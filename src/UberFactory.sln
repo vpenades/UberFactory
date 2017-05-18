@@ -1,0 +1,32 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+
+
+Project("{2150e333-8fdc-42a3-9474-1a3956d46de8}") = "src", "src", "{3aa0cca9-250d-4f8f-9095-9af034dc3bf5}"
+EndProject
+Project("{fae04ec0-301f-11d3-bf4b-00c04f79efbc}") = "Epsylon.UberFactory.CLI", "Epsylon.UberFactory.CLI\Epsylon.UberFactory.CLI.csproj", "{6e832875-0893-4ad2-9ae9-762e1a5ea856}"
+EndProject
+Project("{fae04ec0-301f-11d3-bf4b-00c04f79efbc}") = "Epsylon.UberFactory.Core", "Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj", "{faeab33b-0005-487d-bb66-a0b2c61a3b77}"
+EndProject
+Project("{fae04ec0-301f-11d3-bf4b-00c04f79efbc}") = "Epsylon.UberFactory.SDK", "Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj", "{5c1065b7-9aa9-4e2b-8ab6-903048e32d96}"
+EndProject
+Project("{fae04ec0-301f-11d3-bf4b-00c04f79efbc}") = "Epsylon.UberFactory.Core.Tests", "Epsylon.UberFactory.Core.Tests\Epsylon.UberFactory.Core.Tests.csproj", "{dc861cad-852a-45a9-a747-707316fa6437}"
+EndProject
+Project("{fae04ec0-301f-11d3-bf4b-00c04f79efbc}") = "Epsylon.UberFactory.Editor", "Epsylon.UberFactory.Editor\Epsylon.UberFactory.Editor.csproj", "{9a24c608-bca7-4c68-836c-baf990afed85}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6e832875-0893-4ad2-9ae9-762e1a5ea856} = {3aa0cca9-250d-4f8f-9095-9af034dc3bf5}
+		{faeab33b-0005-487d-bb66-a0b2c61a3b77} = {3aa0cca9-250d-4f8f-9095-9af034dc3bf5}
+		{5c1065b7-9aa9-4e2b-8ab6-903048e32d96} = {3aa0cca9-250d-4f8f-9095-9af034dc3bf5}
+		{dc861cad-852a-45a9-a747-707316fa6437} = {3aa0cca9-250d-4f8f-9095-9af034dc3bf5}
+		{9a24c608-bca7-4c68-836c-baf990afed85} = {3aa0cca9-250d-4f8f-9095-9af034dc3bf5}
+	EndGlobalSection
+EndGlobal

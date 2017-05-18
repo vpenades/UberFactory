@@ -1,0 +1,263 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    
+                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.DataTemplates"                    
+                    
+                    xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"             
+                    
+                    xmlns:cdata="clr-namespace:Epsylon.UberFactory;assembly=Epsylon.UberFactory.Core"
+                    
+                    xmlns:bindings="clr-namespace:Epsylon.UberFactory.Bindings;assembly=Epsylon.UberFactory.Core"
+                    
+                    xmlns:data="clr-namespace:Epsylon.UberFactory"
+                    
+                    xmlns:pitems="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"
+                    >
+
+    <BooleanToVisibilityConverter x:Key="__isVisible" />
+    <themes:RelayCommandConverter x:Key="__asRelayCommand" />
+    <themes:BooleanToTextWrappingConverter x:Key="__asTextWrapping" />
+    
+    
+    <themes:BooleanToBrushConverter x:Key="__booleanAsColor" OddBrush="Gray" EvenBrush="DarkSlateBlue" />
+    <local:PropertyBindingsSelector x:Key="_BindingsViewSelector" />
+
+    <SolidColorBrush x:Key="_NodeBackgroundColor">BlanchedAlmond</SolidColorBrush>
+
+    <Style x:Key="_NodeExpanderStyle" TargetType="{x:Type Expander}" BasedOn="{StaticResource VerticalExpanderStyle}">
+        <!-- http://stackoverflow.com/questions/666269/styling-nested-elements-in-wpf/666377#666377 -->
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="IsExpanded" Value="True"/>
+        <Setter Property="Background" Value="#30001040" />
+    </Style>
+
+    <ContextMenu x:Key="__clearValueContextMenu">
+        <MenuItem Icon="{StaticResource _RemoveIcon}" Command="{Binding ClearValueCmd,Converter={StaticResource __asRelayCommand}}">
+            <MenuItem.Header>
+                <TextBlock>
+                            <Run Text="Reset value to default:" />
+                            <Run Text="{Binding DisplayDefaultValue,Mode=OneWay}" />
+                </TextBlock>                
+            </MenuItem.Header>
+        </MenuItem>
+    </ContextMenu>
+
+
+    <DataTemplate x:Key="BindingView_Invalid">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
+            <TextBlock Text="INVALID BINDING" FontWeight="Bold" Foreground="Red"/>
+        </GroupBox>
+    </DataTemplate>
+
+
+    <DataTemplate x:Key="BindingView_Group" >
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource BasicGroupBoxStyle}">
+            <ItemsControl ItemsSource="{Binding Bindings}" ItemTemplateSelector="{StaticResource _BindingsViewSelector}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </GroupBox>
+    </DataTemplate>
+
+
+    <DataTemplate x:Key="BindingView_TextBox">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
+            <TextBox Text="{Binding Value}" MinWidth="32"
+                     TextWrapping="{Binding IsMultiLine,Converter={StaticResource __asTextWrapping}}" AcceptsReturn="{Binding IsMultiLine}" MaxLines="5" MinLines="1" VerticalScrollBarVisibility="Auto"
+                     Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                     ContextMenu="{StaticResource __clearValueContextMenu}"
+                     BorderThickness="0,0,0,2" VerticalAlignment="Center"/>            
+        </GroupBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="BindingView_CheckBox">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
+            <CheckBox IsChecked="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}"
+                      Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                      VerticalAlignment="Center"/>            
+        </GroupBox>
+    </DataTemplate>    
+
+    <DataTemplate x:Key="BindingView_ComboBox">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}" >
+            <ComboBox ItemsSource="{Binding AvailableValues}"
+                      SelectedValue="{Binding Value}"                      
+                      ContextMenu="{StaticResource __clearValueContextMenu}"
+                      Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                      VerticalAlignment="Center"/>            
+        </GroupBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="BindingView_DateBox">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
+            <DatePicker SelectedDate="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />            
+        </GroupBox>
+    </DataTemplate>
+    
+    <!-- Todo BindingView_TimeBox ... or just use three Int Properties -->
+
+    <DataTemplate x:Key="BindingView_Slider">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
+            <DockPanel
+                ContextMenu="{StaticResource __clearValueContextMenu}"
+                TextElement.Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}">               
+
+                <Grid DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Minimum}" Visibility="Hidden"/>
+                    <TextBlock Text="{Binding Maximum}" Visibility="Hidden"/>
+                    <TextBlock Text="{Binding Value}"/>
+                </Grid>
+                
+                <Slider Value="{Binding Value}" Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" MinWidth="110" />
+                
+            </DockPanel>
+        </GroupBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="BindingView_PathPicker">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}">
+            <DockPanel ContextMenu="{StaticResource __clearValueContextMenu}">                
+                <Button DockPanel.Dock="Right" Content="{StaticResource _FolderIcon}" Command="{Binding ShowPickPathDialogCmd,Converter={StaticResource __asRelayCommand}}" />
+                <TextBox Text="{Binding FileName,Mode=OneWay}" IsReadOnly="True"
+                         Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                         ToolTip="{Binding FilePath,Mode=OneWay}"
+                         />
+            </DockPanel>
+        </GroupBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="BindingView_ColorPicker">
+        <local:ColorBindingView />
+    </DataTemplate>
+
+
+
+
+
+
+    <DataTemplate x:Key="BindingView_Dependency_Pipeline" >
+
+        <Grid>
+
+            <GroupBox VerticalAlignment="Top" Background="#40ff0000"
+                          Style="{StaticResource HorizontalGroupBoxStyle}"                          
+                          Visibility="{Binding IsEmpty,Converter={StaticResource asVisible}}" >
+
+                <GroupBox.Header>
+                    <Border Style="{StaticResource GroupBorderBaseStyle}" Background="Orange" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </Border>
+                </GroupBox.Header>
+
+                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseBindingCmd}" />
+
+            </GroupBox>
+
+            <GroupBox VerticalAlignment="Top"
+                          Style="{StaticResource HorizontalGroupBoxStyle}"                          
+                          Visibility="{Binding IsInstanced,Converter={StaticResource asVisible}}">
+
+                <GroupBox.Header>
+
+                    <GroupBox Style="{StaticResource HorizontalGroupBoxStyle}">
+                        
+                        <GroupBox.Header>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </GroupBox.Header>
+
+                        <WrapPanel>
+                            <Button Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"/>
+                            <Button Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveBindingCmd}"/>
+                        </WrapPanel>
+                    </GroupBox>
+                    
+                </GroupBox.Header>                
+
+            </GroupBox>
+
+        </Grid>
+
+    </DataTemplate>    
+    
+    <DataTemplate x:Key="BindingView_Dependency_Single_Empty" >        
+
+        <GroupBox VerticalAlignment="Top" Background="#40ff0000" Style="{StaticResource VerticalGroupBoxStyle}">
+
+            <GroupBox.Header>
+                <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" HorizontalAlignment="Left" />                    
+            </GroupBox.Header>
+
+            <WrapPanel HorizontalAlignment="Center"  VerticalAlignment="Center">
+                <Button Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveElementCmd}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" />
+                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseParameterCmd}" />
+            </WrapPanel>            
+
+        </GroupBox>        
+
+    </DataTemplate>
+
+    <DataTemplate x:Key="BindingView_Dependency_Single_Instanced" >
+        
+        <Expander VerticalAlignment="Top" Style="{StaticResource _NodeExpanderStyle}">
+
+            <Expander.Header>
+                <DockPanel HorizontalAlignment="Stretch">
+
+                    <DockPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result" Command="{Binding ViewResultCmd}" />
+                            <Separator />
+                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="Remove" Command="{Binding RemoveParameterCmd}" />
+                        </ContextMenu>
+                    </DockPanel.ContextMenu>
+
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />
+                    <Button Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}" DockPanel.Dock="Right"/>
+                    <TextBlock Text="    " />
+                </DockPanel>
+            </Expander.Header>
+
+            <pitems:NodeView DataContext="{Binding NodeInstance}" />
+
+        </Expander>        
+
+    </DataTemplate>
+
+    <DataTemplate x:Key="BindingView_Dependency_Multi" >
+
+        <Grid>
+
+            <Expander VerticalAlignment="Top" Style="{StaticResource _NodeExpanderStyle}">
+                
+                <Expander.Header>
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <DockPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Icon="{StaticResource _AddIcon}" Header="Add new child" Command="{Binding AddParameterSlotCmd}" />                                
+                            </ContextMenu>
+                        </DockPanel.ContextMenu>
+                        <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />                        
+                        <Button Content="{StaticResource _AddIcon}" Command="{Binding AddParameterSlotCmd}" DockPanel.Dock="Right"/>
+                        <TextBlock Text="    " />
+                    </DockPanel>
+                </Expander.Header>
+
+                <ItemsControl ItemsSource="{Binding Slots}" ItemTemplateSelector="{StaticResource _BindingsViewSelector}" >
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="{Binding ItemsControlPanelOrientation}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>                
+
+            </Expander>
+
+        </Grid>
+
+    </DataTemplate>
+
+
+</ResourceDictionary>

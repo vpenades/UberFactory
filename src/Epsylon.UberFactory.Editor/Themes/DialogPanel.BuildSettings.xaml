@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Epsylon.UberFactory.Themes.BuildSettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Epsylon.UberFactory.Themes"
+             mc:Ignorable="d">
+    
+    <GroupBox Header="Build Settings">
+        <StackPanel>
+            
+            <GroupBox Header="Platform:" Style="{StaticResource PlainTextGroupBoxStyle}">
+                <Label Content="{Binding Platform}" />
+            </GroupBox>
+
+            <GroupBox Header="Configuration:" Style="{StaticResource PlainTextGroupBoxStyle}">
+                <Label Content="{Binding Configuration}" />
+            </GroupBox>
+
+            <GroupBox Header="Source Directory:" Style="{StaticResource PlainTextGroupBoxStyle}">
+                <Label Content="{Binding SourceDirectory}" />
+            </GroupBox>
+
+            <GroupBox Header="Target Directory:" Style="{StaticResource PlainTextGroupBoxStyle}">
+                <DockPanel>
+                    <Button Content="📂" Command="{Binding BrowseTargetDirectoryCmd}" DockPanel.Dock="Right" />
+                    <Label Content="{Binding TargetDirectoryShortestDisplay}" ToolTip="{Binding TargetDirectory}" VerticalAlignment="Center" />
+                </DockPanel>                
+            </GroupBox>
+
+        </StackPanel>
+    </GroupBox>
+    
+</UserControl>

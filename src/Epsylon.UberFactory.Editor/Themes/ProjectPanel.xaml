@@ -1,0 +1,134 @@
+﻿<UserControl x:Class="Epsylon.UberFactory.Themes.ProjectPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Epsylon.UberFactory.Themes"
+             mc:Ignorable="d" >
+
+    <DockPanel>
+
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Icon="{StaticResource _NewIcon}" Header="New..." Command="{Binding Application.NewDocumentCmd}" />
+                <MenuItem Icon="{StaticResource _OpenIcon}" Header="Open..." Command="{Binding Application.OpenDocumentCmd}" />
+                <Separator />
+                <MenuItem Header="Close" Command="{Binding Application.CloseDocumentCmd}" />
+                <Separator />
+                <MenuItem Icon="{StaticResource _SaveIcon}" Header="Save" Command="{Binding SaveCmd}" />
+                <Separator />
+                <MenuItem Icon="{StaticResource _ExitIcon}" Header="Exit" Command="{Binding Application.ExitCmd}" />
+            </MenuItem>
+
+            <MenuItem Header="View">
+                <MenuItem Icon="{StaticResource _ConfigurationsIcon}" Header="Configurations Manager..." Command="{Binding EditConfigurationsCmd}" />
+                <MenuItem Icon="{StaticResource _PluginsIcon}" Header="Plugins Manager..." Command="{Binding EditPluginsCmd}" />
+            </MenuItem>
+
+            <MenuItem Header="Project">
+                <MenuItem Icon="{StaticResource _AddIcon}" Header="Add Task..." Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />
+                <MenuItem Icon="{StaticResource _AddIcon}" Header="Add Template..." Command="{Binding AddTemplateCmd}" IsEnabled="{Binding CanAddItems}" />
+                <Separator />
+                <MenuItem Icon="{StaticResource _BuildIcon}" Header="Build All..." Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}"/>
+            </MenuItem>            
+
+            <MenuItem Header="Help">
+                <MenuItem Icon="{StaticResource _AboutIcon}" Header="About Über Factory..." Command="{Binding Application.ShowAboutDialogCmd}" />
+            </MenuItem>
+        </Menu>        
+
+        <StatusBar DockPanel.Dock="Top">
+            
+            <TextBlock Text="{Binding TargetDirectory}" />
+
+            <Button Content="{StaticResource _SaveIcon}" Command="{Binding SaveCmd}" ToolTip="Save" />
+
+            <Button Content="{StaticResource _PluginsIcon}" Command="{Binding EditPluginsCmd}" ToolTip="Show Plugins Manager" />
+
+            <DockPanel>
+                <Button Content="{StaticResource _ConfigurationsIcon}" Command="{Binding EditConfigurationsCmd}" DockPanel.Dock="Right" ToolTip="Show Configuration Manager" />
+                <ComboBox ItemsSource="{Binding Configurations.All}" SelectedValue="{Binding ActiveConfiguration}" />
+            </DockPanel>            
+            <Button Content="{StaticResource _BuildIcon}" Command="{Binding BuildAllCmd}" ToolTip="Build" IsEnabled="{Binding CanBuild}" />
+
+        </StatusBar>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock />
+        </StatusBar>
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <ContentControl Content="{Binding ActiveDocument}" HorizontalAlignment="Stretch" Margin="2" />
+
+            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" ResizeDirection="Columns" HorizontalAlignment="Stretch" />
+
+            <DockPanel Grid.Column="2">
+
+                <TabControl>
+
+                    <TabItem Header="Tasks">
+                        <DataGrid x:Name="myTasks"
+                                  ItemsSource="{Binding Tasks}"
+                                  AutoGenerateColumns="False"
+                                  AllowDrop="True"
+                                  SelectionMode="Single" SelectedValue="{Binding ActiveDocument}">
+
+                            <DataGrid.InputBindings>
+                                <KeyBinding Key="Delete" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ElementName=myTasks,Path=SelectedValue}"/>
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Add Task" Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Enabled}" />
+                                <DataGridTextColumn Header="User Title" Binding="{Binding Title}" />
+                                <DataGridTextColumn Header="Inferred Title" Binding="{Binding InferredTitle}" IsReadOnly="True" />
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </TabItem>
+
+                    <TabItem Header="Templates">
+                        <DataGrid x:Name="myTemplates"
+                                  ItemsSource="{Binding Templates}"
+                                  AutoGenerateColumns="False"
+                                  AllowDrop="True"
+                                  SelectionMode="Single" SelectedValue="{Binding ActiveDocument}">
+
+                            <DataGrid.InputBindings>
+                                <KeyBinding Key="Delete" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ElementName=myTemplates,Path=SelectedValue}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Add Template" Command="{Binding AddTemplateCmd}" IsEnabled="{Binding CanAddItems}" />                                
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+
+                            <DataGrid.Columns>                            
+                                <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </TabItem>
+
+                </TabControl>
+
+            </DockPanel>
+
+        </Grid>
+        
+    </DockPanel>
+    
+</UserControl>

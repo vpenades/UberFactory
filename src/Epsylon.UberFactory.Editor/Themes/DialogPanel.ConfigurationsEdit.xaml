@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Epsylon.UberFactory.Themes.ConfigurationsEditPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Epsylon.UberFactory.Themes"
+             mc:Ignorable="d" 
+             MinWidth="400" MinHeight="200">
+    <DockPanel>
+
+        <GroupBox DockPanel.Dock="Bottom" Style="{StaticResource PlainTextGroupBoxStyle}" Header="Add New Configuration:">
+            <DockPanel>                
+                <TextBlock Name="myCurrentSelection" VerticalAlignment="Center" />
+                <Button DockPanel.Dock="Right" Content="{StaticResource _AddIcon}" Click="_OnClick_AddConfiguration" />
+                <TextBox Name="myNewConfig" VerticalContentAlignment="Center" />
+            </DockPanel>
+        </GroupBox>
+
+        <GroupBox Style="{StaticResource PlainTextGroupBoxStyle}" Header="Available Configurations:">
+            <ListView ItemsSource="{Binding All}" Name="myList" SelectionChanged="myList_SelectionChanged" />
+        </GroupBox>
+
+    </DockPanel>
+</UserControl>

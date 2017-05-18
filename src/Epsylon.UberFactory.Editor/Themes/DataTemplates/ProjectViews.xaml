@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    
+                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.DataTemplates"                    
+                    xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"             
+                    xmlns:data="clr-namespace:Epsylon.UberFactory"                    
+                    
+                    xmlns:pitems="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"                    
+                    >    
+
+    <DataTemplate DataType="{x:Type data:ProjectVIEW+Task}">
+        <pitems:TaskView />        
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type data:ProjectVIEW+Template}">
+        <pitems:TemplateView />
+    </DataTemplate>    
+
+    <DataTemplate DataType="{x:Type data:ProjectVIEW+Project}">
+        <themes:ProjectPanel />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type data:HomeView}">
+        <themes:HomePanel />
+    </DataTemplate>
+
+</ResourceDictionary>

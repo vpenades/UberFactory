@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="Epsylon.UberFactory.Themes.DataTemplates.ColorBindingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.DataTemplates"
+             mc:Ignorable="d">
+    
+    <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}">
+        <DockPanel ContextMenu="{StaticResource __clearValueContextMenu}">
+            <Button Click="Button_Click"
+                        
+                        BorderBrush="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                        
+                        Content="    "
+                        
+                        Background="{Binding Value,Converter={StaticResource __booleanAsColor}}"                        
+                        />
+        </DockPanel>
+    </GroupBox>
+    
+</UserControl>

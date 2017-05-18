@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="Epsylon.UberFactory.Themes.PluginsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Epsylon.UberFactory.Themes"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" MaxHeight="800" MinHeight="300">
+
+    <UserControl.Resources>
+        <sys:String x:Key="pluginsLoadWarning" xml:space="preserve">Plugins loaded into the framework cannot be unloaded.&#x0a;Restart the application to clear the loaded plugins.</sys:String>
+    </UserControl.Resources>
+
+    <GroupBox Style="{StaticResource PlainTextGroupBoxStyle}" Header="{StaticResource pluginsLoadWarning}">        
+
+        <DataGrid ItemsSource="{Binding Assemblies}" AutoGenerateColumns="False" Name="myAssemblies" SelectionMode="Single" SelectionUnit="FullRow" >            
+
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Header="Referenced" IsReadOnly="{Binding CanReference}" Binding="{Binding Referenced}" />                
+                <DataGridTemplateColumn IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button ToolTip="{Binding FilePath}" Command="{Binding ShowContainingFolderCmd}">
+                                <Image Source="{Binding FileIcon}" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn IsReadOnly="true" Header="Status" Binding="{Binding Status}"  />
+                <DataGridTextColumn IsReadOnly="true" Header="Assembly" Binding="{Binding FileName}" />
+                <DataGridTextColumn IsReadOnly="true" Header="Product Version" Binding="{Binding ProductVersion}" />
+                <DataGridTextColumn IsReadOnly="true" Header="Configuration" Binding="{Binding Configuration}" />
+                <DataGridTextColumn IsReadOnly="true" Header="Architecture" Binding="{Binding Architecture}" />
+                <DataGridTextColumn IsReadOnly="true" Header="Company" Binding="{Binding Company}" />
+                <DataGridTextColumn IsReadOnly="true" Header="Description" Binding="{Binding Description}" />
+                
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </GroupBox>
+</UserControl>
