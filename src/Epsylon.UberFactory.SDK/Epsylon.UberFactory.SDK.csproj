@@ -15,11 +15,6 @@
 
   <ItemGroup>
     <Content Include="..\Shared\AppIcon.ico" Link="AppIcon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="Properties\" />
   </ItemGroup>  
 
 </Project>
