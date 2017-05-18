@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net462;netcoreapp1.1</TargetFrameworks>
+    <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
+    <AssemblyName>UberFactory</AssemblyName>
+    <RootNamespace>Epsylon.UberFactory</RootNamespace>
+    <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>  
+
+  <ItemGroup>
+    <Content Include="..\Shared\AppIcon.ico" Link="AppIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />
+    <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />
+  </ItemGroup>
+
+</Project>
