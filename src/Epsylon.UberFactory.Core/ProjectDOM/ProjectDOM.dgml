@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="@10" Category="CodeSchema_Class" Bounds="221.785221354166,46.1621091250002,77.7166666666672,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Project" Icon="Microsoft.VisualStudio.Class.Public" Label="Project" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=382 StartCharacterOffset=29 EndLineNumber=382 EndCharacterOffset=36)" UseManualLocation="True" />
+    <Node Id="@11" Category="CodeSchema_Class" Bounds="589.087005208334,131.332031,63.1033333333326,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Task" Icon="Microsoft.VisualStudio.Class.Public" Label="Task" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=360 StartCharacterOffset=29 EndLineNumber=360 EndCharacterOffset=33)" UseManualLocation="True" />
+    <Node Id="@12" Category="CodeSchema_Class" Bounds="482.82990234375,211.0322263125,89.1399999999994,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Template" Icon="Microsoft.VisualStudio.Class.Public" Label="Template" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=372 StartCharacterOffset=29 EndLineNumber=372 EndCharacterOffset=37)" UseManualLocation="True" />
+    <Node Id="@13" Category="CodeSchema_Class" Bounds="309.862369791666,212.8310544375,142.966666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="TemplateParameter" Icon="Microsoft.VisualStudio.Class.Public" Label="TemplateParameter" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=365 StartCharacterOffset=29 EndLineNumber=365 EndCharacterOffset=46)" UseManualLocation="True" />
+    <Node Id="@14" Category="CodeSchema_Class" Bounds="332.002578125001,59.6621091250001,91.2799999999988,26" CodeSchemaProperty_IsFinal="True" CodeSchemaProperty_IsPublic="True" CommonLabel="Unknown" Icon="Microsoft.VisualStudio.Class.Public" Label="Unknown" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=264 StartCharacterOffset=28 EndLineNumber=264 EndCharacterOffset=35)" UseManualLocation="True" />
+    <Node Id="@4" Category="CodeSchema_Class" Bounds="166.020227864583,214.162109125,113.843333333334,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Configuration" Icon="Microsoft.VisualStudio.Class.Public" Label="Configuration" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=335 StartCharacterOffset=29 EndLineNumber=335 EndCharacterOffset=42)" UseManualLocation="True" />
+    <Node Id="@5" Category="CodeSchema_Class" Bounds="493.202005208334,132.0322263125,64.873333333333,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="Item" Icon="Microsoft.VisualStudio.Class.Public" Label="Item" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=353 StartCharacterOffset=38 EndLineNumber=353 EndCharacterOffset=42)" UseManualLocation="True" />
+    <Node Id="@6" Category="CodeSchema_Class" Bounds="160.701953125001,158.162109125,70.3499999999985,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Node" Icon="Microsoft.VisualStudio.Class.Public" Label="Node" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=341 StartCharacterOffset=29 EndLineNumber=341 EndCharacterOffset=33)" UseManualLocation="True" />
+    <Node Id="@7" Category="CodeSchema_Class" Bounds="327.517578125,133.8310544375,100.25,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="ObjectBase" Icon="Microsoft.VisualStudio.Class.Public" Label="ObjectBase" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=211 StartCharacterOffset=30 EndLineNumber=211 EndCharacterOffset=40)" />
+    <Node Id="@8" Category="CodeSchema_Class" Bounds="160.221803385417,102.162109125,82.8366666666661,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Pipeline" Icon="Microsoft.VisualStudio.Class.Public" Label="Pipeline" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=346 StartCharacterOffset=29 EndLineNumber=346 EndCharacterOffset=37)" UseManualLocation="True" />
+    <Node Id="@9" Category="CodeSchema_Class" Bounds="464.450338541667,65.7812497500001,126.376666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="PluginReference" Icon="Microsoft.VisualStudio.Class.Public" Label="PluginReference" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=377 StartCharacterOffset=29 EndLineNumber=377 EndCharacterOffset=44)" UseManualLocation="True" />
+    <Node Id="ClassInheritance" Bounds="140.222857320379,6.16200912500015,531.966427286324,254.0005" Group="Expanded" Label="Class Inheritance" UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="@10" Target="@7" Bounds="277.992768766996,72.1621091250001,75.0982225834933,56.2721106046648" />
+    <Link Source="@11" Target="@5" Bounds="567.075094088514,144.564584662608,22.0108571848579,0.16223231586585" />
+    <Link Source="@12" Target="@5" Bounds="526.12909127488,167.029990783582,0.980988333505707,44.0022357789179" />
+    <Link Source="@13" Target="@7" Bounds="378.673531070598,168.821180085863,2.06329473043081,44.0098746016365" />
+    <Link Source="@14" Target="@7" Bounds="377.642578125,85.662109375,0,39.1689453125" />
+    <Link Source="@4" Target="@7" Bounds="247.976562392915,163.978623524032,96.6434076307033,50.1837856009678" />
+    <Link Source="@5" Target="@7" Bounds="436.766913398136,145.426480132326,56.4350918101972,0.685943985498881" />
+    <Link Source="@6" Target="@7" Bounds="231.051953124999,154.734911491086,87.5451912553196,11.7188512581121" />
+    <Link Source="@8" Target="@7" Bounds="243.059523987046,122.614825383514,75.6003041714606,13.6031561550876" />
+    <Link Source="@9" Target="@5" Bounds="526.302689311707,91.78125,0.943535517995656,31.2550747443103" />
+    <Link Source="ClassInheritance" Target="@10" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@11" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@12" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@13" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@14" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@4" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@5" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@6" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@7" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@8" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@9" Category="Contains" />
+  </Links>
+  <Categories>
+    <Category Id="CodeSchema_Class" Label="Class" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Classes" />
+    <Category Id="CodeSchema_Type" Label="Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Types" />
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsAbstract" Label="Is Abstract" Description="Flag to indicate member is 'Abstract' does not provide a full implementation" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsFinal" Label="Is Final" Description="Flag to indicate the member is 'Final' and cannot be derived from" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsPublic" Label="Is Public" Description="Flag to indicate the scope is Public" DataType="System.Boolean" />
+    <Property Id="CommonLabel" DataType="System.String" />
+    <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="Group" Label="Group" Description="Display the node as a group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="Icon" Label="Icon" Description="Icon" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="SourceLocation" Label="Start Line Number" DataType="Microsoft.VisualStudio.GraphModel.CodeSchema.SourceLocation" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="ToolTip" DataType="System.String" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <QualifiedNames>
+    <Name Id="Assembly" Label="Assembly" ValueType="Uri" />
+    <Name Id="Name" Label="Name" ValueType="System.String" />
+    <Name Id="Namespace" Label="Namespace" ValueType="System.String" />
+    <Name Id="ParentType" Label="Parent Type" ValueType="System.Object" />
+    <Name Id="Type" Label="Type" ValueType="System.Object" />
+  </QualifiedNames>
+  <IdentifierAliases>
+    <Alias n="1" Uri="Assembly=$(faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPathUri)" />
+    <Alias n="2" Id="Namespace=Epsylon.UberFactory" />
+    <Alias n="3" Id="ParentType=ProjectDOM" />
+    <Alias n="4" Id="(@1 @2 Type=(Name=Configuration @3))" />
+    <Alias n="5" Id="(@1 @2 Type=(Name=Item @3))" />
+    <Alias n="6" Id="(@1 @2 Type=(Name=Node @3))" />
+    <Alias n="7" Id="(@1 @2 Type=(Name=ObjectBase @3))" />
+    <Alias n="8" Id="(@1 @2 Type=(Name=Pipeline @3))" />
+    <Alias n="9" Id="(@1 @2 Type=(Name=PluginReference @3))" />
+    <Alias n="10" Id="(@1 @2 Type=(Name=Project @3))" />
+    <Alias n="11" Id="(@1 @2 Type=(Name=Task @3))" />
+    <Alias n="12" Id="(@1 @2 Type=(Name=Template @3))" />
+    <Alias n="13" Id="(@1 @2 Type=(Name=TemplateParameter @3))" />
+    <Alias n="14" Id="(@1 @2 Type=(Name=Unknown @3))" />
+  </IdentifierAliases>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Circular References" ToolTip="Node is part of a strongly coupled component" ValueLabel="Nodes">
+      <Condition Expression="IsStronglyConnected" />
+      <Setter Property="Stroke" Value="#D02030" />
+      <Setter Property="StrokeThickness" Value="2" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Circular References" ToolTip="Node is part of a strongly coupled component" ValueLabel="Links">
+      <Condition Expression="IsCircularLink" />
+      <Setter Property="Stroke" Value="#D02030" />
+      <Setter Property="StrokeThickness" Value="2" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Class" ValueLabel="True">
+      <Condition Expression="HasCategory('CodeSchema_Class')" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Is Final" ValueLabel="True">
+      <Condition Expression="CodeSchemaProperty_IsFinal = 'True'" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Is Final" ValueLabel="False">
+      <Condition Expression="CodeSchemaProperty_IsFinal = 'False'" />
+    </Style>
+  </Styles>
+  <Paths>
+    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPath" Value="D:\Work\UberFactory\src\Epsylon.UberFactory.Core\bin\Debug\netstandard1.3\Epsylon.UberFactory.Core.dll" />
+    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPathUri" Value="file:///D:/Work/UberFactory/src/Epsylon.UberFactory.Core/bin/Debug/netstandard1.3/Epsylon.UberFactory.Core.dll" />
+  </Paths>
+</DirectedGraph>
