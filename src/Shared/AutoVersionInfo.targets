@@ -1,0 +1,30 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- http://stackoverflow.com/questions/356543/can-i-automatically-increment-the-file-build-version-when-using-visual-studio/6472195#6472195 -->
+    <!-- http://stackoverflow.com/questions/64602/what-are-differences-between-assemblyversion-assemblyfileversion-and-assemblyin -->
+
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
+    <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
+    <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
+    <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+
+    <!-- Package Version -->
+    <Version>$(Year).$(Month).$(Date).$(Time)</Version>
+
+    <!-- used to identify API changes -->
+    <AssemblyVersionAttribute>[assembly:System.Reflection.AssemblyVersion("$(Version)")]</AssemblyVersionAttribute>
+
+    <!-- used to identify deployments, which improve internals but don't break compatibility-->
+    <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(Version)")]</AssemblyFileVersionAttribute>
+
+  </PropertyGroup>
+
+  <Target Name="GenerateAssemblyVersion" BeforeTargets="Build">
+    <Message Text="Generating Assembly Versions..." />
+    <WriteLinesToFile File="Properties\AssemblyVersion.Generated.cs" Lines="$(AssemblyVersionAttribute)%0a$(AssemblyFileVersionAttribute)" Overwrite="true" />
+  </Target>
+
+</Project>
