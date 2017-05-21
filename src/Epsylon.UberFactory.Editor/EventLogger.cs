@@ -44,6 +44,12 @@ namespace Epsylon.UberFactory
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
+            Dispose(true);            
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             
         }
 
