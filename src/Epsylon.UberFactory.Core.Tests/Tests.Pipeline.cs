@@ -25,11 +25,33 @@ namespace Epsylon.UberFactory
             Assert.AreEqual(24, result);
         }
 
-        private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration)
+
+        [TestMethod]
+        public void TemplatePipelineTest()
+        {
+            var template = TestPipelinesFactory.CreateTemplate();
+
+            // create a template
+            var pipeline = new ProjectDOM.Pipeline();
+
+            // create root node and set it as root of the template
+            var nodeId = pipeline.AddNode("TestFilter3");            
+            pipeline.RootIdentifier = nodeId;
+
+            var nodeProps = pipeline.GetNode(nodeId).GetPropertiesForConfiguration("Root");
+            nodeProps.SetValue("Template1", "FCB504CC-4C7D-4A3B-BB92-8811EBA7B217");
+            nodeProps.SetValue("Value1", "7");
+
+
+            var result = (int)_Evaluate(pipeline, "Root", id => template);
+            
+        }
+
+        private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration, Func<Guid,ProjectDOM.Template> tfunc = null)
         {
             // create a pipeline evaluator
 
-            var evaluator = PipelineEvaluator.CreatePipelineInstance(pipeline, id => null, TestFiltersFactory.CreateInstance, PipelineEvaluator.Monitor.Empty);
+            var evaluator = PipelineEvaluator.CreatePipelineInstance(pipeline, tfunc, TestFiltersFactory.CreateInstance, PipelineEvaluator.Monitor.Empty);
             evaluator.Setup(BuildContext.Create(configuration, new PathString("")));
 
             // run evaluation
@@ -95,6 +117,39 @@ namespace Epsylon.UberFactory
 
             return pipeline;
         }
+
+
+
+        /// <summary>
+        /// Create a templated pipeline, with a root node and two leaf nodes
+        /// </summary>        
+        public static ProjectDOM.Template CreateTemplate()
+        {
+            // create a template
+            var template = System.Activator.CreateInstance(typeof(ProjectDOM.Template),true) as ProjectDOM.Template;            
+            var pipeline = template.Pipeline;
+
+            // create root node and set it as root of the template
+            var nodeId = pipeline.AddNode("TestFilter1");
+            pipeline.RootIdentifier = nodeId;
+            pipeline.GetNode(nodeId).TemplateIdentifier = "N1";
+            
+
+            template.AddNewParameter();
+            template.AddNewParameter();
+
+            var ppp = template.Parameters.ToArray();
+
+            ppp[0].BindingName = "Alpha";
+            ppp[0].NodeId = nodeId;
+            ppp[0].NodeProperty = "Value1";
+
+            ppp[1].BindingName = "Beta";
+            ppp[1].NodeId = nodeId;
+            ppp[1].NodeProperty = "Value2";
+
+            return template;            
+        }
     }
 
 
@@ -105,7 +160,8 @@ namespace Epsylon.UberFactory
             var filters = new Type[]
             {
                 typeof(TestFilter1),
-                typeof(TestFilter2)
+                typeof(TestFilter2),
+                typeof(TestFilter3)
             };
 
             var t = filters.FirstOrDefault(item => item.Name == classId);
@@ -113,7 +169,7 @@ namespace Epsylon.UberFactory
             return t == null ? null : SDK.Create(t, context);
         }
 
-        [SDK.ContentFilter("TestFilter1")]
+        [SDK.ContentFilter(nameof(TestFilter1))]
         class TestFilter1 : SDK.ContentFilter<int>
         {
             [SDK.InputValue("Value1")]
@@ -128,7 +184,7 @@ namespace Epsylon.UberFactory
             }
         }
 
-        [SDK.ContentFilter("TestFilter2")]
+        [SDK.ContentFilter(nameof(TestFilter2))]
         class TestFilter2 : SDK.ContentFilter<int>
         {
             [SDK.InputNode("Value1")]
@@ -140,6 +196,24 @@ namespace Epsylon.UberFactory
             protected override int Evaluate()
             {
                 return Value1 + Value2;
+            }
+        }
+
+
+        [SDK.ContentFilter(nameof(TestFilter3))]
+        class TestFilter3 : SDK.ContentFilter<int>
+        {
+            [SDK.InputPipeline(nameof(Template1))]
+            public SDK.IPipelineInstance Template1 { get; set; }
+
+            [SDK.InputValue(nameof(Value1))]
+            public int Value1 { get; set; }
+
+            protected override int Evaluate()
+            {
+                var t1val = (int)Template1.Evaluate(5, 7);                
+
+                return Value1 + t1val;
             }
         }
 

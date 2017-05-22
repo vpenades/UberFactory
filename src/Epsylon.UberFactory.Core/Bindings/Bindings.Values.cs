@@ -58,7 +58,7 @@ namespace Epsylon.UberFactory.Bindings
         // Setter methods write the value first to the serialization DOM object, and then to the node Instance.
         // * values are never read from the node instance *
 
-        
+        public void SetEvaluatedResult(Object value) { SetInstanceValue(value); }
 
         public abstract void CopyToInstance();
 

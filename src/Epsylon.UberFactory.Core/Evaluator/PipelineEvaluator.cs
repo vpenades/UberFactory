@@ -238,6 +238,9 @@ namespace Epsylon.UberFactory
 
         public SDK.IPipelineInstance SetArgument(string name, object value)
         {
+            // this is not working, because it's setting the properties of the instance in the wrong time.
+            // maybe we need to create an "overlay" of the property group that overrides everything else
+
             if (_Template == null) throw new InvalidOperationException("Not a template");
 
             var tb = _Template.GetParameterByBindingName(name);
@@ -247,9 +250,9 @@ namespace Epsylon.UberFactory
 
             var targetBind = targetNode
                 .CreateBindings(null)
-                .OfType<Bindings.PipelineDependencyBinding>()
+                .OfType<Bindings.ValueBinding>()
                 .FirstOrDefault(item => item.SerializationKey == tb.NodeProperty);
-
+            
             targetBind.SetEvaluatedResult(value);
 
             return this;
@@ -266,9 +269,7 @@ namespace Epsylon.UberFactory
 
                     SetArgument(p.BindingName, parameters[i]);
                 }                
-            }
-
-            _BuildSettings.UseTargetDirectory();
+            }            
 
             var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
 
@@ -287,7 +288,10 @@ namespace Epsylon.UberFactory
             var nodeProps = _Pipeline.GetNode(nodeOrTemplateId)?.GetPropertiesForConfiguration(_BuildSettings.Configuration);
             if (nodeProps == null) return null;
             var nodeInst = _NodeInstances.GetValueOrDefault(nodeOrTemplateId);
-            if (nodeInst == null) return null;            
+            if (nodeInst == null) return null;
+
+            // here we can create a wrapper to nodeProps with the values of the template,
+            // so they're used by the bindings by default
 
             // evaluate values returned by node dependencies recursively
             nodeInst.EvaluateBindings(nodeProps,xid => Evaluate(xid) );

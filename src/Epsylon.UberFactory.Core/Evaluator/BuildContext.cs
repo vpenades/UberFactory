@@ -108,15 +108,7 @@ namespace Epsylon.UberFactory
             if (cfgNode.Any(item => char.IsWhiteSpace(item))) return false;
 
             return true;
-        }
-
-        public PathString UseTargetDirectory()
-        {
-            if (!_TargetDirectoryAbsPath.IsValidDirectoryAbsolutePath) throw new InvalidOperationException("Invalid target path");
-
-            System.IO.Directory.CreateDirectory(_TargetDirectoryAbsPath);
-            return _TargetDirectoryAbsPath;
-        }
+        }        
 
         public PathString MakeRelativeToSource(string absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }
 
@@ -238,7 +230,9 @@ namespace Epsylon.UberFactory
 
         public override System.IO.Stream OpenFile(string relativePath)
         {
-            var newPath = _TargetPath.DirectoryPath.MakeAbsolutePath(relativePath);
+            System.IO.Directory.CreateDirectory(_TargetPath.DirectoryPath);
+
+            var newPath = _TargetPath.DirectoryPath.MakeAbsolutePath(relativePath);            
 
             return System.IO.File.Create(newPath);
         }
