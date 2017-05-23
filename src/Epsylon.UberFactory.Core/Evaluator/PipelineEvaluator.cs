@@ -138,6 +138,8 @@ namespace Epsylon.UberFactory
             }
         }
 
+        public string[] Parameters { get { return _Template == null ? null : _Template.Parameters.Select(item => item.BindingName).ToArray(); } }
+
         #endregion
 
         #region API - Setup

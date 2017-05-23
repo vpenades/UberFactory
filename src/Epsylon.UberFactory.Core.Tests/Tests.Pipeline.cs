@@ -211,6 +211,11 @@ namespace Epsylon.UberFactory
 
             protected override int Evaluate()
             {
+                var ppp = Template1.Parameters;
+
+                Assert.AreEqual("TemplateParam1", ppp[0]);
+                Assert.AreEqual("TemplateParam2", ppp[1]);
+
                 var t1val = (int)Template1.Evaluate(5, 7);                
 
                 return Value1 + t1val;
