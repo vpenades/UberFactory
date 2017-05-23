@@ -149,7 +149,7 @@ namespace Epsylon.UberFactory
             _NodeInstances.Clear();
             _PipelineInstances.Clear();            
 
-            _CreateNodeInstancesRecursive(_Pipeline.RootIdentifier);
+            _CreateNodeInstancesRecursive(_Pipeline.RootIdentifier, new Stack<Guid>());
         }
 
         /// <summary>
@@ -159,8 +159,11 @@ namespace Epsylon.UberFactory
         /// Creates the instace for the current ID, and resolves the dependencies of the whole tree.
         /// </remarks>
         /// <param name="nodeId">root node id</param>
-        private void _CreateNodeInstancesRecursive(Guid nodeId)
+        private void _CreateNodeInstancesRecursive(Guid nodeId, Stack<Guid> idStack)
         {
+            if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));
+            idStack.Push(nodeId);
+
             // Find node DOM
             var nodeDom = _Pipeline.GetNode(nodeId);
             if (nodeDom == null) return;            
@@ -202,14 +205,14 @@ namespace Epsylon.UberFactory
                 {
                     var id = ((Bindings.SingleDependencyBinding)binding).GetDependency();
 
-                    _CreateNodeInstancesRecursive(id);
+                    _CreateNodeInstancesRecursive(id, idStack);
                 }
 
                 if (binding is Bindings.MultiDependencyBinding)
                 {
                     var ids = ((Bindings.MultiDependencyBinding)binding).GetDependencies();
 
-                    foreach(var id in ids) _CreateNodeInstancesRecursive(id);
+                    foreach(var id in ids) _CreateNodeInstancesRecursive(id, idStack);
                 }
             }            
         }        
