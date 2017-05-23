@@ -318,6 +318,7 @@ namespace Epsylon.UberFactory
 
         #region value conversion
 
+        public static IPropertyProvider AsReadOnly(this IPropertyProvider props) { return props == null ? null : new _ReadOnlyLayer(props); }
         
 
         public static Object ConvertBindableValue(this TypeInfo expectedType, Object value)

@@ -110,7 +110,7 @@ namespace Epsylon.UberFactory
         private readonly FILTERFACTORY _PluginFactory;
         private readonly TEMPLATEFACTORY _TemplateFactory;
 
-        private readonly ProjectDOM.Template _Template; // optional, it can be null
+        private readonly ProjectDOM.Template _Template; // Non Null if this evaluator is a template
         private readonly ProjectDOM.Pipeline _Pipeline; // here is the serialized data from where we initialize the instances        
         
         // evaluation data
@@ -161,28 +161,25 @@ namespace Epsylon.UberFactory
         /// <param name="nodeId">root node id</param>
         private void _CreateNodeInstancesRecursive(Guid nodeId)
         {
-            // find node            
+            // Find node DOM
             var nodeDom = _Pipeline.GetNode(nodeId);
             if (nodeDom == null) return;            
 
-            // create instance
+            // Create node instance
             var nodeInst = _PluginFactory(nodeDom.ClassIdentifier, _BuildSettings);
-            if (nodeInst == null) throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
-
-            var nodeDesc = Factory.ContentFilterTypeInfo.Create(nodeInst);
-            if (nodeDesc == null) throw new NullReferenceException("not a node type: " + nodeDom.ClassIdentifier);
+            if (nodeInst == null) throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);            
 
             _NodeInstances[nodeId] = nodeInst;
-
             
             // retrieve property values from current cunfiguration
-            var properties = nodeDom.GetPropertiesForConfiguration(_BuildSettings.Configuration);
+            var properties = nodeDom
+                .GetPropertiesForConfiguration(_BuildSettings.Configuration)
+                .AsReadOnly();
 
-            // bind property values to instance
+            // bind property dependencies to instance
             var bindings = nodeInst.CreateBindings(properties).OfType<Bindings.DependencyBinding>();
 
             // recursively create dependencies
-
             foreach(var binding in bindings)
             {
                 if (binding is Bindings.PipelineDependencyBinding)
@@ -234,67 +231,61 @@ namespace Epsylon.UberFactory
 
             return nodeInst.CreateBindings(nodeProps);
         }
-
-
-        public SDK.IPipelineInstance SetArgument(string name, object value)
-        {
-            // this is not working, because it's setting the properties of the instance in the wrong time.
-            // maybe we need to create an "overlay" of the property group that overrides everything else
-
-            if (_Template == null) throw new InvalidOperationException("Not a template");
-
-            var tb = _Template.GetParameterByBindingName(name);
-
-            var targetNode = _NodeInstances
-                .GetValueOrDefault(tb.NodeId);
-
-            var targetBind = targetNode
-                .CreateBindings(null)
-                .OfType<Bindings.ValueBinding>()
-                .FirstOrDefault(item => item.SerializationKey == tb.NodeProperty);
-            
-            targetBind.SetEvaluatedResult(value);
-
-            return this;
-        }
-
+        
+        /// <summary>
+        /// called from a template evaluator
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public Object Evaluate(params Object[] parameters)
         {
-            if (_Template != null)
-            {
-                for(int i=0; i < parameters.Length; ++i)
-                {
-                    var p = _Template.Parameters.Skip(i).FirstOrDefault();
-                    if (p == null) break;
-
-                    SetArgument(p.BindingName, parameters[i]);
-                }                
-            }            
-
             var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
 
-            return Evaluate(_Pipeline.RootIdentifier);
+            return Evaluate(_Pipeline.RootIdentifier, false, parameters);
         }        
 
-        public Object Evaluate(Guid nodeOrTemplateId, bool previewMode = false)
+        public Object Evaluate(Guid nodeOrTemplateId, bool previewMode, params Object[] parameters)
         {
             if (_Monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
 
-            // first, we check if it's a template, and if it is, we return it as the evaluated value (it will be called by the component)
+            // First, we check if it's a template, in which case we return it as the evaluated value (it will be called by the component)
             var pipelineEvaluator = _PipelineInstances.GetValueOrDefault(nodeOrTemplateId);
             if (pipelineEvaluator != null) return pipelineEvaluator;
 
-            // next, we try to find the component
-            var nodeProps = _Pipeline.GetNode(nodeOrTemplateId)?.GetPropertiesForConfiguration(_BuildSettings.Configuration);
-            if (nodeProps == null) return null;
+            // Get the current node being evaluated
             var nodeInst = _NodeInstances.GetValueOrDefault(nodeOrTemplateId);
             if (nodeInst == null) return null;
 
-            // here we can create a wrapper to nodeProps with the values of the template,
-            // so they're used by the bindings by default
+            // Next, we try to find the property values for this node
+            var nodeProps = _Pipeline
+                .GetNode(nodeOrTemplateId)?
+                .GetPropertiesForConfiguration(_BuildSettings.Configuration)
+                .AsReadOnly();
+            if (nodeProps == null) return null;
 
-            // evaluate values returned by node dependencies recursively
-            nodeInst.EvaluateBindings(nodeProps,xid => Evaluate(xid) );
+            // Evaluate values and dependencies. Dependecies are evaluated recursively
+            nodeInst.EvaluateBindings(nodeProps,xid =>  Evaluate(xid,previewMode,parameters));
+
+            // AFTER evaluating the bindings, inject template parameters, if applicable.
+            
+            if (_Template != null)
+            {
+                var nodeBindings = nodeInst.CreateBindings(nodeProps);
+
+                for (int i = 0; i < parameters.Length; ++i)
+                {
+                    var p = _Template.Parameters.Skip(i).FirstOrDefault();
+                    if (p == null) break;
+                    if (p.NodeId != nodeOrTemplateId) continue;
+
+
+                    var templatedBinding = nodeBindings
+                        .OfType<Bindings.ValueBinding>()
+                        .FirstOrDefault(item => item.SerializationKey == p.NodeProperty);
+
+                    if (templatedBinding != null) templatedBinding.SetEvaluatedResult(parameters[i]);                    
+                }
+            }
 
             if (_Monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
 

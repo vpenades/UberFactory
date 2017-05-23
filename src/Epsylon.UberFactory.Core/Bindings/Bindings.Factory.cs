@@ -28,7 +28,7 @@ namespace Epsylon.UberFactory
 
             if (dependencyEvaluator == null) return;
 
-            foreach (var binding in bindings.OfType<Bindings.DependencyBinding>()) { binding.EvaluateAndAssign(dependencyEvaluator); }
+            foreach (var binding in bindings.OfType<Bindings.DependencyBinding>()) { binding.EvaluateAndAssign(dependencyEvaluator); }            
         }
 
         public static IEnumerable<Bindings.MemberBinding> CreateBindings(this SDK.ContentFilter source, IPropertyProvider properties)

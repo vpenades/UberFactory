@@ -29,7 +29,7 @@ namespace Epsylon.UberFactory
         [TestMethod]
         public void TemplatePipelineTest()
         {
-            var template = TestPipelinesFactory.CreateTemplate();
+            var template = TestPipelinesFactory.CreateTemplate();            
 
             // create a template
             var pipeline = new ProjectDOM.Pipeline();
@@ -39,16 +39,18 @@ namespace Epsylon.UberFactory
             pipeline.RootIdentifier = nodeId;
 
             var nodeProps = pipeline.GetNode(nodeId).GetPropertiesForConfiguration("Root");
-            nodeProps.SetValue("Template1", "FCB504CC-4C7D-4A3B-BB92-8811EBA7B217");
+            nodeProps.SetNodeIds("Template1", template.Identifier);
             nodeProps.SetValue("Value1", "7");
 
-
             var result = (int)_Evaluate(pipeline, "Root", id => template);
-            
+
+            Assert.AreEqual(19, result);
         }
 
         private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration, Func<Guid,ProjectDOM.Template> tfunc = null)
         {
+            if (tfunc == null) tfunc = g => null;
+
             // create a pipeline evaluator
 
             var evaluator = PipelineEvaluator.CreatePipelineInstance(pipeline, tfunc, TestFiltersFactory.CreateInstance, PipelineEvaluator.Monitor.Empty);
@@ -131,20 +133,18 @@ namespace Epsylon.UberFactory
 
             // create root node and set it as root of the template
             var nodeId = pipeline.AddNode("TestFilter1");
-            pipeline.RootIdentifier = nodeId;
-            pipeline.GetNode(nodeId).TemplateIdentifier = "N1";
-            
+            pipeline.RootIdentifier = nodeId;            
 
             template.AddNewParameter();
             template.AddNewParameter();
 
             var ppp = template.Parameters.ToArray();
 
-            ppp[0].BindingName = "Alpha";
+            ppp[0].BindingName = "TemplateParam1";
             ppp[0].NodeId = nodeId;
             ppp[0].NodeProperty = "Value1";
 
-            ppp[1].BindingName = "Beta";
+            ppp[1].BindingName = "TemplateParam2";
             ppp[1].NodeId = nodeId;
             ppp[1].NodeProperty = "Value2";
 
