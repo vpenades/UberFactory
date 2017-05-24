@@ -10,7 +10,7 @@ namespace Epsylon.UberFactory
     {
         public interface IPipelineInstance
         {
-            IPipelineInstance SetArgument(string name, object value);
+            string[] Parameters { get; }
 
             Object Evaluate(params Object[] parameters);            
         }        

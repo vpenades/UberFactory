@@ -204,6 +204,7 @@ namespace Epsylon.UberFactory
         class TestFilter3 : SDK.ContentFilter<int>
         {
             [SDK.InputPipeline(nameof(Template1))]
+            [SDK.InputMetaData("TemplateSignature",new string[] { "TemplateParam1", "TemplateParam2" })]
             public SDK.IPipelineInstance Template1 { get; set; }
 
             [SDK.InputValue(nameof(Value1))]
