@@ -103,18 +103,39 @@ namespace Epsylon.UberFactory
         private static PluginManager _LoadPlugins(ProjectDOM.Project project, PathString prjDir)
         {
             var assemblies = new HashSet<System.Reflection.Assembly>();
-            
-            foreach (var rpath in project.References)
-            {
-#if (NET462 || NETCOREAPP1_1)
-                var fullPath = prjDir.MakeAbsolutePath(rpath);
-                
-                var defass = PluginLoader.Instance.UsePlugin(fullPath);
-                if (defass == null) continue;
 
-                assemblies.Add(defass);
-#endif
+            #if (NET462)
+            if (true) // load locally referenced assemblies
+            {
+                var arefs = System.Reflection.Assembly.GetEntryAssembly().GetReferencedAssemblies();
+                foreach (var aname in arefs)
+                {
+                    if (string.IsNullOrWhiteSpace(aname.CodeBase)) continue;
+
+                    var a = PluginLoader.Instance.UsePlugin(new PathString(aname.CodeBase));
+
+                    assemblies.Add(a);
+                }
             }
+            #endif
+
+
+            #if (NET462 || NETCOREAPP1_1)
+            if (true) // load assemblies referenced by the project
+            {
+                foreach (var rpath in project.References)
+                {
+
+                    var fullPath = prjDir.MakeAbsolutePath(rpath);
+
+                    var defass = PluginLoader.Instance.UsePlugin(fullPath);
+                    if (defass == null) continue;
+
+                    assemblies.Add(defass);
+                }
+            }
+            #endif
+            
 
             var plugins = new PluginManager();
 

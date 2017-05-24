@@ -244,7 +244,9 @@ namespace Epsylon.UberFactory
         /// <returns></returns>
         public Object Evaluate(params Object[] parameters)
         {
-            var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
+            if (_NodeInstances.Values.OfType<_UnknownNode>().Any()) throw new InvalidOperationException("Some filters couldn't be instantiated.");
+
+            var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);            
 
             return Evaluate(_Pipeline.RootIdentifier, false, parameters);
         }        
@@ -260,6 +262,7 @@ namespace Epsylon.UberFactory
             // Get the current node being evaluated
             var nodeInst = _NodeInstances.GetValueOrDefault(nodeOrTemplateId);
             if (nodeInst == null) return null;
+            if (nodeInst is _UnknownNode) return null;
 
             // Next, we try to find the property values for this node
             var nodeProps = _Pipeline
