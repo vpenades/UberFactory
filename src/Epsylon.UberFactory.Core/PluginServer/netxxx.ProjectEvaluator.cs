@@ -37,31 +37,36 @@ namespace Epsylon.UberFactory
         {
             if (args.Length < 2) throw new ArgumentException("argument missing");
 
-            var prjFilePath = new PathString(args[0]);
             var dstDirPath = new PathString(args[1]);
-
-            if (!prjFilePath.IsValidFilePath) throw new ArgumentException("Invalid project file");
             if (!dstDirPath.IsValidDirectoryPath) throw new ArgumentException("Invalid target directory");
 
-            prjFilePath = prjFilePath.AsAbsolute();
-            dstDirPath = dstDirPath.AsAbsolute();
+            var directory = System.IO.Path.GetDirectoryName(args[0]);
+            var filePattern = System.IO.Path.GetFileName(args[0]);
 
-            // load project
-            var document = ProjectDOM.LoadProjectFrom(prjFilePath);
-
-            // load plugins
-            var prjDir = prjFilePath.DirectoryPath;
-            var plugins = evalPlugins(document, prjDir);
-
-            using (var logFactory = _CreateLoggerFactory())
+            foreach (var filePath in System.IO.Directory.GetFiles(directory, filePattern))
             {
-                // create build context
-                var buildSettings = BuildContext.Create("Root", prjDir, dstDirPath);
+                var prjFilePath = new PathString(filePath);                
 
-                buildSettings.SetLogger(logFactory);
+                prjFilePath = prjFilePath.AsAbsolute();
+                dstDirPath = dstDirPath.AsAbsolute();
 
-                // do build
-                BuildProject(plugins, document, buildSettings, new PipelineEvaluator.Monitor());
+                // load project
+                var document = ProjectDOM.LoadProjectFrom(prjFilePath);
+
+                // load plugins
+                var prjDir = prjFilePath.DirectoryPath;
+                var plugins = evalPlugins(document, prjDir);
+
+                using (var logFactory = _CreateLoggerFactory())
+                {
+                    // create build context
+                    var buildSettings = BuildContext.Create("Root", prjDir, dstDirPath);
+
+                    buildSettings.SetLogger(logFactory);
+
+                    // do build
+                    BuildProject(plugins, document, buildSettings, new PipelineEvaluator.Monitor());
+                }
             }
         }
 
