@@ -222,11 +222,11 @@ namespace Epsylon.UberFactory
 
         private static T _GetCustomAttribute<T>(this Assembly assembly) where T : Attribute { return Attribute.GetCustomAttribute(assembly, typeof(T), false) as T; }
 
-        public static string InfoCompany(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCompanyAttribute>().Company; }
+        public static string InfoCompany(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCompanyAttribute>()?.Company; }
 
-        public static string InfoProductName(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyProductAttribute>().Product; }
+        public static string InfoProductName(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyProductAttribute>()?.Product; }
 
-        public static string InfoCopyright(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright; }
+        public static string InfoCopyright(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright; }
 
         public static string DisplayTitle(this Assembly assembly) { return assembly == null ? null : assembly.InfoProductName() + " " + assembly.Version().ToString(); }
 
