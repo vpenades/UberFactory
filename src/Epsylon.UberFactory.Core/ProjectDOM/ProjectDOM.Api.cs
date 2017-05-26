@@ -26,8 +26,9 @@ namespace Epsylon.UberFactory
 
         public static Project LoadProjectFrom(string filePath)
         {
-            var root = System.Xml.Linq.XElement.Load(filePath);
-            return _ParseProject(root);
+            var body = System.IO.File.ReadAllText(filePath);
+            
+            return ParseProject(body);
         }
 
         public static Project ParseProject(string projectBody)
