@@ -182,7 +182,7 @@ namespace Epsylon.UberFactory
                 buildSettings.SetLogger(_Logger);
 
                 // do build
-                ProjectDOM.BuildProject(document, buildSettings, plugins, new PipelineEvaluator.Monitor());                
+                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateNodeInstance, new PipelineEvaluator.Monitor());                
             }
         }                
 

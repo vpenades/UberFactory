@@ -70,13 +70,30 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static void BuildProject(Project srcDoc, BuildContext bsettings, PluginManager plugins, PipelineEvaluator.Monitor monitor)
+        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentFilter> filterFactory, PipelineEvaluator.Monitor monitor)
         {
+            if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
+            if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
+            if (filterFactory == null) throw new ArgumentNullException(nameof(filterFactory));
+
             var tasks = srcDoc
                 .Items
                 .OfType<Task>()
                 .Where(item => item.Enabled)
                 .ToArray();
+
+            var templates = srcDoc
+                .Items
+                .OfType<Template>()
+                .ToArray();
+
+            // Before running the tasks we have to ensure:
+            // 1- BuildContext is valid
+            // 2- there's enough space to write
+            // 3- we're able to create instances of all the filters
+            // 4- all the source files are available            
+
+            _ValidateFactory(bsettings, filterFactory, tasks, templates);
 
             for (int i = 0; i < tasks.Length; ++i)
             {
@@ -84,12 +101,41 @@ namespace Epsylon.UberFactory
 
                 var task = tasks[i];
 
-                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, plugins.CreateNodeInstance, monitor.CreatePart(i, tasks.Length));
+                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, filterFactory, monitor.CreatePart(i, tasks.Length));
                 evaluator.Setup(bsettings);
 
                 var srcData = evaluator.Evaluate();
                 if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
             }
         }
+
+        private static void _ValidateFactory(BuildContext bsettings, Func<string, BuildContext, SDK.ContentFilter> filterFactory, Task[] tasks, Template[] templates)
+        {
+            var classIds = tasks
+                            .SelectMany(item => item.Pipeline.Nodes)
+                            .Select(item => item.ClassIdentifier)
+                            .Concat
+                            (
+                                templates
+                                .SelectMany(item => item.Pipeline.Nodes)
+                                .Select(item => item.ClassIdentifier)
+                            )
+                            .Distinct();
+
+            foreach (var cid in classIds)
+            {
+                try
+                {
+                    var instance = filterFactory(cid, bsettings);
+                    if (instance == null) throw new NullReferenceException();
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException("Unable to create " + cid + " instance.", nameof(filterFactory), ex);
+                }
+            }
+        }
+
+
     }
 }
