@@ -8,9 +8,7 @@ namespace Epsylon.UberFactory
 {
     // this interfaces and classes are implemented and created by the serializable DOM objects
     // so the bindings can read and write property values from and to the DOM objects.
-
     
-
     public interface IPropertyProvider
     {
         bool Contains(String serializationKey);
@@ -25,9 +23,7 @@ namespace Epsylon.UberFactory
         String[] GetArray(String serializationKey, String[] defval);
         bool SetArray(String serializationKey, String[] array);
     }
-
     
-
     public static class IPropertyProviderExtensions
     {
         private const string _NODEREFERENCE = "$NODEREF=";
@@ -69,8 +65,7 @@ namespace Epsylon.UberFactory
             properties.SetArray(key, array);
         }        
     }
-
-
+    
     sealed class _PropertyLayer : IPropertyProvider
     {
         #region lifecycle
@@ -125,8 +120,7 @@ namespace Epsylon.UberFactory
 
         #endregion        
     }
-
-
+    
     sealed class _ReadOnlyLayer : IPropertyProvider
     {
         public _ReadOnlyLayer(IPropertyProvider props) { _Properties = props; }
@@ -147,62 +141,4 @@ namespace Epsylon.UberFactory
 
         public bool SetValue(string serializationKey, string value) { throw new NotSupportedException(); }
     }
-
-    sealed class _TemplateLayer : IPropertyProvider
-    {
-        #region lifecycle
-
-        public _TemplateLayer(ProjectDOM.Template template, object[] arguments, Guid nodeId)
-        {
-
-        }
-
-        #endregion
-
-        #region data
-
-        private IPropertyProvider _Properties;
-
-        private readonly Dictionary<string, string> _OverrideValues = new Dictionary<string, string>();
-
-        #endregion
-
-        #region API
-
-        public void Clear(string serializationKey) { throw new NotSupportedException(); }
-
-        public bool SetArray(string serializationKey, string[] array) { throw new NotSupportedException(); }
-
-        public bool SetValue(string serializationKey, string value) { throw new NotSupportedException(); }
-
-        public string GetDefaultValue(string serializationKey, string defval)
-        {
-            return _Properties.GetDefaultValue(serializationKey, defval);
-        }
-
-        public bool Contains(string serializationKey)
-        {
-            if (_OverrideValues.ContainsKey(serializationKey)) return true;
-            return _Properties.Contains(serializationKey);
-        }
-
-        public string GetValue(string serializationKey, string defval)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string[] GetArray(string serializationKey, string[] defval)
-        {
-            throw new NotImplementedException();
-        }        
-
-        #endregion
-
-
-    }
-
-
-
-
-
 }
