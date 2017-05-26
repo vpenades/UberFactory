@@ -32,6 +32,10 @@ namespace Epsylon.UberFactory
 
         public static Project ParseProject(string projectBody)
         {
+            // this reinterprets empty text body projects as "new projects"
+            // which allows to create an empty text file, rename it to "UberFactory" and open it "as is"
+            if (string.IsNullOrWhiteSpace(projectBody)) return CreateNewProject();
+
             var root = System.Xml.Linq.XElement.Parse(projectBody);
             return _ParseProject(root);
         }
