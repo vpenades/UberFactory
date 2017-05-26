@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Epsylon.UberFactory
@@ -67,6 +68,28 @@ namespace Epsylon.UberFactory
             if (name == typeof(Project).Name) return new Project(unk);
 
             return unk;
+        }
+
+        public static void BuildProject(Project srcDoc, BuildContext bsettings, PluginManager plugins, PipelineEvaluator.Monitor monitor)
+        {
+            var tasks = srcDoc
+                .Items
+                .OfType<Task>()
+                .Where(item => item.Enabled)
+                .ToArray();
+
+            for (int i = 0; i < tasks.Length; ++i)
+            {
+                if (monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
+
+                var task = tasks[i];
+
+                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, plugins.CreateNodeInstance, monitor.CreatePart(i, tasks.Length));
+                evaluator.Setup(bsettings);
+
+                var srcData = evaluator.Evaluate();
+                if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
+            }
         }
     }
 }

@@ -182,33 +182,9 @@ namespace Epsylon.UberFactory
                 buildSettings.SetLogger(_Logger);
 
                 // do build
-                BuildProject(document, buildSettings, plugins, new PipelineEvaluator.Monitor());
-                
+                ProjectDOM.BuildProject(document, buildSettings, plugins, new PipelineEvaluator.Monitor());                
             }
-        }
-        
-        public static void BuildProject(ProjectDOM.Project srcDoc, BuildContext bsettings, PluginManager plugins, PipelineEvaluator.Monitor monitor)
-        {
-            var tasks = srcDoc
-                .Items
-                .OfType<ProjectDOM.Task>()
-                .Where(item => item.Enabled)
-                .ToArray();
-
-            for (int i = 0; i < tasks.Length; ++i)
-            {
-                if (monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
-
-                var task = tasks[i];
-
-                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, plugins.CreateNodeInstance, monitor.CreatePart(i, tasks.Length));
-                evaluator.Setup(bsettings);
-
-                var srcData = evaluator.Evaluate();
-                if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
-            }
-        }
-                
+        }                
 
         #endregion
     }
