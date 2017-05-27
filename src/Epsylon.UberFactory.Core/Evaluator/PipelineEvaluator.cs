@@ -136,9 +136,7 @@ namespace Epsylon.UberFactory
 
                 return exportInstance.FileName;
             }
-        }
-
-        public string[] Parameters { get { return _Template == null ? null : _Template.Parameters.Select(item => item.BindingName).ToArray(); } }
+        }        
 
         #endregion
 
@@ -237,6 +235,7 @@ namespace Epsylon.UberFactory
             return nodeInst.CreateBindings(nodeProps);
         }
         
+        
         /// <summary>
         /// called from a template evaluator
         /// </summary>
@@ -274,10 +273,10 @@ namespace Epsylon.UberFactory
             // Evaluate values and dependencies. Dependecies are evaluated recursively
             nodeInst.EvaluateBindings(nodeProps,xid =>  Evaluate(xid,previewMode,parameters));
 
-            // AFTER evaluating the bindings, inject template parameters, if applicable.
-            
+            // AFTER evaluating the bindings, inject template parameters, if applicable.            
             if (_Template != null)
             {
+                var templateArgTypes = GetTemplateParameterTypes().ToArray();
                 var nodeBindings = nodeInst.CreateBindings(nodeProps);
 
                 for (int i = 0; i < parameters.Length; ++i)
@@ -286,12 +285,20 @@ namespace Epsylon.UberFactory
                     if (p == null) break;
                     if (p.NodeId != nodeOrTemplateId) continue;
 
-
                     var templatedBinding = nodeBindings
                         .OfType<Bindings.ValueBinding>()
-                        .FirstOrDefault(item => item.SerializationKey == p.NodeProperty);
+                        .FirstOrDefault(item => item.SerializationKey == p.NodeProperty);                    
 
-                    if (templatedBinding != null) templatedBinding.SetEvaluatedResult(parameters[i]);                    
+                    if (templatedBinding != null)
+                    {
+                        // check if argument types match
+
+                        var pType = templateArgTypes[i];
+
+                        bool areCompatible = templatedBinding.DataType.IsAssignableFrom(pType);
+
+                        templatedBinding.SetEvaluatedResult(parameters[i]);
+                    }
                 }
             }
 
@@ -320,7 +327,33 @@ namespace Epsylon.UberFactory
             throw new NotImplementedException();
         }
 
-        #endregion       
+        #endregion
+
+        #region API - Template
+
+        public string[] TemplateParameters { get { return _Template == null ? null : _Template.Parameters.Select(item => item.BindingName).ToArray(); } }
+
+        public IEnumerable<Type> GetTemplateParameterTypes()
+        {
+            if (_Template == null) yield break;
+
+            foreach (var p in _Template.Parameters.ExceptNulls())
+            {
+                var nodeDom = _Pipeline.GetNode(p.NodeId); if (nodeDom == null) yield return null;
+                if (!_NodeInstances.TryGetValue(p.NodeId, out var nodeInst)) yield return null;
+
+                var nodeBinding = nodeInst
+                    .CreateBindings(null)
+                    .FirstOrDefault(item => item.SerializationKey == p.NodeProperty);
+
+                if (nodeBinding == null) yield return null;
+
+                yield return nodeBinding.DataType;
+            }
+        }
+
+        #endregion
+
     }
 
 

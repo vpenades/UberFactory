@@ -13,10 +13,12 @@ namespace Epsylon.UberFactory
         [TestMethod]
         public void DocumentFileLoadCheck()
         {
-            var basicDocumentBody  = "<Project xmlns=\"http://www.uberfactory.com\" Version=\"1.0\"  > <Properties /> </Project>";
+            Assert.IsNotNull(ProjectDOM.ParseProject(string.Empty),"Empty files must be enterpreted as new documents.");
+
+            var currentDocumentBody  = "<Project xmlns=\"http://www.uberfactory.com\" Version=\""+ProjectDOM.CurrentVersion+"\"  > <Properties /> </Project>";
             var futureDocumentBody = "<Project xmlns=\"http://www.uberfactory.com\" Version=\"999.0\"> <Properties /> </Project>";
 
-            Assert.IsNotNull(ProjectDOM.ParseProject(basicDocumentBody));            
+            Assert.IsNotNull(ProjectDOM.ParseProject(currentDocumentBody));
 
             Assert.ThrowsException<System.IO.FileLoadException> ( () => ProjectDOM.ParseProject(futureDocumentBody) );
             

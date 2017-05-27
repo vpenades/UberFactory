@@ -16,6 +16,8 @@ namespace Epsylon.UberFactory
         private static readonly XName _PropertyArrayItem = _Namespace.GetName("Item");
         private static readonly Version _CurrentVersion = new Version(1, 0);
 
+        public static Version CurrentVersion => _CurrentVersion;
+
         public interface IBindableObject { Guid Identifier { get; } }
 
         public sealed class Property

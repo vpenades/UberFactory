@@ -162,7 +162,7 @@ namespace Epsylon.UberFactory
 
         #endregion        
 
-        #region reflection
+        #region basic reflection
 
         public static IEnumerable<PropertyInfo> FlattenedProperties(this TypeInfo tinfo)
         {
@@ -184,7 +184,46 @@ namespace Epsylon.UberFactory
             if (tinfo.BaseType != null) methods = tinfo.BaseType.GetTypeInfo().FlattenedMethods().Concat(methods);
 
             return methods;
+        }        
+
+        public static Type GetAssignType(this MemberInfo xinfo)
+        {
+            // this method returns the type to pass for assignement:
+            // instance.SomeProperty = value;
+            // instance.SomeMethod(value);
+            // instance.SomeField = value;
+
+            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).PropertyType;
+            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).FieldType;
+            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).GetParameters()[0].ParameterType;
+
+            throw new NotImplementedException();
         }
+
+        public static Type GetEvaluateType(this MemberInfo xinfo)
+        {
+            // this method returns the type to pass for assignement:
+            // value = instance.SomeProperty;
+            // value = instance.SomeMethod();
+            // value = instance.SomeField;
+
+            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).PropertyType;
+            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).FieldType;
+            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).ReturnType;
+
+            throw new NotImplementedException();
+        }
+
+        public static SDK.InputPropertyAttribute GetInputDescAttribute(this MemberInfo xinfo)
+        {
+            return xinfo
+                .GetCustomAttributes<SDK.InputPropertyAttribute>(true)
+                .LastOrDefault();
+        }
+
+        #endregion
+
+        #region ContentFilter extensions        
 
         public static MemberInfo TryGetReflectedMember(this SDK.ContentFilter nodeInstance, String key)
         {
@@ -253,41 +292,6 @@ namespace Epsylon.UberFactory
             if (xinfo is MethodInfo) return ((MethodInfo)xinfo).Invoke(nodeInstance, null);
 
             return null;
-        }
-
-        public static Type GetAssignType(this MemberInfo xinfo)
-        {
-            // this method returns the type to pass for assignement:
-            // instance.SomeProperty = value;
-            // instance.SomeMethod(value);
-            // instance.SomeField = value;
-
-            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).PropertyType;
-            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).FieldType;
-            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).GetParameters()[0].ParameterType;
-
-            throw new NotImplementedException();
-        }
-
-        public static Type GetEvaluateType(this MemberInfo xinfo)
-        {
-            // this method returns the type to pass for assignement:
-            // value = instance.SomeProperty;
-            // value = instance.SomeMethod();
-            // value = instance.SomeField;
-
-            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).PropertyType;
-            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).FieldType;
-            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).ReturnType;
-
-            throw new NotImplementedException();
-        }
-
-        public static SDK.InputPropertyAttribute GetInputDescAttribute(this MemberInfo xinfo)
-        {
-            return xinfo
-                .GetCustomAttributes<SDK.InputPropertyAttribute>(true)
-                .LastOrDefault();
         }
 
         public static T GetValue<T>(this SDK.MetaDataKeyAttribute attrib, SDK.ContentFilter instance, object defval)

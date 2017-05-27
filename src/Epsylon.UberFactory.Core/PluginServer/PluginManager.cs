@@ -34,7 +34,7 @@ namespace Epsylon.UberFactory
             get
             {
                 var types = _GetExportedTypes<SDK.ContentFilter>()
-                    .Select(t => Factory.GetContentFilterInfo(t))
+                    .Select(t => Factory.GetFilterTypeInfo(t))
                     .ExceptNulls()                    
                     .ToArray();
 

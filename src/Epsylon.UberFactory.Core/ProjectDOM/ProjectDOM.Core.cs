@@ -174,6 +174,8 @@ namespace Epsylon.UberFactory
 
             public Node GetNode(Guid nodeId) { return FindBindableObject<Node>(nodeId); }
 
+            public Node GetRootNode() { return GetNode(this.RootIdentifier); }
+
             public Guid AddNode(Factory.ContentBaseTypeInfo t)
             {
                 var f = Node.Create(t); if (f == null) return Guid.Empty;

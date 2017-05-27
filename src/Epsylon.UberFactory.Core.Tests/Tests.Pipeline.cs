@@ -203,8 +203,7 @@ namespace Epsylon.UberFactory
         [SDK.ContentFilter(nameof(TestFilter3))]
         class TestFilter3 : SDK.ContentFilter<int>
         {
-            [SDK.InputPipeline(nameof(Template1))]
-            [SDK.InputMetaData("TemplateSignature",new string[] { "TemplateParam1", "TemplateParam2" })]
+            [SDK.InputPipeline(nameof(Template1),typeof(Int32), typeof(Int32))]            
             public SDK.IPipelineInstance Template1 { get; set; }
 
             [SDK.InputValue(nameof(Value1))]
@@ -212,10 +211,7 @@ namespace Epsylon.UberFactory
 
             protected override int Evaluate()
             {
-                var ppp = Template1.Parameters;
-
-                Assert.AreEqual("TemplateParam1", ppp[0]);
-                Assert.AreEqual("TemplateParam2", ppp[1]);
+                var types = Template1.GetTemplateParameterTypes();
 
                 var t1val = (int)Template1.Evaluate(5, 7);                
 

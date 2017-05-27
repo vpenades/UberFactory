@@ -8,8 +8,23 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory
 {
     public static class Factory
-    {        
-        public static ContentBaseTypeInfo GetContentFilterInfo(this Type t)
+    {
+        /// <summary>
+        /// Gets a specialised TypeInfo with extra information about a ContentFilter
+        /// </summary>
+        /// <param name="instance">Any object, but designed for <code>SDK.ContentFilter</code> derived objects</param>
+        /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
+        public static ContentBaseTypeInfo GetFilterTypeInfo(this Object instance)
+        {
+            return GetFilterTypeInfo(instance == null ? null : instance.GetType());
+        }
+
+        /// <summary>
+        /// Gets a specialised TypeInfo with extra information about a ContentFilter
+        /// </summary>
+        /// <param name="t">Any type, but designed for <code>SDK.ContentFilter</code> derived types</param>
+        /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
+        public static ContentBaseTypeInfo GetFilterTypeInfo(this Type t)
         {            
             return ContentFilterTypeInfo.Create(t);            
         }
@@ -49,7 +64,7 @@ namespace Epsylon.UberFactory
         }
 
         /// <summary>
-        /// Type information for unknown/missing content filter
+        /// Type information for unknown/missing/null content filter
         /// </summary>
         public sealed class UnknownTypeInfo : ContentBaseTypeInfo
         {

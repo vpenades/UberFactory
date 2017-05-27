@@ -181,6 +181,13 @@ namespace Epsylon.UberFactory.Bindings
             SetEvaluatedResult(r);
         }
 
+        public Type[] GetTemplateArgumentTypes()
+        {
+            var desc = GetInputDesc<SDK.InputPipelineAttribute>();
+
+            return desc == null ? new Type[0] : desc.ArgumentTypes;
+        }
+
         #endregion        
     }
 
