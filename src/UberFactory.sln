@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.Core.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.UberFactory.Editor", "Epsylon.UberFactory.Editor\Epsylon.UberFactory.Editor.csproj", "{9A24C608-BCA7-4C68-836C-BAF990AFED85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.TestPlugins", "Epsylon.TestPlugins\Epsylon.TestPlugins.csproj", "{6B47F62D-2FE5-4642-AB8D-1C382A31103B}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -87,6 +89,18 @@ Global
 		{9A24C608-BCA7-4C68-836C-BAF990AFED85}.Release|x64.Build.0 = Release|x64
 		{9A24C608-BCA7-4C68-836C-BAF990AFED85}.Release|x86.ActiveCfg = Release|x86
 		{9A24C608-BCA7-4C68-836C-BAF990AFED85}.Release|x86.Build.0 = Release|x86
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Debug|x64.Build.0 = Debug|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Debug|x86.Build.0 = Debug|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Release|x64.ActiveCfg = Release|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Release|x64.Build.0 = Release|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Release|x86.ActiveCfg = Release|Any CPU
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,5 +111,6 @@ Global
 		{5C1065B7-9AA9-4E2B-8AB6-903048E32D96} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{DC861CAD-852A-45A9-A747-707316FA6437} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{9A24C608-BCA7-4C68-836C-BAF990AFED85} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
+		{6B47F62D-2FE5-4642-AB8D-1C382A31103B} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 	EndGlobalSection
 EndGlobal
