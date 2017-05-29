@@ -35,20 +35,22 @@ namespace Epsylon.UberFactory
 
             // todo: check if first arg is .exe and skip it
 
-            var prjDir = System.IO.Path.GetDirectoryName(args[0]);
-            var prjMsk = System.IO.Path.GetFileName(args[0]);
+            var prjPath = new PathString(args[0]);
+            prjPath = prjPath.AsAbsolute();
 
-            if (!prjMsk.EndsWith(".UberFactory", StringComparison.OrdinalIgnoreCase)) prjMsk += ".UberFactory";
-
-            var outDir = _GetCommandArgument(args, "-OUT:", "Bin");
-            var tmpDir = _GetCommandArgument(args, "-TMP:", "Tmp");
+            var outDir = new PathString(_GetCommandArgument(args, "-OUT:", "Bin")).AsAbsolute();
+            var tmpDir = new PathString(_GetCommandArgument(args, "-TMP:", "Tmp")).AsAbsolute();
             var cfg = _GetCommandArgument(args, "-CFG:", "Root");
 
-            return new CommandLineContext(new PathString(prjDir), prjMsk, new PathString(outDir), new PathString(tmpDir), cfg);
+            return new CommandLineContext(prjPath.DirectoryPath, prjPath.FileName, outDir, tmpDir, cfg);
         }
 
         private CommandLineContext(PathString prjDir, string prjMsk, PathString outDir, PathString tmpDir, string cfg)
         {
+            System.Diagnostics.Debug.Assert(prjDir.IsAbsolute);
+            System.Diagnostics.Debug.Assert(outDir.IsAbsolute);
+            System.Diagnostics.Debug.Assert(tmpDir.IsAbsolute);
+
             _SrcDir = prjDir;
             _SrcMask = prjMsk;
 
