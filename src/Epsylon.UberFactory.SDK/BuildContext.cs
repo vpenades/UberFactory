@@ -9,6 +9,58 @@ namespace Epsylon.UberFactory
     public static partial class SDK
     {
 
+        public interface IMonitorContext : IProgress<float>
+        {
+            SDK.IMonitorContext GetProgressPart(int part, int total);
+
+            /// <summary>
+            /// True if host has requested operation cancellation
+            /// </summary>
+            bool IsCancelRequested { get; }
+
+            /// <summary>
+            /// Writes a Trace message to the log event system
+            /// </summary>
+            /// <param name="categoryName">category name</param>
+            /// <param name="message">message</param>
+            void LogTrace(string categoryName, string message);
+
+            /// <summary>
+            /// Writes a Debug message to the log event system
+            /// </summary>
+            /// <param name="categoryName">category name</param>
+            /// <param name="message">message</param>
+            void LogDebug(string categoryName, string message);
+
+            /// <summary>
+            /// Writes a Info message to the log event system
+            /// </summary>
+            /// <param name="categoryName">category name</param>
+            /// <param name="message">message</param>
+            void LogInfo(string categoryName, string message);
+
+            /// <summary>
+            /// Writes a Warning message to the log event system
+            /// </summary>
+            /// <param name="categoryName">category name</param>
+            /// <param name="message">message</param>
+            void LogWarning(string categoryName, string message);
+
+            /// <summary>
+            /// Writes a Error message to the log event system
+            /// </summary>
+            /// <param name="categoryName">category name</param>
+            /// <param name="message">message</param>
+            void LogError(string categoryName, string message);
+
+            /// <summary>
+            /// Writes a Critical message to the log event system
+            /// </summary>
+            /// <param name="categoryName">category name</param>
+            /// <param name="message">message</param>
+            void LogCritical(string categoryName, string message);
+        }
+
         /// <summary>
         /// The build context provides a number of services to the contet filters
         /// </summary>
@@ -61,49 +113,7 @@ namespace Epsylon.UberFactory
             /// </summary>
             /// <param name="absoluteUri">A path to the location</param>
             /// <returns>An export context</returns>
-            ExportContext GetExportContext(Uri absoluteUri);
-
-            /// <summary>
-            /// Writes a Trace message to the log event system
-            /// </summary>
-            /// <param name="categoryName">category name</param>
-            /// <param name="message">message</param>
-            void LogTrace(string categoryName, string message);
-
-            /// <summary>
-            /// Writes a Debug message to the log event system
-            /// </summary>
-            /// <param name="categoryName">category name</param>
-            /// <param name="message">message</param>
-            void LogDebug(string categoryName, string message);
-
-            /// <summary>
-            /// Writes a Info message to the log event system
-            /// </summary>
-            /// <param name="categoryName">category name</param>
-            /// <param name="message">message</param>
-            void LogInfo(string categoryName, string message);
-
-            /// <summary>
-            /// Writes a Warning message to the log event system
-            /// </summary>
-            /// <param name="categoryName">category name</param>
-            /// <param name="message">message</param>
-            void LogWarning(string categoryName, string message);
-
-            /// <summary>
-            /// Writes a Error message to the log event system
-            /// </summary>
-            /// <param name="categoryName">category name</param>
-            /// <param name="message">message</param>
-            void LogError(string categoryName, string message);
-
-            /// <summary>
-            /// Writes a Critical message to the log event system
-            /// </summary>
-            /// <param name="categoryName">category name</param>
-            /// <param name="message">message</param>
-            void LogCritical(string categoryName, string message);
+            ExportContext GetExportContext(Uri absoluteUri);            
         }
 
         /// <summary>

@@ -96,7 +96,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 { 
-                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateNodeInstance, new PipelineEvaluator.Monitor());
+                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateNodeInstance);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _Evaluator = evaluator;
                     _Exception = null;
@@ -141,7 +141,7 @@ namespace Epsylon.UberFactory
             public void SetAsCurrentResultView(Guid nodeId)
             {
                 if (_Evaluator == null) return;
-                var result = _Evaluator.Evaluate(nodeId,true);
+                var result = _Evaluator.EvaluateNode(MonitorContext.CreateNull(), nodeId,true);
 
                 _Dialogs.ShowProductAndDispose(null, result);                
             }            

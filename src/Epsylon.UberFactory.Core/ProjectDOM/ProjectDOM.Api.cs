@@ -70,7 +70,7 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentFilter> filterFactory, PipelineEvaluator.Monitor monitor)
+        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentFilter> filterFactory, SDK.IMonitorContext monitor)
         {
             if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
             if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
@@ -97,14 +97,14 @@ namespace Epsylon.UberFactory
 
             for (int i = 0; i < tasks.Length; ++i)
             {
-                if (monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
+                if (monitor.IsCancelRequested) throw new OperationCanceledException();
 
                 var task = tasks[i];
 
-                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, filterFactory, monitor.CreatePart(i, tasks.Length));
+                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, filterFactory);
                 evaluator.Setup(bsettings);
 
-                var srcData = evaluator.Evaluate();
+                var srcData = evaluator.Evaluate(monitor.GetProgressPart(i, tasks.Length));
                 if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
             }
         }

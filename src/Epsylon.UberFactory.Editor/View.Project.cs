@@ -373,9 +373,8 @@ namespace Epsylon.UberFactory
                     {
                         xlogger.AddProvider(_Logger);
 
-                        bs.SetLogger(xlogger);
-
-                        var monitor = PipelineEvaluator.Monitor.Create(ctoken, progress);
+                        var monitor = MonitorContext.Create(xlogger, ctoken, progress);
+                        
                         ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateNodeInstance, monitor);
                     }
                 };

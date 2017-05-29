@@ -18,7 +18,19 @@ namespace Epsylon.TestPlugins
         {
             return null;
         }
-    }    
+    }
+
+    [SDK.ContentFilter(nameof(MultiTextSink))]
+    public sealed class MultiTextSink : SDK.ContentFilter
+    {
+        [SDK.InputNode(nameof(Source),true)]
+        public String[] Source { get; set; }
+
+        protected override object EvaluateObject()
+        {
+            return null;
+        }
+    }
 
     [SDK.ContentFilter(nameof(IntegerSink))]
     public sealed class IntegerSink : SDK.ContentFilter

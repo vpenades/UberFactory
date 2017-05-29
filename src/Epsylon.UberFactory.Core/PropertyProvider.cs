@@ -26,26 +26,16 @@ namespace Epsylon.UberFactory
     
     public static class IPropertyProviderExtensions
     {
-        private const string _NODEREFERENCE = "$NODEREF=";
-        private const string _TEMPLATEEREFERENCE = "TEMPLATEREF=";
-
         private static Guid _ParseGuidReference(string value)
         {
             if (value == null) return Guid.Empty;
 
-            if (value.EndsWith("}")) value = value.Substring(0, value.Length - 1);
-            if (value.StartsWith(_NODEREFERENCE)) value = value.Substring(_NODEREFERENCE.Length);
-            if (value.StartsWith(_TEMPLATEEREFERENCE)) value = value.Substring(_TEMPLATEEREFERENCE.Length);
-            if (value.StartsWith("{")) value = value.Substring(1);
-
-            Guid r = Guid.Empty;
-
-            return Guid.TryParse(value, out r) ? r : Guid.Empty;
+            return Guid.TryParse(value, out var r) ? r : Guid.Empty;
         }
 
         private static string _ToNodeReference(Guid id)
         {
-            return _NODEREFERENCE + "{" + id.ToString() + "}";
+            return id.ToString();
         }
 
         public static Guid[] GetReferenceIds(this IPropertyProvider properties, string key, params string[] defval)

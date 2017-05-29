@@ -11,40 +11,38 @@ namespace Epsylon.UberFactory
         public static ContentFilter Create(Type type, IBuildContext bsettings)
         {
             if (type == null) return null;
-            if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
-
             var processor = (ContentFilter)System.Activator.CreateInstance(type);
 
-            processor._BuildContext = bsettings;            
+            processor._BuildContext = bsettings ?? throw new ArgumentNullException(nameof(bsettings));            
 
             return processor;
         }
 
 
-        public static Object DebugNode(ContentFilter node, System.Threading.CancellationToken cancelToken, IProgress<float> progress)
+        public static Object DebugNode(ContentFilter node, IMonitorContext monitor)
         {
             #if DEBUG
             if (!System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Launch();
             #endif
 
-            return EvaluateNode(node, cancelToken, progress);
+            return EvaluateNode(node, monitor);
         }
 
 
-        public static Object EvaluateNode(ContentFilter node, System.Threading.CancellationToken cancelToken, IProgress<float> progress)
+        public static Object EvaluateNode(ContentFilter node, IMonitorContext monitor)
         {
             if (node == null) return null;
-            if (progress == null) throw new ArgumentNullException(nameof(progress));
+            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
 
-            return node._Evaluate(cancelToken, progress);
+            return node._Evaluate(monitor);
         }
 
-        public static Object PreviewNode(ContentFilter node, System.Threading.CancellationToken cancelToken, IProgress<float> progress)
+        public static Object PreviewNode(ContentFilter node, IMonitorContext monitor)
         {
             if (node == null) return null;
-            if (progress == null) throw new ArgumentNullException(nameof(progress));
+            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
 
-            return node._Preview(cancelToken, progress);
+            return node._Preview(monitor);
         }
 
 

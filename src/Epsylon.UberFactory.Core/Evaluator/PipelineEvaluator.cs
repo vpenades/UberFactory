@@ -14,98 +14,48 @@ namespace Epsylon.UberFactory
 
     public class PipelineEvaluator : SDK.IPipelineInstance
     {
-        #region lifecycle
+        #region lifecycle        
 
-        public struct Monitor : IProgress<float>
-        {
-            #region lifecycle
-
-            public static Monitor Create(System.Threading.CancellationToken cancelToken, IProgress<float> progressAgent)
-            {
-                return new Monitor()
-                {
-                    Cancelator = cancelToken,
-                    _Progress = progressAgent
-                };
-            }
-
-            public Monitor CreatePart(int part, int total)
-            {
-                return new Monitor()
-                {
-                    Cancelator = this.Cancelator,
-                    _Progress = this._Progress.CreatePart(part, total)
-                };
-            }
-
-            #endregion
-
-            #region data
-
-            public static readonly Monitor Empty = Create(System.Threading.CancellationToken.None, null);            
-
-            public System.Threading.CancellationToken Cancelator;
-            private IProgress<float> _Progress;            
-
-            #endregion
-
-            #region API
-
-            public void Report(float value)
-            {
-                if (_Progress == null) return;
-                _Progress.Report(value.Clamp(0, 1));
-            }
-
-            #endregion
-        }
-
-        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, TEMPLATEFACTORY templateResolver, FILTERFACTORY pluginResolver, Monitor monitor)
+        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, TEMPLATEFACTORY templateResolver, FILTERFACTORY pluginResolver)
         {
             if (pipeline == null) throw new ArgumentNullException(nameof(pipeline));
             if (pluginResolver == null) throw new ArgumentNullException(nameof(pluginResolver));
             if (templateResolver == null) throw new ArgumentNullException(nameof(templateResolver));            
 
-            return new PipelineEvaluator(pipeline, templateResolver, pluginResolver, monitor);
+            return new PipelineEvaluator(pipeline, templateResolver, pluginResolver);
         }
 
-        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Template template, TEMPLATEFACTORY templateResolver, FILTERFACTORY pluginResolver, Monitor monitor)
+        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Template template, TEMPLATEFACTORY templateResolver, FILTERFACTORY pluginResolver)
         {
             if (template == null) throw new ArgumentNullException(nameof(template));
             if (template.Pipeline == null) throw new ArgumentNullException(nameof(template));
             if (pluginResolver == null) throw new ArgumentNullException(nameof(pluginResolver));
             if (templateResolver == null) throw new ArgumentNullException(nameof(templateResolver));
 
-            return new PipelineEvaluator(template, templateResolver, pluginResolver, monitor);
+            return new PipelineEvaluator(template, templateResolver, pluginResolver);
         }
 
-        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, TEMPLATEFACTORY templateResolver, FILTERFACTORY plugins, Monitor monitor)
+        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, TEMPLATEFACTORY templateResolver, FILTERFACTORY plugins)
         {
             _PluginFactory = plugins;
             _TemplateFactory = templateResolver;
 
             _Template = null;
-            _Pipeline = pipeline;
-
-            _Monitor = monitor;            
+            _Pipeline = pipeline;            
         }
 
-        private PipelineEvaluator(ProjectDOM.Template template, TEMPLATEFACTORY templateResolver, FILTERFACTORY plugins, Monitor monitor)
+        private PipelineEvaluator(ProjectDOM.Template template, TEMPLATEFACTORY templateResolver, FILTERFACTORY plugins)
         {
             _PluginFactory = plugins;
             _TemplateFactory = templateResolver;
 
             _Template = template;
-            _Pipeline = template.Pipeline;
-
-            _Monitor = monitor;
+            _Pipeline = template.Pipeline;            
         }
 
         #endregion
 
-        #region data
-
-        private readonly Monitor _Monitor;        
+        #region data        
 
         private readonly FILTERFACTORY _PluginFactory;
         private readonly TEMPLATEFACTORY _TemplateFactory;
@@ -118,6 +68,8 @@ namespace Epsylon.UberFactory
         private BuildContext _BuildSettings;        
         private readonly Dictionary<Guid, SDK.ContentFilter> _NodeInstances = new Dictionary<Guid, SDK.ContentFilter>();
         private readonly Dictionary<Guid, PipelineEvaluator> _PipelineInstances = new Dictionary<Guid, PipelineEvaluator>();
+
+        private readonly List<Guid> _NodeOrder = new List<Guid>(); // ids in order of evaluation
 
         #endregion
 
@@ -147,9 +99,15 @@ namespace Epsylon.UberFactory
             _BuildSettings = bsettings ?? throw new ArgumentNullException(nameof(bsettings));            
 
             _NodeInstances.Clear();
-            _PipelineInstances.Clear();            
+            _NodeOrder.Clear();
 
-            _CreateNodeInstancesRecursive(_Pipeline.RootIdentifier, new Stack<Guid>());
+            _PipelineInstances.Clear();
+
+            var nodeIds = new Stack<Guid>();
+
+            _CreateNodeInstancesRecursive(_Pipeline.RootIdentifier, nodeIds);
+
+            _NodeOrder.AddRange(nodeIds.Reverse());
         }
 
         /// <summary>
@@ -161,8 +119,7 @@ namespace Epsylon.UberFactory
         /// <param name="nodeId">root node id</param>
         private void _CreateNodeInstancesRecursive(Guid nodeId, Stack<Guid> idStack)
         {
-            if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));
-            idStack.Push(nodeId);
+            if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));            
 
             // Find node DOM
             var nodeDom = _Pipeline.GetNode(nodeId);
@@ -170,9 +127,7 @@ namespace Epsylon.UberFactory
 
             // Create node instance
             var nodeInst = _PluginFactory(nodeDom.ClassIdentifier, _BuildSettings);
-            if (nodeInst == null) throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);            
-
-            _NodeInstances[nodeId] = nodeInst;
+            _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
             
             // retrieve property values from current cunfiguration
             var properties = nodeDom
@@ -194,7 +149,7 @@ namespace Epsylon.UberFactory
                     if (templateDom == null) _PipelineInstances[templateId] = null;
                     else
                     {
-                        var templateInst = CreatePipelineInstance(templateDom, _TemplateFactory, _PluginFactory, new Monitor());
+                        var templateInst = CreatePipelineInstance(templateDom, _TemplateFactory, _PluginFactory);
                         templateInst.Setup(_BuildSettings);
 
                         _PipelineInstances[templateId] = templateInst;
@@ -214,7 +169,9 @@ namespace Epsylon.UberFactory
 
                     foreach(var id in ids) _CreateNodeInstancesRecursive(id, idStack);
                 }
-            }            
+            }
+
+            idStack.Push(nodeId);
         }        
 
         #endregion
@@ -241,18 +198,18 @@ namespace Epsylon.UberFactory
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public Object Evaluate(params Object[] parameters)
+        public Object Evaluate(SDK.IMonitorContext monitor, params Object[] parameters)
         {
             if (_NodeInstances.Values.OfType<_UnknownNode>().Any()) throw new InvalidOperationException("Some filters couldn't be instantiated.");
 
             var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);            
 
-            return Evaluate(_Pipeline.RootIdentifier, false, parameters);
+            return EvaluateNode(monitor, _Pipeline.RootIdentifier, false, parameters);
         }        
 
-        public Object Evaluate(Guid nodeOrTemplateId, bool previewMode, params Object[] parameters)
+        public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeOrTemplateId, bool previewMode, params Object[] parameters)
         {
-            if (_Monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
+            if (monitor.IsCancelRequested) throw new OperationCanceledException();
 
             // First, we check if it's a template, in which case we return it as the evaluated value (it will be called by the component)
             var pipelineEvaluator = _PipelineInstances.GetValueOrDefault(nodeOrTemplateId);
@@ -271,7 +228,7 @@ namespace Epsylon.UberFactory
             if (nodeProps == null) return null;
 
             // Evaluate values and dependencies. Dependecies are evaluated recursively
-            nodeInst.EvaluateBindings(nodeProps,xid =>  Evaluate(xid,previewMode,parameters));
+            nodeInst.EvaluateBindings(nodeProps,xid =>  EvaluateNode(monitor, xid, previewMode,parameters));
 
             // AFTER evaluating the bindings, inject template parameters, if applicable.            
             if (_Template != null)
@@ -302,20 +259,21 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            if (_Monitor.Cancelator.IsCancellationRequested) throw new OperationCanceledException();
+            if (monitor.IsCancelRequested) throw new OperationCanceledException();
 
-            // evaluate the current node
-            // var localMonitor = _Monitor.CreatePart(progressPart, _NodeInstances.Count);
+            // evaluate the current node            
 
             try
             {
                 if (nodeInst is SDK.ContentFilter)
                 {
-                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, _Monitor.Cancelator, _Monitor);
+                    var localMonitor = monitor.GetProgressPart(_NodeOrder.IndexOf(nodeOrTemplateId), _NodeOrder.Count);
+
+                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, localMonitor);
                     else
                     {
-                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, _Monitor.Cancelator, _Monitor);
-                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, _Monitor.Cancelator, _Monitor);
+                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, localMonitor);
+                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, localMonitor);
                     }
                 }
             }
@@ -331,7 +289,7 @@ namespace Epsylon.UberFactory
 
         #region API - Template
 
-        public string[] TemplateParameters { get { return _Template == null ? null : _Template.Parameters.Select(item => item.BindingName).ToArray(); } }
+        public string[] TemplateParameters { get { return _Template?.Parameters.Select(item => item.BindingName).ToArray(); } }
 
         public IEnumerable<Type> GetTemplateParameterTypes()
         {

@@ -388,6 +388,7 @@ namespace Epsylon.UberFactory
 
         public static IProgress<float> CreatePart(this IProgress<float> target, int part, int total)
         {
+            if (target == null) return null;
             return new _ProgressPart(target, part, total);
         }
 

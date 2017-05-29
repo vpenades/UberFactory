@@ -12,7 +12,7 @@ namespace Epsylon.UberFactory
         {
             IEnumerable<Type> GetTemplateParameterTypes();
 
-            Object Evaluate(params Object[] parameters);            
+            Object Evaluate(IMonitorContext monitor, params Object[] parameters);            
         }        
     }
 

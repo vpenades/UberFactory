@@ -29,19 +29,17 @@ namespace Epsylon.UberFactory
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
             
-            internal IBuildContext _BuildContext;            
+            internal IBuildContext _BuildContext;
 
-            private System.Threading.CancellationToken _CancellationToken;
-
-            private IProgress<float> _Progress;
+            internal IMonitorContext _MonitorContext;
 
             #endregion            
 
             #region API            
 
-            public IBuildContext BuildContext => _BuildContext;            
+            public IBuildContext BuildContext => _BuildContext;
 
-            protected bool IsCancelled { get { return _CancellationToken.IsCancellationRequested; } }
+            protected bool IsCancelled { get { return _MonitorContext.IsCancelRequested; } }
 
             protected bool IsRunning { get { return !IsCancelled; } }
 
@@ -49,41 +47,34 @@ namespace Epsylon.UberFactory
 
             protected void SetProgressPercent(int percent) { SetProgress((float)percent / 100.0f); }
 
-            protected void SetProgress(float value) { CheckCancelation(); _Progress.Report(value); }
+            protected void SetProgress(float value) { CheckCancelation(); _MonitorContext.Report(value); }
 
-            public void LogTrace(string message) { BuildContext.LogTrace(this.GetType().Name,message); }
-            public void LogDebug(string message) { BuildContext.LogDebug(this.GetType().Name, message); }
-            public void LogInfo(string message) { BuildContext.LogInfo(this.GetType().Name, message); }
-            public void LogWarning(string message) { BuildContext.LogWarning(this.GetType().Name, message); }
-            public void LogError(string message) { BuildContext.LogError(this.GetType().Name, message); }
-            public void LogCritical(string message) { BuildContext.LogCritical(this.GetType().Name, message); }
+            public void LogTrace(string message) { _MonitorContext.LogTrace(this.GetType().Name,message); }
+            public void LogDebug(string message) { _MonitorContext.LogDebug(this.GetType().Name, message); }
+            public void LogInfo(string message) { _MonitorContext.LogInfo(this.GetType().Name, message); }
+            public void LogWarning(string message) { _MonitorContext.LogWarning(this.GetType().Name, message); }
+            public void LogError(string message) { _MonitorContext.LogError(this.GetType().Name, message); }
+            public void LogCritical(string message) { _MonitorContext.LogCritical(this.GetType().Name, message); }
 
 
 
-            internal Object _Evaluate(System.Threading.CancellationToken cancelToken, IProgress<float> progress)
+            internal Object _Evaluate(IMonitorContext monitor)
             {
-                LogTrace("Evaluating...");
-
-                return _Evaluate(EvaluateObject, cancelToken, progress);
+                return _Evaluate(EvaluateObject, monitor);
             }
 
-            internal Object _Preview(System.Threading.CancellationToken cancelToken, IProgress<float> progress)
+            internal Object _Preview(IMonitorContext monitor)
             {
-                LogTrace("Previewing...");
-
-                return _Evaluate(PreviewObject, cancelToken, progress);
+                return _Evaluate(PreviewObject, monitor);
             }
 
-
-            internal Object _Evaluate(Func<Object> evaluator, System.Threading.CancellationToken cancelToken, IProgress<float> progress)
+            internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor)
             {
-                this._CancellationToken = cancelToken;
-                this._Progress = progress;
+                this._MonitorContext = monitor;
 
                 var r = evaluator();
 
-                this._Progress = null;
-                this._CancellationToken = System.Threading.CancellationToken.None;
+                this._MonitorContext = null;
 
                 return r;
             }

@@ -8,7 +8,7 @@ namespace Epsylon.UberFactory
 {
     using MONITOR = Func<int, string, bool>;
 
-    public sealed class CommandLineContext : IDisposable
+    public sealed class CommandLineContext : IDisposable , IProgress<float>
     {
         #region lifecycle
 
@@ -16,7 +16,9 @@ namespace Epsylon.UberFactory
         {
             using (var context = Create(args))
             {
-                context.Build(_LoadPluginsFunc, _MonitorFunc);
+                var monitor = MonitorContext.Create(context._Logger,System.Threading.CancellationToken.None, context);                
+
+                context.Build(_LoadPluginsFunc, monitor);
             }
         }
 
@@ -60,7 +62,9 @@ namespace Epsylon.UberFactory
             _Configuration = cfg;
 
             _Logger = _CreateLoggerFactory();
-        }
+
+            System.Console.CancelKeyPress += Console_CancelKeyPress;
+        }        
 
         private static Microsoft.Extensions.Logging.ILoggerFactory _CreateLoggerFactory()
         {
@@ -80,6 +84,8 @@ namespace Epsylon.UberFactory
 
         public void Dispose()
         {
+            System.Console.CancelKeyPress -= Console_CancelKeyPress;
+
             if (_Logger != null) { _Logger.Dispose(); _Logger = null; }
         }
 
@@ -97,22 +103,32 @@ namespace Epsylon.UberFactory
 
         private readonly string _Configuration;
 
+        private bool _CancelRequested = false;
+
         #endregion
 
         #region command line helpers
 
-        private static bool _MonitorFunc(int progress, string text)
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            var line = String.Empty + progress + "% " + text;
+            _CancelRequested = true;
+        }
 
-            System.Diagnostics.Debug.WriteLine(line);
-            System.Console.WriteLine(line);
+        public void Report(float value)
+        {
+            if (_CancelRequested) throw new OperationCanceledException();
+
+            if (float.IsNaN(value)) return;
+
+            value = value.Clamp(0, 1);
+
+            _Logger
+                .CreateLogger("Progress")
+                .Log(Microsoft.Extensions.Logging.LogLevel.Trace, 0, "{0:0%}", null, (s, e) => string.Format(s,value));
 
             // http://stackoverflow.com/questions/10621287/c-sharp-how-to-receive-system-close-or-exit-events-in-a-commandline-application
             // https://social.msdn.microsoft.com/Forums/vstudio/en-US/707e9ae1-a53f-4918-8ac4-62a1eddb3c4a/detecting-console-application-exit-in-c?forum=csharpgeneral
-
-            return false;
-        }
+        }       
 
         private static PluginManager _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
         {
@@ -162,8 +178,10 @@ namespace Epsylon.UberFactory
 
         #region API
 
-        public void Build(Func<ProjectDOM.Project, PathString, PluginManager> evalPlugins, MONITOR monitor)
+        public void Build(Func<ProjectDOM.Project, PathString, PluginManager> evalPlugins, SDK.IMonitorContext monitor)
         {
+            _CancelRequested = false;
+
             foreach (var filePath in System.IO.Directory.GetFiles(_SrcDir, _SrcMask))
             {
                 var prjFilePath = new PathString(filePath);
@@ -179,14 +197,12 @@ namespace Epsylon.UberFactory
                 var plugins = evalPlugins(document, prjDir);
                 
                 // create build context
-                var buildSettings = BuildContext.Create(_Configuration, prjDir, dstDirPath);
-
-                buildSettings.SetLogger(_Logger);
+                var buildSettings = BuildContext.Create(_Configuration, prjDir, dstDirPath);                
 
                 // do build
-                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateNodeInstance, new PipelineEvaluator.Monitor());                
+                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateNodeInstance, monitor);                
             }
-        }                
+        }        
 
         #endregion
     }

@@ -10,6 +10,78 @@ namespace Epsylon.UberFactory
     using MSLOGGER = ILoggerFactory;
 
 
+    public sealed class MonitorContext : SDK.IMonitorContext
+    {
+        #region lifecycle
+
+        private MonitorContext() { }
+
+        public static MonitorContext CreateNull()
+        {
+            return new MonitorContext()
+            {
+                _Cancelator = System.Threading.CancellationToken.None,
+                _Progress = null,
+                _Logger = null
+            };
+        }
+
+        public static MonitorContext Create(MSLOGGER logger, System.Threading.CancellationToken cancelToken, IProgress<float> progressAgent)
+        {
+            return new MonitorContext()
+            {
+                _Cancelator = cancelToken,
+                _Progress = progressAgent,
+                _Logger = logger
+            };
+        }
+
+        public SDK.IMonitorContext GetProgressPart(int part, int total)
+        {
+            return new MonitorContext()
+            {
+                _Cancelator = this._Cancelator,
+                _Progress = this._Progress.CreatePart(part, total),
+                _Logger = this._Logger
+            };
+        }
+
+        #endregion
+
+        #region data        
+
+        private System.Threading.CancellationToken _Cancelator;
+        private IProgress<float> _Progress;
+        private MSLOGGER _Logger;
+
+        #endregion
+
+        #region API
+
+        public void SetLogger(MSLOGGER logger) { _Logger = logger; }
+
+        public bool IsCancelRequested => _Cancelator.IsCancellationRequested;
+
+        public void Report(float value)
+        {
+            if (_Progress == null) return;
+            _Progress.Report(value.Clamp(0, 1));
+        }
+
+        private ILogger CreateLogger(string name)
+        {
+            return _Logger == null ? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance : _Logger.CreateLogger(name);
+        }
+
+        public void LogTrace(string name, string message) { CreateLogger(name).LogTrace(message); }
+        public void LogDebug(string name, string message) { CreateLogger(name).LogDebug(message); }
+        public void LogInfo(string name, string message) { CreateLogger(name).LogInformation(message); }
+        public void LogWarning(string name, string message) { CreateLogger(name).LogWarning(message); }
+        public void LogError(string name, string message) { CreateLogger(name).LogError(message); }
+        public void LogCritical(string name, string message) { CreateLogger(name).LogCritical(message); }
+
+        #endregion
+    }
 
     public sealed class BuildContext : SDK.IBuildContext
     {
@@ -17,7 +89,7 @@ namespace Epsylon.UberFactory
 
         public static BuildContext Create(BuildContext other, PathString td)
         {
-            return new BuildContext(other.Configuration, other.SourceDirectory, td, other._Logger);
+            return new BuildContext(other.Configuration, other.SourceDirectory, td);
         }
 
         public static BuildContext Create(string cfg, PathString sd) { return Create(cfg, sd, PathString.Empty); }
@@ -26,15 +98,14 @@ namespace Epsylon.UberFactory
         {
             var xcfg = cfg?.Split('.').ToArray();
 
-            return new BuildContext(xcfg, sd, td, null);
+            return new BuildContext(xcfg, sd, td);
         }            
 
-        private BuildContext(string[] cfg, PathString sd, PathString td, MSLOGGER logger)
+        private BuildContext(string[] cfg, PathString sd, PathString td)
         {
             _Configuration = cfg ?? (new string[0]);
             _SourceDirectoryAbsPath = sd;
-            _TargetDirectoryAbsPath = td;
-            _Logger = logger;
+            _TargetDirectoryAbsPath = td;            
         }
 
         #endregion
@@ -45,9 +116,7 @@ namespace Epsylon.UberFactory
             
         private readonly String[] _Configuration;            
         private readonly PathString _SourceDirectoryAbsPath;
-        private readonly PathString _TargetDirectoryAbsPath;
-
-        private MSLOGGER _Logger;
+        private readonly PathString _TargetDirectoryAbsPath;        
 
         #endregion
 
@@ -89,9 +158,7 @@ namespace Epsylon.UberFactory
 
         #endregion
 
-        #region API
-
-        public void SetLogger(MSLOGGER logger) { _Logger = logger; }
+        #region API        
 
         public static bool IsValidConfiguration(params string[] cfg)
         {
@@ -116,20 +183,7 @@ namespace Epsylon.UberFactory
 
         public PathString MakeAbsoluteToSource(string relFilePath) { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }
 
-        public PathString MakeAbsoluteToTarget(string relFilePath) { return _TargetDirectoryAbsPath.MakeAbsolutePath(relFilePath); }
-
-
-        private ILogger CreateLogger(string name)
-        {
-            return _Logger == null ? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance : _Logger.CreateLogger(name);            
-        }
-
-        public void LogTrace(string name, string message) { CreateLogger(name).LogTrace(message); }
-        public void LogDebug(string name, string message) { CreateLogger(name).LogDebug(message); }
-        public void LogInfo(string name, string message) { CreateLogger(name).LogInformation(message); }
-        public void LogWarning(string name, string message) { CreateLogger(name).LogWarning(message); }
-        public void LogError(string name, string message) { CreateLogger(name).LogError(message); }
-        public void LogCritical(string name, string message) { CreateLogger(name).LogCritical(message); }
+        public PathString MakeAbsoluteToTarget(string relFilePath) { return _TargetDirectoryAbsPath.MakeAbsolutePath(relFilePath); }        
 
         #endregion
 

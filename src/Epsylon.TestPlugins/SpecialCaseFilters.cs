@@ -38,7 +38,9 @@ namespace Epsylon.TestPlugins
 
         protected override String Evaluate()
         {
-            return Pipeline.Evaluate("A", "B", "C") as String;
+            return null;
+
+            // return Pipeline.Evaluate(MonitorContext.CreateNull(), "A", "B", "C") as String;
         }
     }
 
