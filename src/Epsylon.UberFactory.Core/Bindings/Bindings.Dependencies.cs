@@ -181,11 +181,14 @@ namespace Epsylon.UberFactory.Bindings
             SetEvaluatedResult(r);
         }
 
-        public Type[] GetTemplateArgumentTypes()
+        public Type[] GetTemplateSignature()
         {
             var desc = GetInputDesc<SDK.InputPipelineAttribute>();
+            if (desc == null) return new Type[0];
 
-            return desc == null ? new Type[0] : desc.ArgumentTypes;
+            return new Type[] { desc.ReturnType }
+            .Concat(desc.ArgumentTypes)
+            .ToArray();
         }
 
         #endregion        

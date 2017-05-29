@@ -7,13 +7,20 @@ namespace Epsylon.TestPlugins
     [SDK.ContentFilter(nameof(TestSlowProgressBar))]
     public sealed class TestSlowProgressBar : SDK.ContentFilter<String>
     {
+        [SDK.InputValue(nameof(PauseTime))]
+        [SDK.InputMetaData("Title","Pause Time in Seconds")]
+        [SDK.InputMetaData("Default",10)]
+        [SDK.InputMetaData("Minimum", 1)]
+        public int PauseTime { get; set; }
+
         protected override String Evaluate()
         {
+            var waitTime = TimeSpan.FromSeconds( (double)PauseTime / 100 );
 
             for (int i = 0; i < 100; ++i)
             {
                 this.SetProgressPercent(i);
-                System.Threading.Thread.Sleep(50);
+                System.Threading.Thread.Sleep(waitTime);
             }
 
             return string.Empty;

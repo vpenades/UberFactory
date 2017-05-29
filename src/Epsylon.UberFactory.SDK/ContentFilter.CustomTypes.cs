@@ -10,7 +10,7 @@ namespace Epsylon.UberFactory
     {
         public interface IPipelineInstance
         {
-            string[] Parameters { get; }
+            IEnumerable<Type> GetTemplateParameterTypes();
 
             Object Evaluate(params Object[] parameters);            
         }        

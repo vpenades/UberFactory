@@ -338,16 +338,15 @@ namespace Epsylon.UberFactory
             
             private void _SetNewTemplate()
             {
-                var templates = _Parent.Parent._Parent.GetTemplates();
+                
+                var templateSignature = _Binding.GetTemplateSignature();
 
-                /*
-                var compatibleNodes = plugins
-                    .PluginTypes
-                    .OfType<Factory.ContentNodeDescription>()
-                    .Where(item => DataType.IsAssignableFrom(item.OutputType));
-                    */
+                var templateDOMs = _Parent.Parent._Parent.GetTemplates();
+                //var templateINSs = templateDOMs.Select(item => PipelineEvaluator.CreatePipelineInstance(item))
 
-                var r = _Dialogs.ShowNewTemplateDialog(null, templates);
+                // TODO: foreach templateDOM, create a pipeline evaluator, so we can retrieve the types and filter the compatible types
+
+                var r = _Dialogs.ShowNewTemplateDialog(null, templateDOMs);
                 if (r != null) _SetDependencyId(r.Identifier);
             }            
 

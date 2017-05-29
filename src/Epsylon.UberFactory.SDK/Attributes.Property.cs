@@ -98,9 +98,17 @@ namespace Epsylon.UberFactory
 
             #region lifecycle
 
-            public InputPipelineAttribute(string serializationKey) : base(serializationKey) { }
+            public InputPipelineAttribute(string serializationKey,Type retval, params Type[] argTypes) : base(serializationKey)
+            {
+                ReturnType = retval;
+                ArgumentTypes = argTypes;
+            }
 
             public override bool IsDependency { get { return true; } }
+
+
+            public Type ReturnType { get; }
+            public Type[] ArgumentTypes { get; }
 
             #endregion                    
         }        
