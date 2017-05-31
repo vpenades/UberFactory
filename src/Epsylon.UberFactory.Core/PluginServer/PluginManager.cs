@@ -29,18 +29,33 @@ namespace Epsylon.UberFactory
             _Assemblies = assemblies.ToArray();
         }
 
-        public IEnumerable<Factory.ContentBaseTypeInfo> PluginTypes
+        public IEnumerable<Factory.ContentFilterTypeInfo> PluginTypes
         {
             get
             {
                 var types = _GetExportedTypes<SDK.ContentFilter>()
                     .Select(t => Factory.GetFilterTypeInfo(t))
-                    .ExceptNulls()                    
+                    .ExceptNulls()
+                    .OfType<Factory.ContentFilterTypeInfo>()
                     .ToArray();
 
                 return types;
             }
-        }        
+        }
+
+        public IEnumerable<Factory.GlobalSettingsTypeInfo> SettingsTypes
+        {
+            get
+            {
+                var types = _GetExportedTypes<Object>()
+                    .Select(t => Factory.GetFilterTypeInfo(t))
+                    .ExceptNulls()
+                    .OfType<Factory.GlobalSettingsTypeInfo>()
+                    .ToArray();
+
+                return types;
+            }
+        }
 
         private IEnumerable<Type> _GetExportedTypes<T>()
         {
@@ -52,17 +67,30 @@ namespace Epsylon.UberFactory
             {
                 foreach(var t in a.ExportedTypes)
                 {
+                    if (t.GetTypeInfo().IsAbstract) continue;                    
+                    if (!t.GetTypeInfo().IsClass) continue;
+
                     if (ti.IsAssignableFrom(t.GetTypeInfo())) yield return t;
                 }
             }
         }
 
 
-        public SDK.ContentFilter CreateNodeInstance(string classId, BuildContext bcontext)
+        public SDK.ContentFilter CreateContentFilterInstance(string classId, BuildContext bcontext)
         {
             if (string.IsNullOrWhiteSpace(classId)) throw new ArgumentNullException(nameof(classId));
 
             var factory = PluginTypes.FirstOrDefault(item => item.SerializationKey == classId);
+            if (factory == null) return new _UnknownNode();
+
+            return factory.CreateInstance(bcontext);
+        }
+
+        public SDK.ContentObject CreateGlobalSettingsInstance(string classId, BuildContext bcontext)
+        {
+            if (string.IsNullOrWhiteSpace(classId)) throw new ArgumentNullException(nameof(classId));
+
+            var factory = SettingsTypes.FirstOrDefault(item => item.SerializationKey == classId);
             if (factory == null) return new _UnknownNode();
 
             return factory.CreateInstance(bcontext);

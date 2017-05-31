@@ -225,7 +225,7 @@ namespace Epsylon.UberFactory
 
         #region ContentFilter extensions        
 
-        public static MemberInfo TryGetReflectedMember(this SDK.ContentFilter nodeInstance, String key)
+        public static MemberInfo TryGetReflectedMember(this SDK.ContentObject nodeInstance, String key)
         {
             var pinfo = nodeInstance
                     .GetType()
@@ -246,7 +246,7 @@ namespace Epsylon.UberFactory
             return null;
         }
 
-        public static void TryAssign(this SDK.ContentFilter nodeInstance, MemberInfo xinfo, Object value)
+        public static void TryAssign(this SDK.ContentObject nodeInstance, MemberInfo xinfo, Object value)
         {
             if (xinfo is PropertyInfo pinfo)
             {
@@ -283,7 +283,7 @@ namespace Epsylon.UberFactory
             }
         }
 
-        public static Object TryEvaluate(this SDK.ContentFilter nodeInstance, String key)
+        public static Object TryEvaluate(this SDK.ContentObject nodeInstance, String key)
         {
             var xinfo = nodeInstance.TryGetReflectedMember(key);
 
@@ -294,7 +294,7 @@ namespace Epsylon.UberFactory
             return null;
         }
 
-        public static T GetValue<T>(this SDK.MetaDataKeyAttribute attrib, SDK.ContentFilter instance, object defval)
+        public static T GetValue<T>(this SDK.MetaDataKeyAttribute attrib, SDK.ContentObject instance, object defval)
         {
             object value = defval;
 

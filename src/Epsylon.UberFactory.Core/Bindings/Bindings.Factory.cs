@@ -11,7 +11,7 @@ namespace Epsylon.UberFactory
     {
         #region factory
 
-        public static void ClearDependencyBindings(this SDK.ContentFilter source, IPropertyProvider properties)
+        public static void ClearDependencyBindings(this SDK.ContentObject source, IPropertyProvider properties)
         {
             var bindings = CreateBindings(source, properties);            
 
@@ -21,7 +21,7 @@ namespace Epsylon.UberFactory
             }
         }
 
-        public static void EvaluateBindings(this SDK.ContentFilter source, IPropertyProvider properties, Func<Guid, Object> dependencyEvaluator)
+        public static void EvaluateBindings(this SDK.ContentObject source, IPropertyProvider properties, Func<Guid, Object> dependencyEvaluator)
         {
             var bindings = CreateBindings(source, properties);
             foreach (var binding in bindings.OfType<Bindings.ValueBinding>()) { binding.CopyToInstance(); }
@@ -31,7 +31,7 @@ namespace Epsylon.UberFactory
             foreach (var binding in bindings.OfType<Bindings.DependencyBinding>()) { binding.EvaluateAndAssign(dependencyEvaluator); }            
         }
 
-        public static IEnumerable<Bindings.MemberBinding> CreateBindings(this SDK.ContentFilter source, IPropertyProvider properties)
+        public static IEnumerable<Bindings.MemberBinding> CreateBindings(this SDK.ContentObject source, IPropertyProvider properties)
         {
             if (source == null) return Enumerable.Empty<Bindings.MemberBinding>();
 
@@ -39,7 +39,7 @@ namespace Epsylon.UberFactory
                 .Concat(_CreateBindings(source, tinfo => tinfo.FlattenedMethods(), properties));
         }
 
-        private static Bindings.MemberBinding[] _CreateBindings(SDK.ContentFilter source, Func<TypeInfo, IEnumerable<MemberInfo>> func, IPropertyProvider properties)
+        private static Bindings.MemberBinding[] _CreateBindings(SDK.ContentObject source, Func<TypeInfo, IEnumerable<MemberInfo>> func, IPropertyProvider properties)
         {
             var members = func(source.GetType().GetTypeInfo());
 

@@ -375,7 +375,7 @@ namespace Epsylon.UberFactory
 
                         var monitor = MonitorContext.Create(xlogger, ctoken, progress);
                         
-                        ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateNodeInstance, monitor);
+                        ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateContentFilterInstance, monitor);
                     }
                 };
 

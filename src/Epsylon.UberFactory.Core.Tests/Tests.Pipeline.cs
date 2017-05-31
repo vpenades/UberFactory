@@ -166,7 +166,7 @@ namespace Epsylon.UberFactory
 
             var t = filters.FirstOrDefault(item => item.Name == classId);
 
-            return t == null ? null : SDK.Create(t, context);
+            return t == null ? null : SDK.Create(t, context) as SDK.ContentFilter;
         }
 
         [SDK.ContentFilter(nameof(TestFilter1))]

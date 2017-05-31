@@ -197,10 +197,30 @@ namespace Epsylon.UberFactory
             #endregion
         }
 
+        public partial class Settings : Item
+        {
+            #region lifecycle
 
-        
+            internal Settings() { }
 
+            #endregion
 
+            #region properties
+
+            public IReadOnlyList<Node> Nodes => GetLogicalChildren<Node>().ToArray();            
+
+            public Node UseClass(string className)
+            {
+                var n = Nodes.FirstOrDefault(item => item.ClassIdentifier == className);
+                if (n != null) return n;                
+
+                n = Node.Create(className);
+                AddLogicalChild(n);
+                return n;
+            }
+
+            #endregion
+        }
 
         public partial class Task : Item
         {
@@ -381,6 +401,22 @@ namespace Epsylon.UberFactory
 
             public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.RelativePath).ToArray();
 
+            public Settings Settings
+            {
+                get
+                {
+                    var settings = GetLogicalChildren<Settings>().FirstOrDefault();
+
+                    if (settings == null)
+                    {
+                        settings = new Settings();
+                        AddLogicalChild(settings);
+                    }
+
+                    return settings;
+                }
+            }
+
             #endregion            
 
             #region API            
@@ -413,7 +449,7 @@ namespace Epsylon.UberFactory
 
             public void RemoveItem(Item item) { RemoveLogicalChild(item); }
 
-            public Template GetTemplate(Guid id) { return this.FindBindableObject<Template>(id); }
+            public Template GetTemplate(Guid id) { return this.FindBindableObject<Template>(id); }            
 
             public void Paste(Guid id)
             {

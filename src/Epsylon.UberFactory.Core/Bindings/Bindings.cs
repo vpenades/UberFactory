@@ -28,7 +28,7 @@ namespace Epsylon.UberFactory.Bindings
         {
             public MemberInfo Member;
             public IPropertyProvider Properties;            
-            public SDK.ContentFilter Target;
+            public SDK.ContentObject Target;
         }
 
         protected MemberBinding(Description pvd)
@@ -42,7 +42,7 @@ namespace Epsylon.UberFactory.Bindings
         #region data
 
         protected readonly MemberInfo _MemberInfo;        
-        private readonly SDK.ContentFilter _TargetInstance;
+        private readonly SDK.ContentObject _TargetInstance;
 
         #endregion
 
@@ -52,7 +52,7 @@ namespace Epsylon.UberFactory.Bindings
 
         public Type                 DataType            => _MemberInfo.GetAssignType();
 
-        public SDK.ContentFilter    DataContext         => _TargetInstance;
+        public SDK.ContentObject    DataContext         => _TargetInstance;
 
         #endregion
 

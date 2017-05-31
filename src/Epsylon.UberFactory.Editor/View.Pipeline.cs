@@ -7,10 +7,39 @@ using System.Windows.Input;
 
 namespace Epsylon.UberFactory
 {
+    using Epsylon.UberFactory.Bindings;
     using BINDING = System.ComponentModel.INotifyPropertyChanged;
 
     public static partial class ProjectVIEW
     {
+        public interface INodeViewFactory
+        {
+            #region read
+
+            ProjectDOM.Node GetNodeDOM(Guid id);
+
+            String GetNodeDisplayName(Guid id);
+
+            String GetNodeDisplayFormat(Guid id);                        
+
+            IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id);
+
+            #endregion
+
+            #region write
+
+            IPipelineViewServices PipelineServices { get; }
+
+            Boolean CanEditHierarchy { get; }
+
+            void SetAsCurrentResultView(Guid id); // EvaluatePreview();
+
+            Guid AddNode(Factory.ContentBaseTypeInfo cbinfo);
+
+            void UpdateGraph();
+
+            #endregion
+        }
         
         
         public interface IPipelineViewServices
@@ -27,7 +56,90 @@ namespace Epsylon.UberFactory
             Type GetRootOutputType();
         }
 
-        public class Pipeline : BindableBase
+
+
+        public class SettingsView : BindableBase , INodeViewFactory
+        {
+            #region lifecycle
+
+            public static SettingsView Create(IPipelineViewServices c, ProjectDOM.Settings s)
+            {
+                if (c == null) return null;
+                if (s == null) return null;
+
+                var pp = new SettingsView(c, s);
+
+                // pp.UpdateGraph();
+
+                return pp;
+            }
+
+            private SettingsView(IPipelineViewServices c, ProjectDOM.Settings s)
+            {
+                _Parent = c;
+                _SettingsDom = s;
+            }
+
+            #endregion
+
+            #region data
+
+            internal readonly IPipelineViewServices _Parent;
+            internal readonly ProjectDOM.Settings _SettingsDom;
+
+            #endregion
+
+            #region properties
+
+            public IPipelineViewServices PipelineServices => _Parent;
+
+            public bool CanEditHierarchy => false;
+
+            public Node[] Nodes => _SettingsDom?.Nodes.Select(f => Node.Create(this, f.Identifier)).ToArray();
+
+            #endregion
+
+            #region API
+
+            public ProjectDOM.Node GetNodeDOM(Guid id) { return _SettingsDom.Nodes.FirstOrDefault(item => item.Identifier == id); }
+
+            public string GetNodeDisplayName(Guid id)
+            {
+                // temporary solution; do the correct thing
+                return GetNodeDOM(id).ClassIdentifier;
+            }
+
+            public string GetNodeDisplayFormat(Guid id)
+            {
+                // temporary solution; do the correct thing
+                return GetNodeDOM(id).ClassIdentifier;
+            }
+
+            public IEnumerable<MemberBinding> CreateNodeBindings(Guid id)
+            {                
+                var nodeDOM = GetNodeDOM(id);
+                var bsettings = _Parent.GetBuildSettings();
+                var nodeINS = _Parent.GetPluginManager().CreateGlobalSettingsInstance(nodeDOM.ClassIdentifier, bsettings);
+
+                var props = nodeDOM.GetPropertiesForConfiguration(bsettings.Configuration);
+
+                return nodeINS.CreateBindings(props)
+                    .OfType<Bindings.ValueBinding>()
+                    .ToArray();                
+            }
+
+            public void SetAsCurrentResultView(Guid id) { throw new NotSupportedException(); }
+
+            public Guid AddNode(Factory.ContentBaseTypeInfo cbinfo) { throw new NotSupportedException(); }
+
+            public void UpdateGraph() { throw new NotSupportedException(); }            
+
+            #endregion
+        }
+
+
+
+        public class Pipeline : BindableBase , INodeViewFactory
         {
             #region lifecycle
 
@@ -86,6 +198,10 @@ namespace Epsylon.UberFactory
 
             public Boolean CanEditHierarchy => _Parent.GetBuildSettings().Configuration.Length == 1;
 
+            public bool AllowTemplateEdition => throw new NotImplementedException();
+
+            public IPipelineViewServices PipelineServices => _Parent;
+
             #endregion
 
             #region API
@@ -96,7 +212,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 { 
-                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateNodeInstance);
+                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateContentFilterInstance);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _Evaluator = evaluator;
                     _Exception = null;
@@ -144,7 +260,31 @@ namespace Epsylon.UberFactory
                 var result = _Evaluator.EvaluateNode(MonitorContext.CreateNull(), nodeId,true);
 
                 _Dialogs.ShowProductAndDispose(null, result);                
-            }            
+            }
+
+            public ProjectDOM.Node GetNodeDOM(Guid id) { return _PipelineDom.GetNode(id); }
+
+            public string GetNodeDisplayName(Guid id)
+            {
+                var inst = _Evaluator.GetNodeInstance(id);
+                return Factory.ContentFilterTypeInfo.Create(inst).DisplayName;
+            }
+
+            public string GetNodeDisplayFormat(Guid id)
+            {
+                var inst = _Evaluator.GetNodeInstance(id);
+                return Factory.ContentFilterTypeInfo.Create(inst).DisplayFormatName;
+            }
+
+            public IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id)
+            {
+                return _Evaluator.CreateBindings(id);
+            }
+
+            public Guid AddNode(Factory.ContentBaseTypeInfo cbinfo)
+            {
+                return _PipelineDom.AddNode(cbinfo);
+            }
 
             #endregion
         }
@@ -153,17 +293,15 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static Node Create(Pipeline p, Guid nodeId)
+            public static Node Create(INodeViewFactory p, Guid nodeId)
             {
-                if (p == null) return null;
-                if (p._Parent == null) return null;
+                if (p == null) return null;                
                 if (nodeId == Guid.Empty) return null;
-                if (p._PipelineDom.GetNode(nodeId) == null) return null;
-                if (p._Evaluator.GetNodeInstance(nodeId) == null) return null;                
+                if (p.GetNodeDOM(nodeId) == null) return null;                
 
                 var node = new Node(p, nodeId);                
 
-                var propertyBindings = p._Evaluator.CreateBindings(nodeId);
+                var propertyBindings = p.CreateNodeBindings(nodeId);
 
                 // now we need to wrap some bindings with UI friendly wrappers
                 var propertyViews = propertyBindings.Cast<BINDING>().ToArray();
@@ -178,23 +316,22 @@ namespace Epsylon.UberFactory
 
                 node._BindingsViews = propertyViews;
 
-                return node;
-                
+                return node;                
             }
 
-            private Node(Pipeline p, Guid nodeId)
+            private Node(INodeViewFactory p, Guid nodeId)
             {
-                _Parent = p;
-                _NodeId = nodeId;
+                System.Diagnostics.Debug.Assert(p.GetNodeDOM(nodeId) != null);
 
-                System.Diagnostics.Debug.Assert(_Parent._PipelineDom.GetNode(_NodeId) != null);
+                _Parent = p;
+                _NodeId = nodeId;                
             }
 
             #endregion
 
             #region data
 
-            private readonly Pipeline _Parent;
+            private readonly INodeViewFactory _Parent;
             private readonly Guid _NodeId;
             private BINDING[] _BindingsViews;
 
@@ -204,22 +341,21 @@ namespace Epsylon.UberFactory
 
             public Guid Id                          => _NodeId;
 
-            public Pipeline Parent                  => _Parent;
+            public INodeViewFactory Parent          => _Parent;
 
-            public ProjectDOM.Node NodeDescription  => _Parent._PipelineDom.GetNode(_NodeId);
+            public ProjectDOM.Node NodeDescription  => _Parent.GetNodeDOM(_NodeId);
 
-            public SDK.ContentFilter NodeInstance   => _Parent._Evaluator.GetNodeInstance(_NodeId);            
+            // public SDK.ContentFilter NodeInstance   => _Parent._Evaluator.GetNodeInstance(_NodeId);            
 
-            public string DisplayName               => Factory.ContentFilterTypeInfo.Create(NodeInstance).DisplayName;
+            public string DisplayName               => _Parent.GetNodeDisplayName(_NodeId);
 
-            public string PropertyFormatName        => Factory.ContentFilterTypeInfo.Create(NodeInstance).DisplayFormatName;
+            public string PropertyFormatName        => _Parent.GetNodeDisplayFormat(_NodeId);
 
             public IEnumerable<BINDING> Bindings    => _BindingsViews;
 
             public IEnumerable<BINDING> BindingsGrouped => GroupedBindingsView.Group(_BindingsViews);
 
-
-            public bool AllowTemplateEdition        => _Parent._Parent.AllowTemplateEdition;
+            public bool AllowTemplateEdition        => _Parent.PipelineServices.AllowTemplateEdition;
 
             public string TemplateName { get { return NodeDescription.TemplateIdentifier; } set { NodeDescription.TemplateIdentifier = value; } }
 
@@ -227,7 +363,7 @@ namespace Epsylon.UberFactory
 
             #region API            
 
-            public void SetAsCurrentResultView() { this.Parent.SetAsCurrentResultView(_NodeId); }
+            public void SetAsCurrentResultView() { _Parent.SetAsCurrentResultView(_NodeId); }
             
             #endregion
         }
@@ -322,7 +458,7 @@ namespace Epsylon.UberFactory
 
             public string TitleFormat                   => DisplayName + "  {0}"; // formatting used to combine the name of the property and the template
 
-            public ProjectDOM.Template TemplateDom      => _Parent.Parent._Parent.GetTemplate(_GetDependencyId());
+            public ProjectDOM.Template TemplateDom      => _Parent.Parent.PipelineServices.GetTemplate(_GetDependencyId());
 
             public bool IsInstanced                     => TemplateDom != null;
 
@@ -341,7 +477,7 @@ namespace Epsylon.UberFactory
                 
                 var templateSignature = _Binding.GetTemplateSignature();
 
-                var templateDOMs = _Parent.Parent._Parent.GetTemplates();
+                var templateDOMs = _Parent.Parent.PipelineServices.GetTemplates();
                 //var templateINSs = templateDOMs.Select(item => PipelineEvaluator.CreatePipelineInstance(item))
 
                 // TODO: foreach templateDOM, create a pipeline evaluator, so we can retrieve the types and filter the compatible types
@@ -476,7 +612,7 @@ namespace Epsylon.UberFactory
             {
                 if (!_EditableBarrier()) return;
 
-                var plugins = _Parent.Parent._Parent.GetPluginManager();
+                var plugins = _Parent.Parent.PipelineServices.GetPluginManager();
 
                 var compatibleNodes = plugins
                     .PluginTypes
@@ -507,7 +643,7 @@ namespace Epsylon.UberFactory
 
                 if (value is Factory.ContentFilterTypeInfo)
                 {
-                    var nodeId = _Parent.Parent._PipelineDom.AddNode(value);
+                    var nodeId = _Parent.Parent.AddNode(value);
                     _SetDependencyId(nodeId);
 
                     // create an instance to extract the bindings, so we can create the default nodes

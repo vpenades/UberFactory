@@ -56,9 +56,20 @@ namespace Epsylon.UberFactory
 
             #endregion
 
-            #region API
+            #region API            
 
-            public abstract SDK.ContentFilter CreateInstance(BuildContext bsettings);
+            protected T GetMetaDataValue<T>(String key, T defval)
+            {
+                if (_Type == null) return defval;
+
+                var attrib = _Type.GetTypeInfo().GetCustomAttributes(true)
+                    .OfType<SDK.ContentFilterMetaDataAttribute>()
+                    .FirstOrDefault(item => item.Key == key);
+
+                if (attrib == null) return defval;
+
+                return attrib.GetValue<T>(null, defval);
+            }
 
             #endregion
         }
@@ -80,12 +91,7 @@ namespace Epsylon.UberFactory
 
             public override string DisplayName => "Failed to load!";
 
-            public override string DisplayFormatName => "{0} = Failed to load!";
-
-            public override SDK.ContentFilter CreateInstance(BuildContext bsettings)
-            {
-                throw new InvalidOperationException("Cannot create instance");
-            }
+            public override string DisplayFormatName => "{0} = Failed to load!";            
 
             #endregion
         }
@@ -128,9 +134,9 @@ namespace Epsylon.UberFactory
 
             public override string  SerializationKey    => _GetSerializationKey();
 
-            public override string  DisplayName         => _GetMetaDataValue<String>("Title", _Type.Name);
+            public override string  DisplayName         => GetMetaDataValue<String>("Title", _Type.Name);
 
-            public override string  DisplayFormatName   => _GetMetaDataValue<String>("TitleFormat", DisplayName + " {0}");
+            public override string  DisplayFormatName   => GetMetaDataValue<String>("TitleFormat", DisplayName + " {0}");
 
             public Type             OutputType          => _GetGenericOutputArgument();
 
@@ -171,18 +177,7 @@ namespace Epsylon.UberFactory
                 return root + _GetDeclarationAttribute(_Type).SerializationKey;
             }
 
-            public override SDK.ContentFilter CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings); }            
-
-            private T _GetMetaDataValue<T>(String key, T defval)
-            {
-                var attrib = _Type.GetTypeInfo().GetCustomAttributes(true)
-                    .OfType<SDK.ContentFilterMetaDataAttribute>()
-                    .FirstOrDefault(item => item.Key == key);
-
-                if (attrib == null) return defval;
-
-                return attrib.GetValue<T>(null, defval);                
-            }            
+            public SDK.ContentFilter CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings) as SDK.ContentFilter; }                 
 
             private static SDK.ContentFilterAttribute _GetDeclarationAttribute(Type t)
             {
@@ -193,6 +188,72 @@ namespace Epsylon.UberFactory
 
             #endregion
         }
+
         
+        public sealed class GlobalSettingsTypeInfo : ContentBaseTypeInfo
+        {
+            #region lifecycle
+
+            public static GlobalSettingsTypeInfo Create(object anyInstance)
+            {
+                if (anyInstance == null) return null;
+
+                return Create(anyInstance.GetType());
+            }
+
+            public static GlobalSettingsTypeInfo Create(Type t)
+            {
+                if (t == null) return null;
+
+                var tinfo = t.GetTypeInfo();
+
+                if (tinfo.IsAbstract) return null;                
+
+                if (_GetDeclarationAttribute(t) == null) return null;
+
+                return new GlobalSettingsTypeInfo(t);
+            }
+
+            private GlobalSettingsTypeInfo(Type t) : base(t) { }
+
+            #endregion
+
+            #region properties
+
+            public override string SerializationKey => _GetSerializationKey();
+
+            public override string DisplayName => GetMetaDataValue<String>("Title", _Type.Name);
+
+            public override string DisplayFormatName => GetMetaDataValue<String>("TitleFormat", DisplayName + " {0}");
+
+            #endregion
+
+            #region API
+
+            private string _GetSerializationKey()
+            {
+                var attr = _Type
+                        .GetTypeInfo()
+                        .Assembly
+                        .GetCustomAttributes<AssemblyMetadataAttribute>()
+                        .FirstOrDefault(item => item.Key == "SerializationRoot");
+
+                var root = attr != null ? attr.Value : string.Empty;
+
+                return root + _GetDeclarationAttribute(_Type).SerializationKey;
+            }
+
+            public SDK.ContentObject CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings) as SDK.ContentObject; }
+
+            private static SDK.GlobalSettingsAttribute _GetDeclarationAttribute(Type t)
+            {
+                return t.GetTypeInfo().GetCustomAttributes(true)
+                    .OfType<SDK.GlobalSettingsAttribute>()
+                    .FirstOrDefault();
+            }
+
+            #endregion
+        }
+
     }
 }

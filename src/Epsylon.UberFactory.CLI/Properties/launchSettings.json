@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Epsylon.UberFactory.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "monogame.uberfactory -Out:bin\\monogame",
+      "workingDirectory": "D:\\Vault\\UberPlugins\\Samples"
+    }
+  }
+}

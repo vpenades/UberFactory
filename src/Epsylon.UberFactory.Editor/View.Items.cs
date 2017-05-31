@@ -9,7 +9,7 @@ namespace Epsylon.UberFactory
 {
     public static partial class ProjectVIEW
     {
-        internal sealed class NULL_Type { private NULL_Type() { } }
+        internal sealed class NULL_Type { private NULL_Type() { } }        
 
         public class Task : BindableBase, IPipelineViewServices
         {

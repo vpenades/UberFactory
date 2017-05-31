@@ -387,6 +387,13 @@ namespace Epsylon.UberFactory
             internal Item(Unknown s) : base(s) { }            
         }        
 
+        public partial class Settings : Item
+        {
+            internal Settings(Unknown s) : base(s) { }
+
+
+        }
+
         public partial class Task : Item
         {
             internal Task(Unknown s) : base(s) { }
