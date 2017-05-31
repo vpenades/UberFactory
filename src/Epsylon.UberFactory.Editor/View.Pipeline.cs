@@ -58,23 +58,23 @@ namespace Epsylon.UberFactory
 
 
 
-        public class SettingsView : BindableBase , INodeViewFactory
+        public class SettingsCollectionView : BindableBase , INodeViewFactory
         {
             #region lifecycle
 
-            public static SettingsView Create(IPipelineViewServices c, ProjectDOM.Settings s)
+            public static SettingsCollectionView Create(IPipelineViewServices c, ProjectDOM.Settings s)
             {
                 if (c == null) return null;
                 if (s == null) return null;
 
-                var pp = new SettingsView(c, s);
+                var pp = new SettingsCollectionView(c, s);
 
                 // pp.UpdateGraph();
 
                 return pp;
             }
 
-            private SettingsView(IPipelineViewServices c, ProjectDOM.Settings s)
+            private SettingsCollectionView(IPipelineViewServices c, ProjectDOM.Settings s)
             {
                 _Parent = c;
                 _SettingsDom = s;

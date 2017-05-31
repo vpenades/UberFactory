@@ -208,6 +208,20 @@ namespace Epsylon.UberFactory
                 }
             }
 
+            public SettingsView SharedSettings
+            {
+                get
+                {
+                    var currentClassIds = this._Plugins
+                        .SettingsTypes
+                        .Select(item => item.SerializationKey)
+                        .Distinct()
+                        .ToArray();
+
+                    return SettingsView.Create(this, _Source.Settings);
+                }
+            }
+
             public IEnumerable<Task> Tasks
             {
                 get

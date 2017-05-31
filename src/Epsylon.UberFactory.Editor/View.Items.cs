@@ -9,7 +9,81 @@ namespace Epsylon.UberFactory
 {
     public static partial class ProjectVIEW
     {
-        internal sealed class NULL_Type { private NULL_Type() { } }        
+        internal sealed class NULL_Type { private NULL_Type() { } }
+
+
+        public class SettingsView : BindableBase , IPipelineViewServices
+        {
+            #region lifecycle
+
+            public static SettingsView Create(Project d, ProjectDOM.Settings c)
+            {
+                if (d == null || c == null) return null;
+
+                return new SettingsView(d, c);
+            }
+
+            private SettingsView(Project d, ProjectDOM.Settings c)
+            {
+                _Parent = d;
+                _Source = c;
+            }
+
+            #endregion
+
+            #region data
+
+            private readonly Project _Parent;
+            private readonly ProjectDOM.Settings _Source;
+
+            private SettingsCollectionView _View;
+
+            #endregion
+
+            #region properties
+
+            public ProjectDOM.Settings Source => _Source;
+
+            public Project ParentProject => _Parent;
+
+            public String InferredTitle => "Global Settings";
+
+            public String DisplayTitle => "Global Settings";            
+
+            public String Title
+            {
+                get { return "Global Settings"; }
+                set { }
+            }
+
+            public SettingsCollectionView SettingsCollection
+            {
+                get
+                {
+                    if (_View == null) _View = SettingsCollectionView.Create(this, _Source);
+                    return _View;
+                }
+            }
+
+            #endregion
+
+            #region API - Pipeline services
+
+            public PluginManager GetPluginManager() { return _Parent._Plugins; }
+
+            public BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
+
+            public bool AllowTemplateEdition { get { return false; } }
+
+            public ProjectDOM.Template GetTemplate(Guid id) { throw new NotSupportedException(); }
+
+            public IEnumerable<ProjectDOM.Template> GetTemplates() { throw new NotSupportedException(); }
+
+            public Type GetRootOutputType() { return null; }
+
+            #endregion
+        }
+
 
         public class Task : BindableBase, IPipelineViewServices
         {
