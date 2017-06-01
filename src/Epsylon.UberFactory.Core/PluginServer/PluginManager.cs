@@ -47,7 +47,8 @@ namespace Epsylon.UberFactory
         {
             get
             {
-                var types = _GetExportedTypes<Object>()
+                var types = _GetExportedTypes<SDK.ContentObject>()
+                    .Where(item => !typeof(SDK.ContentFilter).IsAssignableFrom(item) )
                     .Select(t => Factory.GetFilterTypeInfo(t))
                     .ExceptNulls()
                     .OfType<Factory.GlobalSettingsTypeInfo>()

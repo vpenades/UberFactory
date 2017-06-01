@@ -12,7 +12,8 @@ namespace Epsylon.UberFactory
         internal sealed class NULL_Type { private NULL_Type() { } }
 
 
-        public class SettingsView : BindableBase , IPipelineViewServices
+
+        public class SettingsView : BindableBase, IPipelineViewServices
         {
             #region lifecycle
 
@@ -36,7 +37,7 @@ namespace Epsylon.UberFactory
             private readonly Project _Parent;
             private readonly ProjectDOM.Settings _Source;
 
-            private SettingsCollectionView _View;
+            private Pipeline _PipelineView;
 
             #endregion
 
@@ -46,24 +47,24 @@ namespace Epsylon.UberFactory
 
             public Project ParentProject => _Parent;
 
-            public String InferredTitle => "Global Settings";
+            public String InferredTitle => _PipelineView?._Evaluator.InferredTitle;
 
-            public String DisplayTitle => "Global Settings";            
+            public String DisplayTitle => "Task " + Title;            
 
             public String Title
             {
-                get { return "Global Settings"; }
+                get { return _Source.ClassName; }
                 set { }
             }
 
-            public SettingsCollectionView SettingsCollection
+            public Pipeline Pipeline
             {
                 get
                 {
-                    if (_View == null) _View = SettingsCollectionView.Create(this, _Source);
-                    return _View;
+                    if (_PipelineView == null) _PipelineView = Pipeline.Create(this, _Source.Pipeline);
+                    return _PipelineView;
                 }
-            }
+            }            
 
             #endregion
 
@@ -75,9 +76,12 @@ namespace Epsylon.UberFactory
 
             public bool AllowTemplateEdition { get { return false; } }
 
-            public ProjectDOM.Template GetTemplate(Guid id) { throw new NotSupportedException(); }
+            public ProjectDOM.Template GetTemplate(Guid id)
+            {
+                return _Parent.Templates.FirstOrDefault(item => item.Source.Identifier == id)?.Source;
+            }
 
-            public IEnumerable<ProjectDOM.Template> GetTemplates() { throw new NotSupportedException(); }
+            public IEnumerable<ProjectDOM.Template> GetTemplates() { return _Parent.Templates.Select(item => item.Source); }
 
             public Type GetRootOutputType() { return null; }
 

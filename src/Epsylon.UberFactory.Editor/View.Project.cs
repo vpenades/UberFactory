@@ -208,17 +208,23 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            public SettingsView SharedSettings
+            public IEnumerable<SettingsView> SharedSettings
             {
                 get
                 {
+                    if (_ActiveConfiguration == null) return null;
+
                     var currentClassIds = this._Plugins
                         .SettingsTypes
                         .Select(item => item.SerializationKey)
                         .Distinct()
                         .ToArray();
 
-                    return SettingsView.Create(this, _Source.Settings);
+                    return currentClassIds
+                        .Select(clsid => _Source.UseSettings(clsid))
+                        .Select(item => ProjectVIEW.SettingsView.Create(this, item))
+                        .ExceptNulls()
+                        .ToArray();
                 }
             }
 

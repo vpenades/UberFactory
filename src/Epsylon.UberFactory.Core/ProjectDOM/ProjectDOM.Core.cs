@@ -207,16 +207,30 @@ namespace Epsylon.UberFactory
 
             #region properties
 
-            public IReadOnlyList<Node> Nodes => GetLogicalChildren<Node>().ToArray();            
-
-            public Node UseClass(string className)
+            public string ClassName
             {
-                var n = Nodes.FirstOrDefault(item => item.ClassIdentifier == className);
-                if (n != null) return n;                
+                get
+                {
+                    var pipeline = GetLogicalChildren<Pipeline>().FirstOrDefault();
+                    if (pipeline == null) return null;
+                    return pipeline.GetRootNode()?.ClassIdentifier;
+                }
+            }
 
-                n = Node.Create(className);
-                AddLogicalChild(n);
-                return n;
+            public Pipeline Pipeline
+            {
+                get
+                {
+                    var pipeline = GetLogicalChildren<Pipeline>().FirstOrDefault();
+
+                    if (pipeline == null)
+                    {
+                        pipeline = new Pipeline();
+                        AddLogicalChild(pipeline);
+                    }
+
+                    return pipeline;
+                }
             }
 
             #endregion
@@ -399,23 +413,7 @@ namespace Epsylon.UberFactory
 
             public IReadOnlyList<Item> Items => GetLogicalChildren<Item>().ToArray();
 
-            public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.RelativePath).ToArray();
-
-            public Settings Settings
-            {
-                get
-                {
-                    var settings = GetLogicalChildren<Settings>().FirstOrDefault();
-
-                    if (settings == null)
-                    {
-                        settings = new Settings();
-                        AddLogicalChild(settings);
-                    }
-
-                    return settings;
-                }
-            }
+            public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.RelativePath).ToArray();           
 
             #endregion            
 
@@ -454,6 +452,21 @@ namespace Epsylon.UberFactory
             public void Paste(Guid id)
             {
 
+            }
+            
+            public Settings UseSettings(string className)
+            {
+                var s = Items
+                    .OfType<Settings>()
+                    .FirstOrDefault(item => item.ClassName == className);
+
+                if (s != null) return null;
+
+                s = new Settings(); AddLogicalChild(s);
+
+                s.Pipeline.AddNode(className);
+
+                return s;
             }
 
             #endregion

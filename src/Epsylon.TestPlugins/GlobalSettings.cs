@@ -9,10 +9,9 @@ namespace Epsylon.TestPlugins
     using UberFactory;
     
     [SDK.GlobalSettings("MainSettings1")]
-    public class MainSettings1
+    public class MainSettings1 : SDK.ContentObject
     {
         [SDK.InputValue(nameof(Value1))]
         public int Value1 { get; set; }
-
     }
 }

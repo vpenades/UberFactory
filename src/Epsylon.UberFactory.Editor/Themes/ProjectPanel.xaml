@@ -99,6 +99,20 @@
                         </DataGrid>
                     </TabItem>
 
+                    <TabItem Header="Settings">
+                        <DataGrid x:Name="mySettings"
+                                  ItemsSource="{Binding SharedSettings}"
+                                  AutoGenerateColumns="False"
+                                  AllowDrop="False"
+                                  SelectionMode="Single" SelectedValue="{Binding ActiveDocument}">                            
+
+                            <DataGrid.Columns>                                
+                                <DataGridTextColumn Header="Title" Binding="{Binding Title}" IsReadOnly="True" />                                
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </TabItem>
+
                     <TabItem Header="Templates">
                         <DataGrid x:Name="myTemplates"
                                   ItemsSource="{Binding Templates}"

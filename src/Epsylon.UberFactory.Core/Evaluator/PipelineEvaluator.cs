@@ -65,9 +65,12 @@ namespace Epsylon.UberFactory
         
         // evaluation data
 
-        private BuildContext _BuildSettings;        
+        private BuildContext _BuildSettings;
+        private readonly Dictionary<String,SDK.ContentObject> _SettingsInstances = new Dictionary<String,SDK.ContentObject>(); // here we have to set ALL the settings instances
         private readonly Dictionary<Guid, SDK.ContentFilter> _NodeInstances = new Dictionary<Guid, SDK.ContentFilter>();
         private readonly Dictionary<Guid, PipelineEvaluator> _PipelineInstances = new Dictionary<Guid, PipelineEvaluator>();
+
+        
 
         private readonly List<Guid> _NodeOrder = new List<Guid>(); // ids in order of evaluation
 
