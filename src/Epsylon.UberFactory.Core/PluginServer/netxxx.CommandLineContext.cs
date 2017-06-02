@@ -200,7 +200,7 @@ namespace Epsylon.UberFactory
                 var buildSettings = BuildContext.Create(_Configuration, prjDir, dstDirPath);                
 
                 // do build
-                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateContentFilterInstance, monitor);                
+                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);                
             }
         }        
 

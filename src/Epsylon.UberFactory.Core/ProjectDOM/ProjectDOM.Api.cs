@@ -71,7 +71,7 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentFilter> filterFactory, SDK.IMonitorContext monitor)
+        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentObject> filterFactory, SDK.IMonitorContext monitor)
         {
             if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
             if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
@@ -110,7 +110,7 @@ namespace Epsylon.UberFactory
             }
         }
 
-        private static void _ValidateFactory(BuildContext bsettings, Func<string, BuildContext, SDK.ContentFilter> filterFactory, Task[] tasks, Template[] templates)
+        private static void _ValidateFactory(BuildContext bsettings, Func<string, BuildContext, SDK.ContentObject> filterFactory, Task[] tasks, Template[] templates)
         {
             var classIds = tasks
                             .SelectMany(item => item.Pipeline.Nodes)

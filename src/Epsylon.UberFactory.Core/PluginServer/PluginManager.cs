@@ -29,27 +29,14 @@ namespace Epsylon.UberFactory
             _Assemblies = assemblies.ToArray();
         }
 
-        public IEnumerable<Factory.ContentFilterTypeInfo> PluginTypes
-        {
-            get
-            {
-                var types = _GetExportedTypes<SDK.ContentFilter>()
-                    .Select(t => Factory.GetFilterTypeInfo(t))
-                    .ExceptNulls()
-                    .OfType<Factory.ContentFilterTypeInfo>()
-                    .ToArray();
-
-                return types;
-            }
-        }
-
         public IEnumerable<Factory.GlobalSettingsTypeInfo> SettingsTypes
         {
             get
             {
                 var types = _GetExportedTypes<SDK.ContentObject>()
-                    .Where(item => !typeof(SDK.ContentFilter).IsAssignableFrom(item) )
-                    .Select(t => Factory.GetFilterTypeInfo(t))
+                    .Where(item => typeof(SDK.ContentObject).IsAssignableFrom(item))    // Must derive from SDK.ContentObject
+                    .Where(item => !typeof(SDK.ContentFilter).IsAssignableFrom(item))   // Must NOT derive from SDK.ContentFilter
+                    .Select(t => t.GetContentTypeInfo())
                     .ExceptNulls()
                     .OfType<Factory.GlobalSettingsTypeInfo>()
                     .ToArray();
@@ -57,6 +44,20 @@ namespace Epsylon.UberFactory
                 return types;
             }
         }
+
+        public IEnumerable<Factory.ContentFilterTypeInfo> PluginTypes
+        {
+            get
+            {
+                var types = _GetExportedTypes<SDK.ContentFilter>()
+                    .Select(t => t.GetContentTypeInfo())
+                    .ExceptNulls()
+                    .OfType<Factory.ContentFilterTypeInfo>()
+                    .ToArray();
+
+                return types;
+            }
+        }        
 
         private IEnumerable<Type> _GetExportedTypes<T>()
         {
@@ -74,27 +75,20 @@ namespace Epsylon.UberFactory
                     if (ti.IsAssignableFrom(t.GetTypeInfo())) yield return t;
                 }
             }
-        }
+        }        
 
-
-        public SDK.ContentFilter CreateContentFilterInstance(string classId, BuildContext bcontext)
+        public SDK.ContentObject CreateInstance(string classId, BuildContext bcontext)
         {
             if (string.IsNullOrWhiteSpace(classId)) throw new ArgumentNullException(nameof(classId));
 
-            var factory = PluginTypes.FirstOrDefault(item => item.SerializationKey == classId);
-            if (factory == null) return new _UnknownNode();
+            var factory1 = PluginTypes.FirstOrDefault(item => item.SerializationKey == classId);
+            if (factory1 != null) return factory1.CreateInstance(bcontext);
 
-            return factory.CreateInstance(bcontext);
-        }
 
-        public SDK.ContentObject CreateGlobalSettingsInstance(string classId, BuildContext bcontext)
-        {
-            if (string.IsNullOrWhiteSpace(classId)) throw new ArgumentNullException(nameof(classId));
+            var factory2 = SettingsTypes.FirstOrDefault(item => item.SerializationKey == classId);
+            if (factory2 != null) return factory2.CreateInstance(bcontext);
 
-            var factory = SettingsTypes.FirstOrDefault(item => item.SerializationKey == classId);
-            if (factory == null) return new _UnknownNode();
-
-            return factory.CreateInstance(bcontext);
+            return new _UnknownNode();
         }
 
         #endregion

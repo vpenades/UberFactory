@@ -14,9 +14,11 @@ namespace Epsylon.UberFactory
         /// </summary>
         /// <param name="instance">Any object, but designed for <code>SDK.ContentFilter</code> derived objects</param>
         /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
-        public static ContentBaseTypeInfo GetFilterTypeInfo(this Object instance)
+        public static ContentBaseTypeInfo GetContentTypeInfo(this Object instance)
         {
-            return GetFilterTypeInfo(instance == null ? null : instance.GetType());
+            if (instance is Type) return GetContentTypeInfo((Type)instance);
+
+            return GetContentTypeInfo(instance == null ? null : instance.GetType());
         }
 
         /// <summary>
@@ -24,9 +26,11 @@ namespace Epsylon.UberFactory
         /// </summary>
         /// <param name="t">Any type, but designed for <code>SDK.ContentFilter</code> derived types</param>
         /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
-        public static ContentBaseTypeInfo GetFilterTypeInfo(this Type t)
-        {            
-            return ContentFilterTypeInfo.Create(t);            
+        public static ContentBaseTypeInfo GetContentTypeInfo(this Type t)
+        {
+            if (typeof(SDK.ContentFilter).IsAssignableFrom(t)) return ContentFilterTypeInfo.Create(t);
+            return GlobalSettingsTypeInfo.Create(t);
+            
         }
 
         /// <summary>

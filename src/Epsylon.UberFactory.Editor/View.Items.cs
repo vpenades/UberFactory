@@ -83,7 +83,18 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<ProjectDOM.Template> GetTemplates() { return _Parent.Templates.Select(item => item.Source); }
 
+            
             public Type GetRootOutputType() { return null; }
+
+            /// <summary>
+            /// Template Available return types
+            /// </summary>
+            public IEnumerable<Type> AvailableReturnTypes => Enumerable.Empty<Type>();
+
+            /// <summary>
+            /// Template current return type
+            /// </summary>
+            public Type ActiveReturnType { get { return null; } set { } }
 
             #endregion
         }
@@ -144,8 +155,14 @@ namespace Epsylon.UberFactory
                 }
             }
 
+            /// <summary>
+            /// Template Available return types
+            /// </summary>
             public IEnumerable<Type> AvailableReturnTypes=> Enumerable.Empty<Type>();
 
+            /// <summary>
+            /// Template current return type
+            /// </summary>
             public Type ActiveReturnType { get { return null; } set { } }
 
             #endregion
@@ -231,6 +248,9 @@ namespace Epsylon.UberFactory
                 }
             }
 
+            /// <summary>
+            /// Template Available return types
+            /// </summary>
             public IEnumerable<Type> AvailableReturnTypes
             {
                 get
@@ -247,6 +267,9 @@ namespace Epsylon.UberFactory
                 }
             }
 
+            /// <summary>
+            /// Template current return type
+            /// </summary>
             public Type ActiveReturnType
             {
                 get { return _ActiveReturnType; }

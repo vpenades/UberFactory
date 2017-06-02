@@ -6,8 +6,12 @@
                     xmlns:data="clr-namespace:Epsylon.UberFactory"                    
                     
                     xmlns:pitems="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"                    
-                    >    
+                    >
 
+    <DataTemplate DataType="{x:Type data:ProjectVIEW+SettingsView}">
+        <pitems:SettingsView />
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type data:ProjectVIEW+Task}">
         <pitems:TaskView />        
     </DataTemplate>

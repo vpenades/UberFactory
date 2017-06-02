@@ -464,7 +464,9 @@ namespace Epsylon.UberFactory
 
                 s = new Settings(); AddLogicalChild(s);
 
-                s.Pipeline.AddNode(className);
+                var rootId = s.Pipeline.AddNode(className);
+
+                s.Pipeline.RootIdentifier = rootId;
 
                 return s;
             }

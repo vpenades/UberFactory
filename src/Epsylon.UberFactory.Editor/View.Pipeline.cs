@@ -11,37 +11,7 @@ namespace Epsylon.UberFactory
     using BINDING = System.ComponentModel.INotifyPropertyChanged;
 
     public static partial class ProjectVIEW
-    {
-        public interface INodeViewFactory
-        {
-            #region read
-
-            ProjectDOM.Node GetNodeDOM(Guid id);
-
-            String GetNodeDisplayName(Guid id);
-
-            String GetNodeDisplayFormat(Guid id);                        
-
-            IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id);
-
-            #endregion
-
-            #region write
-
-            IPipelineViewServices PipelineServices { get; }
-
-            Boolean CanEditHierarchy { get; }
-
-            void SetAsCurrentResultView(Guid id); // EvaluatePreview();
-
-            Guid AddNode(Factory.ContentBaseTypeInfo cbinfo);
-
-            void UpdateGraph();
-
-            #endregion
-        }
-        
-        
+    {        
         public interface IPipelineViewServices
         {
             bool AllowTemplateEdition { get; }
@@ -56,10 +26,7 @@ namespace Epsylon.UberFactory
             Type GetRootOutputType();
         }
 
-        
-
-
-        public class Pipeline : BindableBase , INodeViewFactory
+        public class Pipeline : BindableBase , INodeViewServices
         {
             #region lifecycle
 
@@ -132,7 +99,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 { 
-                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateContentFilterInstance);
+                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateInstance);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _Evaluator = evaluator;
                     _Exception = null;
@@ -186,14 +153,17 @@ namespace Epsylon.UberFactory
 
             public string GetNodeDisplayName(Guid id)
             {
-                var inst = _Evaluator.GetNodeInstance(id);
-                return Factory.ContentFilterTypeInfo.Create(inst).DisplayName;
+                return _Evaluator.GetNodeInstance(id)?
+                    .GetContentTypeInfo()?
+                    .DisplayName;
             }
 
             public string GetNodeDisplayFormat(Guid id)
             {
-                var inst = _Evaluator.GetNodeInstance(id);
-                return Factory.ContentFilterTypeInfo.Create(inst).DisplayFormatName;
+                return _Evaluator
+                    .GetNodeInstance(id)?
+                    .GetContentTypeInfo()?
+                    .DisplayFormatName;
             }
 
             public IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id)
@@ -209,11 +179,41 @@ namespace Epsylon.UberFactory
             #endregion
         }
 
+
+        public interface INodeViewServices
+        {
+            #region read
+
+            ProjectDOM.Node GetNodeDOM(Guid id);
+
+            String GetNodeDisplayName(Guid id);
+
+            String GetNodeDisplayFormat(Guid id);
+
+            IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id);
+
+            #endregion
+
+            #region write
+
+            IPipelineViewServices PipelineServices { get; }
+
+            Boolean CanEditHierarchy { get; }
+
+            void SetAsCurrentResultView(Guid id); // EvaluatePreview();
+
+            Guid AddNode(Factory.ContentBaseTypeInfo cbinfo);
+
+            void UpdateGraph();
+
+            #endregion
+        }
+
         public class Node : BindableBase
         {
             #region lifecycle
 
-            public static Node Create(INodeViewFactory p, Guid nodeId)
+            public static Node Create(INodeViewServices p, Guid nodeId)
             {
                 if (p == null) return null;                
                 if (nodeId == Guid.Empty) return null;
@@ -239,7 +239,7 @@ namespace Epsylon.UberFactory
                 return node;                
             }
 
-            private Node(INodeViewFactory p, Guid nodeId)
+            private Node(INodeViewServices p, Guid nodeId)
             {
                 System.Diagnostics.Debug.Assert(p.GetNodeDOM(nodeId) != null);
 
@@ -251,7 +251,7 @@ namespace Epsylon.UberFactory
 
             #region data
 
-            private readonly INodeViewFactory _Parent;
+            private readonly INodeViewServices _Parent;
             private readonly Guid _NodeId;
             private BINDING[] _BindingsViews;
 
@@ -261,7 +261,7 @@ namespace Epsylon.UberFactory
 
             public Guid Id                          => _NodeId;
 
-            public INodeViewFactory Parent          => _Parent;
+            public INodeViewServices Parent          => _Parent;
 
             public ProjectDOM.Node NodeDescription  => _Parent.GetNodeDOM(_NodeId);
 

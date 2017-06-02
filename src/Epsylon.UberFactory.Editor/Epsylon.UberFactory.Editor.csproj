@@ -143,6 +143,9 @@
     <Compile Include="Themes\ProjectItems\PipelineView.xaml.cs">
       <DependentUpon>PipelineView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Themes\ProjectItems\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\ProjectItems\TaskView.xaml.cs">
       <DependentUpon>TaskView.xaml</DependentUpon>
     </Compile>
@@ -241,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ProjectItems\PipelineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ProjectItems\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

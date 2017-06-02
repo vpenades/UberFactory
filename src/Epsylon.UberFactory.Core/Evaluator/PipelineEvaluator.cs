@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory
 {
     using TEMPLATEFACTORY = Func<Guid, ProjectDOM.Template>;
-    using FILTERFACTORY = Func<String, BuildContext, SDK.ContentFilter>;
+    using FILTERFACTORY = Func<String, BuildContext, SDK.ContentObject>;
 
     public class PipelineEvaluator : SDK.IPipelineInstance
     {
@@ -67,7 +67,7 @@ namespace Epsylon.UberFactory
 
         private BuildContext _BuildSettings;
         private readonly Dictionary<String,SDK.ContentObject> _SettingsInstances = new Dictionary<String,SDK.ContentObject>(); // here we have to set ALL the settings instances
-        private readonly Dictionary<Guid, SDK.ContentFilter> _NodeInstances = new Dictionary<Guid, SDK.ContentFilter>();
+        private readonly Dictionary<Guid, SDK.ContentObject> _NodeInstances = new Dictionary<Guid, SDK.ContentObject>();
         private readonly Dictionary<Guid, PipelineEvaluator> _PipelineInstances = new Dictionary<Guid, PipelineEvaluator>();
 
         
@@ -181,7 +181,7 @@ namespace Epsylon.UberFactory
 
         #region API - Evaluation
 
-        public SDK.ContentFilter GetNodeInstance(Guid id) { return _NodeInstances.GetValueOrDefault(id); }                
+        public SDK.ContentObject GetNodeInstance(Guid id) { return _NodeInstances.GetValueOrDefault(id); }                
 
         public IEnumerable<Bindings.MemberBinding> CreateBindings(Guid nodeId)
         {
