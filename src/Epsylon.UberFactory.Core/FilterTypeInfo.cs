@@ -181,7 +181,7 @@ namespace Epsylon.UberFactory
                 return root + _GetDeclarationAttribute(_Type).SerializationKey;
             }
 
-            public SDK.ContentFilter CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings) as SDK.ContentFilter; }                 
+            public SDK.ContentFilter CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings) as SDK.ContentFilter; }
 
             private static SDK.ContentFilterAttribute _GetDeclarationAttribute(Type t)
             {

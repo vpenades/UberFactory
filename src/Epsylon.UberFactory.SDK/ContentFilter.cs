@@ -9,15 +9,26 @@ namespace Epsylon.UberFactory
     {
         #region Content Nodes
 
-        /// <summary>
-        /// Used by the evaluator to retrieve all the source files used by this node
-        /// </summary>
-        public interface IProjectFiles
+        public abstract class ContentObject
         {
-            IEnumerable<String> GetProjectFiles();
+            #region data
+
+            // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
+
+            internal IBuildContext _BuildContext;
+
+            
+
+            #endregion
+
+            #region API            
+
+            public IBuildContext BuildContext => _BuildContext;            
+
+            #endregion   
         }
 
-        public abstract class ContentFilter
+        public abstract class ContentFilter : ContentObject // ContentEvaluator
         {
             #region lifecycle
 
@@ -27,17 +38,15 @@ namespace Epsylon.UberFactory
 
             #region data
 
-            // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
-            
-            internal IBuildContext _BuildContext;
+            // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline            
 
             internal IMonitorContext _MonitorContext;
 
+            internal Func<Type, ContentObject> _SharedContentResolver;
+
             #endregion            
 
-            #region API            
-
-            public IBuildContext BuildContext => _BuildContext;
+            #region API
 
             protected bool IsCancelled { get { return _MonitorContext.IsCancelRequested; } }
 
@@ -56,31 +65,34 @@ namespace Epsylon.UberFactory
             public void LogError(string message) { _MonitorContext.LogError(this.GetType().Name, message); }
             public void LogCritical(string message) { _MonitorContext.LogCritical(this.GetType().Name, message); }
 
-
-
-            internal Object _Evaluate(IMonitorContext monitor)
+            public T GetSharedSettings<T>() where T : ContentObject
             {
-                return _Evaluate(EvaluateObject, monitor);
+                return _SharedContentResolver == null ? null : _SharedContentResolver(typeof(T)) as T;
             }
 
-            internal Object _Preview(IMonitorContext monitor)
+
+            internal Object _Evaluate(IMonitorContext monitor, Func<Type,ContentObject> sf)
             {
-                return _Evaluate(PreviewObject, monitor);
+                return _Evaluate(EvaluateObject, monitor, sf);
             }
 
-            internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor)
+            internal Object _Preview(IMonitorContext monitor, Func<Type, ContentObject> sf)
+            {
+                return _Evaluate(PreviewObject, monitor, sf);
+            }
+
+            internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor, Func<Type, ContentObject> sf)
             {
                 this._MonitorContext = monitor;
+                this._SharedContentResolver = sf;
 
                 var r = evaluator();
 
+                this._SharedContentResolver = null;
                 this._MonitorContext = null;
 
                 return r;
             }
-
-            
-
 
             // preview evaluation is expected to be much faster and simplified, for heavy filters, it is recomended to use a simplified processing for preview
             protected virtual Object PreviewObject() { return EvaluateObject(); }

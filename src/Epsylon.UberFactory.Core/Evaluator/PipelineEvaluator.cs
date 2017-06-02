@@ -68,9 +68,7 @@ namespace Epsylon.UberFactory
         private BuildContext _BuildSettings;
         private readonly Dictionary<String,SDK.ContentObject> _SettingsInstances = new Dictionary<String,SDK.ContentObject>(); // here we have to set ALL the settings instances
         private readonly Dictionary<Guid, SDK.ContentObject> _NodeInstances = new Dictionary<Guid, SDK.ContentObject>();
-        private readonly Dictionary<Guid, PipelineEvaluator> _PipelineInstances = new Dictionary<Guid, PipelineEvaluator>();
-
-        
+        private readonly Dictionary<Guid, PipelineEvaluator> _PipelineInstances = new Dictionary<Guid, PipelineEvaluator>();        
 
         private readonly List<Guid> _NodeOrder = new List<Guid>(); // ids in order of evaluation
 
@@ -270,13 +268,15 @@ namespace Epsylon.UberFactory
             {
                 if (nodeInst is SDK.ContentFilter)
                 {
+                    Func<Type, SDK.ContentObject> sharedContentEvaluator = t => _SettingsInstances.Values.FirstOrDefault(item => item.GetType() == t);
+
                     var localMonitor = monitor.GetProgressPart(_NodeOrder.IndexOf(nodeOrTemplateId), _NodeOrder.Count);
 
-                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, localMonitor);
+                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, localMonitor, sharedContentEvaluator);
                     else
                     {
-                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, localMonitor);
-                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, localMonitor);
+                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, localMonitor, sharedContentEvaluator);
+                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, localMonitor, sharedContentEvaluator);
                     }
                 }
             }

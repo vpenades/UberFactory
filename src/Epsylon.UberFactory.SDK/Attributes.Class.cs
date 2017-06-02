@@ -7,7 +7,33 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory
 {
     partial class SDK
-    {       
+    {
+        [AttributeUsageAttribute(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+        public class GlobalSettingsAttribute : Attribute
+        {
+            #region lifecycle           
+
+            /// <summary>
+            /// Declares the current class as a Tail Component with no return type
+            /// </summary>
+            /// <param name="serializationKey">text displayed in the UI</param>
+            public GlobalSettingsAttribute(string serializationKey)
+            {
+                this.SerializationKey = serializationKey;
+            }
+
+            #endregion
+
+            #region properties
+
+            /// <summary>
+            /// key to use to serialize this node
+            /// </summary>
+            public string SerializationKey { get; private set; }
+
+            #endregion
+        }
+
         [AttributeUsageAttribute(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
         public class ContentFilterAttribute : Attribute
         {
