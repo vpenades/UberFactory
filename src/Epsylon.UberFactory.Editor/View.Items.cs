@@ -76,6 +76,11 @@ namespace Epsylon.UberFactory
 
             public bool AllowTemplateEdition { get { return false; } }
 
+            public ProjectDOM.Settings GetSettings(Type t)
+            {
+                return _Parent.GetSharedSettings(t);
+            }
+
             public ProjectDOM.Template GetTemplate(Guid id)
             {
                 return _Parent.Templates.FirstOrDefault(item => item.Source.Identifier == id)?.Source;
@@ -174,6 +179,11 @@ namespace Epsylon.UberFactory
             public BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
 
             public bool AllowTemplateEdition { get { return false; } }
+
+            public ProjectDOM.Settings GetSettings(Type t)
+            {
+                return _Parent.GetSharedSettings(t);
+            }
 
             public ProjectDOM.Template GetTemplate(Guid id)
             {
@@ -296,6 +306,11 @@ namespace Epsylon.UberFactory
             {
                 _Source.RemoveParameter(param);
                 RaiseChanged(nameof(Parameters));
+            }
+
+            public ProjectDOM.Settings GetSettings(Type t)
+            {
+                return _Parent.GetSharedSettings(t);
             }
 
             public ProjectDOM.Template GetTemplate(Guid id)

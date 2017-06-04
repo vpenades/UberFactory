@@ -53,13 +53,13 @@ namespace Epsylon.UberFactory
 
             // create a pipeline evaluator
 
-            var evaluator = PipelineEvaluator.CreatePipelineInstance(pipeline, tfunc, TestFiltersFactory.CreateInstance);
+            var evaluator = PipelineEvaluator.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null, tfunc);
             evaluator.Setup(BuildContext.Create(configuration, new PathString("")));
 
             // run evaluation
 
             // note we're using the secondary evaluator instead of the primary one, to prevent creating the target directory.
-            return (int)evaluator.EvaluateNode(MonitorContext.CreateNull(), pipeline.RootIdentifier, false);
+            return (int)evaluator.EvaluateNode(MonitorContext.CreateNull(), pipeline.RootIdentifier);
         }
     }
 

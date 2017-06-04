@@ -28,7 +28,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentFilter(nameof(TestPipeline1))]
-    [SDK.ContentFilterMetaData("Title", "Debug Content Filter")]
+    [SDK.ContentFilterMetaData("Title", "Debug Template Filter")]
     public sealed class TestPipeline1 : SDK.ContentFilter<String>
     {
         [SDK.InputPipeline(nameof(Pipeline), typeof(string), typeof(string),typeof(string),typeof(string))]        
@@ -41,6 +41,20 @@ namespace Epsylon.TestPlugins
             return null;
 
             // return Pipeline.Evaluate(MonitorContext.CreateNull(), "A", "B", "C") as String;
+        }
+    }
+
+
+
+    [SDK.ContentFilter(nameof(TestGlobalSettings1))]
+    [SDK.ContentFilterMetaData("Title", "Debug Shared Settings Filter")]
+    public sealed class TestGlobalSettings1 : SDK.ContentFilter<String>
+    {
+        protected override String Evaluate()
+        {
+            var g = this.GetSharedSettings<MainSettings1>();
+
+            return g?.Value1.ToString();
         }
     }
 

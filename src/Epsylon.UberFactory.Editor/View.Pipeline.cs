@@ -19,6 +19,7 @@ namespace Epsylon.UberFactory
             PluginManager GetPluginManager();
             BuildContext GetBuildSettings();
 
+            ProjectDOM.Settings GetSettings(Type t);
             ProjectDOM.Template GetTemplate(Guid id);
 
             IEnumerable<ProjectDOM.Template> GetTemplates();
@@ -98,8 +99,8 @@ namespace Epsylon.UberFactory
                 // note: if the general document configuration changes, we must call setup again              
                 
                 try
-                { 
-                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetTemplate , _Parent.GetPluginManager().CreateInstance);
+                {
+                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings,  _Parent.GetTemplate);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _Evaluator = evaluator;
                     _Exception = null;
@@ -144,7 +145,7 @@ namespace Epsylon.UberFactory
             public void SetAsCurrentResultView(Guid nodeId)
             {
                 if (_Evaluator == null) return;
-                var result = _Evaluator.EvaluateNode(MonitorContext.CreateNull(), nodeId,true);
+                var result = _Evaluator.PreviewNode(MonitorContext.CreateNull(), nodeId);
 
                 _Dialogs.ShowProductAndDispose(null, result);                
             }

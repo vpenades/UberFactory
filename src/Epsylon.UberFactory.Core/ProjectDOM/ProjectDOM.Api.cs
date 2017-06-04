@@ -71,7 +71,7 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentObject> filterFactory, SDK.IMonitorContext monitor)
+        public static void BuildProject(Project srcDoc, BuildContext bsettings, Func<String, BuildContext, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor)
         {
             if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
             if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
@@ -94,7 +94,7 @@ namespace Epsylon.UberFactory
             // 3- we're able to create instances of all the filters
             // 4- all the source files are available            
 
-            _ValidateFactory(bsettings, filterFactory, tasks, templates);
+            _ValidateFactory(bsettings, filterFactory, tasks, templates);            
 
             for (int i = 0; i < tasks.Length; ++i)
             {
@@ -102,7 +102,7 @@ namespace Epsylon.UberFactory
 
                 var task = tasks[i];
 
-                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, srcDoc.GetTemplate, filterFactory);
+                var evaluator = PipelineEvaluator.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings, srcDoc.GetTemplate);
                 evaluator.Setup(bsettings);
 
                 var srcData = evaluator.Evaluate(monitor.GetProgressPart(i, tasks.Length));

@@ -203,7 +203,7 @@ namespace Epsylon.UberFactory
                 {
                     if (_ActiveConfiguration == value) return;
                     _ActiveConfiguration = value;
-                    RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks), nameof(Templates), nameof(IsRootConfiguration));
+                    RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks),nameof(SharedSettings),nameof(Templates), nameof(IsRootConfiguration));
                     ActiveDocument = null; // we must flush active document because it might be in the wrong configuration
                 }
             }
@@ -368,6 +368,8 @@ namespace Epsylon.UberFactory
 
                 _Source.AddTemplate().Title = "New Template " + Tasks.Count(); RaiseChanged(nameof(Templates), nameof(IsDirty));
             }
+
+            internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }
 
             public void Build()
             {

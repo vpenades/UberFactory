@@ -1,4 +1,5 @@
-<Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" InitialTargets="GenerateAssemblyVersion" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <!-- http://stackoverflow.com/questions/356543/can-i-automatically-increment-the-file-build-version-when-using-visual-studio/6472195#6472195 -->
@@ -22,8 +23,8 @@
 
   </PropertyGroup>
 
-  <Target Name="GenerateAssemblyVersion" BeforeTargets="Build">
-    <Message Text="Generating Assembly Versions..." />
+  <Target Name="GenerateAssemblyVersion" BeforeTargets="Compile;Build">
+    <Message Text="Generating Assembly Versions..." Importance="high" />
     <WriteLinesToFile File="Properties\AssemblyVersion.Generated.cs" Lines="$(AssemblyVersionAttribute)%0a$(AssemblyFileVersionAttribute)" Overwrite="true" />
   </Target>
 

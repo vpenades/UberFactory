@@ -460,7 +460,7 @@ namespace Epsylon.UberFactory
                     .OfType<Settings>()
                     .FirstOrDefault(item => item.ClassName == className);
 
-                if (s != null) return null;
+                if (s != null) return s;
 
                 s = new Settings(); AddLogicalChild(s);
 
@@ -469,6 +469,14 @@ namespace Epsylon.UberFactory
                 s.Pipeline.RootIdentifier = rootId;
 
                 return s;
+            }
+
+            public Settings UseSettings(Type t)
+            {
+                var skey = t.GetContentTypeInfo()?.SerializationKey;
+                if (string.IsNullOrWhiteSpace(skey)) return null;
+
+                return UseSettings(skey);
             }
 
             #endregion
