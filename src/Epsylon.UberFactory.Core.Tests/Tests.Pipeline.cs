@@ -155,7 +155,7 @@ namespace Epsylon.UberFactory
 
     static class TestFiltersFactory
     {
-        public static SDK.ContentFilter CreateInstance(string classId, BuildContext context)
+        public static SDK.ContentFilter CreateInstance(string classId)
         {
             var filters = new Type[]
             {
@@ -166,7 +166,7 @@ namespace Epsylon.UberFactory
 
             var t = filters.FirstOrDefault(item => item.Name == classId);
 
-            return t == null ? null : SDK.Create(t, context) as SDK.ContentFilter;
+            return t == null ? null : SDK.Create(t) as SDK.ContentFilter;
         }
 
         [SDK.ContentFilter(nameof(TestFilter1))]

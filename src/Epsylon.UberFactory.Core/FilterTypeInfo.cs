@@ -181,7 +181,7 @@ namespace Epsylon.UberFactory
                 return root + _GetDeclarationAttribute(_Type).SerializationKey;
             }
 
-            public SDK.ContentFilter CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings) as SDK.ContentFilter; }
+            public SDK.ContentFilter CreateInstance() { return SDK.Create(_Type) as SDK.ContentFilter; }
 
             private static SDK.ContentFilterAttribute _GetDeclarationAttribute(Type t)
             {
@@ -247,7 +247,7 @@ namespace Epsylon.UberFactory
                 return root + _GetDeclarationAttribute(_Type).SerializationKey;
             }
 
-            public SDK.ContentObject CreateInstance(BuildContext bsettings) { return SDK.Create(_Type, bsettings) as SDK.ContentObject; }
+            public SDK.ContentObject CreateInstance() { return SDK.Create(_Type) as SDK.ContentObject; }
 
             private static SDK.GlobalSettingsAttribute _GetDeclarationAttribute(Type t)
             {

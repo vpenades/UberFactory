@@ -77,16 +77,16 @@ namespace Epsylon.UberFactory
             }
         }        
 
-        public SDK.ContentObject CreateInstance(string classId, BuildContext bcontext)
+        public SDK.ContentObject CreateInstance(string classId)
         {
             if (string.IsNullOrWhiteSpace(classId)) throw new ArgumentNullException(nameof(classId));
 
             var factory1 = PluginTypes.FirstOrDefault(item => item.SerializationKey == classId);
-            if (factory1 != null) return factory1.CreateInstance(bcontext);
+            if (factory1 != null) return factory1.CreateInstance();
 
 
             var factory2 = SettingsTypes.FirstOrDefault(item => item.SerializationKey == classId);
-            if (factory2 != null) return factory2.CreateInstance(bcontext);
+            if (factory2 != null) return factory2.CreateInstance();
 
             return new _UnknownNode();
         }

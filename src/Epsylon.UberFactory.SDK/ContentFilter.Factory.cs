@@ -8,14 +8,26 @@ namespace Epsylon.UberFactory
 {
     public static partial class SDK
     {
-        public static ContentObject Create(Type type, IBuildContext bsettings)
+        public static ContentObject Create(Type type)
         {
             if (type == null) return null;
-            var processor = (ContentObject)System.Activator.CreateInstance(type);
+            var node = (ContentObject)System.Activator.CreateInstance(type);            
 
-            processor._BuildContext = bsettings ?? throw new ArgumentNullException(nameof(bsettings));            
+            return node;
+        }
 
-            return processor;
+        public static void ConfigureNode(this ContentObject node, IBuildContext bsettings, Func<Type,ContentObject> settingsResolver)
+        {
+            if (node._BuildContext != null) throw new InvalidOperationException("already initialized");
+
+            node._BuildContext = bsettings ?? throw new ArgumentNullException(nameof(bsettings));
+            
+            if (node is ContentFilter)
+            {
+                if ((node as ContentFilter)._SharedContentResolver != null) throw new InvalidOperationException("already initialized");
+
+                (node as ContentFilter)._SharedContentResolver = settingsResolver ?? throw new ArgumentNullException(nameof(settingsResolver));
+            }
         }
 
 

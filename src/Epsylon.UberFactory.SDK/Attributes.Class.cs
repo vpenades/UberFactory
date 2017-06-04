@@ -64,7 +64,7 @@ namespace Epsylon.UberFactory
         public class ContentFilterMetaDataAttribute : MetaDataKeyAttribute
         {
             public ContentFilterMetaDataAttribute(string key, Object value) : base(key) {Value = value; }            
-            public Object Value { get; private set; }            
+            public Object Value { get; private set; }           
         }
     }
 }

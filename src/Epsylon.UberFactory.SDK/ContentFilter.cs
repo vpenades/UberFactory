@@ -16,14 +16,23 @@ namespace Epsylon.UberFactory
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
 
             internal IBuildContext _BuildContext;
-
-            
+            internal Func<Type, ContentObject> _SharedContentResolver;
 
             #endregion
 
             #region API            
 
-            public IBuildContext BuildContext => _BuildContext;            
+            public IBuildContext BuildContext => _BuildContext;
+
+            public SDK.ContentObject GetSharedSettings(Type t)
+            {
+                return _SharedContentResolver == null ? null : _SharedContentResolver(t);
+            }
+
+            public T GetSharedSettings<T>() where T : ContentObject
+            {
+                return _SharedContentResolver == null ? null : _SharedContentResolver(typeof(T)) as T;
+            }
 
             #endregion   
         }
@@ -42,7 +51,7 @@ namespace Epsylon.UberFactory
 
             internal IMonitorContext _MonitorContext;
 
-            internal Func<Type, ContentObject> _SharedContentResolver;
+            
 
             #endregion            
 
@@ -65,10 +74,7 @@ namespace Epsylon.UberFactory
             public void LogError(string message) { _MonitorContext.LogError(this.GetType().Name, message); }
             public void LogCritical(string message) { _MonitorContext.LogCritical(this.GetType().Name, message); }
 
-            public T GetSharedSettings<T>() where T : ContentObject
-            {
-                return _SharedContentResolver == null ? null : _SharedContentResolver(typeof(T)) as T;
-            }
+            
 
 
             internal Object _Evaluate(IMonitorContext monitor, Func<Type,ContentObject> sf)
@@ -83,12 +89,12 @@ namespace Epsylon.UberFactory
 
             internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor, Func<Type, ContentObject> sf)
             {
-                this._MonitorContext = monitor;
-                this._SharedContentResolver = sf;
+                if (_BuildContext == null) throw new InvalidOperationException(this.GetType().Name + " not initialized");
+
+                this._MonitorContext = monitor;                
 
                 var r = evaluator();
-
-                this._SharedContentResolver = null;
+                
                 this._MonitorContext = null;
 
                 return r;

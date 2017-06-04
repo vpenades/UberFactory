@@ -12,7 +12,7 @@ namespace Epsylon.UberFactory
         public abstract class MetaDataKeyAttribute : Attribute
         {
             public MetaDataKeyAttribute(string key) { Key = key; }
-            public string Key { get; private set; }
+            public string Key { get; private set; }            
         }
     }
 

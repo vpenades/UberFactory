@@ -311,7 +311,11 @@ namespace Epsylon.UberFactory
             if (attrib is SDK.InputMetaDataEvaluateAttribute)
             {
                 if (instance == null) throw new ArgumentNullException(nameof(instance));
-                var propName = ((SDK.InputMetaDataEvaluateAttribute)attrib).PropertyName;
+
+                var xattrib = attrib as SDK.InputMetaDataEvaluateAttribute;                
+                if (xattrib.SharedType != null) instance = instance.GetSharedSettings(xattrib.SharedType);
+
+                var propName = xattrib.PropertyName;
                 value = instance.TryEvaluate(propName);
             }
 

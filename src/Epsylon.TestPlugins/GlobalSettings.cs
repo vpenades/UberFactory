@@ -13,5 +13,8 @@ namespace Epsylon.TestPlugins
     {
         [SDK.InputValue(nameof(Value1))]
         public int Value1 { get; set; }
+
+        [SDK.InputValue(nameof(Value2))]
+        public int Value2 { get; set; }
     }
 }

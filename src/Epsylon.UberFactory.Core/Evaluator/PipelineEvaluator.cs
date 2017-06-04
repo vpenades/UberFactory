@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory
 {
     
-    using FILTERFACTORY = Func<String, BuildContext, SDK.ContentObject>;
+    using FILTERFACTORY = Func<String, SDK.ContentObject>;
     using SETTINGSFACTORY = Func<Type, ProjectDOM.Settings>;
     using TEMPLATEFACTORY = Func<Guid, ProjectDOM.Template>;
     
@@ -134,7 +134,9 @@ namespace Epsylon.UberFactory
             if (nodeDom == null) return;            
 
             // Create node instance
-            var nodeInst = _FilterFactory(nodeDom.ClassIdentifier, _BuildSettings);
+            var nodeInst = _FilterFactory(nodeDom.ClassIdentifier);
+            SDK.ConfigureNode(nodeInst, _BuildSettings, t=> GetSettingsInstance(t,null) );
+
             _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
             
             // retrieve property values from current cunfiguration
@@ -253,7 +255,7 @@ namespace Epsylon.UberFactory
 
         private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeOrTemplateId, bool previewMode, params Object[] parameters)
         {
-            if (monitor.IsCancelRequested) throw new OperationCanceledException();
+            if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 
             // First, we check if it's a template, in which case we return it as the evaluated value (it will be called by the component)
             var pipelineEvaluator = _PipelineInstances.GetValueOrDefault(nodeOrTemplateId);
@@ -303,13 +305,13 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            if (monitor.IsCancelRequested) throw new OperationCanceledException();
+            if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 
             // evaluate the current node            
 
             try
             {
-                var localMonitor = monitor.GetProgressPart(_NodeOrder.IndexOf(nodeOrTemplateId), _NodeOrder.Count);
+                var localMonitor = monitor == null ? null : monitor.GetProgressPart(_NodeOrder.IndexOf(nodeOrTemplateId), _NodeOrder.Count);
 
                 Func<Type, SDK.ContentObject> sharedContentEvaluator = t => GetSettingsInstance(t, localMonitor);
 

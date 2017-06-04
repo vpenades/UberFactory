@@ -18,7 +18,7 @@ namespace Epsylon.UberFactory
         public class InputMetaDataAttribute : MetaDataKeyAttribute
         {
             public InputMetaDataAttribute(string key,Object value) :base(key) { Value = value; }
-            public Object Value { get; private set; }
+            public Object Value { get; private set; }            
         }
 
         /// <summary>
@@ -28,6 +28,10 @@ namespace Epsylon.UberFactory
         public class InputMetaDataEvaluateAttribute : MetaDataKeyAttribute
         {
             public InputMetaDataEvaluateAttribute(string key, string propertyName) : base(key) { PropertyName = propertyName; }
+
+            public InputMetaDataEvaluateAttribute(string key, Type st, string propertyName) : base(key) { SharedType = st; PropertyName = propertyName; }
+
+            public Type SharedType { get; private set; }
             public string PropertyName { get; private set; }
         }
 

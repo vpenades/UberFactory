@@ -72,10 +72,6 @@ namespace Epsylon.UberFactory.Bindings
 
         protected T GetMetaDataValue<T>(string key, T defval)
         {
-            #if DEBUG
-            var allAttribs = _MemberInfo.GetCustomAttributes(true).ToArray();
-            #endif
-
             var attrib = _MemberInfo.GetCustomAttributes(true)
                 .OfType<SDK.MetaDataKeyAttribute>()
                 .FirstOrDefault(item => item.Key == key);
