@@ -153,8 +153,11 @@ namespace Epsylon.UberFactory
                         
             /// <summary>
             /// Name of the current file being imported.
-            /// </summary>
-            public abstract string FileName { get; }            
+            /// </summary>            
+            public abstract string FileName { get; }
+
+            [Obsolete("Avoid using full file path whenever possible")]
+            public abstract String FilePath { get; }
 
             /// <summary>
             /// Opens a Read stream.

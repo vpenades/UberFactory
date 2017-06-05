@@ -241,9 +241,15 @@ namespace Epsylon.UberFactory
 
         private _ImportContext(PathString path, Byte[] data) { _SourcePath = path; }        
 
-        private readonly PathString _SourcePath;        
+        private readonly PathString _SourcePath;
 
-        public override string FileName => _SourcePath.FileName;        
+        #pragma warning disable CS0672
+
+        public override string FileName => _SourcePath.FileName;
+
+        public override string FilePath => _SourcePath;
+
+        #pragma warning restore CS0672
 
         public override System.IO.Stream OpenFile(string relativePath)
         {
