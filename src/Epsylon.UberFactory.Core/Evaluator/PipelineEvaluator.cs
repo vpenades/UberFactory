@@ -364,7 +364,7 @@ namespace Epsylon.UberFactory
     }
 
 
-    [SDK.ContentFilter("PLUGIN ERROR")]
+    [SDK.ContentNode("PLUGIN ERROR")]
     class _UnknownNode : SDK.ContentFilter
     {
         protected override object EvaluateObject()

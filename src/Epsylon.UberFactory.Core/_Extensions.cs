@@ -298,9 +298,9 @@ namespace Epsylon.UberFactory
         {
             object value = defval;
 
-            if (attrib is SDK.ContentFilterMetaDataAttribute)
+            if (attrib is SDK.ContentMetaDataAttribute)
             {
-                value = ((SDK.ContentFilterMetaDataAttribute)attrib).Value;
+                value = ((SDK.ContentMetaDataAttribute)attrib).Value;
             }
 
             if (attrib is SDK.InputMetaDataAttribute)

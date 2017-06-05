@@ -169,7 +169,7 @@ namespace Epsylon.UberFactory
             return t == null ? null : SDK.Create(t) as SDK.ContentFilter;
         }
 
-        [SDK.ContentFilter(nameof(TestFilter1))]
+        [SDK.ContentNode(nameof(TestFilter1))]
         class TestFilter1 : SDK.ContentFilter<int>
         {
             [SDK.InputValue("Value1")]
@@ -184,7 +184,7 @@ namespace Epsylon.UberFactory
             }
         }
 
-        [SDK.ContentFilter(nameof(TestFilter2))]
+        [SDK.ContentNode(nameof(TestFilter2))]
         class TestFilter2 : SDK.ContentFilter<int>
         {
             [SDK.InputNode("Value1")]
@@ -200,7 +200,7 @@ namespace Epsylon.UberFactory
         }
 
 
-        [SDK.ContentFilter(nameof(TestFilter3))]
+        [SDK.ContentNode(nameof(TestFilter3))]
         class TestFilter3 : SDK.ContentFilter<int>
         {
             [SDK.InputPipeline(nameof(Template1),typeof(Int32), typeof(Int32))]            

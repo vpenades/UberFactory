@@ -29,7 +29,7 @@ namespace Epsylon.UberFactory
             _Assemblies = assemblies.ToArray();
         }
 
-        public IEnumerable<Factory.GlobalSettingsTypeInfo> SettingsTypes
+        public IEnumerable<Factory.ContentObjectTypeInfo> SettingsTypes
         {
             get
             {
@@ -38,7 +38,7 @@ namespace Epsylon.UberFactory
                     .Where(item => !typeof(SDK.ContentFilter).IsAssignableFrom(item))   // Must NOT derive from SDK.ContentFilter
                     .Select(t => t.GetContentTypeInfo())
                     .ExceptNulls()
-                    .OfType<Factory.GlobalSettingsTypeInfo>()
+                    .OfType<Factory.ContentObjectTypeInfo>()
                     .ToArray();
 
                 return types;

@@ -29,7 +29,7 @@ namespace Epsylon.UberFactory
         public static ContentBaseTypeInfo GetContentTypeInfo(this Type t)
         {
             if (typeof(SDK.ContentFilter).IsAssignableFrom(t)) return ContentFilterTypeInfo.Create(t);
-            return GlobalSettingsTypeInfo.Create(t);
+            return ContentObjectTypeInfo.Create(t);
             
         }
 
@@ -67,7 +67,7 @@ namespace Epsylon.UberFactory
                 if (_Type == null) return defval;
 
                 var attrib = _Type.GetTypeInfo().GetCustomAttributes(true)
-                    .OfType<SDK.ContentFilterMetaDataAttribute>()
+                    .OfType<SDK.ContentMetaDataAttribute>()
                     .FirstOrDefault(item => item.Key == key);
 
                 if (attrib == null) return defval;
@@ -183,10 +183,10 @@ namespace Epsylon.UberFactory
 
             public SDK.ContentFilter CreateInstance() { return SDK.Create(_Type) as SDK.ContentFilter; }
 
-            private static SDK.ContentFilterAttribute _GetDeclarationAttribute(Type t)
+            private static SDK.ContentNodeAttribute _GetDeclarationAttribute(Type t)
             {
                 return t.GetTypeInfo().GetCustomAttributes(true)
-                    .OfType<SDK.ContentFilterAttribute>()
+                    .OfType<SDK.ContentNodeAttribute>()
                     .FirstOrDefault();
             }
 
@@ -194,18 +194,18 @@ namespace Epsylon.UberFactory
         }
 
         
-        public sealed class GlobalSettingsTypeInfo : ContentBaseTypeInfo
+        public sealed class ContentObjectTypeInfo : ContentBaseTypeInfo
         {
             #region lifecycle
 
-            public static GlobalSettingsTypeInfo Create(object anyInstance)
+            public static ContentObjectTypeInfo Create(object anyInstance)
             {
                 if (anyInstance == null) return null;
 
                 return Create(anyInstance.GetType());
             }
 
-            public static GlobalSettingsTypeInfo Create(Type t)
+            public static ContentObjectTypeInfo Create(Type t)
             {
                 if (t == null) return null;
 
@@ -215,10 +215,10 @@ namespace Epsylon.UberFactory
 
                 if (_GetDeclarationAttribute(t) == null) return null;
 
-                return new GlobalSettingsTypeInfo(t);
+                return new ContentObjectTypeInfo(t);
             }
 
-            private GlobalSettingsTypeInfo(Type t) : base(t) { }
+            private ContentObjectTypeInfo(Type t) : base(t) { }
 
             #endregion
 
@@ -249,10 +249,10 @@ namespace Epsylon.UberFactory
 
             public SDK.ContentObject CreateInstance() { return SDK.Create(_Type) as SDK.ContentObject; }
 
-            private static SDK.GlobalSettingsAttribute _GetDeclarationAttribute(Type t)
+            private static SDK.ContentNodeAttribute _GetDeclarationAttribute(Type t)
             {
                 return t.GetTypeInfo().GetCustomAttributes(true)
-                    .OfType<SDK.GlobalSettingsAttribute>()
+                    .OfType<SDK.ContentNodeAttribute>()
                     .FirstOrDefault();
             }
 

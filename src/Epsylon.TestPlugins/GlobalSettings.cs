@@ -8,7 +8,8 @@ namespace Epsylon.TestPlugins
 {
     using UberFactory;
     
-    [SDK.GlobalSettings("MainSettings1")]
+    [SDK.ContentNode("MainSettings1")]
+    [SDK.ContentMetaData("Title","Main Settings")]
     public class MainSettings1 : SDK.ContentObject
     {
         [SDK.InputValue(nameof(Value1))]

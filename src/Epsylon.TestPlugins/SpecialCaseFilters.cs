@@ -4,7 +4,7 @@ namespace Epsylon.TestPlugins
 {
     using UberFactory;
 
-    [SDK.ContentFilter(nameof(TestSlowProgressBar))]
+    [SDK.ContentNode(nameof(TestSlowProgressBar))]
     public sealed class TestSlowProgressBar : SDK.ContentFilter<String>
     {
         [SDK.InputValue(nameof(PauseTime))]
@@ -27,8 +27,8 @@ namespace Epsylon.TestPlugins
         }
     }
 
-    [SDK.ContentFilter(nameof(TestPipeline1))]
-    [SDK.ContentFilterMetaData("Title", "Debug Template Filter")]
+    [SDK.ContentNode(nameof(TestPipeline1))]
+    [SDK.ContentMetaData("Title", "Debug Template Filter")]
     public sealed class TestPipeline1 : SDK.ContentFilter<String>
     {
         [SDK.InputPipeline(nameof(Pipeline), typeof(string), typeof(string),typeof(string),typeof(string))]        
@@ -46,8 +46,8 @@ namespace Epsylon.TestPlugins
 
 
 
-    [SDK.ContentFilter(nameof(TestGlobalSettings1))]
-    [SDK.ContentFilterMetaData("Title", "Debug Shared Settings Filter")]
+    [SDK.ContentNode(nameof(TestGlobalSettings1))]
+    [SDK.ContentMetaData("Title", "Debug Shared Settings Filter")]
     public sealed class TestGlobalSettings1 : SDK.ContentFilter<String>
     {
 
@@ -65,7 +65,7 @@ namespace Epsylon.TestPlugins
         }
     }
 
-    [SDK.ContentFilter(nameof(InvalidNodeTest))]
+    [SDK.ContentNode(nameof(InvalidNodeTest))]
     public sealed class InvalidNodeTest : SDK.ContentFilter<String>
     {
         [SDK.InputNode(nameof(InvalidType))]

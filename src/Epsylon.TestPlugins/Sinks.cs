@@ -8,7 +8,7 @@ namespace Epsylon.TestPlugins
 {
     using UberFactory;
 
-    [SDK.ContentFilter(nameof(TextSink))]
+    [SDK.ContentNode(nameof(TextSink))]
     public sealed class TextSink : SDK.ContentFilter
     {
         [SDK.InputNode(nameof(Source))]
@@ -20,7 +20,7 @@ namespace Epsylon.TestPlugins
         }
     }
 
-    [SDK.ContentFilter(nameof(MultiTextSink))]
+    [SDK.ContentNode(nameof(MultiTextSink))]
     public sealed class MultiTextSink : SDK.ContentFilter
     {
         [SDK.InputNode(nameof(Source),true)]
@@ -32,7 +32,7 @@ namespace Epsylon.TestPlugins
         }
     }
 
-    [SDK.ContentFilter(nameof(IntegerSink))]
+    [SDK.ContentNode(nameof(IntegerSink))]
     public sealed class IntegerSink : SDK.ContentFilter
     {
         [SDK.InputNode(nameof(Source))]
