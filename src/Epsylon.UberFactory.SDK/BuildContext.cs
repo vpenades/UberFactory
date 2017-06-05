@@ -126,18 +126,8 @@ namespace Epsylon.UberFactory
         /// It also allows to read other files, for example,
         /// when you need to read another file, associated to the current one.
         /// </remarks>        
-        public abstract class ImportContext : IDisposable
+        public abstract class ImportContext
         {
-            public void Dispose()
-            {
-                GC.SuppressFinalize(this);
-                Dispose(true);
-            }
-
-            ~ImportContext() { Dispose(false); }
-
-            protected virtual void Dispose(bool disposing) { }
-
             /// <summary>
             /// Default text encoding for reading text strings
             /// </summary>
@@ -353,18 +343,8 @@ namespace Epsylon.UberFactory
         /// It also allows to write other files, for example,
         /// when you need to write another file, associated to the current one.
         /// </remarks>
-        public abstract class ExportContext : IDisposable
+        public abstract class ExportContext
         {
-            public void Dispose()
-            {
-                GC.SuppressFinalize(this);
-                Dispose(true);
-            }
-
-            ~ExportContext() { Dispose(false); }
-
-            protected virtual void Dispose(bool disposing) { }
-
             /// <summary>
             /// Default text encoding for writing text strings
             /// </summary>

@@ -20,12 +20,10 @@ namespace Epsylon.UberFactory
 
             protected override TValue Evaluate()
             {
-                using (var s = this.BuildContext.GetImportContext(FilePath))
-                {
-                    if (s == null) throw new System.IO.FileNotFoundException("Error opening file", FilePath.ToString());
+                var s = this.BuildContext.GetImportContext(FilePath);                
+                if (s == null) throw new System.IO.FileNotFoundException("Error opening file", FilePath.ToString());
 
-                    return ReadFile(s);
-                }
+                return ReadFile(s);                
             }
 
             protected abstract TValue ReadFile(ImportContext stream);
@@ -46,11 +44,10 @@ namespace Epsylon.UberFactory
 
                 var absUri = this.BuildContext.GetTargetAbsoluteUri(rpath);
 
-                using (var s = this.BuildContext.GetExportContext(absUri))
-                {
-                    if (s == null) return null;
-                    WriteFile(s);
-                }
+                var s = this.BuildContext.GetExportContext(absUri);                
+                if (s == null) return null;
+
+                WriteFile(s);                
 
                 return null;
             }
