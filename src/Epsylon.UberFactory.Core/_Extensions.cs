@@ -160,7 +160,38 @@ namespace Epsylon.UberFactory
             return collection.Where(item => item != null && types.Any(t => t.GetTypeInfo().IsAssignableFrom(tt)));
         }
 
-        #endregion        
+        #endregion
+
+        #region assemblies
+
+        /// <summary>
+        /// checks if an assembly is part of the runtime framework
+        /// </summary>
+        /// <param name="assembly">Assembly to check</param>
+        /// <returns>True if runtime framework, false otherwise</returns>
+        public static bool IsFramework(this Assembly assembly)
+        {
+            return assembly == null ? false : assembly.GetName().IsFramework();
+        }
+
+        /// <summary>
+        /// checks if an AssemblyName is part of the runtime framework
+        /// </summary>
+        /// <param name="name">AssemblyName to check</param>
+        /// <returns>True if runtime framework, false otherwise</returns>
+        public static bool IsFramework(this System.Reflection.AssemblyName name)
+        {
+            if (name == null) return false;
+
+            var pkey = System.Convert.ToBase64String(name.GetPublicKeyToken());
+
+            if (pkey == "t3pcVhk04Ik=") return true; // system DLLs
+            if (pkey == "Mb84Vq02TjU=") return true; // WPF DLLs
+
+            return false;
+        }
+
+        #endregion
 
         #region basic reflection
 
