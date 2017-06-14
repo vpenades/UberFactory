@@ -13,6 +13,20 @@
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
+    <Compile Remove="**\*.netfx.cs" />
+    <None Include="**\*.netfx.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp1.1'">
+    <Compile Remove="**\*.netcore.cs" />
+    <None Include="**\*.netcore.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="PluginServer\netxxx.AssemblyContext.cs" />
+  </ItemGroup>
+
   <ItemGroup>    
     <Compile Include="..\Shared\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>  
