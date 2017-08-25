@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net462;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net47;netcoreapp2.0</TargetFrameworks>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
     <AssemblyName>UberFactory</AssemblyName>
     <RootNamespace>Epsylon.UberFactory</RootNamespace>
