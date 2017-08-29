@@ -4,8 +4,8 @@
   
   <!-- http://www.natemcmaster.com/blog/2017/03/09/vs2015-to-vs2017-upgrade/ -->
   
-  <PropertyGroup>
-    <!-- ;net462;netcoreapp1.1; -->
+  <PropertyGroup>    
+    <!-- Targets should be as high as possible to allow loading plugins from any framework version -->
     <TargetFrameworks>net47;netcoreapp2.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
