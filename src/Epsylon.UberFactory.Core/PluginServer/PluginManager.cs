@@ -34,8 +34,8 @@ namespace Epsylon.UberFactory
             get
             {
                 var types = _GetExportedTypes<SDK.ContentObject>()
-                    .Where(item => typeof(SDK.ContentObject).IsAssignableFrom(item))    // Must derive from SDK.ContentObject
-                    .Where(item => !typeof(SDK.ContentFilter).IsAssignableFrom(item))   // Must NOT derive from SDK.ContentFilter
+                    .Where(item => typeof(SDK.ContentObject).GetTypeInfo().IsAssignableFrom(item))    // Must derive from SDK.ContentObject
+                    .Where(item => !typeof(SDK.ContentFilter).GetTypeInfo().IsAssignableFrom(item))   // Must NOT derive from SDK.ContentFilter
                     .Select(t => t.GetContentTypeInfo())
                     .ExceptNulls()
                     .OfType<Factory.ContentObjectTypeInfo>()

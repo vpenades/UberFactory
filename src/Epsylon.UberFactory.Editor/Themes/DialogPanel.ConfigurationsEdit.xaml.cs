@@ -29,7 +29,12 @@ namespace Epsylon.UberFactory.Themes
 
             var newCfg = myNewConfig.Text.Trim();
 
-            if (!BuildContext.IsValidConfigurationNode(newCfg)) return;            
+            var error = BuildContext.IsValidConfigurationNode(newCfg);
+            if (error != null)
+            {
+                MessageBox.Show(error.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Exclamation);
+                return;
+            }
 
             if (xdata.All.Count() == 0)
             {

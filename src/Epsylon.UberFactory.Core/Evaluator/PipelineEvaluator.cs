@@ -298,7 +298,7 @@ namespace Epsylon.UberFactory
 
                         var pType = templateArgTypes[i];
 
-                        bool areCompatible = templatedBinding.DataType.IsAssignableFrom(pType);
+                        bool areCompatible = templatedBinding.DataType.GetTypeInfo().IsAssignableFrom(pType);
 
                         templatedBinding.SetEvaluatedResult(parameters[i]);
                     }

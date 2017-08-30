@@ -28,7 +28,7 @@ namespace Epsylon.UberFactory
         /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
         public static ContentBaseTypeInfo GetContentTypeInfo(this Type t)
         {
-            if (typeof(SDK.ContentFilter).IsAssignableFrom(t)) return ContentFilterTypeInfo.Create(t);
+            if (typeof(SDK.ContentFilter).GetTypeInfo().IsAssignableFrom(t)) return ContentFilterTypeInfo.Create(t);
             return ContentObjectTypeInfo.Create(t);
             
         }

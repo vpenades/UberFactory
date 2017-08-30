@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />
-    <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />
+    <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />    
   </ItemGroup>
 
   <ItemGroup>

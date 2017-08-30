@@ -105,7 +105,16 @@ namespace Epsylon.UberFactory
         {
             _Configuration = cfg ?? (new string[0]);
             _SourceDirectoryAbsPath = sd;
-            _TargetDirectoryAbsPath = td;            
+            _TargetDirectoryAbsPath = td;
+
+            if (string.IsNullOrWhiteSpace(_TargetDirectoryAbsPath))
+            {
+                var targetDir = System.IO.Path.Combine(_SourceDirectoryAbsPath, "bin");                
+
+                if (IsValidConfiguration(_Configuration)) targetDir = System.IO.Path.Combine(targetDir, string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), _Configuration));
+
+                _TargetDirectoryAbsPath = new PathString(targetDir);                
+            }
         }
 
         #endregion
@@ -163,18 +172,27 @@ namespace Epsylon.UberFactory
         public static bool IsValidConfiguration(params string[] cfg)
         {
             if (cfg == null || cfg.Length == 0) return false;
-            return cfg.All(item => IsValidConfigurationNode(item));
+            return cfg.All(item => IsValidConfigurationNode(item) == null);
         }
 
-        public static bool IsValidConfigurationNode(string cfgNode)
+        public static Exception IsValidConfigurationNode(string cfgNode)
         {
-            if (string.IsNullOrWhiteSpace(cfgNode)) return false;
+            if (string.IsNullOrWhiteSpace(cfgNode)) return new ArgumentNullException("Text is empty");
 
-            if (cfgNode.Contains(ConfigurationSeparator)) return false;
+            if (cfgNode.Length > 64) return new ArgumentOutOfRangeException("Text is too long");
 
-            if (cfgNode.Any(item => char.IsWhiteSpace(item))) return false;
+            if (cfgNode.Any(item => char.IsWhiteSpace(item))) return new ArgumentException("Text contains white spaces");
 
-            return true;
+            if (cfgNode.Contains(ConfigurationSeparator)) return new ArgumentException($"Text contains invalid character '{ConfigurationSeparator}'");
+
+            var invalidChars = System.IO.Path
+                .GetInvalidFileNameChars()
+                .Intersect(cfgNode.ToCharArray())
+                .ToArray();
+
+            if (invalidChars.Any()) return new ArgumentException($"Text contains invalid characters '{String.Join(" ",invalidChars)}'");            
+
+            return null;
         }        
 
         public PathString MakeRelativeToSource(string absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }

@@ -8,28 +8,9 @@ namespace Epsylon.UberFactory
 {
     using MONITOR = Func<int, string, bool>;
 
-    public sealed class CommandLineContext : IDisposable , IProgress<float>
+    public sealed partial class CommandLineContext : IDisposable , IProgress<float>
     {
-        #region lifecycle
-
-        public static void Build(string[] args)
-        {
-            using (var context = Create(args))
-            {
-                var monitor = MonitorContext.Create(context._Logger,System.Threading.CancellationToken.None, context);                
-
-                context.Build(_LoadPluginsFunc, monitor);
-            }
-        }
-
-        private static string _GetCommandArgument(string[] args, string cmd, string defval)
-        {
-            var part = args.FirstOrDefault(item => item.StartsWith(cmd, StringComparison.OrdinalIgnoreCase));
-
-            if (string.IsNullOrWhiteSpace(part) || part.Length == cmd.Length) return defval;
-
-            return part.Substring(cmd.Length);
-        }
+        #region lifecycle        
 
         public static CommandLineContext Create(string[] args)
         {
@@ -66,21 +47,7 @@ namespace Epsylon.UberFactory
             System.Console.CancelKeyPress += Console_CancelKeyPress;
         }        
 
-        private static Microsoft.Extensions.Logging.ILoggerFactory _CreateLoggerFactory()
-        {
-            #if NET462 || NETCOREAPP1_1
-
-            var loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
-            Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(loggerFactory);
-
-            return loggerFactory;
-
-            #else
-
-            return null;
-
-            #endif
-        }
+        
 
         public void Dispose()
         {
@@ -130,53 +97,19 @@ namespace Epsylon.UberFactory
             // https://social.msdn.microsoft.com/Forums/vstudio/en-US/707e9ae1-a53f-4918-8ac4-62a1eddb3c4a/detecting-console-application-exit-in-c?forum=csharpgeneral
         }       
 
-        private static PluginManager _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
-        {
-            var assemblies = new HashSet<System.Reflection.Assembly>();
-
-            #if (NET462)
-            if (true) // load locally referenced assemblies
-            {
-                var arefs = System.Reflection.Assembly.GetEntryAssembly().GetReferencedAssemblies();
-                foreach (var aname in arefs)
-                {
-                    if (string.IsNullOrWhiteSpace(aname.CodeBase)) continue;
-
-                    var a = PluginLoader.Instance.UsePlugin(new PathString(aname.CodeBase));
-
-                    assemblies.Add(a);
-                }
-            }
-            #endif
-
-
-            #if (NET462 || NETCOREAPP1_1)
-            if (true) // load assemblies referenced by the project
-            {
-                foreach (var rpath in project.References)
-                {
-
-                    var fullPath = prjDir.MakeAbsolutePath(rpath);
-
-                    var defass = PluginLoader.Instance.UsePlugin(fullPath);
-                    if (defass == null) continue;
-
-                    assemblies.Add(defass);
-                }
-            }
-            #endif
-
-
-            var plugins = new PluginManager();
-
-            plugins.SetAssemblies(assemblies);
-
-            return plugins;
-        }
-
         #endregion
 
-        #region API
+        #region API        
+
+        public static void Build(string[] args)
+        {
+            using (var context = Create(args))
+            {
+                var monitor = MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
+
+                context.Build(_LoadPluginsFunc, monitor);
+            }
+        }
 
         public void Build(Func<ProjectDOM.Project, PathString, PluginManager> evalPlugins, SDK.IMonitorContext monitor)
         {
@@ -202,7 +135,29 @@ namespace Epsylon.UberFactory
                 // do build
                 ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);                
             }
-        }        
+        }
+
+        private static IEnumerable<System.Reflection.Assembly> GetProjectAssemblies(ProjectDOM.Project project, PathString prjDir)
+        {
+            foreach (var rpath in project.References)
+            {
+                var fullPath = prjDir.MakeAbsolutePath(rpath);
+
+                var defass = PluginLoader.Instance.UsePlugin(fullPath);
+                if (defass == null) continue;
+
+                yield return defass;
+            }
+        }
+
+        private static string _GetCommandArgument(string[] args, string cmd, string defval)
+        {
+            var part = args.FirstOrDefault(item => item.StartsWith(cmd, StringComparison.OrdinalIgnoreCase));
+
+            if (string.IsNullOrWhiteSpace(part) || part.Length == cmd.Length) return defval;
+
+            return part.Substring(cmd.Length);
+        }
 
         #endregion
     }
