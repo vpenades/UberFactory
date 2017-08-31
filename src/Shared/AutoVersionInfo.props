@@ -8,20 +8,23 @@
 
   <PropertyGroup>
 
-    <Year>$([System.DateTime]::UtcNow.ToString("yy"))</Year>
-    <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
-    <Date>$([System.DateTime]::UtcNow.ToString("dd"))</Date>
-    <Time>$([System.DateTime]::UtcNow.ToString("HHmm"))</Time>
-    <DayOfYear>$([System.DateTime]::UtcNow.DayOfYear.ToString())</DayOfYear>
+    <NowYear>$([System.DateTime]::UtcNow.ToString("yy"))</NowYear>
+    <NowMonth>$([System.DateTime]::UtcNow.ToString("MM"))</NowMonth>
+    <NowDate>$([System.DateTime]::UtcNow.ToString("dd"))</NowDate>
+    <NowTime>$([System.DateTime]::UtcNow.ToString("HHmm"))</NowTime>
+    <NowDayOfYear>$([System.DateTime]::UtcNow.DayOfYear.ToString())</NowDayOfYear>
 
-    <!-- Package Version -->
+
+
     <Version>1.0.0</Version>
 
     <AssemblyVersion>$(Version)</AssemblyVersion>
 
-    <FileVersion>$(Year).$(DayOfYear).$(Time).0</FileVersion>
+    <FileVersion>$(NowYear).$(NowDayOfYear).$(NowTime).0</FileVersion>
 
-    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(Version)-alpha$(Year)$(Month)$(Date)$(Time)</PackageVersion>
+    <PackageVersion>$(Version)</PackageVersion>
+
+    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha$(NowYear)$(NowMonth)$(NowDate)$(NowTime)</PackageVersion>
 
   </PropertyGroup>
 
