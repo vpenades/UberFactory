@@ -11,7 +11,7 @@ namespace Epsylon.UberFactory
 
         public interface IMonitorContext : IProgress<float>
         {
-            SDK.IMonitorContext GetProgressPart(int part, int total);
+            IMonitorContext GetProgressPart(int part, int total);
 
             /// <summary>
             /// True if host has requested operation cancellation

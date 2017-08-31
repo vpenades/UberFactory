@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\Shared\AutoVersionInfo.props" />
+  
   
   <!-- http://www.natemcmaster.com/blog/2017/03/09/vs2015-to-vs2017-upgrade/ -->
   
@@ -41,5 +41,9 @@
     <PackageReference Condition="'$(TargetFramework)' == 'netcoreapp2.0'" Include="System.Runtime.Loader" Version="4.3.0" />
     <PackageReference Condition="'$(TargetFramework)' != 'netstandard2.0'" Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
   </ItemGroup>  
+  
+  <!-- Targets -->
+
+  <Import Project="..\Shared\AutoVersionInfo.targets" />
  
 </Project>

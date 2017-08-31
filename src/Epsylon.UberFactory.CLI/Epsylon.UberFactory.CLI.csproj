@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\Shared\AutoVersionInfo.props" />
+  
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -21,5 +21,7 @@
     <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />
     <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />
   </ItemGroup>
+
+  <Import Project="..\Shared\AutoVersionInfo.targets" />
 
 </Project>

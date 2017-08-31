@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="..\Shared\AutoVersionInfo.props" />
+﻿<Project Sdk="Microsoft.NET.Sdk">  
 
   <PropertyGroup>
-    <!-- Targets should be as low as possible to allow using the SDK in as many framework versions as possible -->
+    <!-- Frameworks should use version as low as possible to allow using the SDK in as many platforms as possible -->
     <TargetFramework>netstandard1.1</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>    
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
-  </PropertyGroup>  
+  </PropertyGroup>
+
+  <Import Project="..\Shared\AutoVersionInfo.targets" />
 
 </Project>

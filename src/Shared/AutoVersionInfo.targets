@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" InitialTargets="DefineAssemblyVersions" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- http://stackoverflow.com/questions/356543/can-i-automatically-increment-the-file-build-version-when-using-visual-studio/6472195#6472195 -->
+    <!-- http://stackoverflow.com/questions/64602/what-are-differences-between-assemblyversion-assemblyfileversion-and-assemblyin -->
+    <!-- https://blogs.msdn.microsoft.com/devops/2016/05/03/versioning-nuget-packages-cd-1/ -->
+    <!-- https://blogs.msdn.microsoft.com/bclteam/2005/03/21/using-reflection-to-list-version-to-version-assembly-changes-libcheck-one-of-the-best-tools-ever-kit-george/ -->  
+
+  <Target Name="DefineAssemblyVersions" BeforeTargets="Compile,Build">
+    
+    <!--
+    Even if these are plain properties, they need to be set ONLY when we're building.
+    If we set these properties in the <Project> root, Visual Studio project evaluators get
+    confused because the $(NowTime) property value changes every second, triggering
+    a re-evaluation of the project properties continuosly.
+    -->
+
+    <PropertyGroup>
+
+      <NowYear>$([System.DateTime]::UtcNow.ToString("yy"))</NowYear>
+      <NowMonth>$([System.DateTime]::UtcNow.ToString("MM"))</NowMonth>
+      <NowDay>$([System.DateTime]::UtcNow.ToString("dd"))</NowDay>
+      <NowDate>$([System.DateTime]::UtcNow.ToString("yyMMdd"))</NowDate>
+      <NowTime>$([System.DateTime]::UtcNow.ToString("HHmmss"))</NowTime>
+      <NowTimeShort>$([System.DateTime]::UtcNow.ToString("HHmm"))</NowTimeShort>            
+      
+      <!-- we use a "Short" version of time to prevent overloading 16 bit integer value of version -->
+      <FileVersion>$(NowYear).$(NowMonth).$(NowDay).$(NowTimeShort)</FileVersion>
+
+      <!-- Immediately AFTER a Release Deploy, increment this value -->
+      <Version>1.0.0</Version>
+
+      <AssemblyVersion>$(Version)</AssemblyVersion>
+
+      <PackageVersion>$(Version)</PackageVersion>
+
+      <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha-$(NowDate)-$(NowTime)</PackageVersion>
+
+    </PropertyGroup>
+    
+  </Target>
+
+</Project>
