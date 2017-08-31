@@ -10,7 +10,7 @@ namespace Epsylon.UberFactory
     {
         static void Main(string[] args)
         {
-            CommandLineContext.Build(args);
+            Evaluation.CommandLineContext.Build(args);
         }        
     }    
 }

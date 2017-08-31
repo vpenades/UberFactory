@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Epsylon.UberFactory
 {
-    static class _Extensions
+    static class _InternalExtensions
     {
         #region strings
 
@@ -444,6 +444,21 @@ namespace Epsylon.UberFactory
             {
                 _Target.Report( (value * _Scale + _Offset).Clamp(0,1) );
             }
+        }
+
+        #endregion        
+    }
+
+
+    public static class _CoreExtensions
+    {
+        #region evaluation
+
+        public static IEnumerable<Assembly> UsePlugins(this Evaluation.IPluginLoader factory, IEnumerable<PathString> paths)
+        {
+            return paths
+                .Select(item => factory.UsePlugin(item))
+                .Where(item => item != null);
         }
 
         #endregion

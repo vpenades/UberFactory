@@ -70,9 +70,9 @@ namespace Epsylon.UberFactory
 
             #region API - Pipeline services
 
-            public PluginManager GetPluginManager() { return _Parent._Plugins; }
+            public Evaluation.PluginManager GetPluginManager() { return _Parent._Plugins; }
 
-            public BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
+            public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
 
             public bool AllowTemplateEdition { get { return false; } }
 
@@ -174,9 +174,9 @@ namespace Epsylon.UberFactory
 
             #region API - Pipeline services
 
-            public PluginManager GetPluginManager() { return _Parent._Plugins; }
+            public Evaluation.PluginManager GetPluginManager() { return _Parent._Plugins; }
 
-            public BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
+            public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
 
             public bool AllowTemplateEdition { get { return false; } }
 
@@ -290,9 +290,9 @@ namespace Epsylon.UberFactory
 
             #region API - Pipeline services
 
-            public PluginManager GetPluginManager() { return _Parent._Plugins; }
+            public Evaluation.PluginManager GetPluginManager() { return _Parent._Plugins; }
 
-            public BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
+            public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }
 
             public bool AllowTemplateEdition { get { return true; } }
 

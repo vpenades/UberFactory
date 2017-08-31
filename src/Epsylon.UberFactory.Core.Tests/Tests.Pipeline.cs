@@ -53,13 +53,13 @@ namespace Epsylon.UberFactory
 
             // create a pipeline evaluator
 
-            var evaluator = PipelineEvaluator.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null, tfunc);
-            evaluator.Setup(BuildContext.Create(configuration, new PathString("")));
+            var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null, tfunc);
+            evaluator.Setup(Evaluation.BuildContext.Create(configuration, new PathString("")));
 
             // run evaluation
 
             // note we're using the secondary evaluator instead of the primary one, to prevent creating the target directory.
-            return (int)evaluator.EvaluateNode(MonitorContext.CreateNull(), pipeline.RootIdentifier);
+            return (int)evaluator.EvaluateNode(Evaluation.MonitorContext.CreateNull(), pipeline.RootIdentifier);
         }
     }
 
@@ -213,7 +213,7 @@ namespace Epsylon.UberFactory
             {
                 var types = Template1.GetTemplateParameterTypes();
 
-                var t1val = (int)Template1.Evaluate(MonitorContext.CreateNull(), 5, 7);                
+                var t1val = (int)Template1.Evaluate(Evaluation.MonitorContext.CreateNull(), 5, 7);                
 
                 return Value1 + t1val;
             }

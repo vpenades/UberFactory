@@ -24,10 +24,12 @@ namespace Epsylon.UberFactory.Themes
         {
             if (parentWindow == null) parentWindow = Application.Current.MainWindow;
 
-            var dlg = new GenericDialog();
-            dlg.Owner = parentWindow;
-            dlg.Icon = parentWindow.Icon;
-            dlg.Title = title;
+            var dlg = new GenericDialog
+            {
+                Owner = parentWindow,
+                Icon = parentWindow.Icon,
+                Title = title
+            };
 
             dlg.SetDataTemplate(typeof(T));
             dlg.DataSource = data;

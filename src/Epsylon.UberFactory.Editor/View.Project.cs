@@ -169,7 +169,7 @@ namespace Epsylon.UberFactory
             private readonly PathString _DocumentPath;
 
             private readonly Configurations _Configurations;
-            internal readonly PluginManager _Plugins = new PluginManager();
+            internal readonly Evaluation.PluginManager _Plugins = new Evaluation.PluginManager();
 
             private readonly EventLoggerProvider _Logger = new EventLoggerProvider();
 
@@ -292,13 +292,13 @@ namespace Epsylon.UberFactory
 
             #region API
 
-            public BuildContext GetBuildSettings()
+            public Evaluation.BuildContext GetBuildSettings()
             {
                 var cfg = _ActiveConfiguration;
 
                 if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;
 
-                return BuildContext.Create(cfg, _DocumentPath.DirectoryPath);
+                return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath);
             }
 
             private void _EditPlugin()
@@ -395,7 +395,7 @@ namespace Epsylon.UberFactory
                     {
                         xlogger.AddProvider(_Logger);
 
-                        var monitor = MonitorContext.Create(xlogger, ctoken, progress);
+                        var monitor = Evaluation.MonitorContext.Create(xlogger, ctoken, progress);
                         
                         ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
                     }
@@ -431,7 +431,7 @@ namespace Epsylon.UberFactory
                     .Where(item => item.IsValidAbsoluteFilePath)
                     .ToArray();
 
-                var assemblies = PluginLoader.Instance.UsePlugins(paths);
+                var assemblies = Evaluation.PluginLoader.Instance.UsePlugins(paths);
                 
                 _Plugins.SetAssemblies(assemblies);
 
@@ -505,9 +505,9 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public BuildSettings(BuildContext bs)
+            public BuildSettings(Evaluation.BuildContext bs)
             {                
-                _Configuration = string.Join(BuildContext.ConfigurationSeparator.ToString(), bs.Configuration);
+                _Configuration = string.Join(Evaluation.BuildContext.ConfigurationSeparator.ToString(), bs.Configuration);
                 _SourceDirectory = bs.SourceDirectory;
                 _TargetDirectory = bs.TargetDirectory;
 
@@ -564,9 +564,9 @@ namespace Epsylon.UberFactory
                 RaiseChanged(nameof(TargetDirectory), nameof(TargetDirectoryShortestDisplay));
             }
 
-            public BuildContext GetBuildSettings()
+            public Evaluation.BuildContext GetBuildSettings()
             {
-                return BuildContext.Create(_Configuration, _SourceDirectory, _TargetDirectory);
+                return Evaluation.BuildContext.Create(_Configuration, _SourceDirectory, _TargetDirectory);
             }
 
             #endregion

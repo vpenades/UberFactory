@@ -16,8 +16,8 @@ namespace Epsylon.UberFactory
         {
             bool AllowTemplateEdition { get; }
 
-            PluginManager GetPluginManager();
-            BuildContext GetBuildSettings();
+            Evaluation.PluginManager GetPluginManager();
+            Evaluation.BuildContext GetBuildSettings();
 
             ProjectDOM.Settings GetSettings(Type t);
             ProjectDOM.Template GetTemplate(Guid id);
@@ -68,7 +68,7 @@ namespace Epsylon.UberFactory
             internal readonly IPipelineViewServices _Parent;
             internal readonly ProjectDOM.Pipeline _PipelineDom;
 
-            internal PipelineEvaluator _Evaluator;
+            internal Evaluation.PipelineEvaluator _Evaluator;
 
             private Exception _Exception;
 
@@ -100,7 +100,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 {
-                    var evaluator = PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings,  _Parent.GetTemplate);
+                    var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings,  _Parent.GetTemplate);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _Evaluator = evaluator;
                     _Exception = null;
@@ -145,7 +145,7 @@ namespace Epsylon.UberFactory
             public void SetAsCurrentResultView(Guid nodeId)
             {
                 if (_Evaluator == null) return;
-                var result = _Evaluator.PreviewNode(MonitorContext.CreateNull(), nodeId);
+                var result = _Evaluator.PreviewNode(Evaluation.MonitorContext.CreateNull(), nodeId);
 
                 _Dialogs.ShowProductAndDispose(null, result);                
             }

@@ -13,23 +13,23 @@ namespace Epsylon.UberFactory
             public Configuration(string[] cfg)
             {
                 if (cfg == null || cfg.Length == 0) throw new ArgumentNullException(nameof(cfg));
-                if (!BuildContext.IsValidConfiguration(cfg)) throw new ArgumentException(nameof(cfg));
+                if (!Evaluation.BuildContext.IsValidConfiguration(cfg)) throw new ArgumentException(nameof(cfg));
 
-                Attributes[PROP_NAME] = string.Join(BuildContext.ConfigurationSeparator.ToString(), cfg);
+                Attributes[PROP_NAME] = string.Join(Evaluation.BuildContext.ConfigurationSeparator.ToString(), cfg);
             }
 
             private const String PROP_NAME = "Name";
 
             public String ConfigurationFullName => Attributes.GetValueOrDefault(PROP_NAME);
 
-            public String[] ConfigurationPath => ConfigurationFullName.Split(BuildContext.ConfigurationSeparator);            
+            public String[] ConfigurationPath => ConfigurationFullName.Split(Evaluation.BuildContext.ConfigurationSeparator);            
 
             public bool IsMatch(string[] cfg)
             {
                 if (cfg == null) return false;
-                if (!BuildContext.IsValidConfiguration(cfg)) return false;
+                if (!Evaluation.BuildContext.IsValidConfiguration(cfg)) return false;
 
-                return IsMatch(string.Join(BuildContext.ConfigurationSeparator.ToString(), cfg));
+                return IsMatch(string.Join(Evaluation.BuildContext.ConfigurationSeparator.ToString(), cfg));
             }
 
             public bool IsMatch(string cfg) { return string.Equals(cfg, ConfigurationFullName, StringComparison.OrdinalIgnoreCase); }
@@ -426,8 +426,10 @@ namespace Epsylon.UberFactory
 
             public void InsertReference(PathString rpath)
             {
-                var pr = new PluginReference();
-                pr.RelativePath = rpath;
+                var pr = new PluginReference
+                {
+                    RelativePath = rpath
+                };
 
                 AddLogicalChild(pr);
             }

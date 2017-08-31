@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"
 EndProject
@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.Core.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.UberFactory.Editor", "Epsylon.UberFactory.Editor\Epsylon.UberFactory.Editor.csproj", "{9A24C608-BCA7-4C68-836C-BAF990AFED85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.TestPlugins", "Epsylon.TestPlugins\Epsylon.TestPlugins.csproj", "{6B47F62D-2FE5-4642-AB8D-1C382A31103B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.TestPlugins", "Epsylon.TestPlugins\Epsylon.TestPlugins.csproj", "{6B47F62D-2FE5-4642-AB8D-1C382A31103B}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -112,5 +112,8 @@ Global
 		{DC861CAD-852A-45A9-A747-707316FA6437} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{9A24C608-BCA7-4C68-836C-BAF990AFED85} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{6B47F62D-2FE5-4642-AB8D-1C382A31103B} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}
 	EndGlobalSection
 EndGlobal

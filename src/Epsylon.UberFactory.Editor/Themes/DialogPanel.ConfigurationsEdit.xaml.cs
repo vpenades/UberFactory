@@ -29,7 +29,7 @@ namespace Epsylon.UberFactory.Themes
 
             var newCfg = myNewConfig.Text.Trim();
 
-            var error = BuildContext.IsValidConfigurationNode(newCfg);
+            var error = Evaluation.BuildContext.IsValidConfigurationNode(newCfg);
             if (error != null)
             {
                 MessageBox.Show(error.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Exclamation);
@@ -43,12 +43,12 @@ namespace Epsylon.UberFactory.Themes
 
             var basePath = myList.SelectedValue as String;
             if (string.IsNullOrWhiteSpace(basePath)) return;
-            xdata.AddConfig(basePath + BuildContext.ConfigurationSeparator + newCfg);
+            xdata.AddConfig(basePath + Evaluation.BuildContext.ConfigurationSeparator + newCfg);
         }
 
         private void myList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            myCurrentSelection.Text = (myList.SelectedValue as String).EnsureNotNull()+ BuildContext.ConfigurationSeparator;
+            myCurrentSelection.Text = (myList.SelectedValue as String).EnsureNotNull()+ Evaluation.BuildContext.ConfigurationSeparator;
         }
     }
 }

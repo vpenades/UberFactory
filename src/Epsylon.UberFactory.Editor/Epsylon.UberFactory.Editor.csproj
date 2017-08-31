@@ -299,9 +299,6 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj">
       <Project>{faeab33b-0005-487d-bb66-a0b2c61a3b77}</Project>
       <Name>Epsylon.UberFactory.Core</Name>
