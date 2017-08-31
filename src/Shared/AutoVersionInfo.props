@@ -6,26 +6,24 @@
     <!-- https://blogs.msdn.microsoft.com/devops/2016/05/03/versioning-nuget-packages-cd-1/ -->
     <!-- https://blogs.msdn.microsoft.com/bclteam/2005/03/21/using-reflection-to-list-version-to-version-assembly-changes-libcheck-one-of-the-best-tools-ever-kit-george/ -->
 
-  <PropertyGroup>
+  <PropertyGroup>    
 
     <NowYear>$([System.DateTime]::UtcNow.ToString("yy"))</NowYear>
     <NowMonth>$([System.DateTime]::UtcNow.ToString("MM"))</NowMonth>
-    <NowDate>$([System.DateTime]::UtcNow.ToString("dd"))</NowDate>
-    <NowTime>$([System.DateTime]::UtcNow.ToString("HHmm"))</NowTime>
-    <NowTicks>$([System.DateTime]::UtcNow.Ticks.ToString("X16"))</NowTicks>
+    <NowDay>$([System.DateTime]::UtcNow.ToString("dd"))</NowDay>
+    <NowDate>$([System.DateTime]::UtcNow.ToString("yyMMdd"))</NowDate>
+    <NowTime>$([System.DateTime]::UtcNow.ToString("HHmmss"))</NowTime>    
     <NowDayOfYear>$([System.DateTime]::UtcNow.DayOfYear.ToString())</NowDayOfYear>
 
-
+    <FileVersion>$(NowYear).$(NowMonth).$(NowDay).$(NowTime)</FileVersion>
 
     <Version>1.0.0</Version>
 
-    <AssemblyVersion>$(Version)</AssemblyVersion>
-
-    <FileVersion>$(NowYear).$(NowDayOfYear).$(NowTime).0</FileVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>    
 
     <PackageVersion>$(Version)</PackageVersion>
 
-    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha-$(NowTicks)</PackageVersion>
+    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha-$(NowDate)-$(NowTime)</PackageVersion>
 
   </PropertyGroup>
 
