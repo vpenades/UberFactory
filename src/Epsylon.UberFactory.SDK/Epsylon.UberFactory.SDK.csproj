@@ -8,10 +8,6 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>    
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
-  </PropertyGroup>
-
-  <ItemGroup>    
-    <Compile Include="..\Shared\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
-  </ItemGroup>  
+  </PropertyGroup>  
 
 </Project>

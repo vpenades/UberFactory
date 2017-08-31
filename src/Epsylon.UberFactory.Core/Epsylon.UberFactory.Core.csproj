@@ -13,10 +13,6 @@
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\Shared\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
-  </ItemGroup>
-
   <!-- Source code Switches -->
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">

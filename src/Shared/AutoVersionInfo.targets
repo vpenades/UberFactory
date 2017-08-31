@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" InitialTargets="GenerateAssemblyVersion" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
     <!-- http://stackoverflow.com/questions/356543/can-i-automatically-increment-the-file-build-version-when-using-visual-studio/6472195#6472195 -->
     <!-- http://stackoverflow.com/questions/64602/what-are-differences-between-assemblyversion-assemblyfileversion-and-assemblyin -->
+    <!-- https://blogs.msdn.microsoft.com/devops/2016/05/03/versioning-nuget-packages-cd-1/ -->
+    <!-- https://blogs.msdn.microsoft.com/bclteam/2005/03/21/using-reflection-to-list-version-to-version-assembly-changes-libcheck-one-of-the-best-tools-ever-kit-george/ -->
 
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  <PropertyGroup>
 
-    <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
-    <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
-    <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
-    <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+    <Year>$([System.DateTime]::UtcNow.ToString("yy"))</Year>
+    <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
+    <Date>$([System.DateTime]::UtcNow.ToString("dd"))</Date>
+    <Time>$([System.DateTime]::UtcNow.ToString("HHmm"))</Time>
 
     <!-- Package Version -->
-    <Version>$(Year).$(Month).$(Date).$(Time)</Version>
+    <Version>1.0.0</Version>
 
-    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(Year).$(Month).$(Date).$(Time)-Alpha</PackageVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
 
-    <!-- used to identify API changes -->
-    <AssemblyVersionAttribute>[assembly:System.Reflection.AssemblyVersion("$(Version)")]</AssemblyVersionAttribute>
+    <FileVersion>$(Version)</FileVersion>
 
-    <!-- used to identify deployments, which improve internals but don't break compatibility-->
-    <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(Version)")]</AssemblyFileVersionAttribute>
+    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(Version)-alpha$(Year)$(Month)$(Date)$(Time)</PackageVersion>
 
   </PropertyGroup>
-
-  <Target Name="GenerateAssemblyVersion" BeforeTargets="Compile;Build">
-    <Message Text="Generating Assembly Versions..." Importance="high" />
-    <WriteLinesToFile File="Properties\AssemblyVersion.Generated.cs" Lines="$(AssemblyVersionAttribute)%0a$(AssemblyFileVersionAttribute)" Overwrite="true" />
-  </Target>
 
 </Project>

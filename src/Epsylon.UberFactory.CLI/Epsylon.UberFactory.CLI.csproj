@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\Shared\AutoVersionInfo.targets" />
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net47;netcoreapp2.0</TargetFrameworks>
@@ -8,7 +10,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageType>DotnetCliTool</PackageType>
     <RootNamespace>Epsylon.UberFactory</RootNamespace>
-    <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>    
   </PropertyGroup>  
 
   <ItemGroup>
