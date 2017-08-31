@@ -44,7 +44,9 @@
     
     <Message Text="Compiling/Building Version: $(PackageVersion)  FileVer: $(FileVersion)" Importance="high" />
     
+    <!--
     <WriteLinesToFile Condition=" '$(ProjectGuid)' != '' " File="Properties\AssemblyVersion.Generated.cs" Lines="$(AssemblyVersionAttribute)%0a$(AssemblyFileVersionAttribute)" Overwrite="true" />
+    -->
     
   </Target>
 
