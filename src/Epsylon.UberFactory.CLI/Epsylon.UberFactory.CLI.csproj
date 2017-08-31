@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\Shared\AutoVersionInfo.targets" />
+  <Import Project="..\Shared\AutoVersionInfo.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>

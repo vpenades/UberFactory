@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\Shared\AutoVersionInfo.targets" />
+  <Import Project="..\Shared\AutoVersionInfo.props" />
 
   <PropertyGroup>
     <!-- Targets should be as low as possible to allow using the SDK in as many framework versions as possible -->
