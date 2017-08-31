@@ -272,7 +272,7 @@
     <Compile Include="View.Items.cs" />
     <Compile Include="View.Pipeline.cs" />
     <Compile Include="View.Project.cs" />
-    <Compile Include="Properties\AssemblyInfo.WPF.cs">
+    <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
