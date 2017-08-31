@@ -12,6 +12,7 @@
     <NowMonth>$([System.DateTime]::UtcNow.ToString("MM"))</NowMonth>
     <NowDate>$([System.DateTime]::UtcNow.ToString("dd"))</NowDate>
     <NowTime>$([System.DateTime]::UtcNow.ToString("HHmm"))</NowTime>
+    <NowTicks>$([System.DateTime]::UtcNow.Ticks.ToString("X16"))</NowTicks>
     <NowDayOfYear>$([System.DateTime]::UtcNow.DayOfYear.ToString())</NowDayOfYear>
 
 
@@ -24,7 +25,7 @@
 
     <PackageVersion>$(Version)</PackageVersion>
 
-    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha$(NowYear)$(NowMonth)$(NowDate)$(NowTime)</PackageVersion>
+    <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha-$(NowTicks)</PackageVersion>
 
   </PropertyGroup>
 

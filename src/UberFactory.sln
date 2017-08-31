@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\AutoVersionInfo.props = Shared\AutoVersionInfo.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.CLI", "Epsylon.UberFactory.CLI\Epsylon.UberFactory.CLI.csproj", "{6E832875-0893-4AD2-9AE9-762E1A5EA856}"
 EndProject
