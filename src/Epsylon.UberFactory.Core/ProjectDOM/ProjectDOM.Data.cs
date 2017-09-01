@@ -399,17 +399,7 @@ namespace Epsylon.UberFactory
             internal Task(Unknown s) : base(s) { }
         }
 
-        public partial class TemplateParameter : ObjectBase
-        {
-            public TemplateParameter() { }
-
-            internal TemplateParameter(Unknown s) : base(s) { }
-        }
-
-        public partial class Template : Item
-        {
-            internal Template(Unknown s) : base(s) { }
-        }
+        
 
         public partial class PluginReference : Item
         {

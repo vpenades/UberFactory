@@ -160,16 +160,7 @@ namespace Epsylon.UberFactory
             if (!ShowGenericDialog<Themes.NewNodeSelector>(owner, "New Node", data)) return null;
 
             return data.Selected;
-        }
-
-        public static ProjectDOM.Template ShowNewTemplateDialog(Window owner, IEnumerable<ProjectDOM.Template> filters)
-        {
-            var data = new _SelectItemFromListData<ProjectDOM.Template>() { Collection = filters.ToArray() };
-
-            if (!ShowGenericDialog<Themes.NewTemplateSelector>(owner, "New Template", data)) return null;
-
-            return data.Selected;
-        }
+        }        
 
 
         public static void ShowProductAndDispose(Window owner, Object product)

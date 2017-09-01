@@ -71,8 +71,7 @@ namespace Epsylon.UberFactory
             #region properties
 
             private const String _PROP_ID = "Id";
-            private const String _PROP_CLASSNAME = "ClassName";
-            private const String _PROP_TEMPLATENAME = "TemplateName";
+            private const String _PROP_CLASSNAME = "ClassName";            
 
             public Guid Identifier
             {
@@ -84,13 +83,7 @@ namespace Epsylon.UberFactory
             {
                 get { return Properties.GetValue(_PROP_CLASSNAME, null); }
                 private set { Properties.SetValue(_PROP_CLASSNAME,value); }
-            }
-
-            public string TemplateIdentifier
-            {
-                get { return Properties.GetValue(_PROP_TEMPLATENAME, null); }
-                set { Properties.SetValue(_PROP_TEMPLATENAME, value); }
-            }
+            }            
 
             public IEnumerable<string> AllConfigurations => GetLogicalChildren<Configuration>().Select(item => item.ConfigurationFullName);
 
@@ -278,103 +271,7 @@ namespace Epsylon.UberFactory
             }
 
             #endregion
-        }
-
-
-        public partial class TemplateParameter : ObjectBase
-        {
-            private const String PROP_NAME = "BindingName";
-            private const String PROP_NODEID = "NodeId";
-            private const String PROP_PROPID = "NodeProperty";
-
-            #region properties
-
-            public String BindingName
-            {
-                get { return Properties.GetValue(PROP_NAME, null); }
-                set { Properties.SetValue(PROP_NAME, value); }
-            }
-
-            public Guid NodeId
-            {
-                get { return Guid.TryParse(Properties.GetValue(PROP_NODEID, null), out Guid v) ? v : Guid.Empty; }
-                set { Properties.SetValue(PROP_NODEID, value.ToString()); }
-            }
-
-            public String NodeProperty
-            {
-                get { return Properties.GetValue(PROP_PROPID, null); }
-                set { Properties.SetValue(PROP_PROPID, value); }
-            }            
-
-            #endregion
-        }
-
-        public partial class Template : Item , IBindableObject
-        {
-            private const String PROP_ID = "Id";
-            private const String PROP_DESCRIPTION = "Description";
-            private const String PROP_TITLE = "Title";            
-
-            #region lifecycle
-
-            internal Template()
-            {
-                Identifier = Guid.NewGuid();                
-            }
-
-            #endregion
-
-            #region properties
-
-            public Guid Identifier
-            {
-                get { return Guid.TryParse(Attributes.GetValueOrDefault(PROP_ID), out Guid v) ? v : Guid.Empty; }
-                private set { Attributes[PROP_ID] = value.ToString(); }
-            }
-
-            public String Title
-            {
-                get { return Properties.GetValue(PROP_TITLE, null); }
-                set { Properties.SetValue(PROP_TITLE, value); }
-            }
-
-            public String Description
-            {
-                get { return Properties.GetValue(PROP_DESCRIPTION, null); }
-                set { Properties.SetValue(PROP_DESCRIPTION, value); }
-            }
-
-            public Pipeline Pipeline
-            {
-                get
-                {
-                    var pipeline = GetLogicalChildren<Pipeline>().FirstOrDefault();
-
-                    if (pipeline == null)
-                    {
-                        pipeline = new Pipeline();
-                        AddLogicalChild(pipeline);
-                    }
-
-                    return pipeline;
-                }
-            }
-
-            public IEnumerable<TemplateParameter> Parameters => this.GetLogicalChildren<TemplateParameter>();
-
-            #endregion
-
-            #region API
-
-            public void RemoveParameter(TemplateParameter param) { this.RemoveLogicalChild(param); }
-
-            public void AddNewParameter() { this.AddLogicalChild(new TemplateParameter()); }
-
-            public TemplateParameter GetParameterByBindingName(string bname) { return Parameters.FirstOrDefault(item => item.BindingName == bname); }
-
-            #endregion
-        }
+        }        
 
         public partial class PluginReference : Item
         {
@@ -442,14 +339,9 @@ namespace Epsylon.UberFactory
                 RemoveLogicalChild(child);
             }
 
+            public Task AddTask() { var task = new Task(); AddLogicalChild(task); return task; }            
 
-            public Task AddTask() { var task = new Task(); AddLogicalChild(task); return task; }
-
-            public Template AddTemplate() { var template = new Template(); AddLogicalChild(template); return template; }
-
-            public void RemoveItem(Item item) { RemoveLogicalChild(item); }
-
-            public Template GetTemplate(Guid id) { return this.FindBindableObject<Template>(id); }            
+            public void RemoveItem(Item item) { RemoveLogicalChild(item); }            
 
             public void Paste(Guid id)
             {

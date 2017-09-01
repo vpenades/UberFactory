@@ -14,25 +14,7 @@
     <GroupBox Style="{StaticResource VerticalGroupBoxStyle}">
 
         <GroupBox.Header>
-            <WrapPanel HorizontalAlignment="Center">
-
-                <GroupBox Header="Return Type"
-                                  Style="{StaticResource HorizontalGroupBoxStyle}" 
-                                  Visibility="{Binding AllowTemplateEdition,Converter={StaticResource asVisible}}">
-
-                    <ComboBox ItemsSource="{Binding AvailableReturnTypes}"
-                                  SelectedValue="{Binding ActiveReturnType}"                                  
-                                  IsEnabled="{Binding Pipeline.IsEmpty}">
-                        
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Converter={StaticResource _AsDisplayName}}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        
-                    </ComboBox>
-
-                </GroupBox>
+            <WrapPanel HorizontalAlignment="Center">                
 
                 <GroupBox Style="{StaticResource HorizontalGroupBoxStyle}"
                               Header="{Binding Pipeline.Content.DisplayName}"

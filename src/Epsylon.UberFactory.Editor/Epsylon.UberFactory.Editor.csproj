@@ -30,7 +30,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>    
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
@@ -124,9 +124,6 @@
     <Compile Include="Themes\DialogPanel.NewNodeSelector.xaml.cs">
       <DependentUpon>DialogPanel.NewNodeSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\DialogPanel.NewTemplateSelector.xaml.cs">
-      <DependentUpon>DialogPanel.NewTemplateSelector.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Themes\DialogPanel.Plugins.xaml.cs">
       <DependentUpon>DialogPanel.Plugins.xaml</DependentUpon>
     </Compile>
@@ -147,9 +144,6 @@
     </Compile>
     <Compile Include="Themes\ProjectItems\TaskView.xaml.cs">
       <DependentUpon>TaskView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Themes\ProjectItems\TemplateView.xaml.cs">
-      <DependentUpon>TemplateView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
@@ -222,10 +216,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DialogPanel.NewTemplateSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Themes\DialogPanel.Plugins.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -251,10 +241,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ProjectItems\TaskView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\ProjectItems\TemplateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

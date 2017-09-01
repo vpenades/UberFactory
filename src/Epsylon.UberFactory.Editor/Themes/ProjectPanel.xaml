@@ -26,8 +26,7 @@
             </MenuItem>
 
             <MenuItem Header="Project">
-                <MenuItem Icon="{StaticResource _AddIcon}" Header="Add Task..." Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />
-                <MenuItem Icon="{StaticResource _AddIcon}" Header="Add Template..." Command="{Binding AddTemplateCmd}" IsEnabled="{Binding CanAddItems}" />
+                <MenuItem Icon="{StaticResource _AddIcon}" Header="Add Task..." Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />                
                 <Separator />
                 <MenuItem Icon="{StaticResource _BuildIcon}" Header="Build All..." Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}"/>
             </MenuItem>            
@@ -111,31 +110,7 @@
                             </DataGrid.Columns>
 
                         </DataGrid>
-                    </TabItem>
-
-                    <TabItem Header="Templates">
-                        <DataGrid x:Name="myTemplates"
-                                  ItemsSource="{Binding Templates}"
-                                  AutoGenerateColumns="False"
-                                  AllowDrop="True"
-                                  SelectionMode="Single" SelectedValue="{Binding ActiveDocument}">
-
-                            <DataGrid.InputBindings>
-                                <KeyBinding Key="Delete" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ElementName=myTemplates,Path=SelectedValue}" />
-                            </DataGrid.InputBindings>
-
-                            <DataGrid.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Add Template" Command="{Binding AddTemplateCmd}" IsEnabled="{Binding CanAddItems}" />                                
-                                </ContextMenu>
-                            </DataGrid.ContextMenu>
-
-                            <DataGrid.Columns>                            
-                                <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
-                            </DataGrid.Columns>
-
-                        </DataGrid>
-                    </TabItem>
+                    </TabItem>                    
 
                 </TabControl>
 

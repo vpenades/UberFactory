@@ -14,10 +14,6 @@
     
     <DataTemplate DataType="{x:Type data:ProjectVIEW+Task}">
         <pitems:TaskView />        
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type data:ProjectVIEW+Template}">
-        <pitems:TemplateView />
     </DataTemplate>    
 
     <DataTemplate DataType="{x:Type data:ProjectVIEW+Project}">

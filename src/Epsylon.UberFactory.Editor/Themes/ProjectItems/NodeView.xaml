@@ -13,13 +13,7 @@
     </UserControl.Resources>
     
 
-    <StackPanel Margin="6">
-
-        <GroupBox Header="Template Name"
-                      Style="{StaticResource HorizontalGroupBoxStyle}"
-                      Visibility="{Binding AllowTemplateEdition,Converter={StaticResource asVisible}}">
-            <TextBox Text="{Binding TemplateName}" />
-        </GroupBox>
+    <StackPanel Margin="6">        
 
         <!-- http://stackoverflow.com/questions/33550849/how-to-use-different-itemscontrol-itemcontainerstyle-for-different-itemspaneltem -->
         

@@ -78,9 +78,7 @@ namespace Epsylon.UberFactory
 
         private static Bindings.MemberBinding _CreateBinding(SDK.InputPropertyAttribute attribute, Bindings.MemberBinding.Description bindDesc)
         {
-            var propertyType = bindDesc.Member.GetAssignType();
-
-            if (attribute is SDK.InputPipelineAttribute) return new Bindings.PipelineDependencyBinding(bindDesc);
+            var propertyType = bindDesc.Member.GetAssignType();            
 
             if (attribute is SDK.InputNodeAttribute)
             {

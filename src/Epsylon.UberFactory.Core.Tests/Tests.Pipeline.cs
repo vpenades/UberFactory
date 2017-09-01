@@ -27,33 +27,20 @@ namespace Epsylon.UberFactory
 
 
         [TestMethod]
-        public void TemplatePipelineTest()
+        public void ArithmeticPipelineTest()
         {
-            var template = TestPipelinesFactory.CreateTemplate();            
-
-            // create a template
-            var pipeline = new ProjectDOM.Pipeline();
-
-            // create root node and set it as root of the template
-            var nodeId = pipeline.AddNode("TestFilter3");            
-            pipeline.RootIdentifier = nodeId;
-
-            var nodeProps = pipeline.GetNode(nodeId).GetPropertiesForConfiguration("Root");
-            nodeProps.SetNodeIds("Template1", template.Identifier);
-            nodeProps.SetValue("Value1", "7");
-
-            var result = (int)_Evaluate(pipeline, "Root", id => template);
-
-            Assert.AreEqual(19, result);
+            var pipeline = TestPipelinesFactory.CreateArithmeticPipeline();
+            var result = (int)_Evaluate(pipeline, "Root");
+            Assert.AreEqual(10, result);
         }
 
-        private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration, Func<Guid,ProjectDOM.Template> tfunc = null)
-        {
-            if (tfunc == null) tfunc = g => null;
 
+
+        private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration)
+        {
             // create a pipeline evaluator
 
-            var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null, tfunc);
+            var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null);
             evaluator.Setup(Evaluation.BuildContext.Create(configuration, new PathString("")));
 
             // run evaluation
@@ -118,37 +105,27 @@ namespace Epsylon.UberFactory
             nodeProps.SetNodeIds("Value2", node3Id);
 
             return pipeline;
-        }
+        }        
 
 
-
-        /// <summary>
-        /// Create a templated pipeline, with a root node and two leaf nodes
-        /// </summary>        
-        public static ProjectDOM.Template CreateTemplate()
+        public static ProjectDOM.Pipeline CreateArithmeticPipeline()
         {
-            // create a template
-            var template = System.Activator.CreateInstance(typeof(ProjectDOM.Template),true) as ProjectDOM.Template;            
-            var pipeline = template.Pipeline;
+            // create a pipeline
+            var pipeline = new ProjectDOM.Pipeline();            
 
-            // create root node and set it as root of the template
-            var nodeId = pipeline.AddNode("TestFilter1");
-            pipeline.RootIdentifier = nodeId;            
+            var value1Id = pipeline.AddNode(nameof(Epsylon.TestPlugins.AssignIntegerValue));
+            pipeline.GetNode(value1Id).GetPropertiesForConfiguration("Root").SetValue("Value", "5");
 
-            template.AddNewParameter();
-            template.AddNewParameter();
+            var value2Id = pipeline.AddNode(nameof(Epsylon.TestPlugins.AssignIntegerValue));
+            pipeline.GetNode(value2Id).GetPropertiesForConfiguration("Root").SetValue("Value", "5");
 
-            var ppp = template.Parameters.ToArray();
+            var rootId = pipeline.AddNode(nameof(Epsylon.TestPlugins.AddIntegerValues));            
+            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetNodeIds("Value1", value1Id);
+            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetNodeIds("Value2", value2Id);
 
-            ppp[0].BindingName = "TemplateParam1";
-            ppp[0].NodeId = nodeId;
-            ppp[0].NodeProperty = "Value1";
+            pipeline.RootIdentifier = rootId;
 
-            ppp[1].BindingName = "TemplateParam2";
-            ppp[1].NodeId = nodeId;
-            ppp[1].NodeProperty = "Value2";
-
-            return template;            
+            return pipeline;
         }
     }
 
@@ -161,7 +138,11 @@ namespace Epsylon.UberFactory
             {
                 typeof(TestFilter1),
                 typeof(TestFilter2),
-                typeof(TestFilter3)
+                typeof(Epsylon.TestPlugins.AssignIntegerValue),
+                typeof(Epsylon.TestPlugins.AddIntegerValues),
+                typeof(Epsylon.TestPlugins.SubstractIntegerValues),
+                typeof(Epsylon.TestPlugins.MultiplyIntegerValues),
+                typeof(Epsylon.TestPlugins.DivideIntegerValues),
             };
 
             var t = filters.FirstOrDefault(item => item.Name == classId);
@@ -197,27 +178,7 @@ namespace Epsylon.UberFactory
             {
                 return Value1 + Value2;
             }
-        }
-
-
-        [SDK.ContentNode(nameof(TestFilter3))]
-        class TestFilter3 : SDK.ContentFilter<int>
-        {
-            [SDK.InputPipeline(nameof(Template1),typeof(Int32), typeof(Int32))]            
-            public SDK.IPipelineInstance Template1 { get; set; }
-
-            [SDK.InputValue(nameof(Value1))]
-            public int Value1 { get; set; }
-
-            protected override int Evaluate()
-            {
-                var types = Template1.GetTemplateParameterTypes();
-
-                var t1val = (int)Template1.Evaluate(Evaluation.MonitorContext.CreateNull(), 5, 7);                
-
-                return Value1 + t1val;
-            }
-        }
+        }        
 
     }
 

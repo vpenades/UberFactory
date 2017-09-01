@@ -11,10 +11,8 @@ namespace Epsylon.UberFactory
         {
             if (o == null) return null;
             if (o is Configuration) return ((Configuration)o).ConfigurationFullName;
-            if (o is Node) return ((Node)o).ClassIdentifier + " " + ((Node)o).TemplateIdentifier;
-            if (o is Task) return ((Task)o).Title;
-            if (o is Template) return ((Template)o).Title;
-            if (o is TemplateParameter) return ((TemplateParameter)o).BindingName;
+            if (o is Node) return ((Node)o).ClassIdentifier;
+            if (o is Task) return ((Task)o).Title;            
             if (o is PluginReference) return ((PluginReference)o).RelativePath;
 
             throw new NotSupportedException();
@@ -61,9 +59,7 @@ namespace Epsylon.UberFactory
             if (name == typeof(Configuration).Name) return new Configuration(unk);
             if (name == typeof(Node).Name) return new Node(unk);
             if (name == typeof(Pipeline).Name) return new Pipeline(unk);
-            if (name == typeof(Task).Name) return new Task(unk);
-            if (name == typeof(TemplateParameter).Name) return new TemplateParameter(unk);
-            if (name == typeof(Template).Name) return new Template(unk);
+            if (name == typeof(Task).Name) return new Task(unk);            
             if (name == typeof(PluginReference).Name) return new PluginReference(unk);
             if (name == typeof(Project).Name) return new Project(unk);
             if (name == typeof(Settings).Name) return new Settings(unk);
@@ -81,12 +77,7 @@ namespace Epsylon.UberFactory
                 .Items
                 .OfType<Task>()
                 .Where(item => item.Enabled)
-                .ToArray();
-
-            var templates = srcDoc
-                .Items
-                .OfType<Template>()
-                .ToArray();
+                .ToArray();            
 
             // Before running the tasks we have to ensure:
             // 1- BuildContext is valid
@@ -94,7 +85,7 @@ namespace Epsylon.UberFactory
             // 3- we're able to create instances of all the filters
             // 4- all the source files are available            
 
-            _ValidateFactory(bsettings, filterFactory, tasks, templates);            
+            _ValidateFactory(bsettings, filterFactory, tasks);            
 
             for (int i = 0; i < tasks.Length; ++i)
             {
@@ -102,7 +93,7 @@ namespace Epsylon.UberFactory
 
                 var task = tasks[i];
 
-                var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings, srcDoc.GetTemplate);
+                var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
                 evaluator.Setup(bsettings);
 
                 var srcData = evaluator.Evaluate(monitor.GetProgressPart(i, tasks.Length));
@@ -110,17 +101,11 @@ namespace Epsylon.UberFactory
             }
         }
 
-        private static void _ValidateFactory(Evaluation.BuildContext bsettings, Func<string, SDK.ContentObject> filterFactory, Task[] tasks, Template[] templates)
+        private static void _ValidateFactory(Evaluation.BuildContext bsettings, Func<string, SDK.ContentObject> filterFactory, Task[] tasks)
         {
             var classIds = tasks
                             .SelectMany(item => item.Pipeline.Nodes)
-                            .Select(item => item.ClassIdentifier)
-                            .Concat
-                            (
-                                templates
-                                .SelectMany(item => item.Pipeline.Nodes)
-                                .Select(item => item.ClassIdentifier)
-                            )
+                            .Select(item => item.ClassIdentifier)                            
                             .Distinct();
 
             foreach (var cid in classIds)

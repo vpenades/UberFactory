@@ -11,52 +11,27 @@ namespace Epsylon.UberFactory.Evaluation
 {
     
     using FILTERFACTORY = Func<String, SDK.ContentObject>;
-    using SETTINGSFACTORY = Func<Type, ProjectDOM.Settings>;
-    using TEMPLATEFACTORY = Func<Guid, ProjectDOM.Template>;
+    using SETTINGSFACTORY = Func<Type, ProjectDOM.Settings>;    
     
 
     public class PipelineEvaluator : SDK.IPipelineInstance
     {
         #region lifecycle        
 
-        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver, TEMPLATEFACTORY templateResolver)
+        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver)
         {
             if (pipeline == null) throw new ArgumentNullException(nameof(pipeline));
-            if (filterResolver == null) throw new ArgumentNullException(nameof(filterResolver));
-            if (templateResolver == null) throw new ArgumentNullException(nameof(templateResolver));            
+            if (filterResolver == null) throw new ArgumentNullException(nameof(filterResolver));            
 
-            return new PipelineEvaluator(pipeline, filterResolver, settingsResolver, templateResolver);
-        }
+            return new PipelineEvaluator(pipeline, filterResolver, settingsResolver);
+        }        
 
-        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Template template, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver, TEMPLATEFACTORY templateResolver)
-        {
-            if (template == null) throw new ArgumentNullException(nameof(template));
-            if (template.Pipeline == null) throw new ArgumentNullException(nameof(template));
-            if (filterResolver == null) throw new ArgumentNullException(nameof(filterResolver));
-            if (templateResolver == null) throw new ArgumentNullException(nameof(templateResolver));
-
-            return new PipelineEvaluator(template, filterResolver, settingsResolver, templateResolver);
-        }
-
-        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver, TEMPLATEFACTORY templateResolver)
+        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver)
         {
             _FilterFactory = filterResolver;
-            _SettingsFactory = settingsResolver;
-            _TemplateFactory = templateResolver;            
-
-            _Template = null;
+            _SettingsFactory = settingsResolver;            
             _Pipeline = pipeline;            
-        }
-
-        private PipelineEvaluator(ProjectDOM.Template template, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver, TEMPLATEFACTORY templateResolver)
-        {
-            _FilterFactory = filterResolver;
-            _SettingsFactory = settingsResolver;
-            _TemplateFactory = templateResolver;
-
-            _Template = template;
-            _Pipeline = template.Pipeline;            
-        }
+        }        
 
         #endregion
 
@@ -64,10 +39,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         private readonly FILTERFACTORY _FilterFactory;
         private readonly SETTINGSFACTORY _SettingsFactory;
-        private readonly TEMPLATEFACTORY _TemplateFactory;
-
-        private readonly ProjectDOM.Template _Template; // Non Null if this evaluator is a template
-        private readonly ProjectDOM.Pipeline _Pipeline; // here is the serialized data from where we initialize the instances        
+        
+        private readonly ProjectDOM.Pipeline _Pipeline;
         
         // evaluation data
 
@@ -150,22 +123,6 @@ namespace Epsylon.UberFactory.Evaluation
             // recursively create dependencies
             foreach(var binding in bindings)
             {
-                if (binding is Bindings.PipelineDependencyBinding)
-                {
-                    var templateId = ((Bindings.PipelineDependencyBinding)binding).GetDependency();                    
-
-                    var templateDom = _TemplateFactory(templateId);
-
-                    if (templateDom == null) _PipelineInstances[templateId] = null;
-                    else
-                    {
-                        var templateInst = CreatePipelineInstance(templateDom, _FilterFactory,_SettingsFactory, _TemplateFactory);
-                        templateInst.Setup(_BuildSettings);
-
-                        _PipelineInstances[templateId] = templateInst;
-                    }
-                }
-
                 if (binding is Bindings.SingleDependencyBinding)
                 {
                     var id = ((Bindings.SingleDependencyBinding)binding).GetDependency();
@@ -210,7 +167,7 @@ namespace Epsylon.UberFactory.Evaluation
             if (_SettingsFactory == null) return null;
 
             var sdom = _SettingsFactory.Invoke(t);
-            var spip = CreatePipelineInstance(sdom.Pipeline, _FilterFactory,_SettingsFactory, _TemplateFactory);
+            var spip = CreatePipelineInstance(sdom.Pipeline, _FilterFactory,_SettingsFactory);
             spip.Setup(_BuildSettings);
 
             var r = spip.Evaluate(monitor);
@@ -239,71 +196,42 @@ namespace Epsylon.UberFactory.Evaluation
             return _EvaluateNode(monitor, _Pipeline.RootIdentifier, false, parameters);
         }
 
-        public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeOrTemplateId)
+        public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
             _SettingsInstancesCache.Clear();
 
-            return _EvaluateNode(monitor, nodeOrTemplateId, false);
+            return _EvaluateNode(monitor, nodeId, false);
         }
 
-        public Object PreviewNode(SDK.IMonitorContext monitor, Guid nodeOrTemplateId)
+        public Object PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
             _SettingsInstancesCache.Clear();
 
-            return _EvaluateNode(monitor, nodeOrTemplateId, true);
+            return _EvaluateNode(monitor, nodeId, true);
         }
 
-        private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeOrTemplateId, bool previewMode, params Object[] parameters)
+        private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode, params Object[] parameters)
         {
             if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 
             // First, we check if it's a template, in which case we return it as the evaluated value (it will be called by the component)
-            var pipelineEvaluator = _PipelineInstances.GetValueOrDefault(nodeOrTemplateId);
+            var pipelineEvaluator = _PipelineInstances.GetValueOrDefault(nodeId);
             if (pipelineEvaluator != null) return pipelineEvaluator;
 
             // Get the current node being evaluated
-            var nodeInst = _NodeInstances.GetValueOrDefault(nodeOrTemplateId);
+            var nodeInst = _NodeInstances.GetValueOrDefault(nodeId);
             if (nodeInst == null) return null;
             if (nodeInst is _UnknownNode) return null;
 
             // Next, we try to find the property values for this node
             var nodeProps = _Pipeline
-                .GetNode(nodeOrTemplateId)?
+                .GetNode(nodeId)?
                 .GetPropertiesForConfiguration(_BuildSettings.Configuration)
                 .AsReadOnly();
             if (nodeProps == null) return null;
 
             // Evaluate values and dependencies. Dependecies are evaluated recursively
-            nodeInst.EvaluateBindings(nodeProps,xid => _EvaluateNode(monitor, xid, previewMode,parameters));
-
-            // AFTER evaluating the bindings, inject template parameters, if applicable.            
-            if (_Template != null)
-            {
-                var templateArgTypes = GetTemplateParameterTypes().ToArray();
-                var nodeBindings = nodeInst.CreateBindings(nodeProps);
-
-                for (int i = 0; i < parameters.Length; ++i)
-                {
-                    var p = _Template.Parameters.Skip(i).FirstOrDefault();
-                    if (p == null) break;
-                    if (p.NodeId != nodeOrTemplateId) continue;
-
-                    var templatedBinding = nodeBindings
-                        .OfType<Bindings.ValueBinding>()
-                        .FirstOrDefault(item => item.SerializationKey == p.NodeProperty);                    
-
-                    if (templatedBinding != null)
-                    {
-                        // check if argument types match
-
-                        var pType = templateArgTypes[i];
-
-                        bool areCompatible = templatedBinding.DataType.GetTypeInfo().IsAssignableFrom(pType);
-
-                        templatedBinding.SetEvaluatedResult(parameters[i]);
-                    }
-                }
-            }
+            nodeInst.EvaluateBindings(nodeProps,xid => _EvaluateNode(monitor, xid, previewMode,parameters));            
 
             if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 
@@ -311,7 +239,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             try
             {
-                var localMonitor = monitor == null ? null : monitor.GetProgressPart(_NodeOrder.IndexOf(nodeOrTemplateId), _NodeOrder.Count);
+                var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);
 
                 Func<Type, SDK.ContentObject> sharedContentEvaluator = t => GetSettingsInstance(t, localMonitor);
 
@@ -334,32 +262,7 @@ namespace Epsylon.UberFactory.Evaluation
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region API - Template
-
-        public string[] TemplateParameters { get { return _Template?.Parameters.Select(item => item.BindingName).ToArray(); } }
-
-        public IEnumerable<Type> GetTemplateParameterTypes()
-        {
-            if (_Template == null) yield break;
-
-            foreach (var p in _Template.Parameters.ExceptNulls())
-            {
-                var nodeDom = _Pipeline.GetNode(p.NodeId); if (nodeDom == null) yield return null;
-                if (!_NodeInstances.TryGetValue(p.NodeId, out var nodeInst)) yield return null;
-
-                var nodeBinding = nodeInst
-                    .CreateBindings(null)
-                    .FirstOrDefault(item => item.SerializationKey == p.NodeProperty);
-
-                if (nodeBinding == null) yield return null;
-
-                yield return nodeBinding.DataType;
-            }
-        }
-
-        #endregion
+        #endregion        
 
     }
 

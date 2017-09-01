@@ -14,15 +14,10 @@ namespace Epsylon.UberFactory
     {        
         public interface IPipelineViewServices
         {
-            bool AllowTemplateEdition { get; }
-
             Evaluation.PluginManager GetPluginManager();
             Evaluation.BuildContext GetBuildSettings();
 
             ProjectDOM.Settings GetSettings(Type t);
-            ProjectDOM.Template GetTemplate(Guid id);
-
-            IEnumerable<ProjectDOM.Template> GetTemplates();
 
             Type GetRootOutputType();
         }
@@ -84,9 +79,7 @@ namespace Epsylon.UberFactory
 
             public Object Content       => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
 
-            public Boolean CanEditHierarchy => _Parent.GetBuildSettings().Configuration.Length == 1;
-
-            public bool AllowTemplateEdition => throw new NotImplementedException();
+            public Boolean CanEditHierarchy => _Parent.GetBuildSettings().Configuration.Length == 1;            
 
             public IPipelineViewServices PipelineServices => _Parent;
 
@@ -100,7 +93,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 {
-                    var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings,  _Parent.GetTemplate);
+                    var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _Evaluator = evaluator;
                     _Exception = null;
@@ -229,8 +222,7 @@ namespace Epsylon.UberFactory
                 for (int i = 0; i < propertyViews.Length; ++i)
                 {
                     var bv = propertyViews[i];
-
-                    if (bv is Bindings.PipelineDependencyBinding) propertyViews[i] = PipelineDependencyView._Create(node, (Bindings.PipelineDependencyBinding)bv);
+                    
                     if (bv is Bindings.MultiDependencyBinding) propertyViews[i] = ArrayDependencyView._Create(node, (Bindings.MultiDependencyBinding)bv);
                     if (bv is Bindings.SingleDependencyBinding) propertyViews[i] = SingleDependencyView._Create(node, (Bindings.SingleDependencyBinding)bv);                    
                 }
@@ -274,11 +266,7 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<BINDING> Bindings    => _BindingsViews;
 
-            public IEnumerable<BINDING> BindingsGrouped => GroupedBindingsView.Group(_BindingsViews);
-
-            public bool AllowTemplateEdition        => _Parent.PipelineServices.AllowTemplateEdition;
-
-            public string TemplateName { get { return NodeDescription.TemplateIdentifier; } set { NodeDescription.TemplateIdentifier = value; } }
+            public IEnumerable<BINDING> BindingsGrouped => GroupedBindingsView.Group(_BindingsViews);            
 
             #endregion
 
@@ -322,99 +310,7 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<BINDING> Bindings => _BindingsViews.ToArray();
         }
-
-
-        public class PipelineDependencyView : BindableBase
-        {
-            // handles the binding of a single node dependency;
-            // this view class has a dual mode function:
-            // if _Binding is a SingleDependencyBinding, it defines the binding of a single dependency with its node.
-            // if _Binding is a MultiDependencyBinding, it defines the binding of a single, indexed, dependency with an item of the array of _MultiDependencyBinding.
-
-            #region lifecycle            
-
-            internal static PipelineDependencyView _Create(Node parent, Bindings.PipelineDependencyBinding binding)
-            {
-                if (parent == null) return null;
-                if (binding == null) return null;
-
-                return new PipelineDependencyView(parent, binding);
-            }            
-
-            private PipelineDependencyView(Node parent, Bindings.PipelineDependencyBinding binding)
-            {
-                _Parent = parent;
-                _Binding = binding;
-                
-
-                ChooseBindingCmd = new RelayCommand(_SetNewTemplate);
-                RemoveBindingCmd = new RelayCommand(_RemoveTemplate);
-
-                // ViewResultCmd = new RelayCommand(() => { var view = NodeInstance; if (view != null) view.SetAsCurrentResultView(); });
-            }
-
-            #endregion
-
-            #region commands
-
-            public ICommand ChooseBindingCmd { get; private set; }
-
-            public ICommand RemoveBindingCmd { get; private set; }
-
-            public ICommand ViewResultCmd { get; private set; }
-
-            #endregion
-
-            #region data
-
-            private readonly Node _Parent;
-
-            private readonly Bindings.PipelineDependencyBinding _Binding;            
-
-            #endregion
-
-            #region properties
-
-            public string DisplayName                   => _Binding.DisplayName + " " + TemplateDom?.Title;            
-
-            public string TitleFormat                   => DisplayName + "  {0}"; // formatting used to combine the name of the property and the template
-
-            public ProjectDOM.Template TemplateDom      => _Parent.Parent.PipelineServices.GetTemplate(_GetDependencyId());
-
-            public bool IsInstanced                     => TemplateDom != null;
-
-            public bool IsEmpty                         => !IsInstanced;            
-
-            public Type DataType                        => typeof(SDK.IPipelineInstance);
-
-            #endregion
-
-            #region API
-
-            private void _RemoveTemplate() { _SetDependencyId(Guid.Empty); }
-            
-            private void _SetNewTemplate()
-            {
-                
-                var templateSignature = _Binding.GetTemplateSignature();
-
-                var templateDOMs = _Parent.Parent.PipelineServices.GetTemplates();
-                //var templateINSs = templateDOMs.Select(item => PipelineEvaluator.CreatePipelineInstance(item))
-
-                // TODO: foreach templateDOM, create a pipeline evaluator, so we can retrieve the types and filter the compatible types
-
-                var r = _Dialogs.ShowNewTemplateDialog(null, templateDOMs);
-                if (r != null) _SetDependencyId(r.Identifier);
-            }            
-
-            private Guid _GetDependencyId() { return _Binding.GetDependency(); }
-
-            private void _SetDependencyId(Guid templateId) { _Binding.SetDependency(templateId); RaiseChanged(); }
-
-            #endregion
-        }
-
-
+        
 
         public class SingleDependencyView : BindableBase
         {

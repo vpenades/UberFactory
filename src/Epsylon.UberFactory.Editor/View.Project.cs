@@ -64,8 +64,6 @@ namespace Epsylon.UberFactory
         {
             if (o == null) return null;
             if (o is Task) return ProjectDOM.GetDisplayName(((Task)o).Source);
-            if (o is Template) return ProjectDOM.GetDisplayName(((Template)o).Source);
-
 
             throw new NotSupportedException();
         }
@@ -117,8 +115,7 @@ namespace Epsylon.UberFactory
                 _ActiveConfiguration = _Configurations.RootConfiguration;
 
                 SaveCmd = new RelayCommand(Save);
-                AddTaskCmd = new RelayCommand(_AddNewTask);
-                AddTemplateCmd = new RelayCommand(_AddNewTemplate);
+                AddTaskCmd = new RelayCommand(_AddNewTask);                
                 EditPluginsCmd = new RelayCommand(_EditPlugin);
                 EditConfigurationsCmd = new RelayCommand(_EditConfigurations);               
 
@@ -133,16 +130,13 @@ namespace Epsylon.UberFactory
 
             public ICommand SaveCmd { get; private set; }
 
-            public ICommand AddTaskCmd { get; private set; }
-
-            public ICommand AddTemplateCmd { get; private set; }
+            public ICommand AddTaskCmd { get; private set; }            
 
             public ICommand EditPluginsCmd { get; private set; }
 
             public ICommand EditConfigurationsCmd { get; private set; }
 
             public ICommand DeleteActiveDocumentCmd { get; private set; }
-
 
             public ICommand BuildAllCmd { get; private set; }
 
@@ -203,7 +197,7 @@ namespace Epsylon.UberFactory
                 {
                     if (_ActiveConfiguration == value) return;
                     _ActiveConfiguration = value;
-                    RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks),nameof(SharedSettings),nameof(Templates), nameof(IsRootConfiguration));
+                    RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks),nameof(SharedSettings), nameof(IsRootConfiguration));
                     ActiveDocument = null; // we must flush active document because it might be in the wrong configuration
                 }
             }
@@ -238,21 +232,6 @@ namespace Epsylon.UberFactory
                         .Items
                         .OfType<ProjectDOM.Task>()
                         .Select(item => ProjectVIEW.Task.Create(this, item))
-                        .ExceptNulls()
-                        .ToArray();
-                }
-            }
-
-            public IEnumerable<Template> Templates
-            {
-                get
-                {
-                    if (_ActiveConfiguration == null) return null;
-
-                    return _Source
-                        .Items
-                        .OfType<ProjectDOM.Template>()
-                        .Select(item => ProjectVIEW.Template.Create(this, item))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -345,8 +324,7 @@ namespace Epsylon.UberFactory
 
                 if (!_Dialogs.QueryDeletePermanentlyWarningDialog( GetDisplayName(item) )) return;
 
-                if (item is Task) { _Source.RemoveItem(((Task)item).Source); RaiseChanged(nameof(Tasks), nameof(IsDirty)); }
-                if (item is Template) { _Source.RemoveItem(((Template)item).Source); RaiseChanged(nameof(Templates), nameof(IsDirty)); }
+                if (item is Task) { _Source.RemoveItem(((Task)item).Source); RaiseChanged(nameof(Tasks), nameof(IsDirty)); }                
 
                 if (ActiveDocument == item) ActiveDocument = null;
 
@@ -360,14 +338,7 @@ namespace Epsylon.UberFactory
                 _Source.AddTask().Title = "New Task " + Tasks.Count(); RaiseChanged(nameof(Tasks), nameof(IsDirty));
 
                 RaiseChanged(nameof(CanBuild));
-            }
-
-            private void _AddNewTemplate()
-            {
-                if (_ActiveConfiguration == null || _Configurations.IsEmpty) { _EditConfigurations(); return; }
-
-                _Source.AddTemplate().Title = "New Template " + Tasks.Count(); RaiseChanged(nameof(Templates), nameof(IsDirty));
-            }
+            }            
 
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }
 
@@ -455,15 +426,7 @@ namespace Epsylon.UberFactory
                     .SelectMany(item => item.Pipeline.Nodes)
                     .SelectMany(item => item.AllConfigurations);
 
-                var templateQuery = prj
-                    .Items
-                    .OfType<ProjectDOM.Template>()
-                    .SelectMany(item => item.Pipeline.Nodes)
-                    .SelectMany(item => item.AllConfigurations);
-
-                var query = taskQuery.Concat(templateQuery);
-
-                _Configurations.UnionWith(query);                
+                _Configurations.UnionWith(taskQuery);                
             }
 
             #endregion

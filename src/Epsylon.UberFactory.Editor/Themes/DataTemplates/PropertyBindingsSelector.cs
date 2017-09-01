@@ -25,8 +25,7 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
                 return element.FindResource("BindingView_Dependency_Single_Empty") as DataTemplate;
             }
 
-            if (item is ProjectVIEW.ArrayDependencyView) return element.FindResource("BindingView_Dependency_Multi") as DataTemplate;
-            if (item is ProjectVIEW.PipelineDependencyView) return element.FindResource("BindingView_Dependency_Pipeline") as DataTemplate;
+            if (item is ProjectVIEW.ArrayDependencyView) return element.FindResource("BindingView_Dependency_Multi") as DataTemplate;            
 
             // Value types
             if (item is Bindings.ValueBinding valueBinding) return element.FindResource(valueBinding.ViewTemplate) as DataTemplate;

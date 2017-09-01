@@ -91,31 +91,7 @@ namespace Epsylon.UberFactory
             public bool IsCollection { get; private set; }
 
             #endregion                    
-        }
-
-        /// <summary>
-        /// Declares a property of a Component as an Input Pipeline, which can be edited and serialized
-        /// </summary>
-        public sealed class InputPipelineAttribute : InputPropertyAttribute
-        {
-            // must define here inputs and output so we can restrict the pipeline choices.
-
-            #region lifecycle
-
-            public InputPipelineAttribute(string serializationKey,Type retval, params Type[] argTypes) : base(serializationKey)
-            {
-                ReturnType = retval;
-                ArgumentTypes = argTypes;
-            }
-
-            public override bool IsDependency { get { return true; } }
-
-
-            public Type ReturnType { get; }
-            public Type[] ArgumentTypes { get; }
-
-            #endregion                    
-        }        
+        }         
 
         #endregion
     }

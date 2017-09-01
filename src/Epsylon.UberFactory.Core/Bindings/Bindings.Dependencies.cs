@@ -152,47 +152,5 @@ namespace Epsylon.UberFactory.Bindings
         }
 
         #endregion
-    }
-
-    [System.Diagnostics.DebuggerDisplay("Pipeline Dependency {SerializationKey}")]
-    public sealed class PipelineDependencyBinding : DependencyBinding
-    {
-        #region lifecycle
-
-        public PipelineDependencyBinding(Description pvd) : base(pvd) { }
-
-        #endregion        
-
-        #region API
-
-        public void SetDependency(ProjectDOM.Template template) { SetSingleDependency(template.Identifier); }
-
-        public void SetDependency(Guid templateId) { SetSingleDependency( templateId); }
-
-        public Guid GetDependency() { return GetSingleDependency(); }
-
-        public override void EvaluateAndAssign(Func<Guid, Object> nodeEvaluator)
-        {
-            var templateId = GetDependency();
-            var r = nodeEvaluator(templateId);
-
-            System.Diagnostics.Debug.Assert(r == null || r is SDK.IPipelineInstance, "Unexpected type");
-
-            SetEvaluatedResult(r);
-        }
-
-        public Type[] GetTemplateSignature()
-        {
-            var desc = GetInputDesc<SDK.InputPipelineAttribute>();
-            if (desc == null) return new Type[0];
-
-            return new Type[] { desc.ReturnType }
-            .Concat(desc.ArgumentTypes)
-            .ToArray();
-        }
-
-        #endregion        
-    }
-
-
+    }    
 }

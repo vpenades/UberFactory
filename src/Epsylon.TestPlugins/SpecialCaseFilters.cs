@@ -26,25 +26,7 @@ namespace Epsylon.TestPlugins
             return string.Empty;
         }
     }
-
-    [SDK.ContentNode(nameof(TestPipeline1))]
-    [SDK.ContentMetaData("Title", "Debug Template Filter")]
-    public sealed class TestPipeline1 : SDK.ContentFilter<String>
-    {
-        [SDK.InputPipeline(nameof(Pipeline), typeof(string), typeof(string),typeof(string),typeof(string))]        
-
-        // Func<string,string,string,string>
-        public SDK.IPipelineInstance Pipeline { get; set; }
-
-        protected override String Evaluate()
-        {
-            return null;
-
-            // return Pipeline.Evaluate(MonitorContext.CreateNull(), "A", "B", "C") as String;
-        }
-    }
-
-
+    
 
     [SDK.ContentNode(nameof(TestGlobalSettings1))]
     [SDK.ContentMetaData("Title", "Debug Shared Settings Filter")]
@@ -68,8 +50,11 @@ namespace Epsylon.TestPlugins
     [SDK.ContentNode(nameof(InvalidNodeTest))]
     public sealed class InvalidNodeTest : SDK.ContentFilter<String>
     {
+        /// <summary>
+        /// We've chosen a return type that it's going to be rarely used as a interoperation type to throw
+        /// </summary>
         [SDK.InputNode(nameof(InvalidType))]
-        public System.ResolveEventArgs InvalidType { get; set; }
+        public System.Dynamic.BindingRestrictions InvalidType { get; set; }
 
         [SDK.InputValue(nameof(Date))]
         public DateTime Date { get; set; }
