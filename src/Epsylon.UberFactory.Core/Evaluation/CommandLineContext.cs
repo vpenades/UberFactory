@@ -65,13 +65,13 @@ namespace Epsylon.UberFactory.Evaluation
 
         private Microsoft.Extensions.Logging.ILoggerFactory _Logger;
 
-        private readonly string _TargetTask;
+        private readonly string _TargetTask; // BUILD | SIMULATE
 
         private readonly PathString _SrcDir;
         private readonly string _SrcMask;   // filter, it can be: "content.UberFactory" "*.UberFactory" "content*.UberFactory" , etc
-
+        
         private readonly PathString _OutDir;
-        private readonly PathString _TmpDir;
+        private readonly PathString _TmpDir;        
 
         private readonly string _Configuration;
 
@@ -135,7 +135,12 @@ namespace Epsylon.UberFactory.Evaluation
                 var plugins = evalPlugins(document, prjDir);
                 
                 // create build context
-                var buildSettings = BuildContext.Create(_Configuration, prjDir, dstDirPath);                
+
+                var buildSettings = _TargetTask == "SIMULATE"
+                    ?
+                    BuildContext.CreateSimulator(_Configuration,prjDir)
+                    :
+                    BuildContext.Create(_Configuration, prjDir, dstDirPath);                
 
                 // do build
                 ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);                

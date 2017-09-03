@@ -88,7 +88,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public static BuildContext Create(BuildContext other, PathString td)
         {
-            return new BuildContext(other.Configuration, other.SourceDirectory, td);
+            return new BuildContext(other.Configuration, other.SourceDirectory, td, other._SimulateOutput);
         }
 
         public static BuildContext Create(string cfg, PathString sd) { return Create(cfg, sd, PathString.Empty); }
@@ -97,22 +97,33 @@ namespace Epsylon.UberFactory.Evaluation
         {
             var xcfg = cfg?.Split('.').ToArray();
 
-            return new BuildContext(xcfg, sd, td);
-        }            
+            return new BuildContext(xcfg, sd, td, false);
+        }
 
-        private BuildContext(string[] cfg, PathString sd, PathString td)
+        public static BuildContext CreateSimulator(string cfg, PathString sd)
+        {
+            var xcfg = cfg?.Split('.').ToArray();
+
+            return new BuildContext(xcfg, sd, PathString.Empty, true);
+        }
+
+        private BuildContext(string[] cfg, PathString sd, PathString td, bool simulateOutput)
         {
             _Configuration = cfg ?? (new string[0]);
             _SourceDirectoryAbsPath = sd;
             _TargetDirectoryAbsPath = td;
+            _SimulateOutput = simulateOutput;
 
-            if (string.IsNullOrWhiteSpace(_TargetDirectoryAbsPath))
+            if (!_SimulateOutput)
             {
-                var targetDir = System.IO.Path.Combine(_SourceDirectoryAbsPath, "bin");                
+                if (string.IsNullOrWhiteSpace(_TargetDirectoryAbsPath))
+                {
+                    var targetDir = System.IO.Path.Combine(_SourceDirectoryAbsPath, "bin");
 
-                if (IsValidConfiguration(_Configuration)) targetDir = System.IO.Path.Combine(targetDir, string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), _Configuration));
+                    if (IsValidConfiguration(_Configuration)) targetDir = System.IO.Path.Combine(targetDir, string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), _Configuration));
 
-                _TargetDirectoryAbsPath = new PathString(targetDir);                
+                    _TargetDirectoryAbsPath = new PathString(targetDir);
+                }
             }
         }
 
@@ -120,17 +131,19 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region data
 
-        public const Char ConfigurationSeparator = '.';            
+        public const Char ConfigurationSeparator = '.';
             
-        private readonly String[] _Configuration;            
+        private readonly String[] _Configuration;
         private readonly PathString _SourceDirectoryAbsPath;
-        private readonly PathString _TargetDirectoryAbsPath;        
+        private readonly PathString _TargetDirectoryAbsPath;
+
+        private bool _SimulateOutput;
 
         #endregion
 
         #region properties
 
-        public String[] Configuration       => _Configuration;
+        public String[] Configuration       => _Configuration;        
 
         public string ConfigurationJoined   => string.Join(ConfigurationSeparator.ToString(), _Configuration);
 
@@ -153,10 +166,14 @@ namespace Epsylon.UberFactory.Evaluation
                 if (!IsValidConfiguration(_Configuration)) return "Invalid Configuration";
 
                 if (!_SourceDirectoryAbsPath.IsValidDirectoryAbsolutePath) return "Invalid Source Directory";
-                if (!_TargetDirectoryAbsPath.IsValidDirectoryAbsolutePath) return "Invalid Target Directory";
 
-                // TODO: have a "-DisableSourceTargetDirCollisionCheck" to allow the same (for self-generated code)
-                if (string.Equals(_SourceDirectoryAbsPath, _TargetDirectoryAbsPath, StringComparison.CurrentCultureIgnoreCase)) return "Source and Target directories must be different";                    
+                if (!_SimulateOutput) // if we're simulating output, we don't require to test it
+                {
+                    if (!_TargetDirectoryAbsPath.IsValidDirectoryAbsolutePath) return "Invalid Target Directory";
+
+                    // TODO: have a "-DisableSourceTargetDirCollisionCheck" to allow the same (for self-generated code)
+                    if (string.Equals(_SourceDirectoryAbsPath, _TargetDirectoryAbsPath, StringComparison.CurrentCultureIgnoreCase)) return "Source and Target directories must be different";
+                }
 
                 if (!System.IO.Directory.Exists(_SourceDirectoryAbsPath)) return "Source Directory doesn't exist";
 
@@ -237,7 +254,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         public SDK.ExportContext GetExportContext(Uri absoluteUri)
         {
-            // if we're in "simulation mode" we should create a _ReportModeExportContext instead
+            if (_SimulateOutput) _SimulateExportContext.Create(absoluteUri, _TargetDirectoryAbsPath);
+            
             return _ExportContext.Create(absoluteUri, _TargetDirectoryAbsPath);
         }
 
