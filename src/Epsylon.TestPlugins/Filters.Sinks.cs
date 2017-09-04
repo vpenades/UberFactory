@@ -52,7 +52,7 @@ namespace Epsylon.TestPlugins
 
         protected override string GetFileExtension()
         {
-            return "Text File|*.txt";
+            return "txt";
         }
 
         protected override void WriteFile(SDK.ExportContext stream)

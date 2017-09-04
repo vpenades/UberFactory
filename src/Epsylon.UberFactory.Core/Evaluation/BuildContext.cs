@@ -82,13 +82,13 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion
     }
 
-    public sealed class BuildContext : SDK.IBuildContext
+    public abstract class BuildContext : SDK.IBuildContext
     {
         #region lifecycle
 
-        public static BuildContext Create(BuildContext other, PathString td)
+        public static BuildContext Create(RealBuildContext other, PathString td)
         {
-            return new BuildContext(other.Configuration, other.SourceDirectory, td, other._SimulateOutput);
+            return new RealBuildContext(other.Configuration, other.SourceDirectory, td);
         }
 
         public static BuildContext Create(string cfg, PathString sd) { return Create(cfg, sd, PathString.Empty); }
@@ -97,38 +97,20 @@ namespace Epsylon.UberFactory.Evaluation
         {
             var xcfg = cfg?.Split('.').ToArray();
 
-            return new BuildContext(xcfg, sd, td, false);
+            return new RealBuildContext(xcfg, sd, td);
         }
 
         public static BuildContext CreateSimulator(string cfg, PathString sd)
         {
             var xcfg = cfg?.Split('.').ToArray();
 
-            return new BuildContext(xcfg, sd, PathString.Empty, true);
+            return new TestBuildContext(xcfg, sd);
         }
 
-        private BuildContext(string[] cfg, PathString sd, PathString td, bool simulateOutput)
+        protected BuildContext(string[] cfg, PathString sd)
         {
             _Configuration = cfg ?? (new string[0]);
             _SourceDirectoryAbsPath = sd;
-            _TargetDirectoryAbsPath = td;
-            _SimulateOutput = simulateOutput;
-
-            if (!_SimulateOutput)
-            {
-                if (string.IsNullOrWhiteSpace(_TargetDirectoryAbsPath))
-                {
-                    var targetDir = System.IO.Path.Combine(_SourceDirectoryAbsPath, "bin");
-
-                    if (IsValidConfiguration(_Configuration)) targetDir = System.IO.Path.Combine(targetDir, string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), _Configuration));
-
-                    _TargetDirectoryAbsPath = new PathString(targetDir);
-                }
-            }
-            else
-            {
-                _Checksum = System.Security.Cryptography.MD5.Create();
-            }
         }
 
         #endregion
@@ -138,13 +120,7 @@ namespace Epsylon.UberFactory.Evaluation
         public const Char ConfigurationSeparator = '.';
             
         private readonly String[] _Configuration;
-        private readonly PathString _SourceDirectoryAbsPath;
-        private readonly PathString _TargetDirectoryAbsPath;
-
-        private readonly bool _SimulateOutput;
-        private readonly System.Security.Cryptography.MD5 _Checksum;
-
-        private readonly Dictionary<string, string> _SimulatedOutputFiles = new Dictionary<string, string>();
+        private readonly PathString _SourceDirectoryAbsPath;        
 
         #endregion
 
@@ -157,36 +133,11 @@ namespace Epsylon.UberFactory.Evaluation
         /// <summary>
         /// this is typically the directory where the project and source files are located
         /// </summary>
-        public PathString SourceDirectory   => _SourceDirectoryAbsPath;
+        public PathString SourceDirectory   => _SourceDirectoryAbsPath;        
 
-        /// <summary>
-        /// this is typically the directory where generated files are saved
-        /// </summary>
-        public PathString TargetDirectory   => _TargetDirectoryAbsPath;
+        public bool CanBuild                => CurrentError == null;
 
-        public bool CanBuild                => CurrentError == null;            
-
-        public String CurrentError
-        {
-            get
-            {
-                if (!IsValidConfiguration(_Configuration)) return "Invalid Configuration";
-
-                if (!_SourceDirectoryAbsPath.IsValidDirectoryAbsolutePath) return "Invalid Source Directory";
-
-                if (!_SimulateOutput) // if we're simulating output, we don't require to test it
-                {
-                    if (!_TargetDirectoryAbsPath.IsValidDirectoryAbsolutePath) return "Invalid Target Directory";
-
-                    // TODO: have a "-DisableSourceTargetDirCollisionCheck" to allow the same (for self-generated code)
-                    if (string.Equals(_SourceDirectoryAbsPath, _TargetDirectoryAbsPath, StringComparison.CurrentCultureIgnoreCase)) return "Source and Target directories must be different";
-                }
-
-                if (!System.IO.Directory.Exists(_SourceDirectoryAbsPath)) return "Source Directory doesn't exist";
-
-                return null;
-            }
-        }
+        public String CurrentError => GetCurrentError();
 
         #endregion
 
@@ -218,13 +169,9 @@ namespace Epsylon.UberFactory.Evaluation
             return null;
         }        
 
-        public PathString MakeRelativeToSource(string absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }
+        public PathString MakeRelativeToSource(string absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }        
 
-        public PathString MakeRelativeToTarget(string absFilePath) { return _TargetDirectoryAbsPath.MakeRelativePath(absFilePath); }
-
-        public PathString MakeAbsoluteToSource(string relFilePath) { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }
-
-        public PathString MakeAbsoluteToTarget(string relFilePath) { return _TargetDirectoryAbsPath.MakeAbsolutePath(relFilePath); }        
+        public PathString MakeAbsoluteToSource(string relFilePath) { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }        
 
         #endregion
 
@@ -237,7 +184,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public string GetRelativeToTarget(Uri absoluteUri)
         {
-            return _TargetDirectoryAbsPath.MakeRelativePath(absoluteUri.ToFriendlySystemPath());
+            return TargetDirectory.MakeRelativePath(absoluteUri.ToFriendlySystemPath());
         }
 
         public Uri GetSourceAbsoluteUri(string relativePath)
@@ -249,7 +196,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public Uri GetTargetAbsoluteUri(string relativePath)
         {
-            var absPath = _TargetDirectoryAbsPath.MakeAbsolutePath(relativePath);
+            var absPath = TargetDirectory.MakeAbsolutePath(relativePath);
 
             return new Uri(absPath, UriKind.Absolute);
         }       
@@ -259,14 +206,85 @@ namespace Epsylon.UberFactory.Evaluation
             return _ImportContext.Create(absoluteUri);
         }
 
-        public SDK.ExportContext GetExportContext(Uri absoluteUri)
+        /// <summary>
+        /// this is typically the directory where generated files are saved
+        /// </summary>
+        public abstract PathString TargetDirectory { get; }
+
+        public PathString MakeRelativeToTarget(string absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }
+
+        public PathString MakeAbsoluteToTarget(string relFilePath) { return TargetDirectory.MakeAbsolutePath(relFilePath); }
+
+        public abstract SDK.ExportContext GetExportContext(Uri absoluteUri);
+
+        protected virtual string GetCurrentError()
         {
-            if (_SimulateOutput)
+            if (!IsValidConfiguration(_Configuration)) return "Invalid Configuration";
+
+            if (!_SourceDirectoryAbsPath.IsValidDirectoryAbsolutePath) return "Invalid Source Directory";
+
+            if (!System.IO.Directory.Exists(_SourceDirectoryAbsPath)) return "Source Directory doesn't exist";
+
+            return null;
+        }
+
+        #endregion
+    }
+
+    public sealed class RealBuildContext : BuildContext
+    {
+        internal RealBuildContext(string[] cfg, PathString sd, PathString td) : base(cfg,sd)
+        {
+            _TargetDirectoryAbsPath = td;
+
+            if (string.IsNullOrWhiteSpace(_TargetDirectoryAbsPath))
             {
-                _SimulateExportContext.Create(absoluteUri, _TargetDirectoryAbsPath, _NotifyCreateFileSimulation);
+                var targetDir = System.IO.Path.Combine(SourceDirectory, "bin");
+
+                if (IsValidConfiguration(Configuration)) targetDir = System.IO.Path.Combine(targetDir, string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), Configuration));
+
+                _TargetDirectoryAbsPath = new PathString(targetDir);
             }
-            
+        }
+
+        private readonly PathString _TargetDirectoryAbsPath;
+
+        public override PathString TargetDirectory => _TargetDirectoryAbsPath;
+
+        public override SDK.ExportContext GetExportContext(Uri absoluteUri)
+        {
             return _ExportContext.Create(absoluteUri, _TargetDirectoryAbsPath);
+        }
+
+        protected override string GetCurrentError()
+        {
+            var err = base.GetCurrentError(); if (err != null) return err;
+
+            if (!TargetDirectory.IsValidDirectoryAbsolutePath) return "Invalid Target Directory";
+
+            // TODO: have a "-DisableSourceTargetDirCollisionCheck" to allow the same (for self-generated code)
+            if (string.Equals(SourceDirectory, TargetDirectory, StringComparison.CurrentCultureIgnoreCase)) return "Source and Target directories must be different";
+
+            return null;
+        }
+    }
+
+    public sealed class TestBuildContext : BuildContext
+    {
+        internal TestBuildContext(string[] cfg, PathString sd) : base(cfg,sd)
+        {
+            _Checksum = System.Security.Cryptography.MD5.Create();
+        }
+
+        private readonly System.Security.Cryptography.MD5 _Checksum;
+
+        private readonly Dictionary<string, string> _SimulatedOutputFiles = new Dictionary<string, string>();
+
+        public override PathString TargetDirectory => new PathString(System.IO.Path.GetTempPath());
+
+        public override SDK.ExportContext GetExportContext(Uri absoluteUri)
+        {            
+            return _SimulateExportContext.Create(absoluteUri, _NotifyCreateFileSimulation);           
         }
 
         private void _NotifyCreateFileSimulation(string name, Byte[] data)
@@ -278,6 +296,5 @@ namespace Epsylon.UberFactory.Evaluation
             _SimulatedOutputFiles[name] = b64hash;
         }
 
-        #endregion
-    }    
+    }
 }

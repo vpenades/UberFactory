@@ -35,6 +35,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         public static Assembly LoadAssemblyFromFilePath(string absoluteFilePath)
         {
+            if (!System.IO.File.Exists(absoluteFilePath)) return null;
+
             return AssemblyLoadContext.Default.LoadFromAssemblyPath(absoluteFilePath);
         }
 
