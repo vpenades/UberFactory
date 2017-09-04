@@ -125,6 +125,10 @@ namespace Epsylon.UberFactory.Evaluation
                     _TargetDirectoryAbsPath = new PathString(targetDir);
                 }
             }
+            else
+            {
+                _Checksum = System.Security.Cryptography.MD5.Create();
+            }
         }
 
         #endregion
@@ -137,7 +141,10 @@ namespace Epsylon.UberFactory.Evaluation
         private readonly PathString _SourceDirectoryAbsPath;
         private readonly PathString _TargetDirectoryAbsPath;
 
-        private bool _SimulateOutput;
+        private readonly bool _SimulateOutput;
+        private readonly System.Security.Cryptography.MD5 _Checksum;
+
+        private readonly Dictionary<string, string> _SimulatedOutputFiles = new Dictionary<string, string>();
 
         #endregion
 
@@ -254,9 +261,21 @@ namespace Epsylon.UberFactory.Evaluation
 
         public SDK.ExportContext GetExportContext(Uri absoluteUri)
         {
-            if (_SimulateOutput) _SimulateExportContext.Create(absoluteUri, _TargetDirectoryAbsPath);
+            if (_SimulateOutput)
+            {
+                _SimulateExportContext.Create(absoluteUri, _TargetDirectoryAbsPath, _NotifyCreateFileSimulation);
+            }
             
             return _ExportContext.Create(absoluteUri, _TargetDirectoryAbsPath);
+        }
+
+        private void _NotifyCreateFileSimulation(string name, Byte[] data)
+        {
+            var hash = _Checksum.ComputeHash(data);
+
+            var b64hash = Convert.ToBase64String(hash);
+
+            _SimulatedOutputFiles[name] = b64hash;
         }
 
         #endregion

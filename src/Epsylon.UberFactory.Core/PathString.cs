@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Epsylon.UberFactory
 {
+    // https://blogs.msdn.microsoft.com/jeremykuhne/2016/04/21/path-normalization/
+
     /// <summary>
     /// Essentially a text String, but with methods specialised for file and directory path operations
     /// </summary>
@@ -14,7 +16,7 @@ namespace Epsylon.UberFactory
     {
         #region lifecycle
 
-        public PathString(Uri p) { _Path = p==null ? null: p.ToFriendlySystemPath(); }
+        public PathString(Uri p) { _Path = p?.ToFriendlySystemPath(); }
 
         public PathString(string p) { _Path = p; }
 
@@ -162,11 +164,17 @@ namespace Epsylon.UberFactory
 
         public PathString MakeAbsolutePath(string relfilePath)
         {
-            if (string.IsNullOrWhiteSpace(relfilePath)) return this;
+            if (string.IsNullOrWhiteSpace(relfilePath)) return this;            
 
-            var directoryPath = _Path;
+            var newPath = System.IO.Path.Combine(_Path, relfilePath);
 
-            return new PathString( System.IO.Path.Combine(directoryPath, relfilePath) );
+            // todo: split into parts and remove ".." and previous element
+
+            newPath = System.IO.Path.GetFullPath(newPath);
+            
+
+
+            return new PathString(newPath);
         }        
 
         public PathString MakeRelativePath(string absFilePath)

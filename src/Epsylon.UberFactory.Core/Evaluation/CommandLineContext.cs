@@ -12,13 +12,13 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle        
 
-        public static CommandLineContext Create(string[] args)
+        public static CommandLineContext Create(params string[] args)
         {
             if (args == null || args.Length == 0) throw new ArgumentNullException(nameof(args));
 
-            // todo: check if first arg is .exe and skip it
+            // todo: check if first arg is .exe and skip it            
 
-            var prjPath = new PathString(args[0]);
+            var prjPath = new PathString(args.Where(item => !item.StartsWith("-")).First());
             prjPath = prjPath.AsAbsolute();
 
             var outDir = new PathString(_GetCommandArgument(args, "-OUT:", "Bin")).AsAbsolute();
@@ -106,19 +106,21 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API        
 
-        public static void Build(string[] args)
+        public static IEnumerable<BuildContext> Build(params string[] args)
         {
             using (var context = Create(args))
             {
                 var monitor = MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
                 
-                context.Build(_LoadPluginsFunc, monitor);
+                return context.Build(_LoadPluginsFunc, monitor);
             }
         }
 
-        public void Build(Func<ProjectDOM.Project, PathString, PluginManager> evalPlugins, SDK.IMonitorContext monitor)
+        public IEnumerable<BuildContext> Build(Func<ProjectDOM.Project, PathString, PluginManager> evalPlugins, SDK.IMonitorContext monitor)
         {
             _CancelRequested = false;
+
+            var bbbccc = new List<BuildContext>();
 
             foreach (var filePath in System.IO.Directory.GetFiles(_SrcDir, _SrcMask))
             {
@@ -143,8 +145,12 @@ namespace Epsylon.UberFactory.Evaluation
                     BuildContext.Create(_Configuration, prjDir, dstDirPath);                
 
                 // do build
-                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);                
+                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);
+
+                bbbccc.Add(buildSettings);
             }
+
+            return bbbccc;
         }
 
         private static IEnumerable<System.Reflection.Assembly> GetProjectAssemblies(ProjectDOM.Project project, PathString prjDir)
