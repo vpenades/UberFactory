@@ -8,8 +8,6 @@ namespace Epsylon.UberFactory
     [TestClass]
     public class ProjectDomTests
     {
-        
-
         [TestMethod]
         public void DocumentFileLoadCheck()
         {

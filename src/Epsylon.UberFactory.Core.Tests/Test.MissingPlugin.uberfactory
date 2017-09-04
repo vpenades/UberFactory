@@ -1,0 +1,52 @@
+<Project Version="1.0" xmlns="http://www.uberfactory.com">
+  <Properties />
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>e1c0ce5f-aa62-4056-8d13-c8946a7256fe</RootNodeId>
+      </Properties>
+      <Node Id="e1c0ce5f-aa62-4056-8d13-c8946a7256fe">
+        <Properties>
+          <ClassName>MainSettings1</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Task>
+    <Properties>
+      <Title>New Task 1</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>c70a3371-77e7-4cbb-9e29-4c1bd6561670</RootNodeId>
+      </Properties>
+      <Node Id="c70a3371-77e7-4cbb-9e29-4c1bd6561670">
+        <Properties>
+          <ClassName>IntegerWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Source>58e4122b-7594-4af7-90bd-2eb5f274b4cd</Source>
+            <FileName>Task1</FileName>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="58e4122b-7594-4af7-90bd-2eb5f274b4cd">
+        <Properties>
+          <ClassName>AssignIntegerValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value>5</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+  <PluginReference>
+    <Properties>
+      <RelativePath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\MISSINGPLUGIN.dll</RelativePath>
+    </Properties>
+  </PluginReference>
+</Project>
