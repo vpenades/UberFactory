@@ -140,7 +140,7 @@ namespace Epsylon.UberFactory.Evaluation
 
                 var buildSettings = _TargetTask == "SIMULATE"
                     ?
-                    BuildContext.CreateSimulator(_Configuration,prjDir)
+                    BuildContext.CreateWithSimulatedOutput(_Configuration,prjDir)
                     :
                     BuildContext.Create(_Configuration, prjDir, dstDirPath);                
 

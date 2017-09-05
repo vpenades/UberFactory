@@ -76,7 +76,7 @@ namespace Epsylon.UberFactory
                 DereferenceLinks = true
             };
 
-            if (startDir.DirectoryExit) dlg.InitialDirectory = startDir;
+            if (startDir.DirectoryExists) dlg.InitialDirectory = startDir;
 
             if (!dlg.ShowDialog().Value) return PathString.Empty;
 
@@ -87,7 +87,7 @@ namespace Epsylon.UberFactory
         {
             var dlg = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
 
-            if (startDir.DirectoryExit) dlg.DefaultDirectory = startDir;
+            if (startDir.DirectoryExists) dlg.DefaultDirectory = startDir;
 
             dlg.IsFolderPicker = true;
             dlg.RestoreDirectory = true;

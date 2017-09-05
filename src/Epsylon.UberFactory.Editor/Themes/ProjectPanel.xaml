@@ -48,7 +48,7 @@
             </DockPanel>
 
             <DockPanel>
-                <Button Content="{StaticResource _TestIcon}" Command="{Binding TestAllCmd}" ToolTip="Test" IsEnabled="{Binding CanBuild}" />
+                <Button Content="{StaticResource _TestIcon}" Command="{Binding TestAllCmd}" IsEnabled="{Binding CanBuild}" ToolTip="Test" />
                 <Button Content="{StaticResource _BuildIcon}" Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}" >
                     <Button.ToolTip>
                         <TextBlock>

@@ -121,7 +121,8 @@ namespace Epsylon.UberFactory
 
                 DeleteActiveDocumentCmd = new RelayCommand<BindableBase>(_DeleteItem);
 
-                BuildAllCmd = new RelayCommand(Build);                
+                BuildAllCmd = new RelayCommand(Build);
+                TestAllCmd = new RelayCommand(Test);
             }
 
             #endregion
@@ -139,6 +140,8 @@ namespace Epsylon.UberFactory
             public ICommand DeleteActiveDocumentCmd { get; private set; }
 
             public ICommand BuildAllCmd { get; private set; }
+
+            public ICommand TestAllCmd { get; private set; }
 
             #endregion
 
@@ -271,11 +274,13 @@ namespace Epsylon.UberFactory
 
             #region API
 
-            public Evaluation.BuildContext GetBuildSettings()
+            public Evaluation.BuildContext GetBuildSettings(bool isTest=false)
             {
                 var cfg = _ActiveConfiguration;
 
                 if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;
+
+                if (isTest) return Evaluation.BuildContext.CreateWithSimulatedOutput(cfg, _DocumentPath.DirectoryPath);
 
                 return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath);
             }
@@ -342,11 +347,15 @@ namespace Epsylon.UberFactory
 
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }
 
-            public void Build()
-            {
-                if (!CanBuild) { _Dialogs.ShowErrorDialog("Can't build"); return; }                
+            public void Test() { _BuildOrTest(true); }
 
-                var bs = GetBuildSettings();
+            public void Build() { _BuildOrTest(false); }
+
+            private void _BuildOrTest(bool isTest)
+            {
+                if (!CanBuild) { _Dialogs.ShowErrorDialog("Can't build"); return; }
+
+                var bs = GetBuildSettings(isTest);
 
                 // bs = SDK.BuildSettings.Create(bs, bs.SourceDirectory + "\\bin\\debug\\");
 
@@ -367,7 +376,7 @@ namespace Epsylon.UberFactory
                         xlogger.AddProvider(_Logger);
 
                         var monitor = Evaluation.MonitorContext.Create(xlogger, ctoken, progress);
-                        
+
                         ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
                     }
                 };
@@ -375,8 +384,8 @@ namespace Epsylon.UberFactory
                 try
                 {
                     buildTask.RunWithDialog();
-                }                
-                catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     if (ex is TaskCanceledException || ex is OperationCanceledException)
                     {
@@ -390,7 +399,7 @@ namespace Epsylon.UberFactory
 
                     // System.Windows.MessageBox.Show(System.Windows.Application.Current.MainWindow, "Build Error");
                 }
-            }            
+            }
 
             private void _ReloadPlugins()
             {

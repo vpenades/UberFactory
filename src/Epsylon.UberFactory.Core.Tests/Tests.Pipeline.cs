@@ -57,8 +57,10 @@ namespace Epsylon.UberFactory
         {
             // create a pipeline evaluator
 
+            var srcDir = new PathString(System.Environment.CurrentDirectory);
+
             var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null);
-            evaluator.Setup(Evaluation.BuildContext.Create(configuration, new PathString("")));
+            evaluator.Setup(Evaluation.BuildContext.CreateWithSimulatedOutput(configuration, srcDir));
 
             // run evaluation
 

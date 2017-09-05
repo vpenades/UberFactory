@@ -203,7 +203,7 @@ namespace Epsylon.UberFactory
 
         public bool FileExists => _Path == null ? false: System.IO.File.Exists(_Path);
 
-        public bool DirectoryExit => _Path == null ? false : System.IO.Directory.Exists(_Path);
+        public bool DirectoryExists => _Path == null ? false : System.IO.Directory.Exists(_Path);
 
         public bool HasExtension(string ext)
         {
