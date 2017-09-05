@@ -43,7 +43,10 @@ namespace Epsylon.UberFactory
             var values = properties.GetArray(key, defval);
             if (values == null) values = new string[0];
 
-            return values.Select(item => _ParseGuidReference(item)).ToArray();
+            return values
+                .Select(item => _ParseGuidReference(item))
+                .Where(item => item != Guid.Empty)
+                .ToArray();
         }
 
         public static void SetNodeIds(this IPropertyProvider properties, string key, params Guid[] values)

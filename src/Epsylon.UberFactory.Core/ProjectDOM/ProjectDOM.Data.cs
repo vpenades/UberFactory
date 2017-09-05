@@ -155,6 +155,8 @@ namespace Epsylon.UberFactory
 
             #region API
 
+            public IEnumerable<string> Keys => _Properties.Select(item => item.Key);
+
             public void CopyTo(PropertyGroup other)
             {
                 other._Properties.AddRange(this._Properties);

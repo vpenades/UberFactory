@@ -9,6 +9,7 @@ namespace Epsylon.TestPlugins
     using UberFactory;
 
     [SDK.ContentNode(nameof(AssignIntegerValue))]
+    [SDK.ContentMetaData("Title","Value")]
     public sealed class AssignIntegerValue : SDK.ContentFilter<int>
     {
         [SDK.InputValue(nameof(Value))]        
@@ -18,6 +19,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(AddIntegerValues))]
+    [SDK.ContentMetaData("Title", "A + B")]
     public sealed class AddIntegerValues : SDK.ContentFilter<int>
     {
         [SDK.InputNode(nameof(Value1))]
@@ -30,6 +32,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(SubstractIntegerValues))]
+    [SDK.ContentMetaData("Title", "A - B")]
     public sealed class SubstractIntegerValues : SDK.ContentFilter<int>
     {
         [SDK.InputNode(nameof(Value1))]
@@ -42,6 +45,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(MultiplyIntegerValues))]
+    [SDK.ContentMetaData("Title", "A * B")]
     public sealed class MultiplyIntegerValues : SDK.ContentFilter<int>
     {
         [SDK.InputNode(nameof(Value1))]
@@ -54,6 +58,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(DivideIntegerValues))]
+    [SDK.ContentMetaData("Title", "A / B")]
     public sealed class DivideIntegerValues : SDK.ContentFilter<int>
     {
         [SDK.InputNode(nameof(Value1))]

@@ -36,9 +36,7 @@
             </MenuItem>
         </Menu>        
 
-        <StatusBar DockPanel.Dock="Top">
-            
-            <TextBlock Text="{Binding TargetDirectory}" />
+        <StatusBar DockPanel.Dock="Top">            
 
             <Button Content="{StaticResource _SaveIcon}" Command="{Binding SaveCmd}" ToolTip="Save" />
 
@@ -47,8 +45,22 @@
             <DockPanel>
                 <Button Content="{StaticResource _ConfigurationsIcon}" Command="{Binding EditConfigurationsCmd}" DockPanel.Dock="Right" ToolTip="Show Configuration Manager" />
                 <ComboBox ItemsSource="{Binding Configurations.All}" SelectedValue="{Binding ActiveConfiguration}" />
-            </DockPanel>            
-            <Button Content="{StaticResource _BuildIcon}" Command="{Binding BuildAllCmd}" ToolTip="Build" IsEnabled="{Binding CanBuild}" />
+            </DockPanel>
+
+            <DockPanel>
+                <Button Content="{StaticResource _TestIcon}" Command="{Binding TestAllCmd}" ToolTip="Test" IsEnabled="{Binding CanBuild}" />
+                <Button Content="{StaticResource _BuildIcon}" Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}" >
+                    <Button.ToolTip>
+                        <TextBlock>
+                            <Run Text="Build to:" />
+                            <Run Text="{Binding TargetDirectory, Mode=OneWay}" />
+                        </TextBlock>
+                    </Button.ToolTip>
+                </Button>
+
+                
+            </DockPanel>
+            
 
         </StatusBar>
 

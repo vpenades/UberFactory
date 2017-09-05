@@ -17,6 +17,7 @@
     <sys:String x:Key="_ExitIcon">❎</sys:String>
     <sys:String x:Key="_ConfigurationsIcon">🗃</sys:String>
     <sys:String x:Key="_PluginsIcon">🔌</sys:String>
+    <sys:String x:Key="_TestIcon">▷</sys:String>
     <sys:String x:Key="_BuildIcon">▶</sys:String>
     <sys:String x:Key="_AboutIcon">❓</sys:String>
 

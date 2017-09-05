@@ -85,7 +85,7 @@ namespace Epsylon.UberFactory.Evaluation
     /// </summary>
     sealed class _SimulateExportContext : _ExportContext
     {
-        public new static _SimulateExportContext Create(Uri uri, Action<string, Byte[]> fileCreationNotifier)
+        public static _SimulateExportContext Create(Uri uri, Action<string, Byte[]> fileCreationNotifier)
         {
             // TODO: ensure uri is within the specified target path
 

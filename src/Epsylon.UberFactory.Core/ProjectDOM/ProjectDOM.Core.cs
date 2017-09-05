@@ -136,6 +136,32 @@ namespace Epsylon.UberFactory
                 }
             }
 
+            public bool ReferencesNode(Node node)
+            {
+                if (node == null) return false;
+                if (node == this) return true;
+
+                // due to the nature of the DOM, we cannot be sure what's an actual Node
+                // reference, or simply some user's text input, so we have to check ALL
+                // the properties for ALL configurations.
+
+                foreach (var cfg in AllConfigurations)
+                {
+                    var splitCfg = cfg.Split(Evaluation.BuildContext.ConfigurationSeparator);
+
+                    var props = _GetConfiguration(splitCfg).Properties;
+
+                    foreach(var key in props.Keys)
+                    {
+                        var ids = props.GetReferenceIds(key);
+
+                        if (ids.Contains(node.Identifier)) return true;
+                    }                    
+                }
+
+                return false;
+            }
+
             #endregion
         }
 
@@ -185,7 +211,25 @@ namespace Epsylon.UberFactory
                 return f.Identifier;
             }
 
-            public void RemoveNode(Node f) { RemoveLogicalChild(f); }            
+            public void RemoveNode(Node f) { RemoveLogicalChild(f); }
+
+            public void RemoveIsolatedNodes()
+            {
+                var isolatedNodes = Nodes
+                    .Where(item => !_IsBeingReferenced(item))
+                    .ToArray();
+
+                foreach (var n in isolatedNodes) RemoveNode(n);
+            }
+
+            private bool _IsBeingReferenced(Node node)
+            {
+                if (node.Identifier == RootIdentifier) return true;
+
+                var otherNodes = Nodes.Where(item => item != node).ToArray();
+
+                return otherNodes.Any(item => item.ReferencesNode(node));
+            }
 
             #endregion
         }

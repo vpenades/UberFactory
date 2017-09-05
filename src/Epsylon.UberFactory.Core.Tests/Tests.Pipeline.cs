@@ -34,6 +34,23 @@ namespace Epsylon.UberFactory
             Assert.AreEqual(10, result);
         }
 
+        [TestMethod]
+        public void RemoveIsolatedNodeTest()
+        {
+            var pipeline = TestPipelinesFactory.CreateArithmeticPipeline();
+
+            var nodeCount = pipeline.Nodes.Count();
+
+            var isolatedNodeId = pipeline.AddNode("TestFilter1");
+
+            Assert.IsTrue(pipeline.Nodes.Select(item => item.Identifier).Contains(isolatedNodeId));
+
+            pipeline.RemoveIsolatedNodes();
+
+            Assert.IsFalse(pipeline.Nodes.Select(item => item.Identifier).Contains(isolatedNodeId));
+            Assert.AreEqual(nodeCount, pipeline.Nodes.Count());
+        }
+
 
 
         private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration)
