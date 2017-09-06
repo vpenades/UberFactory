@@ -151,6 +151,10 @@
     <Compile Include="Themes\Dialog.TaskMonitor.xaml.cs">
       <DependentUpon>Dialog.TaskMonitor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Themes\TaskMonitorWindow.ProgressDialog.xaml.cs">
+      <DependentUpon>TaskMonitorWindow.ProgressDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\TaskMonitorWindow.cs" />
     <Compile Include="View.Application.cs" />
     <Compile Include="EventLogger.cs" />
     <Compile Include="_Dialogs.cs" />
@@ -249,6 +253,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Dialog.TaskMonitor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\TaskMonitorWindow.ProgressDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

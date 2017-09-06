@@ -15,8 +15,9 @@ using System.Windows.Shapes;
 namespace Epsylon.UberFactory.Themes
 {
     using System.ComponentModel;
-    using TASKACTION = Action<System.Threading.CancellationToken, IProgress<float>>;
-    using TASKFUNCTION = Func<System.Threading.CancellationToken, IProgress<float>, Object>;
+    using System.Reflection;
+    using TASKACTION = Action<System.Threading.CancellationToken, Action<Object>>;
+    using TASKFUNCTION = Func<System.Threading.CancellationToken, Action<Object>, Object>;
 
     // http://www.codeproject.com/Articles/137552/WPF-TaskDialog-Wrapper-and-Emulator
 
@@ -28,27 +29,26 @@ namespace Epsylon.UberFactory.Themes
     // https://www.codeproject.com/Tips/247358/TaskDilaog-via-Windows-API-Code-Pack-for-Microsoft
 
 
-    public sealed partial class TaskMonitorDialog : Window, IProgress<float> , IDisposable
+    public abstract class TaskMonitorWindow : Window, IDisposable
     {
         #region lifecycle
 
         private static bool IsDesignMode => LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
-        static TaskMonitorDialog()
+        public static void RunTask<T>(TASKACTION task, Window parentWindow = null, string windowTitle = null) where T : TaskMonitorWindow, new()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TaskMonitorDialog), new FrameworkPropertyMetadata(typeof(Window)));
-        }
+            if (task == null) throw new ArgumentNullException(nameof(task));
 
-        public static void RunTask(TASKACTION task, Window parentWindow = null, string windowTitle = null)
-        {
             TASKFUNCTION func = (c, p) => { task(c, p); return null; };
 
-            RunTask(func, parentWindow, windowTitle);            
+            RunTask<T>(func, parentWindow, windowTitle);
         }
 
-        public static Object RunTask(TASKFUNCTION task, Window parentWindow = null, string windowTitle = null)
+        public static Object RunTask<T>(TASKFUNCTION task, Window parentWindow = null, string windowTitle = null) where T: TaskMonitorWindow,new()
         {
-            using (var dlg = new TaskMonitorDialog())
+            if (task == null) throw new ArgumentNullException(nameof(task));
+
+            using (var dlg = new T())
             {
                 if (parentWindow == null) parentWindow = Application.Current.MainWindow;
                 dlg.Owner = parentWindow;
@@ -67,16 +67,14 @@ namespace Epsylon.UberFactory.Themes
 
                 return result;
             }
-        }        
+        }
 
-        private TaskMonitorDialog()
+        protected TaskMonitorWindow()
         {
             if (!IsDesignMode)
             {
                 Loaded += (s, e) => this.Dispatcher.Invoke(_TaskRun);
-            }
-
-            InitializeComponent();
+            }            
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -102,7 +100,7 @@ namespace Epsylon.UberFactory.Themes
         private DateTime _TaskStart;
         private System.Threading.CancellationTokenSource _CancelSource;
 
-        private TASKFUNCTION _Task;        
+        private TASKFUNCTION _Task;
         private Object _Result;
 
         #endregion
@@ -111,16 +109,14 @@ namespace Epsylon.UberFactory.Themes
 
         private void _TaskRun()
         {
-            if (_Task == null) { this.Close(); return; }
-
             _TaskStart = DateTime.Now;
             _CancelSource = new System.Threading.CancellationTokenSource();
-            
-            Task.Run<Object>(() => _Task(_CancelSource.Token, this), _CancelSource.Token)
-                .ContinueWith(_OnTaskComplete, TaskScheduler.Current);            
+
+            Task.Run<Object>(() => _Task(_CancelSource.Token, _SendReportToWindow), _CancelSource.Token)
+                .ContinueWith(_OnTaskComplete, TaskScheduler.Current);
         }
 
-        private void _OnTaskCancelRequest(object sender, RoutedEventArgs e)
+        protected void Abort()
         {
             if (_CancelSource != null) _CancelSource.Cancel();
         }
@@ -142,33 +138,42 @@ namespace Epsylon.UberFactory.Themes
             _CancelSource = null;
 
             this.Dispatcher.Invoke(this.Close);
-        }               
-
-        void IProgress<float>.Report(float value) { _Report(value); }
-
-        private void _Report(float value)
-        {
-            if (!this.Dispatcher.CheckAccess()) { this.Dispatcher.Invoke(() => this._Report(value)); return; }
-
-            if (value < 0)
-            {
-                this.myProgressBar.IsIndeterminate = true;
-                this.myPercent.Text = string.Empty;
-            }
-            else
-            {
-                var percent = (int)(value.Clamp(0, 1) * 100.0f);
-
-                this.myProgressBar.IsIndeterminate = false;
-                this.myProgressBar.Value = percent;
-                this.myPercent.Text = percent.ToString() + "%";
-            }
-
-            var ts = DateTime.Now - _TaskStart;
-
-            this.myElapsedTime.Text = string.Format("Elapsed Time: {0:hh\\:mm\\:ss}", ts);
         }        
 
+        private void _SendReportToWindow(object value)
+        {
+            if (value == null) return;
+
+            if (!this.Dispatcher.CheckAccess()) { this.Dispatcher.Invoke(() => this.ShowReport(value)); return; }
+
+            this.ShowReport(value);
+        }
+
+        protected TimeSpan ElapsedTime => DateTime.Now - _TaskStart;
+
+        protected virtual void ShowReport(Object message)
+        {
+            _TryReportProgress(this, message);
+        }
+
+        /// <summary>
+        /// if recipient instance implements <code>IProgress with T=value</code> it casts the recipient and invokes the method
+        /// </summary>
+        /// <param name="recipient">the recipient of the message</param>
+        /// <param name="message"></param>
+        private static void _TryReportProgress(Object recipient, Object message)
+        {
+            // this is convenient... but probably not very fast
+
+            if (recipient == null || message == null) return;
+
+            var progressInterface = typeof(IProgress<>).MakeGenericType(message.GetType());            
+
+            if (!progressInterface.GetTypeInfo().IsAssignableFrom(recipient.GetType())) return;
+
+            progressInterface.GetMethod("Progress").Invoke(recipient, new Object[] { message });
+        }
+
         #endregion
-    }    
+    }
 }

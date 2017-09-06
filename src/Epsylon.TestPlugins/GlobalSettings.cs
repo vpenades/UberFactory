@@ -18,4 +18,26 @@ namespace Epsylon.TestPlugins
         [SDK.InputValue(nameof(Value2))]
         public int Value2 { get; set; }
     }
+
+    [SDK.ContentNode("MainSettings2")]
+    [SDK.ContentMetaData("Title", "Main Settings")]
+    public class MainSettings2 : SDK.ContentObject
+    {
+        [SDK.InputValue(nameof(Value1))]
+        public String Value1 { get; set; }
+
+        [SDK.InputValue(nameof(Value2))]
+        public String Value2 { get; set; }
+    }
+
+    [SDK.ContentNode("MainSettings3")]
+    [SDK.ContentMetaData("Title", "Main Settings")]
+    public class MainSettings3 : SDK.ContentObject
+    {
+        [SDK.InputNode(nameof(Value1))]
+        public int Value1 { get; set; }
+
+        [SDK.InputNode(nameof(Value2))]
+        public int Value2 { get; set; }
+    }
 }
