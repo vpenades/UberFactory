@@ -429,13 +429,21 @@ namespace Epsylon.UberFactory
 
             internal Configurations(ProjectDOM.Project prj)
             {
-                var taskQuery = prj
+                var taskNodes = prj
                     .Items
                     .OfType<ProjectDOM.Task>()
-                    .SelectMany(item => item.Pipeline.Nodes)
-                    .SelectMany(item => item.AllConfigurations);
+                    .SelectMany(item => item.Pipeline.Nodes);
 
-                _Configurations.UnionWith(taskQuery);                
+                var settingNodes = prj
+                    .Items
+                    .OfType<ProjectDOM.Settings>()
+                    .SelectMany(item => item.Pipeline.Nodes);
+
+                var nodes = taskNodes.Concat(settingNodes);
+
+                var cfgQuery = nodes.SelectMany(item => item.AllConfigurations);
+
+                _Configurations.UnionWith(cfgQuery);                
             }
 
             #endregion

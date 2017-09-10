@@ -19,7 +19,7 @@ namespace Epsylon.UberFactory.Bindings
 
         #region data
 
-        protected IPropertyProvider _Properties;
+        protected IPropertyProvider _Properties;        
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace Epsylon.UberFactory.Bindings
 
         protected void SetSingleDependency(Guid nodeId)
         {
-            _Properties.SetNodeIds(this.SerializationKey, nodeId);
+            _Properties.SetReferenceIds(this.SerializationKey, nodeId);
         }
 
         protected Guid GetSingleDependency()
@@ -48,7 +48,7 @@ namespace Epsylon.UberFactory.Bindings
 
         protected void SetMultiDependency(Guid[] nodeIds)
         {
-            _Properties.SetNodeIds(this.SerializationKey, nodeIds);
+            _Properties.SetReferenceIds(this.SerializationKey, nodeIds);
         }
 
         protected Guid[] GetMultiDependency()

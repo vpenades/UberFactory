@@ -41,6 +41,7 @@ namespace Epsylon.UberFactory
 
         }
 
+        [System.Diagnostics.DebuggerDisplay("Node {" + nameof(Node.ClassIdentifier) + "} {" + nameof(Node.Identifier) +"}")]
         public partial class Node : ObjectBase , IBindableObject
         {
             #region lifecycle
@@ -141,9 +142,14 @@ namespace Epsylon.UberFactory
                 if (node == null) return false;
                 if (node == this) return true;
 
-                // due to the nature of the DOM, we cannot be sure what's an actual Node
-                // reference, or simply some user's text input, so we have to check ALL
-                // the properties for ALL configurations.
+                // node references are simply GUID parseable strings that must match
+                // an existing node reference. But it can also happen that an end user
+                // chooses to enter a GUID to a text field, that matches that of an
+                // existing node (which teoretically should not happen since Node
+                // reference GUIDs are internally generated and should never collision
+                // with user generated GUIDs.
+
+                // In any case we have to check ALL the properties for ALL configurations.
 
                 foreach (var cfg in AllConfigurations)
                 {
@@ -165,6 +171,7 @@ namespace Epsylon.UberFactory
             #endregion
         }
 
+        [System.Diagnostics.DebuggerDisplay("Pipeline {" + nameof(Pipeline.RootIdentifier) + "}")]
         public partial class Pipeline : ObjectBase
         {            
             private const String _PROP_ROOTNODEREF = "RootNodeId";
@@ -234,6 +241,7 @@ namespace Epsylon.UberFactory
             #endregion
         }
 
+        [System.Diagnostics.DebuggerDisplay("Settings {" + nameof(Settings.ClassName) + "}")]
         public partial class Settings : Item
         {
             #region lifecycle
@@ -273,6 +281,7 @@ namespace Epsylon.UberFactory
             #endregion
         }
 
+        [System.Diagnostics.DebuggerDisplay("Task {" + nameof(Task.Title) + "}")]
         public partial class Task : Item
         {
             private const String PROP_TITLE = "Title";

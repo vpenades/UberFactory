@@ -52,6 +52,34 @@ namespace Epsylon.UberFactory
         }
 
 
+        [TestMethod]
+        public void AddDifferentNodesOnEachConfiguration()
+        {
+            // create a pipeline
+            var pipeline = new ProjectDOM.Pipeline();
+
+            // create a node and set it as root of the pipeline
+            var rootId = pipeline.AddNode("TestFilter2");
+            pipeline.RootIdentifier = rootId;
+            
+            var rootChild = pipeline.AddNode("TestFilter1");
+            var debugChild = pipeline.AddNode("TestFilter1");
+
+            var rootProps = pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root");
+            rootProps.SetReferenceIds("Value1",rootChild);
+
+            Assert.IsTrue(rootProps.GetReferenceIds("Value1").Contains(rootChild));
+
+            var debugProps = pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root","Debug");
+            debugProps.SetReferenceIds("Value1", debugChild);
+
+            Assert.IsTrue(rootProps.GetReferenceIds("Value1").Contains(rootChild));
+            Assert.IsTrue(debugProps.GetReferenceIds("Value1").Contains(debugChild));
+        }
+            
+
+
+
 
         private static Object _Evaluate(ProjectDOM.Pipeline pipeline, string configuration)
         {
@@ -120,8 +148,8 @@ namespace Epsylon.UberFactory
 
             // set root node properties
             nodeProps = pipeline.GetNode(nodeId).GetPropertiesForConfiguration("Root");
-            nodeProps.SetNodeIds("Value1", node2Id);
-            nodeProps.SetNodeIds("Value2", node3Id);
+            nodeProps.SetReferenceIds("Value1", node2Id);
+            nodeProps.SetReferenceIds("Value2", node3Id);
 
             return pipeline;
         }        
@@ -139,8 +167,8 @@ namespace Epsylon.UberFactory
             pipeline.GetNode(value2Id).GetPropertiesForConfiguration("Root").SetValue("Value", "5");
 
             var rootId = pipeline.AddNode(nameof(Epsylon.TestPlugins.AddIntegerValues));            
-            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetNodeIds("Value1", value1Id);
-            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetNodeIds("Value2", value2Id);
+            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value1", value1Id);
+            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value2", value2Id);
 
             pipeline.RootIdentifier = rootId;
 

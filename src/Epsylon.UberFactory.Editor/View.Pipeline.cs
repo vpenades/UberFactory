@@ -79,7 +79,7 @@ namespace Epsylon.UberFactory
 
             public Object Content       => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
 
-            public Boolean CanEditHierarchy => _Parent.GetBuildSettings().Configuration.Length == 1;            
+            public Boolean CanEditHierarchy => true; // _Parent.GetBuildSettings().Configuration.Length == 1;            
 
             public IPipelineViewServices PipelineServices => _Parent;
 
@@ -223,8 +223,8 @@ namespace Epsylon.UberFactory
                 {
                     var bv = propertyViews[i];
                     
-                    if (bv is Bindings.MultiDependencyBinding) propertyViews[i] = ArrayDependencyView._Create(node, (Bindings.MultiDependencyBinding)bv);
-                    if (bv is Bindings.SingleDependencyBinding) propertyViews[i] = SingleDependencyView._Create(node, (Bindings.SingleDependencyBinding)bv);                    
+                    if (bv is MultiDependencyBinding) propertyViews[i] = ArrayDependencyView._Create(node, (MultiDependencyBinding)bv);
+                    if (bv is SingleDependencyBinding) propertyViews[i] = SingleDependencyView._Create(node, (SingleDependencyBinding)bv);                    
                 }
 
                 node._BindingsViews = propertyViews;
@@ -321,7 +321,7 @@ namespace Epsylon.UberFactory
 
             #region lifecycle            
 
-            internal static SingleDependencyView _Create(Node parent, Bindings.SingleDependencyBinding binding)
+            internal static SingleDependencyView _Create(Node parent, SingleDependencyBinding binding)
             {
                 if (parent == null) return null;
                 if (binding == null) return null;                
@@ -329,7 +329,7 @@ namespace Epsylon.UberFactory
                 return new SingleDependencyView(parent, binding, -1);
             }
 
-            internal static SingleDependencyView _Create(Node parent, Bindings.MultiDependencyBinding binding, int index)
+            internal static SingleDependencyView _Create(Node parent, MultiDependencyBinding binding, int index)
             {                
                 if (parent == null) return null;
                 if (binding == null) return null;
@@ -338,7 +338,7 @@ namespace Epsylon.UberFactory
                 return new SingleDependencyView(parent, binding, index);
             }
 
-            private SingleDependencyView(Node parent, Bindings.DependencyBinding binding, int index)
+            private SingleDependencyView(Node parent, DependencyBinding binding, int index)
             {
                 _Parent = parent;
                 _Binding = binding;
@@ -346,6 +346,7 @@ namespace Epsylon.UberFactory
 
                 ChooseParameterCmd = new RelayCommand(_SetNewDependencyNode);                
                 RemoveParameterCmd = new RelayCommand(_RemoveParameter);
+                SetParameterDefaultValueCmd = new RelayCommand(_SetParameterDefaultValue);
                 ViewResultCmd = new RelayCommand(() => { var view = NodeInstance; if (view != null) view.SetAsCurrentResultView(); });
                 if (_Index >=0) RemoveElementCmd = new RelayCommand(_RemoveElement);
             }
@@ -357,6 +358,8 @@ namespace Epsylon.UberFactory
             public ICommand ChooseParameterCmd { get; private set; }            
 
             public ICommand RemoveParameterCmd { get; private set; }
+
+            public ICommand SetParameterDefaultValueCmd { get; private set; }
 
             public ICommand ViewResultCmd { get; private set; }
 
@@ -425,6 +428,13 @@ namespace Epsylon.UberFactory
                 _SetDependencyId(Guid.Empty);
             }
 
+            private void _SetParameterDefaultValue()
+            {
+                if (!_EditableBarrier()) return;
+
+                _SetDependencyId(ProjectDOM.RESETTODEFAULT);
+            }
+
             private void _SetNewDependencyNode()
             {
                 if (!_EditableBarrier()) return;
@@ -472,10 +482,10 @@ namespace Epsylon.UberFactory
 
             private void _SetDependencyId(Guid nodeId)
             {
-                if (!_EditableBarrier()) return;
+                if (!_EditableBarrier()) return;                
 
-                if (_Binding is Bindings.SingleDependencyBinding) ((Bindings.SingleDependencyBinding)_Binding).SetDependency(nodeId);
-                if (_Binding is Bindings.MultiDependencyBinding) ((Bindings.MultiDependencyBinding)_Binding).SetDependency(_Index,nodeId);
+                if (_Binding is SingleDependencyBinding) ((SingleDependencyBinding)_Binding).SetDependency(nodeId);
+                if (_Binding is MultiDependencyBinding) ((MultiDependencyBinding)_Binding).SetDependency(_Index,nodeId);
 
                 _Parent.Parent.UpdateGraph();
             }

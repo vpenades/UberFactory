@@ -38,6 +38,8 @@ namespace Epsylon.UberFactory
             return id.ToString();
         }
 
+        
+
         public static Guid[] GetReferenceIds(this IPropertyProvider properties, string key, params string[] defval)
         {
             var values = properties.GetArray(key, defval);
@@ -49,11 +51,16 @@ namespace Epsylon.UberFactory
                 .ToArray();
         }
 
-        public static void SetNodeIds(this IPropertyProvider properties, string key, params Guid[] values)
+        
+
+        public static void SetReferenceIds(this IPropertyProvider properties, string key, params Guid[] values)
         {
             var array = values
-                .Select(item => _ToNodeReference(item))
+                .Where(item => item != ProjectDOM.RESETTODEFAULT)
+                .Select(item => _ToNodeReference(item))                
                 .ToArray();
+
+            if (array.Length == 0) array = null;
 
             properties.SetArray(key, array);
         }        

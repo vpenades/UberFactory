@@ -211,6 +211,7 @@
                             <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result" Command="{Binding ViewResultCmd}" />
                             <Separator />
                             <MenuItem Icon="{StaticResource _RemoveIcon}" Header="Remove" Command="{Binding RemoveParameterCmd}" />
+                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="Reset to Default Value" Command="{Binding SetParameterDefaultValueCmd}" />
                         </ContextMenu>
                     </DockPanel.ContextMenu>
 
