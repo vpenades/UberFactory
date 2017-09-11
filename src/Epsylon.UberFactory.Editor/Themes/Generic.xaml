@@ -6,12 +6,16 @@
 
     <BooleanToVisibilityConverter x:Key="asVisible" />
 
+    <!-- http://xahlee.info/comp/unicode_crosses.html -->
+    
     <sys:String x:Key="_AddIcon">➕</sys:String>
     <sys:String x:Key="_RemoveIcon">❌</sys:String>
+    <sys:String x:Key="_ResetIcon">❌</sys:String> <!-- ⭕ ⬜ 🔲 🔳 ⚪ ⚫ ❎⛝ -->
+    <sys:String x:Key="_EmptyIcon">🔲</sys:String>    
     <sys:String x:Key="_InspectIcon">🔎</sys:String>
     <sys:String x:Key="_FolderIcon">📂</sys:String>
     <sys:String x:Key="_EditIcon">✎</sys:String>
-    <sys:String x:Key="_NewIcon">✨</sys:String>
+    <sys:String x:Key="_NewIcon">✨</sys:String> <!-- ✳✴❇🆕-->
     <sys:String x:Key="_OpenIcon">📂</sys:String>
     <sys:String x:Key="_SaveIcon">💾</sys:String>
     <sys:String x:Key="_ExitIcon">❎</sys:String>

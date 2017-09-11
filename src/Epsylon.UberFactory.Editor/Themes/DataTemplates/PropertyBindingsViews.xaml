@@ -11,12 +11,19 @@
                     
                     xmlns:data="clr-namespace:Epsylon.UberFactory"
                     
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    
                     xmlns:pitems="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"
                     >
 
     <BooleanToVisibilityConverter x:Key="__isVisible" />
     <themes:RelayCommandConverter x:Key="__asRelayCommand" />
     <themes:BooleanToTextWrappingConverter x:Key="__asTextWrapping" />
+
+    <sys:String x:Key="L2N_SetNewReference">Set New Value</sys:String>
+    <sys:String x:Key="L2N_SetNullReference">Set Empty Value</sys:String>
+    <sys:String x:Key="L2N_SetDefaultReference">Remove Value</sys:String>
+    
     
     
     <themes:BooleanToBrushConverter x:Key="__booleanAsColor" OddBrush="Gray" EvenBrush="DarkSlateBlue" />
@@ -152,7 +159,7 @@
                     </Border>
                 </GroupBox.Header>
 
-                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseBindingCmd}" />
+                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseBindingCmd}" ToolTip="{StaticResource L2N_SetNewReference}" />
 
             </GroupBox>
 
@@ -170,7 +177,7 @@
 
                         <WrapPanel>
                             <Button Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"/>
-                            <Button Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveBindingCmd}"/>
+                            <Button Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveBindingCmd}" ToolTip="{StaticResource L2N_SetNullReference}"/>
                         </WrapPanel>
                     </GroupBox>
                     
@@ -187,12 +194,27 @@
         <GroupBox VerticalAlignment="Top" Background="#40ff0000" Style="{StaticResource VerticalGroupBoxStyle}">
 
             <GroupBox.Header>
-                <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" HorizontalAlignment="Left" />                    
+                <DockPanel HorizontalAlignment="Stretch">
+
+                    <DockPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Icon="{StaticResource _AddIcon}" Header="{StaticResource L2N_SetNewReference}" Command="{Binding ChooseParameterCmd}" />
+                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetParameterDefaultValueCmd}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+                        </ContextMenu>
+                    </DockPanel.ContextMenu>
+
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" HorizontalAlignment="Left" />
+
+                    <!-- this one is used to stretch the dockpanel along the whole header -->
+                    <TextBlock Text="" HorizontalAlignment="Right" />
+
+                </DockPanel>                
             </GroupBox.Header>
 
             <WrapPanel HorizontalAlignment="Center"  VerticalAlignment="Center">
-                <Button Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveElementCmd}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" />
-                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseParameterCmd}" />
+                <Button Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+                <Button Content="{StaticResource _EmptyIcon}" Command="{Binding RemoveElementCmd}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" ToolTip="{StaticResource L2N_SetNullReference}" />
+                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseParameterCmd}" ToolTip="{StaticResource L2N_SetNewReference}" />
             </WrapPanel>            
 
         </GroupBox>        
@@ -210,8 +232,10 @@
                         <ContextMenu>
                             <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result" Command="{Binding ViewResultCmd}" />
                             <Separator />
-                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="Remove" Command="{Binding RemoveParameterCmd}" />
-                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="Reset to Default Value" Command="{Binding SetParameterDefaultValueCmd}" />
+                            <MenuItem Icon="{StaticResource _AddIcon}" Header="{StaticResource L2N_SetNewReference}" Command="{Binding ChooseParameterCmd}" />
+                            <MenuItem Icon="{StaticResource _EmptyIcon}" Header="{StaticResource L2N_SetNullReference}" Command="{Binding RemoveParameterCmd}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+                            <Separator />                            
+                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetParameterDefaultValueCmd}" />
                         </ContextMenu>
                     </DockPanel.ContextMenu>
 
@@ -241,7 +265,7 @@
                             </ContextMenu>
                         </DockPanel.ContextMenu>
                         <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />                        
-                        <Button Content="{StaticResource _AddIcon}" Command="{Binding AddParameterSlotCmd}" DockPanel.Dock="Right"/>
+                        <Button Content="{StaticResource _AddIcon}" Command="{Binding AddParameterSlotCmd}" DockPanel.Dock="Right" ToolTip="{StaticResource L2N_SetNewReference}"/>
                         <TextBlock Text="    " />
                     </DockPanel>
                 </Expander.Header>

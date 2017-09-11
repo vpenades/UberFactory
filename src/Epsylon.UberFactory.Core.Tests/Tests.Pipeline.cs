@@ -58,23 +58,21 @@ namespace Epsylon.UberFactory
             // create a pipeline
             var pipeline = new ProjectDOM.Pipeline();
 
-            // create a node and set it as root of the pipeline
-            var rootId = pipeline.AddNode("TestFilter2");
-            pipeline.RootIdentifier = rootId;
-            
-            var rootChild = pipeline.AddNode("TestFilter1");
-            var debugChild = pipeline.AddNode("TestFilter1");
+            // create the nodes
+            var root = pipeline.CreateRootNode("TestFilter2");            
+            var childOnRoot = pipeline.CreateNode("TestFilter1");
+            var childOnDebug = pipeline.CreateNode("TestFilter1");
 
-            var rootProps = pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root");
-            rootProps.SetReferenceIds("Value1",rootChild);
+            root.SetReferences("Root", "Value1", childOnRoot);
 
-            Assert.IsTrue(rootProps.GetReferenceIds("Value1").Contains(rootChild));
+            Assert.IsTrue(root.GetReferenceIds("Root","Value1").Contains(childOnRoot.Identifier));
+            Assert.IsTrue(pipeline.GetReferences(root, "Root", "Value1").Contains(childOnRoot));
 
-            var debugProps = pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root","Debug");
-            debugProps.SetReferenceIds("Value1", debugChild);
+            root.SetReferences("Root.Debug", "Value1", childOnDebug);
 
-            Assert.IsTrue(rootProps.GetReferenceIds("Value1").Contains(rootChild));
-            Assert.IsTrue(debugProps.GetReferenceIds("Value1").Contains(debugChild));
+            Assert.IsTrue(root.GetReferenceIds("Root","Value1").Contains(childOnRoot.Identifier));
+            Assert.IsTrue(root.GetReferenceIds("Root.Debug","Value1").Contains(childOnDebug.Identifier));
+            Assert.IsTrue(pipeline.GetReferences(root, "Root.Debug", "Value1").Contains(childOnDebug));
         }
             
 
@@ -109,9 +107,8 @@ namespace Epsylon.UberFactory
             var pipeline = new ProjectDOM.Pipeline();
 
             // create a node and set it as root of the pipeline
-            var nodeId = pipeline.AddNode("TestFilter1");
-            pipeline.RootIdentifier = nodeId;
-
+            var nodeId = pipeline.AddRootNode("TestFilter1");
+            
             // set node properties for "Root" Configuration            
             var nodeProps = pipeline.GetNode(nodeId).GetPropertiesForConfiguration("Root");
             nodeProps.SetValue("Value1", "5");
@@ -129,8 +126,7 @@ namespace Epsylon.UberFactory
             var pipeline = new ProjectDOM.Pipeline();
 
             // create root node and set it as root of the pipeline
-            var nodeId = pipeline.AddNode("TestFilter2");
-            pipeline.RootIdentifier = nodeId;
+            var nodeId = pipeline.AddRootNode("TestFilter2");            
 
             // create leaf nodes
             var node2Id = pipeline.AddNode("TestFilter1");
@@ -166,11 +162,9 @@ namespace Epsylon.UberFactory
             var value2Id = pipeline.AddNode(nameof(Epsylon.TestPlugins.AssignIntegerValue));
             pipeline.GetNode(value2Id).GetPropertiesForConfiguration("Root").SetValue("Value", "5");
 
-            var rootId = pipeline.AddNode(nameof(Epsylon.TestPlugins.AddIntegerValues));            
+            var rootId = pipeline.AddRootNode(nameof(Epsylon.TestPlugins.AddIntegerValues));            
             pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value1", value1Id);
-            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value2", value2Id);
-
-            pipeline.RootIdentifier = rootId;
+            pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value2", value2Id);            
 
             return pipeline;
         }

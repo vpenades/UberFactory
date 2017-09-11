@@ -79,7 +79,9 @@ namespace Epsylon.UberFactory
 
             public Object Content       => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
 
-            public Boolean CanEditHierarchy => true; // _Parent.GetBuildSettings().Configuration.Length == 1;            
+            public Boolean CanEditHierarchy => true;
+
+            public Boolean IsChildConfiguration => _Parent.GetBuildSettings().Configuration.Length > 1;
 
             public IPipelineViewServices PipelineServices => _Parent;
 
@@ -193,6 +195,8 @@ namespace Epsylon.UberFactory
             IPipelineViewServices PipelineServices { get; }
 
             Boolean CanEditHierarchy { get; }
+
+            Boolean IsChildConfiguration { get; }
 
             void SetAsCurrentResultView(Guid id); // EvaluatePreview();
 
@@ -398,6 +402,8 @@ namespace Epsylon.UberFactory
             public bool IsInstanced     => NodeInstance != null;
 
             public bool IsEditable      => _Parent.Parent.CanEditHierarchy;
+
+            public bool IsChildConfiguration => _Parent.Parent.IsChildConfiguration;
 
             public bool IsCollectionElement => _Index >= 0;
 
