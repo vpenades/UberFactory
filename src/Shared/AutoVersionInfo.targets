@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="DefineAssemblyVersions" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="DefinePackageVersion" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <!-- http://stackoverflow.com/questions/356543/can-i-automatically-increment-the-file-build-version-when-using-visual-studio/6472195#6472195 -->
     <!-- http://stackoverflow.com/questions/64602/what-are-differences-between-assemblyversion-assemblyfileversion-and-assemblyin -->
     <!-- https://blogs.msdn.microsoft.com/devops/2016/05/03/versioning-nuget-packages-cd-1/ -->
     <!-- https://blogs.msdn.microsoft.com/bclteam/2005/03/21/using-reflection-to-list-version-to-version-assembly-changes-libcheck-one-of-the-best-tools-ever-kit-george/ -->  
 
-  <Target Name="DefineAssemblyVersions" BeforeTargets="Compile,Build,Rebuild">
+  <Target Name="DefinePackageVersion" BeforeTargets="Compile;Build;Rebuild">
     
     <!--
     Even if these are plain properties, they need to be set ONLY when we're building.
@@ -35,18 +35,29 @@
       <PackageVersion>$(Version)</PackageVersion>
 
       <PackageVersion Condition=" '$(Configuration)' == 'Debug' ">$(PackageVersion)-alpha-$(NowDate)-$(NowTime)</PackageVersion>
-
       
       <AssemblyVersionAttribute>[assembly:System.Reflection.AssemblyVersion("$(Version)")]</AssemblyVersionAttribute>      
-      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>      
+      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>
+      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>
+      <AssemblyInformationalVersionAttribute>[assembly:System.Reflection.AssemblyInformationalVersionAttribute("$(PackageVersion)")]</AssemblyInformationalVersionAttribute>      
 
     </PropertyGroup>
     
-    <Message Text="Compiling/Building Version: $(PackageVersion)  FileVer: $(FileVersion)" Importance="high" />
+    <Message Text="Package Version: $(PackageVersion)  File Version: $(FileVersion)" Importance="high" />
     
     <!--
     <WriteLinesToFile Condition=" '$(ProjectGuid)' != '' " File="Properties\AssemblyVersion.Generated.cs" Lines="$(AssemblyVersionAttribute)%0a$(AssemblyFileVersionAttribute)" Overwrite="true" />
     -->
+
+    <ItemGroup>
+      <AssemblyInformationalVersionAttribute Include="AssemblyInformationalVersionAttribute">
+        <_Parameter1>$(PackageVersion)</_Parameter1>
+      </AssemblyInformationalVersionAttribute>
+    </ItemGroup>
+
+    <WriteCodeFragment Language="C#" OutputDirectory="$(IntermediateOutputPath)" OutputFile="_BuildVersion.g.cs" AssemblyAttributes="@(AssemblyInformationalVersionAttribute)">
+      <Output TaskParameter="OutputFile" ItemName="Compile" />
+    </WriteCodeFragment>
     
   </Target>
 

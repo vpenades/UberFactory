@@ -26,16 +26,18 @@ namespace Epsylon.UberFactory.Themes
 
         private void AboutPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            this.mySDKVersion.Text = typeof(SDK.ContentFilter).Assembly.Version().ToString();
-            this.myCoreVersion.Text = typeof(Evaluation.PipelineEvaluator).Assembly.Version().ToString();
+            var assembly_SDK = typeof(SDK.ContentFilter).Assembly;
+            var assembly_Core = typeof(Evaluation.PipelineEvaluator).Assembly;
+            var assembly_Editor = typeof(AppView).Assembly;
 
-            var editAsm = typeof(AppView).Assembly;
+            this.mySDKVersion.Text = assembly_SDK.InformationalVersion();
+            this.myCoreVersion.Text = assembly_Core.InformationalVersion();
 
-            this.myEditorVersion.Text = editAsm.Version().ToString();
-
-            this.myArchitecture.Text = editAsm.GetName().ProcessorArchitecture.ToString();
-
-            this.myCopyright.Text = editAsm.InfoCopyright();
+            this.myEditorVersion.Text = assembly_Editor.InformationalVersion();
+            this.myArchitecture.Text = assembly_Editor.GetName().ProcessorArchitecture.ToString();
+            this.myCopyright.Text = assembly_Editor.InfoCopyright();
         }
+
+        
     }
 }

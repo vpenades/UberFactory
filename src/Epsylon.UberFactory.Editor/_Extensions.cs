@@ -226,6 +226,8 @@ namespace Epsylon.UberFactory
 
         public static string InfoProductName(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyProductAttribute>()?.Product; }
 
+        public static string InformationalVersion(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion; }
+
         public static string InfoCopyright(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright; }
 
         public static string DisplayTitle(this Assembly assembly) { return assembly == null ? null : assembly.InfoProductName() + " " + assembly.Version().ToString(); }
@@ -251,6 +253,8 @@ namespace Epsylon.UberFactory
             return attributes.OfType<AssemblyMetadataAttribute>().FirstOrDefault(item => item.Key == key)?.Value;
         }
 
+
+        
 
         public static bool IsLoaded(this System.Diagnostics.FileVersionInfo fvinfo)
         {
