@@ -43,7 +43,7 @@
 
     </PropertyGroup>
     
-    <Message Text="Package Version: $(PackageVersion)  File Version: $(FileVersion)" Importance="high" />
+    <Message Text="$(MSBuildProjectName) Package Version: $(PackageVersion)  File Version: $(FileVersion)" Importance="high" />
     
     <!--
     <WriteLinesToFile Condition=" '$(ProjectGuid)' != '' " File="Properties\AssemblyVersion.Generated.cs" Lines="$(AssemblyVersionAttribute)%0a$(AssemblyFileVersionAttribute)" Overwrite="true" />
