@@ -330,7 +330,7 @@
       <Version>1.5.1</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\Shared\AutoVersionInfo.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Shared\AssemblyInfoGenerator.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

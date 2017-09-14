@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    
+  <!-- https://github.com/dotnet/sdk/blob/master/src/Tasks/Microsoft.NET.Build.Tasks/build/Microsoft.NET.GenerateAssemblyInfo.targets -->
+
+
+  <Import Project="$(MSBuildThisFileDirectory)\AutoVersionInfo.targets" />
+
+  <PropertyGroup>    
+    <GeneratedAssemblyInfoFile Condition="'$(GeneratedAssemblyInfoFile)' ==''">$(IntermediateOutputPath)$(MSBuildProjectName).AssemblyInfo$(DefaultLanguageSourceExtension)</GeneratedAssemblyInfoFile>    
+  </PropertyGroup>
+
+  <Target Name="GenerateAssemblyInfo" BeforeTargets="CoreCompile" DependsOnTargets="PrepareForBuild">   
+
+    <PropertyGroup>      
+      
+      <AssemblyVersionAttribute>[assembly:System.Reflection.AssemblyVersion("$(Version)")]</AssemblyVersionAttribute>      
+      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>
+      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>
+      <AssemblyInformationalVersionAttribute>[assembly:System.Reflection.AssemblyInformationalVersionAttribute("$(PackageVersion)")]</AssemblyInformationalVersionAttribute>      
+
+    </PropertyGroup>    
+
+    <ItemGroup>
+      <!-- Ensure the generated assemblyinfo file is not already part of the Compile sources, as a workaround for https://github.com/dotnet/sdk/issues/114 -->
+      <Compile Remove="$(GeneratedAssemblyInfoFile)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AssemblyVer Include="AssemblyVersion">
+        <_Parameter1>$(Version)</_Parameter1>
+      </AssemblyVer>
+      <AssemblyFileVer Include="AssemblyFileVersion">
+        <_Parameter1>$(FileVersion)</_Parameter1>
+      </AssemblyFileVer>
+      <AssemblyInformationalVer Include="AssemblyInformationalVersion">
+        <_Parameter1>$(PackageVersion)</_Parameter1>
+      </AssemblyInformationalVer>
+    </ItemGroup>
+
+    <WriteCodeFragment Language="C#" OutputFile="$(GeneratedAssemblyInfoFile)" AssemblyAttributes="@(AssemblyVer);@(AssemblyFileVer);@(AssemblyInformationalVer)">      
+      <Output TaskParameter="OutputFile" ItemName="Compile" />
+      <Output TaskParameter="OutputFile" ItemName="FileWrites" />
+    </WriteCodeFragment>
+    
+  </Target>
+
+</Project>
