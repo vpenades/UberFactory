@@ -422,12 +422,35 @@ namespace Epsylon.UberFactory
             public void RemoveFile(string filepath, int max) { _Parent.RemoveFile(filepath, max); }
         }
 
+        internal class _DummyPersister : IPersist
+        {
+            private readonly List<string> _Files = new List<string>();
+
+            public void InsertFile(string filepath, int max)
+            {
+                if (_Files.Contains(filepath)) return;
+
+                while (_Files.Count > 0 && _Files.Count > max) _Files.RemoveAt(_Files.Count - 1);
+
+                _Files.Add(filepath);
+            }
+
+            public IEnumerable<string> RecentFiles(int max)
+            {
+                return _Files.Take(max);
+            }
+
+            public void RemoveFile(string filepath, int max)
+            {
+                _Files.Remove(filepath);
+            }
+        }
 
         #endregion
 
         #region data
 
-        private static RecentFilesManager.IPersist _Persister;        
+        private static RecentFilesManager.IPersist _Persister = new _DummyPersister();  
 
         #endregion
 
@@ -435,7 +458,7 @@ namespace Epsylon.UberFactory
 
         public static int MaxNumberOfFiles { get; set; }
 
-        public static IEnumerable<string> RecentFiles { get { return _Persister.RecentFiles(MaxNumberOfFiles); } }
+        public static IEnumerable<string> RecentFiles { get { return _Persister?.RecentFiles(MaxNumberOfFiles); } }
 
         #endregion
 
@@ -450,12 +473,16 @@ namespace Epsylon.UberFactory
 
         public static void RemoveFile(string filepath)
         {
+            if (_Persister == null) throw new InvalidOperationException("you must register a Persister");
+
             // if (!IsValidFullPath(filepath)) throw new ArgumentException(filepath);
             _Persister.RemoveFile(filepath, MaxNumberOfFiles);
         }
 
         public static void InsertFile(string filepath)
         {
+            if (_Persister == null) throw new InvalidOperationException("you must register a Persister");
+
             if (!IsValidFullPath(filepath)) throw new ArgumentException(filepath);
             _Persister.InsertFile(filepath, MaxNumberOfFiles);
         }

@@ -24,15 +24,27 @@ namespace Epsylon.UberFactory.Evaluation
         private static readonly Object _LockObject = new object();
         private static ASSEMBLYRESOLVEFUNC _AssemblySolver = null;
 
+        private static readonly Stack<AssemblyName> _ReentrancyCheck = new Stack<AssemblyName>();
+
         private static readonly string _EntryAssemblyDirectory = GetEntryAssembly()?.GetDirectory();
 
         #endregion
 
-        #region core
+        #region core        
 
         private static Assembly _AssemblyResolve(AssemblyName aname, ASSEMBLYRESOLVEFUNC fallbackFunc)
         {
             // note: after Net 4.0 onwards, satellite assembly resources are also resolved here!
+
+            lock (_LockObject)
+            {
+                if (_ReentrancyCheck.Contains(aname))
+                {
+                    System.Diagnostics.Debug.WriteLine("3. Failed to find " + aname.Name);
+                    return null;
+                }
+                _ReentrancyCheck.Push(aname);
+            }
 
             try
             {
@@ -41,8 +53,8 @@ namespace Epsylon.UberFactory.Evaluation
             }
             catch
             {
-                System.Diagnostics.Debug.WriteLine("Failed to find " + aname.Name + " in Application directory");
-            }
+                System.Diagnostics.Debug.WriteLine("1. Can't find " + aname.Name + " in Application directory");
+            }            
 
             try
             {
@@ -50,8 +62,13 @@ namespace Epsylon.UberFactory.Evaluation
             }
             catch
             {
-                System.Diagnostics.Debug.WriteLine("Failed to find " + aname.Name + " in fallback directories");
+                System.Diagnostics.Debug.WriteLine("2. Can't find " + aname.Name + " in fallback directories");
             }
+
+            lock(_LockObject)
+            {
+                _ReentrancyCheck.Pop();
+            }            
 
             return null;
         }
