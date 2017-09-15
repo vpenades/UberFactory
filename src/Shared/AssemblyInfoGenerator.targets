@@ -15,10 +15,9 @@
 
     <PropertyGroup>      
       
-      <AssemblyVersionAttribute>[assembly:System.Reflection.AssemblyVersion("$(Version)")]</AssemblyVersionAttribute>      
-      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>
-      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>
-      <AssemblyInformationalVersionAttribute>[assembly:System.Reflection.AssemblyInformationalVersionAttribute("$(PackageVersion)")]</AssemblyInformationalVersionAttribute>      
+      <AssemblyVersionAttribute>[assembly:System.Reflection.AssemblyVersion("$(AssemblyVersion)")]</AssemblyVersionAttribute>      
+      <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersion)")]</AssemblyFileVersionAttribute>      
+      <AssemblyInformationalVersionAttribute>[assembly:System.Reflection.AssemblyInformationalVersionAttribute("$(Version)")]</AssemblyInformationalVersionAttribute>      
 
     </PropertyGroup>    
 
@@ -29,13 +28,13 @@
 
     <ItemGroup>
       <AssemblyVer Include="AssemblyVersion">
-        <_Parameter1>$(Version)</_Parameter1>
+        <_Parameter1>$(AssemblyVersion)</_Parameter1>
       </AssemblyVer>
       <AssemblyFileVer Include="AssemblyFileVersion">
         <_Parameter1>$(FileVersion)</_Parameter1>
       </AssemblyFileVer>
       <AssemblyInformationalVer Include="AssemblyInformationalVersion">
-        <_Parameter1>$(PackageVersion)</_Parameter1>
+        <_Parameter1>$(Version)</_Parameter1>
       </AssemblyInformationalVer>
     </ItemGroup>
 
