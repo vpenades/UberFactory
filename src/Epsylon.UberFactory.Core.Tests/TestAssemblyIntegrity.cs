@@ -19,11 +19,14 @@ namespace Epsylon.UberFactory
         [TestMethod]
         public void TestAssemblyVersion()
         {
-            var SDK_Assembly = typeof(SDK.ContentFilter).Assembly;
+            var assembly_SDK = typeof(SDK.ContentFilter).Assembly;
+            var assembly_Core = typeof(Evaluation.PipelineEvaluator).Assembly;
 
-            Assert.IsTrue(SDK_Assembly.Version() >= new Version(1, 0, 0));
+            Assert.IsTrue(assembly_SDK.Version() >= new Version(1, 0, 0));
+            Assert.IsTrue(assembly_Core.Version() >= new Version(1, 0, 0));
 
-            var infoVersion = SDK_Assembly.InformationalVersion();
+            var infoVersion1 = assembly_SDK.InformationalVersion();
+            var infoVersion2 = assembly_Core.InformationalVersion();
         }
     }
 }

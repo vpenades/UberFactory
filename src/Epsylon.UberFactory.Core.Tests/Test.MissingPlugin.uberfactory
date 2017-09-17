@@ -1,18 +1,5 @@
 <Project Version="1.0" xmlns="http://www.uberfactory.com">
-  <Properties />
-  <Settings>
-    <Properties />
-    <Pipeline>
-      <Properties>
-        <RootNodeId>e1c0ce5f-aa62-4056-8d13-c8946a7256fe</RootNodeId>
-      </Properties>
-      <Node Id="e1c0ce5f-aa62-4056-8d13-c8946a7256fe">
-        <Properties>
-          <ClassName>MainSettings1</ClassName>
-        </Properties>
-      </Node>
-    </Pipeline>
-  </Settings>
+  <Properties />  
   <Task>
     <Properties>
       <Title>New Task 1</Title>
@@ -23,7 +10,7 @@
       </Properties>
       <Node Id="c70a3371-77e7-4cbb-9e29-4c1bd6561670">
         <Properties>
-          <ClassName>IntegerWriter</ClassName>
+          <ClassName>MISSINGPLUGIN_IntegerWriter</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
@@ -34,7 +21,7 @@
       </Node>
       <Node Id="58e4122b-7594-4af7-90bd-2eb5f274b4cd">
         <Properties>
-          <ClassName>AssignIntegerValue</ClassName>
+          <ClassName>MISSINGPLUGIN_AssignIntegerValue</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>

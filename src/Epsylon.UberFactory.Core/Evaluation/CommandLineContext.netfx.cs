@@ -16,28 +16,29 @@ namespace Epsylon.UberFactory.Evaluation
             return loggerFactory;
         }
 
-        private static PluginManager _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
+        private static Factory.Collection _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
         {
-            var assemblies = new HashSet<System.Reflection.Assembly>();
+            LoadProjectAssemblies(project, prjDir);
 
             if (true) // load locally referenced assemblies
             {
-                var arefs = System.Reflection.Assembly.GetEntryAssembly().GetReferencedAssemblies();
-                foreach (var aname in arefs)
+                var entry = AssemblyServices.GetEntryAssembly();
+
+                if (entry != null)
                 {
-                    if (string.IsNullOrWhiteSpace(aname.CodeBase)) continue;
+                    var arefs = entry.GetReferencedAssemblies();
+                    foreach (var aname in arefs)
+                    {
+                        if (string.IsNullOrWhiteSpace(aname.CodeBase)) continue;
 
-                    var a = PluginLoader.Instance.UsePlugin(new PathString(aname.CodeBase));
-
-                    assemblies.Add(a);
+                        PluginLoader.Instance.UsePlugin(new PathString(aname.CodeBase));
+                    }
                 }
             }
-            
-            assemblies.UnionWith(GetProjectAssemblies(project, prjDir));
 
-            var plugins = new PluginManager();
+            var plugins = new Factory.Collection();
 
-            plugins.SetAssemblies(assemblies);
+            plugins.SetAssemblies(PluginLoader.Instance.GetPlugins());
 
             return plugins;
         }

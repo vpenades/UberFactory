@@ -70,7 +70,7 @@ namespace Epsylon.UberFactory
 
             #region API - Pipeline services
 
-            public Evaluation.PluginManager GetPluginManager() { return _Parent._Plugins; }
+            public Factory.Collection GetPluginManager() { return _Parent._Plugins; }
 
             public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }            
 
@@ -164,7 +164,7 @@ namespace Epsylon.UberFactory
 
             #region API - Pipeline services
 
-            public Evaluation.PluginManager GetPluginManager() { return _Parent._Plugins; }
+            public Factory.Collection GetPluginManager() { return _Parent._Plugins; }
 
             public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }            
 

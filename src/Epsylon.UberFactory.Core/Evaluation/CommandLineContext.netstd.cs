@@ -13,7 +13,7 @@ namespace Epsylon.UberFactory.Evaluation
             throw new PlatformNotSupportedException();
         }
 
-        private static PluginManager _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
+        private static Factory.Collection _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
         {
             throw new PlatformNotSupportedException();
         }

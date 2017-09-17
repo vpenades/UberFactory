@@ -116,7 +116,7 @@ namespace Epsylon.UberFactory.Evaluation
             }
         }
 
-        public IEnumerable<BuildContext> Build(Func<ProjectDOM.Project, PathString, PluginManager> evalPlugins, SDK.IMonitorContext monitor)
+        public IEnumerable<BuildContext> Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor)
         {
             _CancelRequested = false;
 
@@ -153,17 +153,14 @@ namespace Epsylon.UberFactory.Evaluation
             return bbbccc;
         }
 
-        private static IEnumerable<System.Reflection.Assembly> GetProjectAssemblies(ProjectDOM.Project project, PathString prjDir)
+        private static void LoadProjectAssemblies(ProjectDOM.Project project, PathString prjDir)
         {
             foreach (var rpath in project.References)
             {
                 var fullPath = prjDir.MakeAbsolutePath(rpath);
 
-                var defass = PluginLoader.Instance.UsePlugin(fullPath);
-                if (defass == null) continue;
-
-                yield return defass;
-            }
+                PluginLoader.Instance.UsePlugin(fullPath);
+            }            
         }
 
         private static string _GetCommandArgument(string[] args, string cmd, string defval)

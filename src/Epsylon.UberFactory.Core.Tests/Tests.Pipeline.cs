@@ -25,7 +25,7 @@ namespace Epsylon.UberFactory
             Assert.AreEqual(24, result);
         }
 
-
+        /*
         [TestMethod]
         public void ArithmeticPipelineTest()
         {
@@ -49,7 +49,7 @@ namespace Epsylon.UberFactory
 
             Assert.IsFalse(pipeline.Nodes.Select(item => item.Identifier).Contains(isolatedNodeId));
             Assert.AreEqual(nodeCount, pipeline.Nodes.Count());
-        }
+        }*/
 
 
         [TestMethod]
@@ -150,19 +150,19 @@ namespace Epsylon.UberFactory
             return pipeline;
         }        
 
-
+        
         public static ProjectDOM.Pipeline CreateArithmeticPipeline()
         {
             // create a pipeline
             var pipeline = new ProjectDOM.Pipeline();            
 
-            var value1Id = pipeline.AddNode(nameof(Epsylon.TestPlugins.AssignIntegerValue));
+            var value1Id = pipeline.AddNode("AssignIntegerValue");
             pipeline.GetNode(value1Id).GetPropertiesForConfiguration("Root").SetValue("Value", "5");
 
-            var value2Id = pipeline.AddNode(nameof(Epsylon.TestPlugins.AssignIntegerValue));
+            var value2Id = pipeline.AddNode("AssignIntegerValue");
             pipeline.GetNode(value2Id).GetPropertiesForConfiguration("Root").SetValue("Value", "5");
 
-            var rootId = pipeline.AddRootNode(nameof(Epsylon.TestPlugins.AddIntegerValues));            
+            var rootId = pipeline.AddRootNode("AddIntegerValues");            
             pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value1", value1Id);
             pipeline.GetNode(rootId).GetPropertiesForConfiguration("Root").SetReferenceIds("Value2", value2Id);            
 
@@ -173,26 +173,26 @@ namespace Epsylon.UberFactory
 
     static class TestFiltersFactory
     {
+        static System.Reflection.Assembly[] _Plugins;
+        
         public static SDK.ContentFilter CreateInstance(string classId)
         {
-            var filters = new Type[]
+            if (_Plugins == null)
             {
-                typeof(TestFilter1),
-                typeof(TestFilter2),
-                typeof(Epsylon.TestPlugins.AssignIntegerValue),
-                typeof(Epsylon.TestPlugins.AddIntegerValues),
-                typeof(Epsylon.TestPlugins.SubstractIntegerValues),
-                typeof(Epsylon.TestPlugins.MultiplyIntegerValues),
-                typeof(Epsylon.TestPlugins.DivideIntegerValues),
-            };
+                var plugins = TestAssemblyLoadContext.LoadPlugins().ToList();
+                plugins.Add(typeof(TestFiltersFactory).Assembly);
+                _Plugins = plugins.ToArray();
+            }
 
-            var t = filters.FirstOrDefault(item => item.Name == classId);
+            var pluginManager = new Factory.Collection();
 
-            return t == null ? null : SDK.Create(t) as SDK.ContentFilter;
+            pluginManager.SetAssemblies(_Plugins);
+
+            return pluginManager.CreateInstance(classId) as SDK.ContentFilter;            
         }
 
         [SDK.ContentNode(nameof(TestFilter1))]
-        class TestFilter1 : SDK.ContentFilter<int>
+        public class TestFilter1 : SDK.ContentFilter<int>
         {
             [SDK.InputValue("Value1")]
             public int Value1 { get; set; }
@@ -207,7 +207,7 @@ namespace Epsylon.UberFactory
         }
 
         [SDK.ContentNode(nameof(TestFilter2))]
-        class TestFilter2 : SDK.ContentFilter<int>
+        public class TestFilter2 : SDK.ContentFilter<int>
         {
             [SDK.InputNode("Value1")]
             public int Value1 { get; set; }
@@ -222,7 +222,5 @@ namespace Epsylon.UberFactory
         }        
 
     }
-
-
-    
+        
 }

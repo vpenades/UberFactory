@@ -8,6 +8,27 @@ namespace Epsylon.UberFactory
 {
     static class _Extensions
     {
+        #region paths
+
+        public static string GetAbsolutePath(this string relativeFilePath)
+        {
+            var probeDir = Environment.CurrentDirectory;
+
+            while (probeDir.Length > 3)
+            {
+                var absPath = System.IO.Path.Combine(probeDir, relativeFilePath);
+                if (System.IO.File.Exists(absPath)) return absPath;
+
+                probeDir = System.IO.Path.GetDirectoryName(probeDir);
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region DOM
+
         public static Guid AddRootNode(this ProjectDOM.Pipeline pipeline, string className)
         {
             var id = pipeline.AddNode(className);
@@ -54,6 +75,8 @@ namespace Epsylon.UberFactory
 
             return ids.Select(item => pipeline.GetNode(item));
         }
+
+        #endregion
 
         #region assemblies
 

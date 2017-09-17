@@ -16,15 +16,13 @@ namespace Epsylon.UberFactory.Evaluation
             return loggerFactory;
         }
 
-        private static PluginManager _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
+        private static Factory.Collection _LoadPluginsFunc(ProjectDOM.Project project, PathString prjDir)
         {
-            var assemblies = new HashSet<System.Reflection.Assembly>();
+            LoadProjectAssemblies(project, prjDir);
 
-            assemblies.UnionWith(GetProjectAssemblies(project, prjDir));
+            var plugins = new Factory.Collection();
 
-            var plugins = new PluginManager();
-
-            plugins.SetAssemblies(assemblies);
+            plugins.SetAssemblies(PluginLoader.Instance.GetPlugins());
 
             return plugins;
         }

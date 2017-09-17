@@ -14,7 +14,7 @@ namespace Epsylon.UberFactory
     {        
         public interface IPipelineViewServices
         {
-            Evaluation.PluginManager GetPluginManager();
+            Factory.Collection GetPluginManager();
             Evaluation.BuildContext GetBuildSettings();
 
             ProjectDOM.Settings GetSettings(Type t);
@@ -121,7 +121,7 @@ namespace Epsylon.UberFactory
                 var compatibleNodes = _Parent
                     .GetPluginManager()
                     .PluginTypes
-                    .OfType<Factory.ContentFilterTypeInfo>()
+                    .OfType<Factory.ContentFilterInfo>()
                     .Where(item => item.OutputType == _Parent.GetRootOutputType())
                     .ToArray();                          
 
@@ -130,7 +130,7 @@ namespace Epsylon.UberFactory
                 _SetRootExporter(r);
             }
 
-            private void _SetRootExporter(Factory.ContentFilterTypeInfo t)
+            private void _SetRootExporter(Factory.ContentFilterInfo t)
             {
                 _PipelineDom.ClearNodes();
                 _PipelineDom.RootIdentifier = _PipelineDom.AddNode(t);
@@ -150,7 +150,7 @@ namespace Epsylon.UberFactory
             public string GetNodeDisplayName(Guid id)
             {
                 return _Evaluator.GetNodeInstance(id)?
-                    .GetContentTypeInfo()?
+                    .GetContentInfo()?
                     .DisplayName;
             }
 
@@ -158,7 +158,7 @@ namespace Epsylon.UberFactory
             {
                 return _Evaluator
                     .GetNodeInstance(id)?
-                    .GetContentTypeInfo()?
+                    .GetContentInfo()?
                     .DisplayFormatName;
             }
 
@@ -167,7 +167,7 @@ namespace Epsylon.UberFactory
                 return _Evaluator.CreateBindings(id);
             }
 
-            public Guid AddNode(Factory.ContentBaseTypeInfo cbinfo)
+            public Guid AddNode(Factory.ContentBaseInfo cbinfo)
             {
                 return _PipelineDom.AddNode(cbinfo);
             }
@@ -200,7 +200,7 @@ namespace Epsylon.UberFactory
 
             void SetAsCurrentResultView(Guid id); // EvaluatePreview();
 
-            Guid AddNode(Factory.ContentBaseTypeInfo cbinfo);
+            Guid AddNode(Factory.ContentBaseInfo cbinfo);
 
             void UpdateGraph();
 
@@ -449,7 +449,7 @@ namespace Epsylon.UberFactory
 
                 var compatibleNodes = plugins
                     .PluginTypes
-                    .OfType<Factory.ContentFilterTypeInfo>()
+                    .OfType<Factory.ContentFilterInfo>()
                     .Where(item => DataType.IsAssignableFrom(item.OutputType));
 
                 var r = _Dialogs.ShowNewNodeDialog(null, compatibleNodes);
@@ -466,7 +466,7 @@ namespace Epsylon.UberFactory
             }
 
 
-            private void _SetDependency(Factory.ContentBaseTypeInfo value)
+            private void _SetDependency(Factory.ContentBaseInfo value)
             {
                 if (!_EditableBarrier()) return;
 
@@ -474,7 +474,7 @@ namespace Epsylon.UberFactory
 
                 
 
-                if (value is Factory.ContentFilterTypeInfo)
+                if (value is Factory.ContentFilterInfo)
                 {
                     var nodeId = _Parent.Parent.AddNode(value);
                     _SetDependencyId(nodeId);

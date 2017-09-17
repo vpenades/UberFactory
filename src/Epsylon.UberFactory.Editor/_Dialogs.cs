@@ -153,9 +153,9 @@ namespace Epsylon.UberFactory
         }
 
 
-        public static Factory.ContentFilterTypeInfo ShowNewNodeDialog(Window owner, IEnumerable<Factory.ContentFilterTypeInfo> filters)
+        public static Factory.ContentFilterInfo ShowNewNodeDialog(Window owner, IEnumerable<Factory.ContentFilterInfo> filters)
         {
-            var data = new _SelectItemFromListData<Factory.ContentFilterTypeInfo>() { Collection = filters.ToArray() };
+            var data = new _SelectItemFromListData<Factory.ContentFilterInfo>() { Collection = filters.ToArray() };
 
             if (!ShowGenericDialog<Themes.NewNodeSelector>(owner, "New Node", data)) return null;
 

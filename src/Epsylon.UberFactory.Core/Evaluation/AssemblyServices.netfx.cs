@@ -9,7 +9,7 @@ namespace Epsylon.UberFactory.Evaluation
 {
     using ASSEMBLYRESOLVEFUNC = Func<AssemblyName, Assembly>;
 
-    public static partial class AssemblyContext
+    public static partial class AssemblyServices
     {
         public static Assembly GetEntryAssembly() { return Assembly.GetEntryAssembly(); }
 
@@ -17,8 +17,12 @@ namespace Epsylon.UberFactory.Evaluation
 
         public static Assembly[] GetLoadedAssemblies() { return AppDomain.CurrentDomain.GetAssemblies(); }
 
+        public static AssemblyName GetAssemblyName(string absoluteFilePath)
+        {
+            if (!System.IO.File.Exists(absoluteFilePath)) return null;
 
-        public static AssemblyName GetAssemblyName(string absoluteFilePath) { return AssemblyName.GetAssemblyName(absoluteFilePath); }
+            return AssemblyName.GetAssemblyName(absoluteFilePath);
+        }
 
         public static Assembly LoadAssemblyFromFilePath(string absoluteFilePath)
         {
@@ -31,27 +35,21 @@ namespace Epsylon.UberFactory.Evaluation
             return Assembly.LoadFrom(absoluteFilePath);
         }
 
-        public static void SetAssemblyResolver(ASSEMBLYRESOLVEFUNC func)
+        public static void SetDefaultAssemblyResolver(ASSEMBLYRESOLVEFUNC func)
         {
-            // https://msdn.microsoft.com/en-us/library/ff527268.aspx
+            // https://msdn.microsoft.com/en-us/library/ff527268.aspx            
+            
+            // ensure that we only receive events if we have an actual fallback function set
+            if (func != null && _AssemblySolver == null) AppDomain.CurrentDomain.AssemblyResolve += _AssemblyResolveAdapter;
+            if (func == null && _AssemblySolver != null) AppDomain.CurrentDomain.AssemblyResolve -= _AssemblyResolveAdapter;
 
-            func = func == null ? (ASSEMBLYRESOLVEFUNC)null : n => _AssemblyResolve(n, func);
-
-            lock (_LockObject)
-            {
-                if (func != null && _AssemblySolver == null) AppDomain.CurrentDomain.AssemblyResolve += _AssemblyResolve;
-                if (func == null && _AssemblySolver != null) AppDomain.CurrentDomain.AssemblyResolve -= _AssemblyResolve;
-
-                _AssemblySolver = func;
-
-                return;
-            }
+            _AssemblySolver = func;                   
         }
 
-        private static Assembly _AssemblyResolve(object sender, ResolveEventArgs args)
+        private static Assembly _AssemblyResolveAdapter(object sender, ResolveEventArgs args)
         {
             var aname = new AssemblyName(args.Name);
-            return _AssemblyResolve(aname);
+            return _AssemblySolver?.Invoke(aname);
         }
-    }
+    }    
 }

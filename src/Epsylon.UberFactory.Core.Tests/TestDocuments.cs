@@ -17,7 +17,7 @@ namespace Epsylon.UberFactory
             Assert.ThrowsException<System.IO.FileLoadException>(() => _BuildDocument("Test.FutureDocument.uberfactory"));            
 
             // missing plugin            
-            Assert.ThrowsException<InvalidOperationException>(() => _BuildDocument("Test.MissingPlugin.uberfactory"));
+            Assert.ThrowsException<ArgumentException>(() => _BuildDocument("Test.MissingPlugin.uberfactory"));            
 
             // malformed documents
         }
@@ -32,7 +32,7 @@ namespace Epsylon.UberFactory
 
         private static Evaluation.BuildContext _BuildDocument(string docFileName)
         {
-            docFileName = _GetAbsolutePath(docFileName);
+            docFileName = docFileName.GetAbsolutePath();
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(docFileName));
 
@@ -43,19 +43,6 @@ namespace Epsylon.UberFactory
             return results[0];
         }
 
-        private static string _GetAbsolutePath(string documentName)
-        {
-            var probeDir = Environment.CurrentDirectory;
-
-            while(probeDir.Length > 3)
-            {
-                var absPath = System.IO.Path.Combine(probeDir, documentName);
-                if (System.IO.File.Exists(absPath)) return absPath;
-
-                probeDir = System.IO.Path.GetDirectoryName(probeDir);
-            }
-
-            return null;
-        }
+        
     }
 }

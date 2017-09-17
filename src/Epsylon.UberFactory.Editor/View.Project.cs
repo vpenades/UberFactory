@@ -166,7 +166,7 @@ namespace Epsylon.UberFactory
             private readonly PathString _DocumentPath;
 
             private readonly Configurations _Configurations;
-            internal readonly Evaluation.PluginManager _Plugins = new Evaluation.PluginManager();
+            internal readonly Factory.Collection _Plugins = new Factory.Collection();
 
             private readonly EventLoggerProvider _Logger = new EventLoggerProvider();
 
@@ -411,9 +411,9 @@ namespace Epsylon.UberFactory
                     .Where(item => item.IsValidAbsoluteFilePath)
                     .ToArray();
 
-                var assemblies = Evaluation.PluginLoader.Instance.UsePlugins(paths);
+                foreach(var apath in paths) Evaluation.PluginLoader.Instance.UsePlugin(apath);
                 
-                _Plugins.SetAssemblies(assemblies);
+                _Plugins.SetAssemblies( Evaluation.PluginLoader.Instance.GetPlugins() );
 
                 RaiseChanged();
             }

@@ -115,11 +115,12 @@ namespace Epsylon.UberFactory
                 try
                 {
                     var instance = filterFactory(cid);
+                    if (instance is Evaluation._UnknownNode) throw new NullReferenceException();
                     if (instance == null) throw new NullReferenceException();
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("Unable to create " + cid + " instance.", nameof(filterFactory), ex);
+                    throw new ArgumentException($"Unable to create {cid} instance.", nameof(filterFactory), ex);
                 }
             }
         }

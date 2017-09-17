@@ -14,11 +14,11 @@ namespace Epsylon.UberFactory
         /// </summary>
         /// <param name="instance">Any object, but designed for <code>SDK.ContentFilter</code> derived objects</param>
         /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
-        public static ContentBaseTypeInfo GetContentTypeInfo(this Object instance)
+        public static ContentBaseInfo GetContentInfo(this Object instance)
         {
-            if (instance is Type) return GetContentTypeInfo((Type)instance);
+            if (instance is Type) return GetContentInfo((Type)instance);
 
-            return GetContentTypeInfo(instance == null ? null : instance.GetType());
+            return GetContentInfo(instance?.GetType());
         }
 
         /// <summary>
@@ -26,21 +26,65 @@ namespace Epsylon.UberFactory
         /// </summary>
         /// <param name="t">Any type, but designed for <code>SDK.ContentFilter</code> derived types</param>
         /// <returns>A <code>ContentFilterTypeInfo</code> instace for valid <code>SDK.ContentFilter</code>, and <code>UnknownTypeInfo</code> for everything else</returns>
-        public static ContentBaseTypeInfo GetContentTypeInfo(this Type t)
+        public static ContentBaseInfo GetContentInfo(this Type t)
         {
-            if (typeof(SDK.ContentFilter).GetTypeInfo().IsAssignableFrom(t)) return ContentFilterTypeInfo.Create(t);
-            return ContentObjectTypeInfo.Create(t);
-            
+            if (t == null) return null;
+            if (typeof(SDK.ContentFilter).GetTypeInfo().IsAssignableFrom(t)) return ContentFilterInfo.Create(t);
+            return ContentObjectInfo.Create(t);            
+        }
+
+
+        public class Collection
+        {
+            #region data        
+
+            private Assembly[] _Assemblies;
+            private ContentObjectInfo[] _SettingsTypes;
+            private ContentFilterInfo[] _PluginTypes;
+
+            #endregion
+
+            #region API        
+
+            public void SetAssemblies(IEnumerable<Assembly> assemblies)
+            {
+                _Assemblies = assemblies
+                    .ExceptNulls()
+                    .Distinct()
+                    .ToArray();
+
+                _SettingsTypes = ContentObjectInfo.GetContentTypes(_Assemblies).ToArray();
+                _PluginTypes = ContentFilterInfo.GetContentTypes(_Assemblies).ToArray();
+            }
+
+            public IReadOnlyList<ContentObjectInfo> SettingsTypes => _SettingsTypes;
+
+            public IReadOnlyList<ContentFilterInfo> PluginTypes => _PluginTypes;
+
+            public SDK.ContentObject CreateInstance(string classId)
+            {
+                if (string.IsNullOrWhiteSpace(classId)) throw new ArgumentNullException(nameof(classId));
+
+                var factory1 = _PluginTypes.FirstOrDefault(item => item.SerializationKey == classId);
+                if (factory1 != null) return factory1.CreateInstance();
+
+                var factory2 = _SettingsTypes.FirstOrDefault(item => item.SerializationKey == classId);
+                if (factory2 != null) return factory2.CreateInstance();
+
+                return new Evaluation._UnknownNode();
+            }
+
+            #endregion
         }
 
         /// <summary>
         /// Base class for type information for ContentFilters
         /// </summary>
-        public abstract class ContentBaseTypeInfo
+        public abstract class ContentBaseInfo
         {
             #region lifecycle
 
-            public ContentBaseTypeInfo(Type t) { _Type = t; }
+            public ContentBaseInfo(Type t) { _Type = t; }
 
             #endregion
 
@@ -75,17 +119,36 @@ namespace Epsylon.UberFactory
                 return attrib.GetValue<T>(null, defval);
             }
 
-            #endregion
+            protected static IEnumerable<Type> GetDefinedTypes<T>(IEnumerable<Assembly> assemblies)
+            {
+                if (assemblies == null) yield break;
+
+                var ti = typeof(T).GetTypeInfo();
+
+                foreach (var a in assemblies)
+                {
+                    foreach (var t in a.DefinedTypes)
+                    {
+                        if (t.GetTypeInfo().IsAbstract) continue;
+                        if (!t.GetTypeInfo().IsClass) continue;
+                        if (t.IsNestedPrivate) continue;
+
+                        if (ti.IsAssignableFrom(t.GetTypeInfo())) yield return t;
+                    }
+                }
+            }
+
+            #endregion            
         }
 
         /// <summary>
         /// Type information for unknown/missing/null content filter
         /// </summary>
-        public sealed class UnknownTypeInfo : ContentBaseTypeInfo
+        public sealed class UnknownInfo : ContentBaseInfo
         {
             #region lifecycle
 
-            internal UnknownTypeInfo() : base(typeof(Object)) { }
+            internal UnknownInfo() : base(typeof(Object)) { }
 
             #endregion
 
@@ -104,18 +167,18 @@ namespace Epsylon.UberFactory
         /// Type information for ContentFilters
         /// </summary>
         [System.Diagnostics.DebuggerDisplay("{DisplayName}  {InputTypes} > {OutputType}")]
-        public sealed class ContentFilterTypeInfo : ContentBaseTypeInfo
+        public sealed class ContentFilterInfo : ContentBaseInfo
         {
             #region lifecycle
 
-            public static ContentFilterTypeInfo Create(SDK.ContentFilter node)
+            public static ContentFilterInfo Create(SDK.ContentFilter node)
             {
                 if (node == null) return null;
                 
                 return Create(node.GetType());
             }
 
-            public static ContentFilterTypeInfo Create(Type t)
+            public static ContentFilterInfo Create(Type t)
             {
                 if (t == null) return null;
 
@@ -127,10 +190,10 @@ namespace Epsylon.UberFactory
 
                 if (_GetDeclarationAttribute(t) == null) return null;
 
-                return new ContentFilterTypeInfo(t);
+                return new ContentFilterInfo(t);
             }
 
-            private ContentFilterTypeInfo(Type t) : base(t) { }
+            private ContentFilterInfo(Type t) : base(t) { }
 
             #endregion
 
@@ -190,22 +253,33 @@ namespace Epsylon.UberFactory
                     .FirstOrDefault();
             }
 
+            public static IEnumerable<Factory.ContentFilterInfo> GetContentTypes(IEnumerable<Assembly> assemblies)
+            {                
+                var types = GetDefinedTypes<SDK.ContentFilter>(assemblies)
+                    .Select(t => t.GetContentInfo())
+                    .ExceptNulls()
+                    .OfType<Factory.ContentFilterInfo>()
+                    .ToArray();
+
+                return types;                
+            }
+
             #endregion
         }
 
         
-        public sealed class ContentObjectTypeInfo : ContentBaseTypeInfo
+        public sealed class ContentObjectInfo : ContentBaseInfo
         {
             #region lifecycle
 
-            public static ContentObjectTypeInfo Create(object anyInstance)
+            public static ContentObjectInfo Create(object anyInstance)
             {
                 if (anyInstance == null) return null;
 
                 return Create(anyInstance.GetType());
             }
 
-            public static ContentObjectTypeInfo Create(Type t)
+            public static ContentObjectInfo Create(Type t)
             {
                 if (t == null) return null;
 
@@ -215,10 +289,10 @@ namespace Epsylon.UberFactory
 
                 if (_GetDeclarationAttribute(t) == null) return null;
 
-                return new ContentObjectTypeInfo(t);
+                return new ContentObjectInfo(t);
             }
 
-            private ContentObjectTypeInfo(Type t) : base(t) { }
+            private ContentObjectInfo(Type t) : base(t) { }
 
             #endregion
 
@@ -254,6 +328,20 @@ namespace Epsylon.UberFactory
                 return t.GetTypeInfo().GetCustomAttributes(true)
                     .OfType<SDK.ContentNodeAttribute>()
                     .FirstOrDefault();
+            }
+
+            public static IEnumerable<Factory.ContentObjectInfo> GetContentTypes(IEnumerable<Assembly> assemblies)
+            {                
+                var types = GetDefinedTypes<SDK.ContentObject>(assemblies)
+                    .Where(item => typeof(SDK.ContentObject).GetTypeInfo().IsAssignableFrom(item))    // Must derive from SDK.ContentObject
+                    .Where(item => !typeof(SDK.ContentFilter).GetTypeInfo().IsAssignableFrom(item))   // Must NOT derive from SDK.ContentFilter
+                    .Select(t => t.GetContentInfo())
+                    .ExceptNulls()
+                    .OfType<Factory.ContentObjectInfo>()
+                    .ToArray();
+
+                return types;
+                
             }
 
             #endregion

@@ -454,12 +454,7 @@ namespace Epsylon.UberFactory
     {
         #region evaluation
 
-        public static IEnumerable<Assembly> UsePlugins(this Evaluation.IPluginLoader factory, IEnumerable<PathString> paths)
-        {
-            return paths
-                .Select(item => factory.UsePlugin(item))
-                .Where(item => item != null);
-        }
+        
 
         #endregion
     }

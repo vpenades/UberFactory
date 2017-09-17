@@ -23,26 +23,33 @@ namespace Epsylon.UberFactory.Evaluation
     // is available here: https://msdn.microsoft.com/en-us/library/jj635137%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
     // https://weblogs.asp.net/ricardoperes/using-mef-in-net-core
 
-    
+
 
     // https://social.msdn.microsoft.com/Forums/en-US/eaad2b9e-d1c8-4dca-9379-15cd2e19b3ef/can-i-get-a-list-of-type-without-instantiating-using-mef?forum=MEFramework
 
     // https://github.com/dotnet/home/blob/master/projects/mef.md
     // https://www.codeproject.com/articles/376033/from-zero-to-proficient-with-mef
-    
-    
+
+
 
     // https://social.msdn.microsoft.com/Forums/en-US/eaad2b9e-d1c8-4dca-9379-15cd2e19b3ef/can-i-get-a-list-of-type-without-instantiating-using-mef?forum=MEFramework
 
+    public interface IPluginLoader
+    {
+        void UsePlugin(PathString pluginAbsPath);
+
+        Assembly[] GetPlugins();
+    }
+
     public static class PluginLoader
     {
-        public static IPluginLoader Instance { get { return _PluginsFactoryWithResolver.Default; } }
-
-        
+        public static IPluginLoader Instance { get { return _PluginsFactoryWithResolver.Default; } }        
     }    
 
 
-
+    /// <summary>
+    /// Basic interface that loads an assembly from a given path. It's unable to resolve secondary dependencies
+    /// </summary>
     sealed class _PluginsFactoryBasic : IPluginLoader
     {
         #region lifecycle
@@ -53,21 +60,40 @@ namespace Epsylon.UberFactory.Evaluation
 
         static _PluginsFactoryBasic() { }
 
-        #endregion        
+        #endregion
+
+        #region data
+
+        private readonly HashSet<Assembly> _Plugins = new HashSet<Assembly>();
+
+        #endregion
 
         #region API
 
-        public Assembly UsePlugin(PathString pluginAbsPath)
+        public void UsePlugin(PathString pluginAbsPath)
         {
-            try { return AssemblyContext.LoadAssemblyFromFilePath(pluginAbsPath); } // this was originally using Assembly.Load();
-            catch { return null; }
+            // this was originally using Assembly.Load();
+            try
+            {
+                if (!pluginAbsPath.IsValidAbsoluteFilePath) return;
+                if (!pluginAbsPath.FileExists) return;
+
+                var a = AssemblyServices.LoadAssemblyFromFilePath(pluginAbsPath);
+
+                _Plugins.Add(a);
+            } 
+            catch { }
         }
+
+        public Assembly[] GetPlugins() { return _Plugins.ToArray(); }
 
         #endregion
     }
 
 
-
+    /// <summary>
+    /// Advanced plugin manager that looks into every previously loaded plugin directory to find 2nd level dependencies
+    /// </summary>    
     sealed class _PluginsFactoryWithResolver : IPluginLoader
     {
         #region lifecycle
@@ -78,7 +104,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         private _PluginsFactoryWithResolver()
         {
-            AssemblyContext.SetAssemblyResolver(_AssemblyResolve);
+            AssemblyServices.SetDefaultAssemblyResolver(_AssemblyResolve);
         }
 
         static _PluginsFactoryWithResolver() { }
@@ -89,30 +115,38 @@ namespace Epsylon.UberFactory.Evaluation
 
         private readonly Object _Lock = new object();
 
+        private readonly HashSet<Assembly> _Plugins = new HashSet<Assembly>();
+
         private readonly HashSet<PathString> _ProbeDirectories = new HashSet<PathString>();
 
-        // list of assemblies the framework was unable to load and were handled here
-        private readonly Dictionary<String, PathString> _ResolvedAssembles = new Dictionary<string, PathString>();
+        // list of assemblies the runtime was unable to resolve and were resolved here by probing directories
+        private readonly Dictionary<String, PathString> _ResolvedAssemblies = new Dictionary<string, PathString>();        
 
         #endregion
 
         #region API        
 
-        public Assembly UsePlugin(PathString pluginAbsPath)
+        public Assembly[] GetPlugins() { return _Plugins.ExceptNulls().ToArray(); }
+
+        public void UsePlugin(PathString pluginAbsPath)
         {
             try
             {
-                if (!pluginAbsPath.IsValidAbsoluteFilePath) return null;
-                if (!pluginAbsPath.FileExists) return null;
+                if (!pluginAbsPath.IsValidAbsoluteFilePath) return;
+                if (!pluginAbsPath.FileExists) return;
+
+                // TODO: if an assembly exists in the path, read the AssemblyName and check if we already have it in our plugins dir.                
 
                 lock(_Lock)
                 {
                     _ProbeDirectories.Add(pluginAbsPath.DirectoryPath);
                 }
 
-                return AssemblyContext.LoadAssemblyFromFilePath(pluginAbsPath);
+                var a = AssemblyServices.LoadAssemblyFromFilePath(pluginAbsPath);
+
+                if (a != null) _Plugins.Add(a);
             }
-            catch { return null; }
+            catch {  }
         }       
 
         private Assembly _AssemblyResolve(AssemblyName aname)
@@ -127,7 +161,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             lock (_Lock)
             {
-                _ResolvedAssembles[dllName] = PathString.Empty;
+                _ResolvedAssemblies[dllName] = PathString.Empty;
                 probeDirs = _ProbeDirectories.ToArray();
             }            
 
@@ -139,12 +173,12 @@ namespace Epsylon.UberFactory.Evaluation
 
                 try
                 {
-                    var a = AssemblyContext.LoadAssemblyFromFilePath(fullPath);
+                    var a = AssemblyServices.LoadAssemblyFromFilePath(fullPath);
                     if (a != null)
                     {
                         System.Diagnostics.Debug.WriteLine("LOADED ASSEMBLY: " + fullPath);
 
-                        lock (_Lock) { _ResolvedAssembles[aname.Name] = new PathString(fullPath); }
+                        lock (_Lock) { _ResolvedAssemblies[aname.Name] = new PathString(fullPath); }
                         return a;
                     }
                 }
@@ -157,7 +191,49 @@ namespace Epsylon.UberFactory.Evaluation
         }
 
         #endregion
-    }    
+    }
+
+
+    sealed class _PluginsFactoryCopiedToTemp : IPluginLoader
+    {
+        private readonly HashSet<string> _AssemblyFileNames = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+        private string _TempDir;
+        private HashSet<Assembly> _Plugins;
+
+        // TODO: create a temporary directory
+
+        public void UsePlugin(PathString pluginAbsPath)
+        {
+            if (_Plugins != null) throw new InvalidOperationException("This plugin manager can be initialized once");
+
+            _AssemblyFileNames.Add(pluginAbsPath.FileName);
+
+            // todo: copy all the files and subdirectories of pluginAbsPath to Temp directory
+            throw new NotImplementedException();
+        }
+
+        public Assembly[] GetPlugins()
+        {
+            if (_TempDir == null) throw new InvalidOperationException("Not initialized");
+
+            if (_Plugins == null)
+            {
+                _Plugins = new HashSet<Assembly>();
+
+                foreach (var afn in _AssemblyFileNames)
+                {
+                    var fullPath = System.IO.Path.Combine(_TempDir, afn);
+                    var p = AssemblyServices.LoadAssemblyFromFilePath(fullPath);
+                    _Plugins.Add(p);
+                }
+            }
+
+            return _Plugins.ToArray();
+        }
+    }
+
+
 }
 
 

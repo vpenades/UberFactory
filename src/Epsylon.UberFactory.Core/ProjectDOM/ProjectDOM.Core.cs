@@ -46,9 +46,9 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static Node Create(Factory.ContentBaseTypeInfo node)
+            public static Node Create(Factory.ContentBaseInfo node)
             {
-                var filter = node as Factory.ContentFilterTypeInfo;
+                var filter = node as Factory.ContentFilterInfo;
                 if (filter == null) return null;                
 
                 return Create(filter.SerializationKey);
@@ -202,7 +202,7 @@ namespace Epsylon.UberFactory
 
             public Node GetRootNode() { return GetNode(this.RootIdentifier); }
 
-            public Guid AddNode(Factory.ContentBaseTypeInfo t)
+            public Guid AddNode(Factory.ContentBaseInfo t)
             {
                 var f = Node.Create(t); if (f == null) return Guid.Empty;
 
@@ -420,7 +420,7 @@ namespace Epsylon.UberFactory
 
             public Settings UseSettings(Type t)
             {
-                var skey = t.GetContentTypeInfo()?.SerializationKey;
+                var skey = t.GetContentInfo()?.SerializationKey;
                 if (string.IsNullOrWhiteSpace(skey)) return null;
 
                 return UseSettings(skey);

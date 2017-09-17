@@ -10,9 +10,9 @@ namespace Epsylon.UberFactory.Evaluation
 {
     using ASSEMBLYRESOLVEFUNC = Func<AssemblyName, Assembly>;
 
-    public static partial class AssemblyContext
+    public static partial class AssemblyServices
     {
-        // http://www.michael-whelan.net/replacing-appdomain-in-dotnet-core/        
+        // http://www.michael-whelan.net/replacing-appdomain-in-dotnet-core/
 
         // NOTE: although System.Runtime.Loader is declared as compatible with Net.Standard 1.5, it is only implemented for Net.Core
 
@@ -23,13 +23,15 @@ namespace Epsylon.UberFactory.Evaluation
         public static Assembly[] GetLoadedAssemblies()
         {
             // https://github.com/dotnet/coreclr/blob/master/src/mscorlib/src/System/Runtime/Loader/AssemblyLoadContext.cs#L74            
-            // return AssemblyLoadContext.GetLoadedAssemblies();            
+            // return AssemblyLoadContext.GetLoadedAssemblies();
 
-            throw new NotImplementedException();
+            throw new NotSupportedException("DotNet API says it should be supported by now, but it is not yet.");
         }
 
         public static AssemblyName GetAssemblyName(string absoluteFilePath)
         {
+            if (!System.IO.File.Exists(absoluteFilePath)) return null;
+
             return AssemblyLoadContext.GetAssemblyName(absoluteFilePath);
         }
 
@@ -40,29 +42,23 @@ namespace Epsylon.UberFactory.Evaluation
             return AssemblyLoadContext.Default.LoadFromAssemblyPath(absoluteFilePath);
         }
 
-        public static void SetAssemblyResolver(ASSEMBLYRESOLVEFUNC func)
+        public static void SetDefaultAssemblyResolver(ASSEMBLYRESOLVEFUNC func)
         {
-            // https://msdn.microsoft.com/en-us/library/ff527268.aspx
+            // https://msdn.microsoft.com/en-us/library/ff527268.aspx            
+            
+            if (func != null && _AssemblySolver == null) AssemblyLoadContext.Default.Resolving += _AssemblyResolveAdapter;
+            if (func == null && _AssemblySolver != null) AssemblyLoadContext.Default.Resolving -= _AssemblyResolveAdapter;            
 
-            func = func == null ? (ASSEMBLYRESOLVEFUNC)null : n => _AssemblyResolve(n, func);
+            _AssemblySolver = func;
 
-            lock (_LockObject)
-            {
-
-                if (func != null && _AssemblySolver == null) AssemblyLoadContext.Default.Resolving += _AssemblyResolve;
-                if (func == null && _AssemblySolver != null) AssemblyLoadContext.Default.Resolving -= _AssemblyResolve;
-
-                _AssemblySolver = func;
-
-                return;
-            }
+            return;            
         }
 
-        private static Assembly _AssemblyResolve(AssemblyLoadContext ctx, AssemblyName aname)
+        private static Assembly _AssemblyResolveAdapter(AssemblyLoadContext ctx, AssemblyName aname)
         {
             if (ctx != AssemblyLoadContext.Default) throw new ArgumentException("AssemblyLoadContexts other than default not supported", nameof(ctx));
 
-            return _AssemblyResolve(aname);
+            return _AssemblySolver?.Invoke(aname);
         }
-    }
+    }    
 }

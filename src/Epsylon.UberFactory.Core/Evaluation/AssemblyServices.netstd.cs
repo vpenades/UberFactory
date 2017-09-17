@@ -9,7 +9,7 @@ namespace Epsylon.UberFactory.Evaluation
 {
     using ASSEMBLYRESOLVEFUNC = Func<AssemblyName, Assembly>;
 
-    public static partial class AssemblyContext
+    public static partial class AssemblyServices
     {
         public static Assembly GetEntryAssembly() { return null; }
 
@@ -17,17 +17,10 @@ namespace Epsylon.UberFactory.Evaluation
 
         public static Assembly[] GetLoadedAssemblies() { throw new PlatformNotSupportedException(); }
 
-
         public static AssemblyName GetAssemblyName(string absoluteFilePath) { throw new PlatformNotSupportedException(); }
 
-        public static Assembly LoadAssemblyFromFilePath(string absoluteFilePath)
-        {
-            throw new PlatformNotSupportedException();
-        }
+        public static Assembly LoadAssemblyFromFilePath(string absoluteFilePath) { throw new PlatformNotSupportedException(); }
 
-        public static void SetAssemblyResolver(ASSEMBLYRESOLVEFUNC func)
-        {
-            throw new PlatformNotSupportedException();
-        }        
+        public static void SetDefaultAssemblyResolver(ASSEMBLYRESOLVEFUNC func) { throw new PlatformNotSupportedException(); }
     }
 }
