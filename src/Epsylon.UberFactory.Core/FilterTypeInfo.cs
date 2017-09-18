@@ -34,6 +34,14 @@ namespace Epsylon.UberFactory
         }
 
 
+        public static Collection GetContentInfoCollection(this IEnumerable<Assembly> assemblies)
+        {
+            var c = new Collection();
+            c.SetAssemblies(assemblies);
+            return c;
+        }
+
+
         public class Collection
         {
             #region data        

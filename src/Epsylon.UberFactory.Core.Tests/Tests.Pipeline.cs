@@ -184,11 +184,9 @@ namespace Epsylon.UberFactory
                 _Plugins = plugins.ToArray();
             }
 
-            var pluginManager = new Factory.Collection();
+            var typeCollection = _Plugins.GetContentInfoCollection();            
 
-            pluginManager.SetAssemblies(_Plugins);
-
-            return pluginManager.CreateInstance(classId) as SDK.ContentFilter;            
+            return typeCollection.CreateInstance(classId) as SDK.ContentFilter;            
         }
 
         [SDK.ContentNode(nameof(TestFilter1))]

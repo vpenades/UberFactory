@@ -20,11 +20,9 @@ namespace Epsylon.UberFactory.Evaluation
         {
             LoadProjectAssemblies(project, prjDir);
 
-            var plugins = new Factory.Collection();
+            var plugins = new Factory.Collection();            
 
-            plugins.SetAssemblies(PluginLoader.Instance.GetPlugins());
-
-            return plugins;
+            return PluginLoader.Instance.GetPlugins().GetContentInfoCollection();
         }
     }
 }

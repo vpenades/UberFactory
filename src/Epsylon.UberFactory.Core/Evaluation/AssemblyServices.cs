@@ -24,6 +24,8 @@ namespace Epsylon.UberFactory.Evaluation
         private static ASSEMBLYRESOLVEFUNC _AssemblySolver = null;
 
         public static string EntryAssemblyDirectory => _EntryAssemblyDirectory;
+
+        public static System.Diagnostics.FileVersionInfo LoadVersionInfo(string absFilePath) { return System.Diagnostics.FileVersionInfo.GetVersionInfo(absFilePath); }
     }
 
 }

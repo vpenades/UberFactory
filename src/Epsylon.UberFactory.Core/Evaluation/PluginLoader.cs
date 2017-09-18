@@ -135,9 +135,17 @@ namespace Epsylon.UberFactory.Evaluation
                 if (!pluginAbsPath.IsValidAbsoluteFilePath) return;
                 if (!pluginAbsPath.FileExists) return;
 
+                var fvi = AssemblyServices.LoadVersionInfo(pluginAbsPath);
+                if (fvi == null) return;
+                var aname = AssemblyServices.GetAssemblyName(pluginAbsPath);
+                if (aname == null) return;
+
+                if (aname.IsFramework()) return;
+                if (!aname.ProcessorArchitecture.IsRuntimeCompatible()) return;
+
                 // TODO: if an assembly exists in the path, read the AssemblyName and check if we already have it in our plugins dir.                
 
-                lock(_Lock)
+                lock (_Lock)
                 {
                     _ProbeDirectories.Add(pluginAbsPath.DirectoryPath);
                 }

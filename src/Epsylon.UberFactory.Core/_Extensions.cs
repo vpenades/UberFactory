@@ -179,7 +179,7 @@ namespace Epsylon.UberFactory
         /// </summary>
         /// <param name="name">AssemblyName to check</param>
         /// <returns>True if runtime framework, false otherwise</returns>
-        public static bool IsFramework(this System.Reflection.AssemblyName name)
+        public static bool IsFramework(this AssemblyName name)
         {
             if (name == null) return false;
 
@@ -189,6 +189,24 @@ namespace Epsylon.UberFactory
             if (pkey == "Mb84Vq02TjU=") return true; // WPF DLLs
 
             return false;
+        }
+
+        /// <summary>
+        /// Tells if the given processor architecture is compatible with the current runtime architecture
+        /// </summary>
+        /// <param name="architecture">architecture</param>
+        /// <returns>true if compatible</returns>
+        public static bool IsRuntimeCompatible(this ProcessorArchitecture architecture)
+        {
+            if (architecture == ProcessorArchitecture.None) return false;
+
+            if (architecture == ProcessorArchitecture.X86 && IntPtr.Size != 4) return false;
+            if (architecture == ProcessorArchitecture.Amd64 && IntPtr.Size != 8) return false;
+            if (architecture == ProcessorArchitecture.IA64 && IntPtr.Size != 8) return false;
+
+            if (architecture == ProcessorArchitecture.Arm) return false;
+
+            return true;
         }
 
         #endregion

@@ -36,11 +36,8 @@ namespace Epsylon.UberFactory.Evaluation
                 }
             }
 
-            var plugins = new Factory.Collection();
 
-            plugins.SetAssemblies(PluginLoader.Instance.GetPlugins());
-
-            return plugins;
+            return PluginLoader.Instance.GetPlugins().GetContentInfoCollection();
         }
 
         
