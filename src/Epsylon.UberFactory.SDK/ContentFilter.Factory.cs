@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// make factory internals visible only to Core
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Epsylon.UberFactory.Core")]
+
 namespace Epsylon.UberFactory
 {
     public static partial class SDK
     {
-        public static ContentObject Create(Type type)
+        internal static ContentObject Create(Type type)
         {
             if (type == null) return null;
             var node = (ContentObject)System.Activator.CreateInstance(type);            
@@ -16,47 +19,34 @@ namespace Epsylon.UberFactory
             return node;
         }
 
-        public static void ConfigureNode(this ContentObject node, IBuildContext bsettings, Func<Type,ContentObject> settingsResolver)
+        internal static void ConfigureNode(this ContentObject node, IBuildContext bsettings, Func<Type,ContentObject> settingsResolver)
         {
-            if (node._BuildContext != null) throw new InvalidOperationException("already initialized");
-
-            node._BuildContext = bsettings ?? throw new ArgumentNullException(nameof(bsettings));
-            
-            if (node is ContentFilter)
-            {
-                if ((node as ContentFilter)._SharedContentResolver != null) throw new InvalidOperationException("already initialized");
-
-                (node as ContentFilter)._SharedContentResolver = settingsResolver ?? throw new ArgumentNullException(nameof(settingsResolver));
-            }
+            node.Setup(bsettings, settingsResolver);            
         }
 
-
-        public static Object DebugNode(ContentFilter node, IMonitorContext monitor, Func<Type, ContentObject> sf)
+        internal static Object DebugNode(ContentFilter node, IMonitorContext monitor)
         {
             #if DEBUG
             if (!System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Launch();
             #endif
 
-            return EvaluateNode(node, monitor, sf);
+            return EvaluateNode(node, monitor);
         }
 
-
-        public static Object EvaluateNode(ContentFilter node, IMonitorContext monitor, Func<Type,ContentObject> sf)
+        internal static Object EvaluateNode(ContentFilter node, IMonitorContext monitor)
         {
             if (node == null) return null;
             if (monitor == null) throw new ArgumentNullException(nameof(monitor));
 
-            return node._Evaluate(monitor, sf);
+            return node._Evaluate(monitor);
         }
 
-        public static Object PreviewNode(ContentFilter node, IMonitorContext monitor, Func<Type, ContentObject> sf)
+        internal static Object PreviewNode(ContentFilter node, IMonitorContext monitor)
         {
             if (node == null) return null;
             if (monitor == null) throw new ArgumentNullException(nameof(monitor));
 
-            return node._Preview(monitor, sf);
+            return node._Preview(monitor);
         }
-
-
     }
 }

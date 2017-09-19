@@ -15,24 +15,26 @@ namespace Epsylon.UberFactory
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
 
-            internal IBuildContext _BuildContext;
-            internal Func<Type, ContentObject> _SharedContentResolver;
+            private IBuildContext _BuildContext;
+            private Func<Type, ContentObject> _SharedContentResolver;
 
             #endregion
 
-            #region API            
+            #region API     
+            
+            internal void Setup(IBuildContext bc, Func<Type, ContentObject> scr)
+            {
+                if (_BuildContext != null || _SharedContentResolver != null) throw new InvalidOperationException("already initialized");
+
+                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
+                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
+            }
 
             public IBuildContext BuildContext => _BuildContext;
 
-            public SDK.ContentObject GetSharedSettings(Type t)
-            {
-                return _SharedContentResolver == null ? null : _SharedContentResolver(t);
-            }
+            public SDK.ContentObject GetSharedSettings(Type t) { return _SharedContentResolver?.Invoke(t); }
 
-            public T GetSharedSettings<T>() where T : ContentObject
-            {
-                return _SharedContentResolver == null ? null : _SharedContentResolver(typeof(T)) as T;
-            }
+            public T GetSharedSettings<T>() where T : ContentObject { return _SharedContentResolver?.Invoke(typeof(T)) as T; }
 
             #endregion   
         }
@@ -49,9 +51,7 @@ namespace Epsylon.UberFactory
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline            
 
-            internal IMonitorContext _MonitorContext;
-
-            
+            internal IMonitorContext _MonitorContext;            
 
             #endregion            
 
@@ -77,19 +77,19 @@ namespace Epsylon.UberFactory
             
 
 
-            internal Object _Evaluate(IMonitorContext monitor, Func<Type,ContentObject> sf)
+            internal Object _Evaluate(IMonitorContext monitor)
             {
-                return _Evaluate(EvaluateObject, monitor, sf);
+                return _Evaluate(EvaluateObject, monitor);
             }
 
-            internal Object _Preview(IMonitorContext monitor, Func<Type, ContentObject> sf)
+            internal Object _Preview(IMonitorContext monitor)
             {
-                return _Evaluate(PreviewObject, monitor, sf);
+                return _Evaluate(PreviewObject, monitor);
             }
 
-            internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor, Func<Type, ContentObject> sf)
+            internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor)
             {
-                if (_BuildContext == null) throw new InvalidOperationException(this.GetType().Name + " not initialized");
+                if (BuildContext == null) throw new InvalidOperationException(this.GetType().Name + " not initialized");
 
                 this._MonitorContext = monitor;                
 

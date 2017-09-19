@@ -424,7 +424,7 @@ namespace Epsylon.UberFactory
 
             public void WriteAllText(String data) { WriteAllText(FileName, data); }            
         }        
-
+        
     }
 
 }

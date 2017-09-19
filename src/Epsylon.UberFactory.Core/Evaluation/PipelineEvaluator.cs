@@ -14,7 +14,7 @@ namespace Epsylon.UberFactory.Evaluation
     using SETTINGSFACTORY = Func<Type, ProjectDOM.Settings>;    
     
 
-    public class PipelineEvaluator : SDK.IPipelineInstance
+    public class PipelineEvaluator
     {
         #region lifecycle        
 
@@ -239,17 +239,15 @@ namespace Epsylon.UberFactory.Evaluation
 
             try
             {
-                var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);
-
-                Func<Type, SDK.ContentObject> sharedContentEvaluator = t => GetSettingsInstance(t, localMonitor);
+                var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);                
 
                 if (nodeInst is SDK.ContentFilter)
                 {
-                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, localMonitor, sharedContentEvaluator);
+                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, localMonitor);
                     else
                     {
-                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, localMonitor, sharedContentEvaluator);
-                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, localMonitor, sharedContentEvaluator);
+                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, localMonitor);
+                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, localMonitor);
                     }
                 }
                 else if (nodeInst is SDK.ContentObject) return nodeInst;
