@@ -247,6 +247,11 @@ namespace Epsylon.UberFactory.Evaluation
             return null;
         }
 
+        public SDK.PreviewContext GetPreviewContext()
+        {
+            return new _PreviewContext();
+        }
+
         #endregion
     }
 

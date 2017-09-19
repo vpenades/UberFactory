@@ -26,6 +26,11 @@ namespace Epsylon.UberFactory
                 return ReadFile(s);                
             }
 
+            protected override object EvaluatePreview(PreviewContext previewContext)
+            {
+                return base.EvaluatePreview(previewContext);
+            }
+
             protected abstract TValue ReadFile(ImportContext stream);
         }
             

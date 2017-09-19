@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Epsylon.UberFactory.Evaluation
@@ -11,6 +12,8 @@ namespace Epsylon.UberFactory.Evaluation
 
     class _ImportContext : SDK.ImportContext
     {
+        #region lifecycle
+
         public static _ImportContext Create(Uri uri)
         {
             var path = new PathString(uri);
@@ -23,7 +26,15 @@ namespace Epsylon.UberFactory.Evaluation
 
         private _ImportContext(PathString path, Byte[] data) { _SourcePath = path; }
 
+        #endregion
+
+        #region data
+
         private readonly PathString _SourcePath;
+
+        #endregion
+
+        #region API
 
         #pragma warning disable CS0672
 
@@ -41,10 +52,14 @@ namespace Epsylon.UberFactory.Evaluation
 
             return new System.IO.MemoryStream(data, false);
         }
+
+        #endregion
     }
 
     class _ExportContext : SDK.ExportContext
     {
+        #region lifecycle
+
         public static _ExportContext Create(Uri uri, PathString outDir)
         {
             // TODO: ensure uri is within the specified target path
@@ -54,11 +69,23 @@ namespace Epsylon.UberFactory.Evaluation
             return new _ExportContext(path, outDir);
         }
 
-        protected _ExportContext(PathString p, PathString o) { _TargetPath = p; _OutDir = o; }
+        protected _ExportContext(PathString p, PathString o)
+        {
+            _TargetPath = p;
+            _OutDir = o;
+        }
+
+        #endregion
+
+        #region data
 
         private readonly PathString _TargetPath;
 
         private readonly PathString _OutDir;
+
+        #endregion
+
+        #region API
 
         public override string FileName => _TargetPath.FileName;
 
@@ -78,13 +105,17 @@ namespace Epsylon.UberFactory.Evaluation
 
             return System.IO.File.Create(newPath);
         }
+
+        #endregion
     }
 
     /// <summary>
     /// export context that writes nothing, used for simulation and debug.
     /// </summary>
-    sealed class _SimulateExportContext : _ExportContext
+    sealed class _SimulateExportContext : SDK.ExportContext
     {
+        #region lifecycle
+
         public static _SimulateExportContext Create(Uri uri, Action<string, Byte[]> fileCreationNotifier)
         {
             // TODO: ensure uri is within the specified target path
@@ -92,43 +123,185 @@ namespace Epsylon.UberFactory.Evaluation
             var path = new PathString(uri);
 
             return new _SimulateExportContext(path, fileCreationNotifier);
-        }        
+        }
 
-        private _SimulateExportContext(PathString p, Action<string, Byte[]> fileCreationNotifier) : base(p, new PathString(System.IO.Path.GetTempPath()) )
+        private _SimulateExportContext(PathString p, Action<string, Byte[]> fileCreationNotifier)
         {
+            _TargetPath = p;
             _FileCreationNotifier = fileCreationNotifier;
         }
 
+        #endregion
+
+        #region data
+
+        private readonly PathString _TargetPath;
+
         private readonly Action<string, Byte[]> _FileCreationNotifier;
 
-        public override System.IO.Stream OpenFile(string relativePath)
+        #endregion
+
+        #region API
+
+        public override string FileName => _TargetPath.FileName;
+
+        #pragma warning disable CS0672
+
+        public override string FilePath => throw new NotSupportedException("Write to file not supported.");
+
+        public override string OutputDirectory => throw new NotSupportedException("Write to file not supported.");
+
+        #pragma warning restore CS0672
+
+        public override Stream OpenFile(string relativePath)
         {
             // for writing very large files, using System.IO.MemoryStream would use a lot of RAM
             // alternatives:
             // - write a Stream object that updates Position and Length, but does nothing else
             // - write to a temporary file
 
-            return new _DummyStream(relativePath, _FileCreationNotifier);
+            return new _MemoryStream(relativePath, _FileCreationNotifier);
         }
 
-        class _DummyStream : System.IO.MemoryStream
+        #endregion
+    }
+
+    class _DictionaryExportContext : SDK.ExportContext
+    {
+        #region lifecycle
+
+        public static _DictionaryExportContext Create(string fileName)
         {
-            public _DummyStream(string name, Action<string, Byte[]> onClosingFile)
-            {
-                _FileName = name;
-                _OnClosingFile = onClosingFile;
-            }
+            var fp = new PathString(fileName);
+            if (!fp.IsValidRelativeFilePath) return null;            
 
-            private readonly string _FileName;
-            private readonly Action<string, Byte[]> _OnClosingFile;
+            return new _DictionaryExportContext(fileName);
+        }
 
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing && _OnClosingFile != null) _OnClosingFile.Invoke(_FileName, this.GetBuffer());
+        private _DictionaryExportContext(string fileName)
+        {
+            _DefaultFileName = fileName;
+        }
 
-                base.Dispose(disposing);                
-            }
+        #endregion
 
+        #region data
+
+        private string _DefaultFileName;
+        private readonly Dictionary<String, Byte[]> _Files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+
+        #endregion
+
+        #region API
+
+        public IReadOnlyDictionary<String, Byte[]> Content => _Files;
+
+        public override string FileName => _DefaultFileName;
+
+        #pragma warning disable CS0672
+
+        public override string FilePath => throw new NotSupportedException("Write to file not supported.");
+
+        public override string OutputDirectory => throw new NotSupportedException("Write to file not supported.");
+
+        #pragma warning restore CS0672
+
+        public override Stream OpenFile(string localName)
+        {
+            return new _MemoryStream(localName, (key, val) => _Files[key] = val);
+        }
+
+        #endregion        
+    }
+
+    class _DictionaryImportContext : SDK.ImportContext
+    {
+        #region lifecycle
+
+        public static _DictionaryImportContext Create(IConvertible value)
+        {
+            var text = value.ToString();
+            var data = Encoding.UTF8.GetBytes(text);
+
+            var dict = new Dictionary<string, byte[]>();
+
+            dict["preview.txt"] = data;
+
+            return Create(dict, "preview.txt");
+        }
+
+        public static _DictionaryImportContext Create(IReadOnlyDictionary<string,Byte[]> files, string fileName)
+        {
+            var fp = new PathString(fileName);
+            if (!fp.IsValidRelativeFilePath) return null;
+
+            return new _DictionaryImportContext(files, fileName);
+        }
+
+        private _DictionaryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName)
+        {
+            _DefaultFileName = fileName;
+            _Files = files;
+        }
+
+        #endregion
+
+        #region data
+
+        private string _DefaultFileName;
+        private readonly IReadOnlyDictionary<String, Byte[]> _Files;
+
+        #endregion
+
+        #region API
+
+        #pragma warning disable CS0672
+
+        public override string FileName => throw new NotSupportedException();
+
+        public override string FilePath => throw new NotSupportedException();
+
+        #pragma warning restore CS0672
+
+        public override Stream OpenFile(string relativePath)
+        {
+            if (!_Files.TryGetValue(relativePath, out byte[] data)) return null;
+
+            return new MemoryStream(data);
+        }
+
+        #endregion
+    }
+
+    class _PreviewContext : SDK.PreviewContext
+    {
+        public override SDK.ExportContext CreateMemoryFile(string fileName)
+        {
+            return _DictionaryExportContext.Create(fileName);
         }
     }
+
+    class _MemoryStream : MemoryStream
+    {
+        public _MemoryStream(string name, Action<string, Byte[]> onClosingFile)
+        {
+            _FileName = name;
+            _OnClosingFile = onClosingFile;
+        }
+
+        private readonly string _FileName;
+        private readonly Action<string, Byte[]> _OnClosingFile;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && _OnClosingFile != null)
+            {
+                _OnClosingFile.Invoke(_FileName, this.ToArray());
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+
 }

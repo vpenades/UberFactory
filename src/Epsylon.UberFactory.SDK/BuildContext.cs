@@ -113,7 +113,13 @@ namespace Epsylon.UberFactory
             /// </summary>
             /// <param name="absoluteUri">A path to the location</param>
             /// <returns>An export context</returns>
-            ExportContext GetExportContext(Uri absoluteUri);            
+            ExportContext GetExportContext(Uri absoluteUri);
+
+            /// <summary>
+            /// Gets a preview context to 
+            /// </summary>            
+            /// <returns>A preview context</returns>
+            PreviewContext GetPreviewContext();
         }
 
         /// <summary>
@@ -424,6 +430,12 @@ namespace Epsylon.UberFactory
 
             public void WriteAllText(String data) { WriteAllText(FileName, data); }            
         }        
+
+
+        public abstract class PreviewContext
+        {
+            public abstract ExportContext CreateMemoryFile(string fileName);
+        }
         
     }
 

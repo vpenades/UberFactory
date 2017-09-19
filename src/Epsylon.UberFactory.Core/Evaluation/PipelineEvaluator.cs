@@ -203,11 +203,24 @@ namespace Epsylon.UberFactory.Evaluation
             return _EvaluateNode(monitor, nodeId, false);
         }
 
-        public Object PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
+        public SDK.ImportContext PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
             _SettingsInstancesCache.Clear();
 
-            return _EvaluateNode(monitor, nodeId, true);
+            var previewObject =  _EvaluateNode(monitor, nodeId, true);
+
+            if (previewObject is _DictionaryExportContext expDict)
+            {
+                return _DictionaryImportContext.Create(expDict.Content,expDict.FileName);
+            }
+
+            if (previewObject is IConvertible convertible)
+            {
+                return _DictionaryImportContext.Create(convertible);
+            }
+
+            return null;
+
         }
 
         private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode, params Object[] parameters)

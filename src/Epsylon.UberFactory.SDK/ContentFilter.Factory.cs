@@ -38,7 +38,7 @@ namespace Epsylon.UberFactory
             if (node == null) return null;
             if (monitor == null) throw new ArgumentNullException(nameof(monitor));
 
-            return node._Evaluate(monitor);
+            return node._EvaluateObject(monitor);
         }
 
         internal static Object PreviewNode(ContentFilter node, IMonitorContext monitor)
@@ -46,7 +46,7 @@ namespace Epsylon.UberFactory
             if (node == null) return null;
             if (monitor == null) throw new ArgumentNullException(nameof(monitor));
 
-            return node._Preview(monitor);
+            return node._EvaluatePreview(monitor);
         }
     }
 }

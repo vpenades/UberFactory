@@ -55,11 +55,11 @@ namespace Epsylon.UberFactory
 
             #endregion            
 
-            #region API
+            #region user's API
 
-            protected bool IsCancelled { get { return _MonitorContext.IsCancelRequested; } }
+            protected bool IsCancelled      => _MonitorContext.IsCancelRequested;
 
-            protected bool IsRunning { get { return !IsCancelled; } }
+            protected bool IsRunning        => !IsCancelled;
 
             protected void CheckCancelation() { if (IsCancelled) throw new OperationCanceledException(); }            
 
@@ -74,36 +74,42 @@ namespace Epsylon.UberFactory
             public void LogError(string message) { _MonitorContext.LogError(this.GetType().Name, message); }
             public void LogCritical(string message) { _MonitorContext.LogCritical(this.GetType().Name, message); }
 
-            
+            protected abstract Object EvaluateObject();
 
+            protected virtual Object EvaluatePreview(PreviewContext previewContext) { return EvaluateObject(); }
 
-            internal Object _Evaluate(IMonitorContext monitor)
+            #endregion
+
+            #region internals
+
+            internal Object _EvaluateObject(IMonitorContext monitor)
             {
-                return _Evaluate(EvaluateObject, monitor);
+                if (BuildContext == null) throw new InvalidOperationException($"{this.GetType().Name} not initialized");
+
+                _MonitorContext = monitor;
+
+                var r = EvaluateObject();
+
+                _MonitorContext = null;
+
+                return r;                
             }
 
-            internal Object _Preview(IMonitorContext monitor)
+            internal Object _EvaluatePreview(IMonitorContext monitor)
             {
-                return _Evaluate(PreviewObject, monitor);
-            }
+                if (BuildContext == null) throw new InvalidOperationException($"{this.GetType().Name} not initialized");                
 
-            internal Object _Evaluate(Func<Object> evaluator, IMonitorContext monitor)
-            {
-                if (BuildContext == null) throw new InvalidOperationException(this.GetType().Name + " not initialized");
+                var previewContext = BuildContext.GetPreviewContext();
+                if (previewContext == null) throw new InvalidOperationException($"{nameof(PreviewContext)} is Null");
 
-                this._MonitorContext = monitor;                
+                _MonitorContext = monitor;
 
-                var r = evaluator();
-                
-                this._MonitorContext = null;
+                var r = EvaluatePreview(previewContext);
+
+                _MonitorContext = null;
 
                 return r;
-            }
-
-            // preview evaluation is expected to be much faster and simplified, for heavy filters, it is recomended to use a simplified processing for preview
-            protected virtual Object PreviewObject() { return EvaluateObject(); }
-
-            protected abstract Object EvaluateObject();
+            }                
 
             #endregion            
         }                
