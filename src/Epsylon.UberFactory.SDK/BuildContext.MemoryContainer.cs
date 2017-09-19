@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,18 +8,21 @@ namespace Epsylon.UberFactory
 {
     public static partial class SDK
     {
-        class _MemoryDirectory
-        {
-            private readonly Dictionary<string, Byte[]> _Files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
-            private readonly Object _Lock = new object();
 
-            public void AddEntry(string name, byte[] data) { lock (_Lock) { _Files[name] = data; } }
-        }
+        // si dejo que el usuario me envie cualquier "import context", me puede enviar cualquier cosa.
 
-        class _MemoryDirectoryWriter : ExportContext
+        class _MemoryContextWriter : ExportContext
         {
+            #region data
+
             private string _DefaultFileName;
-            private _MemoryDirectory _Content = new _MemoryDirectory();
+            private readonly Dictionary<String, Byte[]> _Files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+
+            #endregion
+
+            #region API
+
+            public IReadOnlyDictionary<String, Byte[]> Content => _Files;
 
             public override string FileName => _DefaultFileName;
 
@@ -28,32 +32,40 @@ namespace Epsylon.UberFactory
 
             public override Stream OpenFile(string localName)
             {
-                return new _DummyStream(localName, (key, data) => _Content.AddEntry(key,data) );
-            }
-        }
-
-        class _DummyStream : System.IO.MemoryStream
-        {
-            public _DummyStream(string name, Action<string, Byte[]> onClosingFile)
-            {
-                _FileName = name;
-                _OnClosingFile = onClosingFile;
+                return new _MemoryStream(localName, (key, val) => _Files[key] = val);
             }
 
-            private readonly string _FileName;
-            private readonly Action<string, Byte[]> _OnClosingFile;
+            #endregion
 
-            protected override void Dispose(bool disposing)
+            #region helper class
+
+            class _MemoryStream : MemoryStream
             {
-                if (disposing && _OnClosingFile != null)
+                public _MemoryStream(string name, Action<string, Byte[]> onClosingFile)
                 {
-                    _OnClosingFile.Invoke(_FileName, this.ToArray());                    
+                    _FileName = name;
+                    _OnClosingFile = onClosingFile;
                 }
 
-                base.Dispose(disposing);
+                private readonly string _FileName;
+                private readonly Action<string, Byte[]> _OnClosingFile;
+
+                protected override void Dispose(bool disposing)
+                {
+                    if (disposing && _OnClosingFile != null)
+                    {
+                        _OnClosingFile.Invoke(_FileName, this.ToArray());
+                    }
+
+                    base.Dispose(disposing);
+                }
+
             }
 
+            #endregion
         }
+
+        
 
     }
 }
