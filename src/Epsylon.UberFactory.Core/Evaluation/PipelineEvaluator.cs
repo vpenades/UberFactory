@@ -203,7 +203,7 @@ namespace Epsylon.UberFactory.Evaluation
             return _EvaluateNode(monitor, nodeId, false);
         }
 
-        public SDK.ImportContext PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
+        public IPreviewResult PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
             _SettingsInstancesCache.Clear();
 
@@ -211,16 +211,22 @@ namespace Epsylon.UberFactory.Evaluation
 
             if (previewObject is _DictionaryExportContext expDict)
             {
-                return _DictionaryImportContext.Create(expDict.Content,expDict.FileName);
+                return expDict;
             }
 
             if (previewObject is IConvertible convertible)
             {
-                return _DictionaryImportContext.Create(convertible);
+                var text = convertible.ToString();
+                var data = Encoding.UTF8.GetBytes(text);
+
+                var dict = _DictionaryExportContext.Create("preview.txt");
+
+                dict.WriteAllBytes(data);
+
+                return dict;
             }
 
             return null;
-
         }
 
         private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode, params Object[] parameters)

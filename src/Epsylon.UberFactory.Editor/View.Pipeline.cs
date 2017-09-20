@@ -142,11 +142,7 @@ namespace Epsylon.UberFactory
                 if (_Evaluator == null) return;
                 var result = _Evaluator.PreviewNode(Evaluation.MonitorContext.CreateNull(), nodeId);
 
-                // TODO: if result is TEXT|IMAGE AND we've selected internal viewer, show in a dialog:
-
-                _Dialogs.ShowProductAndDispose(null, result);                
-
-                // OTHERWISE: tODO: save to a temp dir, and run process
+                PreviewManager.ShowPreview(result);
             }
 
             public ProjectDOM.Node GetNodeDOM(Guid id) { return _PipelineDom.GetNode(id); }

@@ -104,6 +104,7 @@
     <Compile Include="..\Shared\AssemblyInfo.Shared.cs">
       <Link>Properties\AssemblyInfo.Shared.cs</Link>
     </Compile>
+    <Compile Include="PreviewManager.cs" />
     <Compile Include="Properties\DebugInfo.cs" />
     <Compile Include="RecentFilesMenuItem.cs" />
     <Compile Include="Themes\DataTemplates\BindingView.Color.xaml.cs">

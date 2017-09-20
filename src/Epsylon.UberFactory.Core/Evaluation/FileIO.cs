@@ -9,6 +9,12 @@ namespace Epsylon.UberFactory.Evaluation
     // it can be done with a custom attribute defined in the filter, so, the BuildContext can
     // create special importer/exporters
     
+    public interface IPreviewResult
+    {
+        string FileName { get; }
+
+        IReadOnlyDictionary<String, Byte[]> Content { get; }
+    }
 
     class _ImportContext : SDK.ImportContext
     {
@@ -166,7 +172,7 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion
     }
 
-    class _DictionaryExportContext : SDK.ExportContext
+    class _DictionaryExportContext : SDK.ExportContext , IPreviewResult
     {
         #region lifecycle
 
