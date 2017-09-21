@@ -8,6 +8,9 @@ namespace Epsylon.UberFactory
     [TestClass]
     public class TestAssembly
     {
+        // Microsoft uses LibCheck
+        // https://stackoverflow.com/questions/2377855/tool-for-backwards-compatibility-for-the-c-net-api
+
         // dump public API of an assembly
         // https://code.msdn.microsoft.com/windowsdesktop/Code-Index-How-to-discover-98ba517b
 
@@ -15,6 +18,10 @@ namespace Epsylon.UberFactory
 
         // Dot net API portability test
         // https://github.com/Microsoft/dotnet-apiport
+
+        // test nuget vs current API, also. how to create a plugin system with NuGet
+        // https://stackoverflow.com/a/39578135
+
 
         [TestMethod]
         public void TestAssemblyVersion()
