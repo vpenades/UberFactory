@@ -8,7 +8,10 @@ namespace Epsylon.UberFactory
 {
     static class PreviewManager
     {
-        private static readonly string _TempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "UberFactory.Previews");        
+        private static readonly string _TempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "UberFactory.Previews");
+
+        private static readonly Object _Lock = new object();
+        private static readonly Dictionary<string, int> _OpenDocuments = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
 
         private static void _CleanupPreviewFiles(TimeSpan lifespan)
         {
@@ -26,14 +29,54 @@ namespace Epsylon.UberFactory
                 var dtdt = DateTime.FromBinary(dt);
 
                 if (DateTime.Now - dtdt < lifespan) continue;
-                
-                try { System.IO.Directory.Delete(docdir, true); } catch { }                
+
+                _CleanupPreviewDirectory(docdir);
+            }
+        }
+
+        private static void _CleanupPreviewFiles()
+        {
+            var dir = _TempDirectory;
+            if (!System.IO.Directory.Exists(dir)) return;
+
+            var docdirs = System.IO.Directory.GetDirectories(dir);
+
+            foreach (var docdir in docdirs)
+            {
+                _CleanupPreviewDirectory(docdir);
+            }
+        }
+
+        private static void _CleanupPreviewDirectory(string docdir)
+        {
+            lock (_Lock)
+            {
+                var docName = System.IO.Path.GetFileName(docdir);
+
+                try
+                {
+                    if (_OpenDocuments.TryGetValue(docName, out int pid))
+                    {
+                        var p = System.Diagnostics.Process.GetProcessById(pid);
+
+                        if (!p.HasExited) return;
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    System.IO.Directory.Delete(docdir, true);
+
+                    _OpenDocuments.Remove(docName);
+                }
+                catch { }
             }
         }
 
         private static string _GetDocumentPreviewDirectory()
         {
-            _CleanupPreviewFiles(TimeSpan.FromMinutes(30));
+            _CleanupPreviewFiles();
             
             var path = System.IO.Path.Combine(_TempDirectory, DateTime.Now.ToBinary().ToString("X"));
 
@@ -57,8 +100,20 @@ namespace Epsylon.UberFactory
 
             var fileName = System.IO.Path.Combine(dirPath, result.FileName);
 
-            try { System.Diagnostics.Process.Start(fileName); }
-            catch { }            
+            try
+            {
+                var pinfo = new System.Diagnostics.ProcessStartInfo(fileName);                
+
+                // setup verb
+                var verbIndex = pinfo.Verbs.IndexOf(item => item.ToLower() == "open");
+                if (verbIndex >= 0) pinfo.Verb = pinfo.Verbs[verbIndex];
+
+                // run
+                var process = System.Diagnostics.Process.Start(pinfo);
+
+                _OpenDocuments[System.IO.Path.GetFileName(dirPath)] = process.Id;
+            }
+            catch(Exception ex) { }            
         }
 
 
