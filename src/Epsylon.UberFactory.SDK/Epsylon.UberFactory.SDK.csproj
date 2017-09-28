@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-
-
   <PropertyGroup>
     <!-- Frameworks should use version as low as possible to allow using the SDK in as many platforms as possible -->
     <TargetFramework>netstandard1.1</TargetFramework>
@@ -11,6 +9,6 @@
     <RootNamespace>Epsylon.UberFactory</RootNamespace>    
   </PropertyGroup>
 
-  <Import Project="..\Shared\AutoVersionInfo.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\Shared\AutoVersionInfo.targets" />
 
 </Project>

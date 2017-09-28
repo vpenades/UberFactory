@@ -9,6 +9,12 @@
     <!-- Actual AssemblyInfo project is written by this task, so we must ensure we run our task before it--> 
     <!-- https://github.com/dotnet/sdk/blob/master/src/Tasks/Microsoft.NET.Build.Tasks/build/Microsoft.NET.GenerateAssemblyInfo.targets -->
     <!-- <Target Name="GenerateAssemblyInfo" BeforeTargets="CoreCompile" DependsOnTargets="PrepareForBuild;CoreGenerateAssemblyInfo" Condition="'$(GenerateAssemblyInfo)' == 'true'" /> -->
+
+  <PropertyGroup>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <Version>$(AssemblyVersion)</Version>    
+  </PropertyGroup>
+  
   
   <!-- We must run WHEN GenerateAssemblyInfo runs, but immediately before it -->
   <Target Name="DefineAutomaticVersions" DependsOnTargets="PrepareForBuild" BeforeTargets="CoreCompile;GenerateAssemblyInfo">
@@ -28,20 +34,19 @@
       <NowDate>$([System.DateTime]::UtcNow.ToString("yyMMdd"))</NowDate>
       <NowTime>$([System.DateTime]::UtcNow.ToString("HHmmss"))</NowTime>
       <NowTimeShort>$([System.DateTime]::UtcNow.ToString("HHmm"))</NowTimeShort>      
-      
-      <AssemblyVersion>1.0.0</AssemblyVersion>      
 
       <!-- we use a "Short" version of time to prevent overloading 16 bit integer value of version -->
       <FileVersion>$(NowYear).$(NowMonth).$(NowDay).$(NowTimeShort)</FileVersion>
-
-      <Version>$(Version)</Version>
-      <Version Condition=" '$(Configuration)' == 'Debug' ">$(Version)-alpha-$(NowDate)-$(NowTime)</Version>
+      
+      <Version Condition=" '$(Configuration)' == 'Debug' ">$(Version)-alpha-$(NowDate)-$(NowTime)</Version>      
 
       <PackageVersion>$(Version)</PackageVersion>
 
     </PropertyGroup>
-    
-    <Message Text="AUTOVERSION for $(MSBuildProjectName) Package Version: $(Version)  File Version: $(FileVersion)" Importance="high" />    
+
+
+    <Message Text="_" Importance="high" />
+    <Message Text="AUTOVERSION for $(MSBuildProjectName)-$(TargetFramework) Package Version: $(Version) File Version: $(FileVersion)" Importance="high" />    
     
   </Target>
 

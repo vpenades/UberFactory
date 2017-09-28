@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  
-  
-  <!-- http://www.natemcmaster.com/blog/2017/03/09/vs2015-to-vs2017-upgrade/ -->
-  
-  <PropertyGroup>    
-    <!-- Targets should be as high as possible to allow loading plugins from any framework version -->
+  <PropertyGroup>
+    <!-- Since this assembly is responsible of loading plugins, it should have framework versions as high as possible -->
     <TargetFrameworks>netstandard2.0;net47;netcoreapp2.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
-    <RootNamespace>Epsylon.UberFactory</RootNamespace>
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>
-  </PropertyGroup>
+    <RootNamespace>Epsylon.UberFactory</RootNamespace>
+  </PropertyGroup>  
 
   <!-- Source code Switches -->
 
@@ -44,6 +40,6 @@
   
   <!-- Targets -->
 
-  <Import Project="..\Shared\AutoVersionInfo.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\Shared\AutoVersionInfo.targets" />
  
 </Project>
