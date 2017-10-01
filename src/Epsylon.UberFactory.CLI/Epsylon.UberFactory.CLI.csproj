@@ -21,6 +21,6 @@
     <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />    
   </ItemGroup>
 
-  <Import Project="..\Shared\AutoVersionInfo.targets" />
+  <Import Project="..\Shared\StaticVersionInfo.props" />
 
 </Project>

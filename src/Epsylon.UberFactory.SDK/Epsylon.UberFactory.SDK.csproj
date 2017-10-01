@@ -9,6 +9,6 @@
     <RootNamespace>Epsylon.UberFactory</RootNamespace>    
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)\..\Shared\AutoVersionInfo.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\Shared\StaticVersionInfo.props" />
 
 </Project>

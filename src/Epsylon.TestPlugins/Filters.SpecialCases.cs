@@ -37,6 +37,9 @@ namespace Epsylon.TestPlugins
         [SDK.InputNode(nameof(InvalidType))]
         public System.Attribute InvalidType { get; set; }
 
+        [SDK.InputValue(nameof(InvalidArray))]
+        public int[][,] InvalidArray { get; set; }
+
         [SDK.InputValue(nameof(Date))]
         public DateTime Date { get; set; }
 
