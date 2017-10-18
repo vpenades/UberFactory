@@ -18,8 +18,8 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup>    
     <ProjectReference Include="..\Epsylon.UberFactory.Editor\Epsylon.UberFactory.Editor.csproj" />
   </ItemGroup>
-
+  
 </Project>
