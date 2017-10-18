@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,6 +9,19 @@ namespace Epsylon.UberFactory
 {
     public static partial class SDK
     {
+        public static string InformationalVersion
+        {
+            get
+            {
+                var assembly = typeof(SDK).GetTypeInfo().Assembly;
+
+                var attribute = assembly
+                    .GetCustomAttributes<AssemblyInformationalVersionAttribute>()
+                    .FirstOrDefault();
+
+                return attribute?.InformationalVersion;
+            }
+        }
 
         public interface IMonitorContext : IProgress<float>
         {

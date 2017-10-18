@@ -10,6 +10,14 @@ namespace Epsylon.UberFactory
     {
         static void Main(string[] args)
         {
+            System.Diagnostics.Debugger.Launch();
+
+            if (args.Contains("-?"))
+            {
+                System.Console.WriteLine($"Über Factory CLI. SDK Version:{SDK.InformationalVersion}");
+                return;
+            }
+
             Evaluation.CommandLineContext.Build(args);
         }        
     }    

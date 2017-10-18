@@ -218,17 +218,15 @@ namespace Epsylon.UberFactory
 
         #region assemblies
 
-        public static Version Version(this Assembly assembly) { return assembly == null ? new Version() : assembly.GetName().Version; }
+        public static Version Version(this Assembly assembly) { return assembly == null ? new Version() : assembly.GetName().Version; }        
 
-        private static T _GetCustomAttribute<T>(this Assembly assembly) where T : Attribute { return Attribute.GetCustomAttribute(assembly, typeof(T), false) as T; }
+        public static string InfoCompany(this Assembly assembly) { return assembly.GetCustomAttributes<AssemblyCompanyAttribute>().FirstOrDefault()?.Company; }
 
-        public static string InfoCompany(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCompanyAttribute>()?.Company; }
+        public static string InfoProductName(this Assembly assembly) { return assembly.GetCustomAttributes<AssemblyProductAttribute>().FirstOrDefault()?.Product; }
 
-        public static string InfoProductName(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyProductAttribute>()?.Product; }
+        public static string InformationalVersion(this Assembly assembly) { return assembly.GetCustomAttributes<AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion; }
 
-        public static string InformationalVersion(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion; }
-
-        public static string InfoCopyright(this Assembly assembly) { return assembly._GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright; }
+        public static string InfoCopyright(this Assembly assembly) { return assembly.GetCustomAttributes<AssemblyCopyrightAttribute>().FirstOrDefault()?.Copyright; }
 
         public static string DisplayTitle(this Assembly assembly) { return assembly == null ? null : assembly.InfoProductName() + " " + assembly.Version().ToString(); }
 
