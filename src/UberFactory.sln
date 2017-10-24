@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.Editor.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.UberPlugin.CoreTypes", "Epsylon.UberPlugin.CoreTypes\Epsylon.UberPlugin.CoreTypes.csproj", "{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberPlugin.MathTypes", "Epsylon.UberPlugin.MathTypes\Epsylon.UberPlugin.MathTypes.csproj", "{C773DB8B-DD2B-47FD-A040-8BE545332F94}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -98,6 +100,14 @@ Global
 		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}.Release|Mixed Configurations.ActiveCfg = Release|Any CPU
 		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}.Release|Mixed Configurations.Build.0 = Release|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Debug|Mixed Configurations.ActiveCfg = Debug|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Debug|Mixed Configurations.Build.0 = Debug|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Mixed Configurations.ActiveCfg = Release|Any CPU
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Mixed Configurations.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +121,7 @@ Global
 		{6B47F62D-2FE5-4642-AB8D-1C382A31103B} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{E5ADCBAA-337B-474D-A547-45F391DB84DE} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
+		{C773DB8B-DD2B-47FD-A040-8BE545332F94} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}
