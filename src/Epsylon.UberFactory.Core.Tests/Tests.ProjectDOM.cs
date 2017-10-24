@@ -45,6 +45,11 @@ namespace Epsylon.UberFactory
 
             pg.Clear("X");
             Assert.IsFalse(pg.Contains("X"));
+
+            // check if Guid.Empty is stored correctly
+            pg.SetReferenceIds("RefIds", Guid.NewGuid(), Guid.Empty, Guid.NewGuid());
+            Assert.AreEqual(3, pg.GetReferenceIds("RefIds").Length);
+            
         }
 
         [TestMethod]

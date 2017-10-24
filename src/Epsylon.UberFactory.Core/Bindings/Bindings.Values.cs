@@ -202,6 +202,8 @@ namespace Epsylon.UberFactory.Bindings
 
         public bool IsMultiLine => this.GetMetaDataValue<Boolean>("MultiLine", false);
 
+        public int MaxTextLines => 5;
+
         public T[] AvailableValues { get { return _GetTypeAvailableValues(); } }
 
         public T Value

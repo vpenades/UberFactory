@@ -284,6 +284,8 @@ namespace Epsylon.UberFactory
 
         public class GroupedBindingsView : BindableBase
         {
+            #region lifecycle
+
             public static IEnumerable<BINDING> Group(IEnumerable<BINDING> bindings)
             {
                 var r = new List<BINDING>();
@@ -295,7 +297,7 @@ namespace Epsylon.UberFactory
 
                     var gn = vb.GroupName; if (string.IsNullOrWhiteSpace(gn)) { r.Add(b); continue; }
 
-                    var g = r.OfType<GroupedBindingsView>().FirstOrDefault(item => item.DisplayName == gn);
+                    var g = r.OfType<GroupedBindingsView>().FirstOrDefault(item => item._DisplayName == gn);
                     if (g == null) { g = new GroupedBindingsView(gn); r.Add(g); }
 
                     g._BindingsViews.Add(b);                    
@@ -306,13 +308,23 @@ namespace Epsylon.UberFactory
 
             private GroupedBindingsView(string displayName) { _DisplayName = displayName; }
 
+            #endregion
+
+            #region data
+
             private readonly string _DisplayName;
 
             private readonly List<BINDING> _BindingsViews = new List<BINDING>();
 
-            public string DisplayName => _DisplayName;
+            #endregion
 
-            public IEnumerable<BINDING> Bindings => _BindingsViews.ToArray();
+            #region properties
+
+            public string DisplayName               => _DisplayName == "$" ? string.Empty : _DisplayName;
+
+            public IReadOnlyList<BINDING> Bindings  => _BindingsViews.ToArray();
+
+            #endregion
         }
         
 

@@ -1,0 +1,90 @@
+<Project Version="1.0" xmlns="http://www.uberfactory.com">
+  <Properties />
+  <PluginReference>
+    <Properties>
+      <RelativePath>..\Epsylon.UberPlugin.CoreTypes\bin\Debug\netstandard1.1\Epsylon.UberPlugin.CoreTypes.dll</RelativePath>
+    </Properties>
+  </PluginReference>
+  <Task>
+    <Properties>
+      <Title>New Task 1</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>0c1be7c4-45fd-4fa8-8ef0-a381a36237ca</RootNodeId>
+      </Properties>
+      <Node Id="0c1be7c4-45fd-4fa8-8ef0-a381a36237ca">
+        <Properties>
+          <ClassName>TextWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <FileName>hello world!</FileName>
+            <Value>a64f75b5-47b4-4088-9298-8384c74dc501</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="a64f75b5-47b4-4088-9298-8384c74dc501">
+        <Properties>
+          <ClassName>FormatText</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Transforms>
+              <Item>677e22b1-0c73-4a71-9a0c-b2866f404634</Item>
+              <Item>900f1791-ad89-4700-9d93-871562f003b3</Item>
+            </Transforms>
+            <Value>f16f6d7f-2827-4302-a003-90d61dfced84</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="cabb55cb-513b-473c-9dec-cd6de6c9f59e">
+        <Properties>
+          <ClassName>AssignTextValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value>Hello world</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="9d096293-e01f-44c3-b850-7d0b0e2b9235">
+        <Properties>
+          <ClassName>AppendTextFunction</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="677e22b1-0c73-4a71-9a0c-b2866f404634">
+        <Properties>
+          <ClassName>ReplaceTextFunction</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <OldString>Hello</OldString>
+            <NewString>Hola</NewString>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="900f1791-ad89-4700-9d93-871562f003b3">
+        <Properties>
+          <ClassName>AppendTextFunction</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Text>Good Bye!</Text>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="f16f6d7f-2827-4302-a003-90d61dfced84">
+        <Properties>
+          <ClassName>AssignText</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+</Project>

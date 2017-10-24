@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <RootNamespace>Epsylon.UberPlugin</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />
+  </ItemGroup>
+
+</Project>

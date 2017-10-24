@@ -73,7 +73,7 @@
     <DataTemplate x:Key="BindingView_TextBox">
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
             <TextBox Text="{Binding Value}" MinWidth="32"
-                     TextWrapping="{Binding IsMultiLine,Converter={StaticResource __asTextWrapping}}" AcceptsReturn="{Binding IsMultiLine}" MaxLines="5" MinLines="1" VerticalScrollBarVisibility="Auto"
+                     TextWrapping="{Binding IsMultiLine,Converter={StaticResource __asTextWrapping}}" AcceptsReturn="{Binding IsMultiLine}" MaxLines="{Binding MaxTextLines}" MinLines="1" VerticalScrollBarVisibility="Auto"
                      Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
                      ContextMenu="{StaticResource __clearValueContextMenu}"
                      BorderThickness="0,0,0,2" VerticalAlignment="Center"/>            

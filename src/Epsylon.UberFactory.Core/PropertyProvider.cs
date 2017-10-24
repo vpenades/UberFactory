@@ -46,8 +46,7 @@ namespace Epsylon.UberFactory
             if (values == null) values = new string[0];
 
             return values
-                .Select(item => _ParseGuidReference(item))
-                .Where(item => item != Guid.Empty)
+                .Select(item => _ParseGuidReference(item))                
                 .ToArray();
         }
 
