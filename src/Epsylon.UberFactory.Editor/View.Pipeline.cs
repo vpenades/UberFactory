@@ -281,6 +281,7 @@ namespace Epsylon.UberFactory
             #endregion
         }
 
+        // class DockBindingView TODO: similar to GroupBindingView, but only takes two BINDING objects, the docker and the docked
 
         public class GroupedBindingsView : BindableBase
         {
