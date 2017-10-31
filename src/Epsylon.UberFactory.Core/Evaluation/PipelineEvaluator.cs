@@ -91,6 +91,11 @@ namespace Epsylon.UberFactory.Evaluation
             _NodeOrder.AddRange(nodeIds.Reverse());
         }
 
+        private void _CheckIsReady()
+        {
+            if (_BuildSettings == null) throw new InvalidOperationException("Call Setup first");
+        }
+
         /// <summary>
         /// Creates a filter instance for a given node ID
         /// </summary>
@@ -100,6 +105,8 @@ namespace Epsylon.UberFactory.Evaluation
         /// <param name="nodeId">root node id</param>
         private void _CreateNodeInstancesRecursive(Guid nodeId, Stack<Guid> idStack)
         {
+            _CheckIsReady();
+
             if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));            
 
             // Find node DOM
@@ -145,10 +152,17 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API - Evaluation
 
-        public SDK.ContentObject GetNodeInstance(Guid id) { return _NodeInstances.GetValueOrDefault(id); }                
+        public SDK.ContentObject GetNodeInstance(Guid id)
+        {
+            _CheckIsReady();
+
+            return _NodeInstances.GetValueOrDefault(id);
+        }                
 
         public IEnumerable<Bindings.MemberBinding> CreateBindings(Guid nodeId)
         {
+            _CheckIsReady();
+
             // get source and destination objects            
             var nodeProps = _Pipeline.GetNode(nodeId)?.GetPropertiesForConfiguration(_BuildSettings.Configuration);
             var nodeInst = _NodeInstances.GetValueOrDefault(nodeId);            
@@ -161,6 +175,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         public SDK.ContentObject GetSettingsInstance(Type t, SDK.IMonitorContext monitor)
         {
+            _CheckIsReady();
+
             var si = _SettingsInstancesCache.FirstOrDefault(item => item.GetType() == t);
 
             if (si != null) return si;
@@ -180,24 +196,24 @@ namespace Epsylon.UberFactory.Evaluation
         }
         
         
-        /// <summary>
-        /// called from a template evaluator
-        /// </summary>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public Object Evaluate(SDK.IMonitorContext monitor, params Object[] parameters)
+        
+        public Object Evaluate(SDK.IMonitorContext monitor)
         {
+            _CheckIsReady();
+
             if (_NodeInstances.Values.OfType<_UnknownNode>().Any()) throw new InvalidOperationException("Some filters couldn't be instantiated.");
 
             _SettingsInstancesCache.Clear();
 
             var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);            
 
-            return _EvaluateNode(monitor, _Pipeline.RootIdentifier, false, parameters);
+            return _EvaluateNode(monitor, _Pipeline.RootIdentifier, false);
         }
 
         public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
+            _CheckIsReady();
+
             _SettingsInstancesCache.Clear();
 
             return _EvaluateNode(monitor, nodeId, false);
@@ -205,6 +221,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         public IPreviewResult PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
+            _CheckIsReady();
+
             _SettingsInstancesCache.Clear();
 
             var previewObject =  _EvaluateNode(monitor, nodeId, true);
@@ -229,8 +247,10 @@ namespace Epsylon.UberFactory.Evaluation
             return null;
         }
 
-        private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode, params Object[] parameters)
+        private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode)
         {
+            _CheckIsReady();
+
             if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 
             // First, we check if it's a template, in which case we return it as the evaluated value (it will be called by the component)
@@ -250,7 +270,7 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeProps == null) return null;
 
             // Evaluate values and dependencies. Dependecies are evaluated recursively
-            nodeInst.EvaluateBindings(nodeProps,xid => _EvaluateNode(monitor, xid, previewMode,parameters));            
+            nodeInst.EvaluateBindings(nodeProps,xid => _EvaluateNode(monitor, xid, previewMode));            
 
             if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 

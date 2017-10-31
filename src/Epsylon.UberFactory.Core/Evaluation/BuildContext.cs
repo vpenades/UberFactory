@@ -253,20 +253,32 @@ namespace Epsylon.UberFactory.Evaluation
         }
 
         #endregion
-    }
+    }    
 
-    
-
+    /// <summary>
+    /// Build context designed for testing and validation
+    /// It performs a full processing without actually writing anything to the hard drive
+    /// </summary>
     public sealed class TestBuildContext : BuildContext
     {
+        #region lifecycle
+
         internal TestBuildContext(string[] cfg, PathString sd) : base(cfg,sd)
         {
             _Checksum = System.Security.Cryptography.MD5.Create();
         }
 
+        #endregion
+
+        #region data
+
         private readonly System.Security.Cryptography.MD5 _Checksum;
 
-        private readonly Dictionary<string, string> _SimulatedOutputFiles = new Dictionary<string, string>();        
+        private readonly Dictionary<string, string> _SimulatedOutputFiles = new Dictionary<string, string>();
+
+        #endregion
+
+        #region API
 
         public override SDK.ExportContext GetExportContext(Uri absoluteUri)
         {            
@@ -281,6 +293,8 @@ namespace Epsylon.UberFactory.Evaluation
 
             _SimulatedOutputFiles[name] = b64hash;
         }
+
+        #endregion
 
     }
 }

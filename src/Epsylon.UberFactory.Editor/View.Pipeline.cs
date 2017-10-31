@@ -279,10 +279,11 @@ namespace Epsylon.UberFactory
             public void SetAsCurrentResultView() { _Parent.SetAsCurrentResultView(_NodeId); }
             
             #endregion
-        }
+        }        
 
-        // class DockBindingView TODO: similar to GroupBindingView, but only takes two BINDING objects, the docker and the docked
-
+        /// <summary>
+        /// Groups multiple bindable objects in an horizontal arrangement
+        /// </summary>
         public class GroupedBindingsView : BindableBase
         {
             #region lifecycle

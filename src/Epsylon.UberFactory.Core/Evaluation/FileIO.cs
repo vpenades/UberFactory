@@ -85,6 +85,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region data
 
+        private readonly HashSet<string> _OutputFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
         private readonly PathString _TargetPath;
 
         private readonly PathString _OutDir;
@@ -105,6 +107,10 @@ namespace Epsylon.UberFactory.Evaluation
 
         public override System.IO.Stream OpenFile(string relativePath)
         {
+            if (_OutputFiles.Contains(relativePath)) throw new ArgumentException($"{relativePath} already written", nameof(relativePath));
+
+            _OutputFiles.Add(relativePath);
+
             System.IO.Directory.CreateDirectory(_TargetPath.DirectoryPath);
 
             var newPath = _TargetPath.DirectoryPath.MakeAbsolutePath(relativePath);
