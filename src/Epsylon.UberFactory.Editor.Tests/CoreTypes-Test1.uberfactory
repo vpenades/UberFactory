@@ -2,7 +2,7 @@
   <Properties />
   <PluginReference>
     <Properties>
-      <RelativePath>..\Epsylon.UberPlugin.CoreTypes\bin\Debug\netstandard1.1\Epsylon.UberPlugin.CoreTypes.dll</RelativePath>
+      <RelativePath>..\Epsylon.UberPlugin.CoreTypes\bin\Debug\netstandard2.0\Epsylon.UberPlugin.CoreTypes.dll</RelativePath>
     </Properties>
   </PluginReference>
   <Task>
@@ -33,6 +33,7 @@
             <Transforms>
               <Item>677e22b1-0c73-4a71-9a0c-b2866f404634</Item>
               <Item>900f1791-ad89-4700-9d93-871562f003b3</Item>
+              <Item>b7982e23-1f65-458f-a54a-b88220366e0b</Item>
             </Transforms>
             <Value>f16f6d7f-2827-4302-a003-90d61dfced84</Value>
           </Properties>
@@ -82,9 +83,35 @@
           <ClassName>AssignText</ClassName>
         </Properties>
         <Configuration Name="Root">
-          <Properties />
+          <Properties>
+            <Value>Hello World</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="b7982e23-1f65-458f-a54a-b88220366e0b">
+        <Properties>
+          <ClassName>InsertTextAtFunction</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <NewString>XoXo</NewString>
+            <Offset>2</Offset>
+          </Properties>
         </Configuration>
       </Node>
     </Pipeline>
   </Task>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>75fd7e6c-6f95-4fb9-84c9-8c45927c2179</RootNodeId>
+      </Properties>
+      <Node Id="75fd7e6c-6f95-4fb9-84c9-8c45927c2179">
+        <Properties>
+          <ClassName>TextFormattingSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
 </Project>

@@ -205,5 +205,35 @@ namespace Epsylon.UberPlugin.CoreTypes
 
             return value;
         }
-    }    
+    }
+
+
+    [SDK.ContentNode(nameof(InsertTextAtFunction))]
+    [SDK.ContentMetaData("Title", "Insert At")]
+    public sealed class InsertTextAtFunction : TextFunction
+    {
+        [SDK.InputValue(nameof(NewEscape))]
+        [SDK.InputMetaData("Group", "Text to Insert"), SDK.InputMetaData("Title", "Esc")]
+        [SDK.InputMetaData("Default", true)]
+        public bool NewEscape { get; set; }
+
+        [SDK.InputValue(nameof(NewString))]
+        [SDK.InputMetaData("Group", "Text to Insert"), SDK.InputMetaData("Title", "Text")]
+        public String NewString { get; set; }
+
+        [SDK.InputValue(nameof(Offset))]
+        [SDK.InputMetaData("Title", "From Start")]
+        public int Offset { get; set; }
+
+        protected override String Process(String value)
+        {
+            if (value == null) return null;
+
+            while (Offset > value.Length) value += " ";
+
+            value = value.Insert(Offset, NewString.SanitizeUserInput(NewEscape));      
+
+            return value;
+        }
+    }
 }
