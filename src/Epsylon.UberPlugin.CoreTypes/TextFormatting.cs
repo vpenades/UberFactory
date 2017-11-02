@@ -236,4 +236,31 @@ namespace Epsylon.UberPlugin.CoreTypes
             return value;
         }
     }
+
+
+    [SDK.ContentNode(nameof(ChangeTextCaseFunction))]
+    [SDK.ContentMetaData("Title", "Case")]
+    public sealed class ChangeTextCaseFunction : TextFunction
+    {
+        [SDK.InputValue(nameof(CaseType))]
+        [SDK.InputMetaData("Title", "Case")]
+        [SDK.InputMetaData("ViewStyle", "ComboBox")]
+        [SDK.InputMetaData("Default", "Upper")]
+        [SDK.InputMetaData("Values", new string[] { "Upper", "Lower", "Title" }) ]
+        public string CaseType { get; set; }        
+
+        protected override String Process(String value)
+        {
+            if (value == null) return null;
+
+            var settings = GetSharedSettings<TextFormattingSettings>();
+
+            if (CaseType == "Upper") value = settings.CurrentCulture.TextInfo.ToUpper(value);
+            if (CaseType == "Lower") value = settings.CurrentCulture.TextInfo.ToLower(value);
+            if (CaseType == "Title") value = settings.CurrentCulture.TextInfo.ToTitleCase(value);
+
+            return value;
+        }
+    }
+
 }

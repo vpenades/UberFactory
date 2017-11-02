@@ -21,7 +21,7 @@ namespace Epsylon.UberFactory
 
                 return attribute?.InformationalVersion;
             }
-        }
+        }        
 
         public interface IMonitorContext : IProgress<float>
         {
@@ -75,6 +75,12 @@ namespace Epsylon.UberFactory
             void LogCritical(string categoryName, string message);
         }
 
+        public interface ITaskFileIOTracker
+        {
+            void RegisterInputFile(string filePath, string parentFilePath);
+            void RegisterOutputFile(string filePath, string parentFilePath);
+        }
+
         /// <summary>
         /// The build context provides a number of services to the contet filters
         /// </summary>
@@ -87,6 +93,8 @@ namespace Epsylon.UberFactory
         /// </remarks>
         public interface IBuildContext
         {
+            String[] Configuration { get; }
+
             /// <summary>
             /// Converts an absolute URI path to a path relative to Context's Source path
             /// </summary>
@@ -120,14 +128,14 @@ namespace Epsylon.UberFactory
             /// </summary>
             /// <param name="absoluteUri">A path to the location</param>
             /// <returns>An import context</returns>
-            ImportContext GetImportContext(Uri absoluteUri);
+            ImportContext GetImportContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
 
             /// <summary>
             /// Creates an Export context to write files to the given location
             /// </summary>
             /// <param name="absoluteUri">A path to the location</param>
             /// <returns>An export context</returns>
-            ExportContext GetExportContext(Uri absoluteUri);
+            ExportContext GetExportContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
 
             /// <summary>
             /// Gets a preview context to 
@@ -135,6 +143,9 @@ namespace Epsylon.UberFactory
             /// <returns>A preview context</returns>
             PreviewContext GetPreviewContext();
         }
+
+
+        
 
         /// <summary>
         /// Current context for reading files
@@ -148,6 +159,17 @@ namespace Epsylon.UberFactory
         /// </remarks>        
         public abstract class ImportContext
         {
+            #region lifecycle
+
+            protected ImportContext(ITaskFileIOTracker trackerContext)
+            {
+                this._TrackerContext = trackerContext;
+            }
+
+            #endregion
+
+            #region Constants
+
             /// <summary>
             /// Default text encoding for reading text strings
             /// </summary>
@@ -160,21 +182,42 @@ namespace Epsylon.UberFactory
             /// <see cref="http://referencesource.microsoft.com/#mscorlib/system/io/streamreader.cs,137"/>
             /// <seealso cref="http://referencesource.microsoft.com/#mscorlib/system/io/file.cs,794"/>
             public static readonly Encoding DefaultEncoding = Encoding.UTF8;
-                        
+
+            #endregion
+
+            #region data
+
+            private readonly ITaskFileIOTracker _TrackerContext;
+
+            #endregion
+
+            #region API - Abstract
+
             /// <summary>
-            /// Name of the current file being imported.
+            /// Name of the default file being imported.
             /// </summary>            
             public abstract string FileName { get; }
 
             [Obsolete("Avoid using full file path whenever possible")]
             public abstract String FilePath { get; }
 
+            
+            protected abstract System.IO.Stream OpenFileCore(String relativePath);
+
+            #endregion
+
+            #region API
+
             /// <summary>
             /// Opens a Read stream.
             /// </summary>
             /// <param name="relativePath">path relative to the current context</param>
             /// <returns>a read stream</returns>
-            public abstract System.IO.Stream OpenFile(String relativePath);
+            public System.IO.Stream OpenFile(String relativePath)
+            {
+                _TrackerContext?.RegisterInputFile(relativePath, string.Equals(relativePath,this.FileName,StringComparison.OrdinalIgnoreCase)?null:this.FileName );
+                return OpenFileCore(relativePath);
+            }
 
             /// <summary>
             /// Reads an object from a path relative to current context
@@ -351,6 +394,7 @@ namespace Epsylon.UberFactory
             /// <returns>The content text</returns>
             public String ReadAllText() { return ReadAllText(FileName); }
 
+            #endregion
         }
 
         /// <summary>
@@ -365,6 +409,17 @@ namespace Epsylon.UberFactory
         /// </remarks>
         public abstract class ExportContext
         {
+            #region lifecycle
+
+            protected ExportContext(ITaskFileIOTracker trackerContext)
+            {
+                this._TrackerContext = trackerContext;
+            }
+
+            #endregion
+
+            #region Constants
+
             /// <summary>
             /// Default text encoding for writing text strings
             /// </summary>
@@ -372,8 +427,21 @@ namespace Epsylon.UberFactory
             /// Net.Framework uses UTF8noBOM as default encoding for WriteAllText
             /// </remarks>
             /// <see cref="http://referencesource.microsoft.com/#mscorlib/system/io/streamwriter.cs,106"/>
-            public static readonly Encoding DefaultEncoding = new UTF8Encoding(false, true);            
+            public static readonly Encoding DefaultEncoding = new UTF8Encoding(false, true);
 
+            #endregion
+
+            #region data
+
+            private readonly ITaskFileIOTracker _TrackerContext;
+
+            #endregion
+
+            #region API - Abstract
+
+            /// <summary>
+            /// Name of the default file being exported.
+            /// </summary>            
             public abstract String FileName { get; }
 
             [Obsolete("Avoid using full file path whenever possible")]
@@ -382,7 +450,17 @@ namespace Epsylon.UberFactory
             [Obsolete("Avoid using output directory path whenever possible")]
             public abstract String OutputDirectory { get; }
 
-            public abstract System.IO.Stream OpenFile(String localName);
+            protected abstract System.IO.Stream OpenFileCore(String localName);
+
+            #endregion
+
+            #region API
+
+            public System.IO.Stream OpenFile(String localName)
+            {
+                _TrackerContext?.RegisterOutputFile(localName, string.Equals(localName, this.FileName, StringComparison.OrdinalIgnoreCase) ? null : this.FileName);
+                return OpenFileCore(localName);
+            }
 
             public void WriteStream(String relativePath, Action<System.IO.Stream> writeFunc)
             {
@@ -442,7 +520,9 @@ namespace Epsylon.UberFactory
 
             public void WriteAllText(Encoding encoding, String data) { WriteAllText(FileName, encoding, data); }
 
-            public void WriteAllText(String data) { WriteAllText(FileName, data); }            
+            public void WriteAllText(String data) { WriteAllText(FileName, data); }
+
+            #endregion
         }        
 
 

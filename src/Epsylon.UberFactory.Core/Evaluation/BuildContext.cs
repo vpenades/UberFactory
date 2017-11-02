@@ -217,18 +217,18 @@ namespace Epsylon.UberFactory.Evaluation
             return new Uri(absPath, UriKind.Absolute);
         }       
 
-        public SDK.ImportContext GetImportContext(Uri absoluteUri)
+        public SDK.ImportContext GetImportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ImportContext.Create(absoluteUri);
+            return _ImportContext.Create(absoluteUri,trackerContext);
         }        
 
         public PathString MakeRelativeToTarget(string absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }
 
         public PathString MakeAbsoluteToTarget(string relFilePath) { return TargetDirectory.MakeAbsolutePath(relFilePath); }
 
-        public virtual SDK.ExportContext GetExportContext(Uri absoluteUri)
+        public virtual SDK.ExportContext GetExportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ExportContext.Create(absoluteUri, _TargetDirectoryAbsPath);
+            return _ExportContext.Create(absoluteUri, _TargetDirectoryAbsPath, trackerContext);
         }
 
         private string _GetCurrentError()
@@ -280,9 +280,9 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API
 
-        public override SDK.ExportContext GetExportContext(Uri absoluteUri)
+        public override SDK.ExportContext GetExportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
         {            
-            return _SimulateExportContext.Create(absoluteUri, _NotifyCreateFileSimulation);           
+            return _SimulateExportContext.Create(absoluteUri, _NotifyCreateFileSimulation, trackerContext);           
         }
 
         private void _NotifyCreateFileSimulation(string name, Byte[] data)

@@ -98,7 +98,7 @@ namespace Epsylon.UberFactory
                 var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
                 evaluator.Setup(bsettings);
 
-                var srcData = evaluator.Evaluate(monitor.GetProgressPart(i, tasks.Length));
+                var srcData = evaluator.EvaluateRoot(monitor.GetProgressPart(i, tasks.Length));
                 if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
             }
         }

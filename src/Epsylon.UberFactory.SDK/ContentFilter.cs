@@ -11,26 +11,37 @@ namespace Epsylon.UberFactory
 
         public abstract class ContentObject
         {
+            #region lifecycle
+
+            internal void _Initialize(IBuildContext bc, Func<Type, ContentObject> scr, ITaskFileIOTracker trackerContext)
+            {
+                if (_BuildContext != null || _SharedContentResolver != null) throw new InvalidOperationException("already initialized");
+                
+                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
+                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
+
+                _TrackerContext = trackerContext;
+            }
+
+            #endregion
+
             #region data
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
 
-            private IBuildContext _BuildContext;
+            private ITaskFileIOTracker _TrackerContext;
+            private IBuildContext _BuildContext;            
             private Func<Type, ContentObject> _SharedContentResolver;
 
             #endregion
 
             #region API     
+
+            public IBuildContext BuildContext => _BuildContext;            
+
+            public ImportContext GetImportContext(Uri absoluteUri) { return _BuildContext.GetImportContext(absoluteUri, _TrackerContext); }
             
-            internal void Setup(IBuildContext bc, Func<Type, ContentObject> scr)
-            {
-                if (_BuildContext != null || _SharedContentResolver != null) throw new InvalidOperationException("already initialized");
-
-                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
-                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
-            }
-
-            public IBuildContext BuildContext => _BuildContext;
+            public ExportContext GetExportContext(Uri absoluteUri) { return _BuildContext.GetExportContext(absoluteUri, _TrackerContext); }
 
             public SDK.ContentObject GetSharedSettings(Type t) { return _SharedContentResolver?.Invoke(t); }
 

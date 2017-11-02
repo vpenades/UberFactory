@@ -10,15 +10,16 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory.Evaluation
 {
     
-    using FILTERFACTORY = Func<String, SDK.ContentObject>;
-    using SETTINGSFACTORY = Func<Type, ProjectDOM.Settings>;    
-    
+    using INSTANCEFACTORY = Func<String, SDK.ContentObject>;
+    using SETTINGSFUNCTION = Func<Type, ProjectDOM.Settings>;
+
+    using SETTINGSINSTANCES = HashSet<SDK.ContentObject>;
 
     public class PipelineEvaluator
     {
         #region lifecycle        
 
-        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver)
+        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, INSTANCEFACTORY filterResolver, SETTINGSFUNCTION settingsResolver)
         {
             if (pipeline == null) throw new ArgumentNullException(nameof(pipeline));
             if (filterResolver == null) throw new ArgumentNullException(nameof(filterResolver));            
@@ -26,9 +27,9 @@ namespace Epsylon.UberFactory.Evaluation
             return new PipelineEvaluator(pipeline, filterResolver, settingsResolver);
         }        
 
-        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, FILTERFACTORY filterResolver, SETTINGSFACTORY settingsResolver)
+        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, INSTANCEFACTORY filterResolver, SETTINGSFUNCTION settingsResolver)
         {
-            _FilterFactory = filterResolver;
+            _InstanceFactory = filterResolver;
             _SettingsFactory = settingsResolver;            
             _Pipeline = pipeline;            
         }        
@@ -37,20 +38,22 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region data        
 
-        private readonly FILTERFACTORY _FilterFactory;
-        private readonly SETTINGSFACTORY _SettingsFactory;
+        private readonly INSTANCEFACTORY _InstanceFactory;
+        private readonly SETTINGSFUNCTION _SettingsFactory;
         
         private readonly ProjectDOM.Pipeline _Pipeline;
         
         // evaluation data
 
-        private BuildContext _BuildSettings;        
-        private readonly Dictionary<Guid, SDK.ContentObject> _NodeInstances = new Dictionary<Guid, SDK.ContentObject>();
-        private readonly Dictionary<Guid, PipelineEvaluator> _PipelineInstances = new Dictionary<Guid, PipelineEvaluator>();
+        private SDK.IBuildContext _BuildSettings;
 
-        private readonly HashSet<SDK.ContentObject> _SettingsInstancesCache = new HashSet<SDK.ContentObject>();
+        private readonly Dictionary<Guid, SDK.ContentObject> _NodeInstances = new Dictionary<Guid, SDK.ContentObject>();        
+
+        private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();
 
         private readonly List<Guid> _NodeOrder = new List<Guid>(); // ids in order of evaluation
+
+        private _TaskFileIOTracker _FileIOTracker;
 
         #endregion
 
@@ -64,10 +67,7 @@ namespace Epsylon.UberFactory.Evaluation
 
                 var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
 
-                var exportInstance = rootInstance as SDK.FileWriter;
-                if (exportInstance == null) return "Unknown";
-
-                return exportInstance.FileName;
+                return rootInstance is SDK.FileWriter exportInstance ? exportInstance.FileName : "Unknown";
             }
         }        
 
@@ -75,14 +75,14 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API - Setup
 
-        public void Setup(BuildContext bsettings)
+        public void Setup(SDK.IBuildContext bsettings)
         {
-            _BuildSettings = bsettings ?? throw new ArgumentNullException(nameof(bsettings));            
+            _BuildSettings = bsettings ?? throw new ArgumentNullException(nameof(bsettings));
+
+            _FileIOTracker = new _TaskFileIOTracker(_BuildSettings);
 
             _NodeInstances.Clear();
-            _NodeOrder.Clear();
-
-            _PipelineInstances.Clear();
+            _NodeOrder.Clear();            
 
             var nodeIds = new Stack<Guid>();
 
@@ -91,9 +91,15 @@ namespace Epsylon.UberFactory.Evaluation
             _NodeOrder.AddRange(nodeIds.Reverse());
         }
 
-        private void _CheckIsReady()
+        private void _SetupIsReady()
         {
-            if (_BuildSettings == null) throw new InvalidOperationException("Call Setup first");
+            if (_BuildSettings == null) throw new InvalidOperationException($"Call {nameof(Setup)} first");
+
+            bool allInstancesReady = !_NodeInstances.Values
+                .OfType<_UnknownNode>()
+                .Any();
+
+            if (!allInstancesReady) throw new InvalidOperationException("Some filters couldn't be instantiated.");
         }
 
         /// <summary>
@@ -105,7 +111,7 @@ namespace Epsylon.UberFactory.Evaluation
         /// <param name="nodeId">root node id</param>
         private void _CreateNodeInstancesRecursive(Guid nodeId, Stack<Guid> idStack)
         {
-            _CheckIsReady();
+            _SetupIsReady();
 
             if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));            
 
@@ -114,8 +120,8 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeDom == null) return;            
 
             // Create node instance
-            var nodeInst = _FilterFactory(nodeDom.ClassIdentifier);
-            SDK.ConfigureNode(nodeInst, _BuildSettings, t=> GetSettingsInstance(t,null) );
+            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);
+            SDK.ConfigureNode(nodeInst, _BuildSettings, t=> _GetSettingsInstance(t, null) , _FileIOTracker);
 
             _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
             
@@ -154,14 +160,14 @@ namespace Epsylon.UberFactory.Evaluation
 
         public SDK.ContentObject GetNodeInstance(Guid id)
         {
-            _CheckIsReady();
+            _SetupIsReady();
 
             return _NodeInstances.GetValueOrDefault(id);
         }                
 
         public IEnumerable<Bindings.MemberBinding> CreateBindings(Guid nodeId)
         {
-            _CheckIsReady();
+            _SetupIsReady();
 
             // get source and destination objects            
             var nodeProps = _Pipeline.GetNode(nodeId)?.GetPropertiesForConfiguration(_BuildSettings.Configuration);
@@ -171,48 +177,22 @@ namespace Epsylon.UberFactory.Evaluation
             nodeInst.EvaluateBindings(nodeProps, null); // we don't pass the dependency evaluator callback because we only want to assign the initial values, we don't want a full chain evaluation
 
             return nodeInst.CreateBindings(nodeProps);
-        }
-
-        public SDK.ContentObject GetSettingsInstance(Type t, SDK.IMonitorContext monitor)
+        }       
+        
+        
+        
+        public Object EvaluateRoot(SDK.IMonitorContext monitor)
         {
-            _CheckIsReady();
+            _SetupIsReady();
 
-            var si = _SettingsInstancesCache.FirstOrDefault(item => item.GetType() == t);
+            _FileIOTracker?.Clear();
 
-            if (si != null) return si;
-            if (_SettingsFactory == null) return null;
-
-            var sdom = _SettingsFactory.Invoke(t);
-            var spip = CreatePipelineInstance(sdom.Pipeline, _FilterFactory,_SettingsFactory);
-            spip.Setup(_BuildSettings);
-
-            var r = spip.Evaluate(monitor);
-
-            si = r as SDK.ContentObject;
-
-            _SettingsInstancesCache.Add(si);
-
-            return si;
-        }
-        
-        
-        
-        public Object Evaluate(SDK.IMonitorContext monitor)
-        {
-            _CheckIsReady();
-
-            if (_NodeInstances.Values.OfType<_UnknownNode>().Any()) throw new InvalidOperationException("Some filters couldn't be instantiated.");
-
-            _SettingsInstancesCache.Clear();
-
-            var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);            
-
-            return _EvaluateNode(monitor, _Pipeline.RootIdentifier, false);
+            return EvaluateNode(monitor, _Pipeline.RootIdentifier);
         }
 
         public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
-            _CheckIsReady();
+            _SetupIsReady();
 
             _SettingsInstancesCache.Clear();
 
@@ -221,7 +201,9 @@ namespace Epsylon.UberFactory.Evaluation
 
         public IPreviewResult PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
-            _CheckIsReady();
+            _SetupIsReady();
+
+            _FileIOTracker?.Clear();
 
             _SettingsInstancesCache.Clear();
 
@@ -237,7 +219,7 @@ namespace Epsylon.UberFactory.Evaluation
                 var text = convertible.ToString();
                 var data = Encoding.UTF8.GetBytes(text);
 
-                var dict = _DictionaryExportContext.Create("preview.txt");
+                var dict = _DictionaryExportContext.Create("preview.txt", null);
 
                 dict.WriteAllBytes(data);
 
@@ -249,27 +231,25 @@ namespace Epsylon.UberFactory.Evaluation
 
         private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode)
         {
-            _CheckIsReady();
-
             if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
 
-            // First, we check if it's a template, in which case we return it as the evaluated value (it will be called by the component)
-            var pipelineEvaluator = _PipelineInstances.GetValueOrDefault(nodeId);
-            if (pipelineEvaluator != null) return pipelineEvaluator;
+            _SetupIsReady();
 
             // Get the current node being evaluated
             var nodeInst = _NodeInstances.GetValueOrDefault(nodeId);
             if (nodeInst == null) return null;
             if (nodeInst is _UnknownNode) return null;
 
-            // Next, we try to find the property values for this node
+            _FileIOTracker.RegisterAssemblyFile(nodeInst.GetType().Assembly.Location);            
+
+            // Next, we retrieve the property values for this node from the DOM
             var nodeProps = _Pipeline
                 .GetNode(nodeId)?
                 .GetPropertiesForConfiguration(_BuildSettings.Configuration)
                 .AsReadOnly();
             if (nodeProps == null) return null;
 
-            // Evaluate values and dependencies. Dependecies are evaluated recursively
+            // Assign values and node dependencies. Dependecies are evaluated to its values.
             nodeInst.EvaluateBindings(nodeProps,xid => _EvaluateNode(monitor, xid, previewMode));            
 
             if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
@@ -280,13 +260,13 @@ namespace Epsylon.UberFactory.Evaluation
             {
                 var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);                
 
-                if (nodeInst is SDK.ContentFilter)
+                if (nodeInst is SDK.ContentFilter filterInst)
                 {
-                    if (previewMode) return SDK.PreviewNode((SDK.ContentFilter)nodeInst, localMonitor);
+                    if (previewMode) return SDK.PreviewNode(filterInst, localMonitor);
                     else
                     {
-                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode((SDK.ContentFilter)nodeInst, localMonitor);
-                        else return SDK.EvaluateNode((SDK.ContentFilter)nodeInst, localMonitor);
+                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode(filterInst, localMonitor);
+                        else return SDK.EvaluateNode(filterInst, localMonitor);
                     }
                 }
                 else if (nodeInst is SDK.ContentObject) return nodeInst;
@@ -297,6 +277,28 @@ namespace Epsylon.UberFactory.Evaluation
             }
 
             throw new NotImplementedException();
+        }
+
+        private SDK.ContentObject _GetSettingsInstance(Type t, SDK.IMonitorContext monitor)
+        {
+            _SetupIsReady();
+
+            var si = _SettingsInstancesCache.FirstOrDefault(item => item.GetType() == t);
+
+            if (si != null) return si;
+            if (_SettingsFactory == null) return null;
+
+            var sdom = _SettingsFactory.Invoke(t);
+            var spip = CreatePipelineInstance(sdom.Pipeline, _InstanceFactory, _SettingsFactory);
+            spip.Setup(_BuildSettings);
+
+            var r = spip.EvaluateRoot(monitor);
+
+            si = r as SDK.ContentObject;
+
+            _SettingsInstancesCache.Add(si);
+
+            return si;
         }
 
         #endregion        
@@ -310,6 +312,55 @@ namespace Epsylon.UberFactory.Evaluation
         protected override object EvaluateObject()
         {
             return null;
+        }
+    }
+
+
+    class _TaskFileIOTracker : SDK.ITaskFileIOTracker
+    {
+        public _TaskFileIOTracker(SDK.IBuildContext bc)
+        {
+
+        }
+
+
+        private readonly HashSet<String> _AssemblyFiles = new HashSet<String>(StringComparer.OrdinalIgnoreCase);// assembly files used by this pipeline
+        private readonly HashSet<String> _InputFiles = new HashSet<String>(StringComparer.OrdinalIgnoreCase);   // files read from Source directory
+        private readonly HashSet<String> _OutputFiles = new HashSet<String>(StringComparer.OrdinalIgnoreCase);  // files written to temporary directory
+
+        public IEnumerable<String> InputFiles
+        {
+            get
+            {
+                return _InputFiles;
+            }
+        }
+
+        public IEnumerable<String> OutputFiles
+        {
+            get
+            {
+                return _OutputFiles;
+            }
+        }
+
+        public void Clear()
+        {
+            _AssemblyFiles.Clear();
+            _InputFiles.Clear();
+            _OutputFiles.Clear();
+        }
+
+        public void RegisterAssemblyFile(string filePath) { _AssemblyFiles.Add(filePath); }
+
+        void SDK.ITaskFileIOTracker.RegisterInputFile(string filePath, string parentFilePath)
+        {
+            _InputFiles.Add(filePath);
+        }
+
+        void SDK.ITaskFileIOTracker.RegisterOutputFile(string filePath, string parentFilePath)
+        {
+            _OutputFiles.Add(filePath);
         }
     }
 }

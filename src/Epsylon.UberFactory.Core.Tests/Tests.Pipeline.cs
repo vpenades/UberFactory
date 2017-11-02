@@ -91,7 +91,7 @@ namespace Epsylon.UberFactory
             // run evaluation
 
             // note we're using the secondary evaluator instead of the primary one, to prevent creating the target directory.
-            return (int)evaluator.EvaluateNode(Evaluation.MonitorContext.CreateNull(), pipeline.RootIdentifier);
+            return (int)evaluator.EvaluateRoot(Evaluation.MonitorContext.CreateNull());
         }
     }
 

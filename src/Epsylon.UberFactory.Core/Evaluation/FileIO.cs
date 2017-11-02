@@ -20,17 +20,20 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _ImportContext Create(Uri uri)
+        public static _ImportContext Create(Uri uri, SDK.ITaskFileIOTracker tc)
         {
             var path = new PathString(uri);
 
             var data = System.IO.File.ReadAllBytes(path);
             if (data == null) return null;
 
-            return new _ImportContext(new PathString(uri), data);
+            return new _ImportContext(new PathString(uri), data,tc);
         }
 
-        private _ImportContext(PathString path, Byte[] data) { _SourcePath = path; }
+        private _ImportContext(PathString path, Byte[] data, SDK.ITaskFileIOTracker tc) :base(tc)
+        {
+            _SourcePath = path;
+        }
 
         #endregion
 
@@ -50,7 +53,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         #pragma warning restore CS0672
 
-        public override System.IO.Stream OpenFile(string relativePath)
+        protected override System.IO.Stream OpenFileCore(string relativePath)
         {
             var newPath = _SourcePath.DirectoryPath.MakeAbsolutePath(relativePath);
 
@@ -66,16 +69,16 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _ExportContext Create(Uri uri, PathString outDir)
+        public static _ExportContext Create(Uri uri, PathString outDir, SDK.ITaskFileIOTracker tc)
         {
             // TODO: ensure uri is within the specified target path
 
             var path = new PathString(uri);
 
-            return new _ExportContext(path, outDir);
+            return new _ExportContext(path, outDir, tc);
         }
 
-        protected _ExportContext(PathString p, PathString o)
+        protected _ExportContext(PathString p, PathString o, SDK.ITaskFileIOTracker tc) : base(tc)
         {
             _TargetPath = p;
             _OutDir = o;
@@ -105,7 +108,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         #pragma warning restore CS0672
 
-        public override System.IO.Stream OpenFile(string relativePath)
+        protected override System.IO.Stream OpenFileCore(string relativePath)
         {
             if (_OutputFiles.Contains(relativePath)) throw new ArgumentException($"{relativePath} already written", nameof(relativePath));
 
@@ -128,16 +131,16 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _SimulateExportContext Create(Uri uri, Action<string, Byte[]> fileCreationNotifier)
+        public static _SimulateExportContext Create(Uri uri, Action<string, Byte[]> fileCreationNotifier, SDK.ITaskFileIOTracker tc)
         {
             // TODO: ensure uri is within the specified target path
 
             var path = new PathString(uri);
 
-            return new _SimulateExportContext(path, fileCreationNotifier);
+            return new _SimulateExportContext(path, fileCreationNotifier, tc);
         }
 
-        private _SimulateExportContext(PathString p, Action<string, Byte[]> fileCreationNotifier)
+        private _SimulateExportContext(PathString p, Action<string, Byte[]> fileCreationNotifier, SDK.ITaskFileIOTracker tc) : base(tc)
         {
             _TargetPath = p;
             _FileCreationNotifier = fileCreationNotifier;
@@ -165,7 +168,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         #pragma warning restore CS0672
 
-        public override Stream OpenFile(string relativePath)
+        protected override Stream OpenFileCore(string relativePath)
         {
             // for writing very large files, using System.IO.MemoryStream would use a lot of RAM
             // alternatives:
@@ -182,15 +185,15 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _DictionaryExportContext Create(string fileName)
+        public static _DictionaryExportContext Create(string fileName, SDK.ITaskFileIOTracker tc)
         {
             var fp = new PathString(fileName);
             if (!fp.IsValidRelativeFilePath) return null;            
 
-            return new _DictionaryExportContext(fileName);
+            return new _DictionaryExportContext(fileName,tc);
         }
 
-        private _DictionaryExportContext(string fileName)
+        private _DictionaryExportContext(string fileName, SDK.ITaskFileIOTracker tc) : base(tc)
         {
             _DefaultFileName = fileName;
         }
@@ -218,7 +221,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         #pragma warning restore CS0672
 
-        public override Stream OpenFile(string localName)
+        protected override Stream OpenFileCore(string localName)
         {
             return new _MemoryStream(localName, (key, val) => _Files[key] = val);
         }
@@ -235,22 +238,23 @@ namespace Epsylon.UberFactory.Evaluation
             var text = value.ToString();
             var data = Encoding.UTF8.GetBytes(text);
 
-            var dict = new Dictionary<string, byte[]>();
+            var dict = new Dictionary<string, byte[]>
+            {
+                ["preview.txt"] = data
+            };
 
-            dict["preview.txt"] = data;
-
-            return Create(dict, "preview.txt");
+            return Create(dict, "preview.txt", null);
         }
 
-        public static _DictionaryImportContext Create(IReadOnlyDictionary<string,Byte[]> files, string fileName)
+        public static _DictionaryImportContext Create(IReadOnlyDictionary<string,Byte[]> files, string fileName, SDK.ITaskFileIOTracker tc)
         {
             var fp = new PathString(fileName);
             if (!fp.IsValidRelativeFilePath) return null;
 
-            return new _DictionaryImportContext(files, fileName);
+            return new _DictionaryImportContext(files, fileName,tc);
         }
 
-        private _DictionaryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName)
+        private _DictionaryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName, SDK.ITaskFileIOTracker tc) :base(tc)
         {
             _DefaultFileName = fileName;
             _Files = files;
@@ -275,7 +279,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         #pragma warning restore CS0672
 
-        public override Stream OpenFile(string relativePath)
+        protected override Stream OpenFileCore(string relativePath)
         {
             if (!_Files.TryGetValue(relativePath, out byte[] data)) return null;
 
@@ -289,7 +293,7 @@ namespace Epsylon.UberFactory.Evaluation
     {
         public override SDK.ExportContext CreateMemoryFile(string fileName)
         {
-            return _DictionaryExportContext.Create(fileName);
+            return _DictionaryExportContext.Create(fileName, null);
         }
     }
 

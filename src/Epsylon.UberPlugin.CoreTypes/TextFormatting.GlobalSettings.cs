@@ -11,8 +11,6 @@ namespace Epsylon.UberPlugin.CoreTypes
     [SDK.ContentMetaData("Title", "Text Formatting Settings")]
     public class TextFormattingSettings : SDK.ContentObject
     {
-        
-
         private static string[] _GetAvailableCultureIdentifiers()
         {
             return System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.AllCultures)
@@ -28,6 +26,17 @@ namespace Epsylon.UberPlugin.CoreTypes
         [SDK.InputMetaDataEvaluate("Default",nameof(_GetDefaultCultureIndentifier))]
         [SDK.InputMetaDataEvaluate("Values", nameof(_GetAvailableCultureIdentifiers))]
         public string CultureIdentifier { get; set; }
-        
+
+
+        public System.Globalization.CultureInfo CurrentCulture
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(CultureIdentifier) || CultureIdentifier == "INVARIANT") return System.Globalization.CultureInfo.InvariantCulture;
+
+                return System.Globalization.CultureInfo.GetCultureInfo(CultureIdentifier);
+            }
+        }        
     }
+
 }

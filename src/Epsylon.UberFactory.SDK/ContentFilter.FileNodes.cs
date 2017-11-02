@@ -20,7 +20,7 @@ namespace Epsylon.UberFactory
 
             protected override TValue Evaluate()
             {
-                var s = this.BuildContext.GetImportContext(FilePath);                
+                var s = this.GetImportContext(FilePath);                
                 if (s == null) throw new System.IO.FileNotFoundException("Error opening file", FilePath.ToString());
 
                 return ReadFile(s);                
@@ -49,7 +49,7 @@ namespace Epsylon.UberFactory
 
                 var absUri = this.BuildContext.GetTargetAbsoluteUri(rpath);
 
-                var s = this.BuildContext.GetExportContext(absUri);                
+                var s = this.GetExportContext(absUri);                
                 if (s == null) return null;
 
                 WriteFile(s);                
