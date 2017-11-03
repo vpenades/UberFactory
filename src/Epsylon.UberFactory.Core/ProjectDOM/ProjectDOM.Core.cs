@@ -168,6 +168,20 @@ namespace Epsylon.UberFactory
                 return false;
             }
 
+            public int GetHierarchyFingerPrint()
+            {
+                int h = Identifier.GetHashCode();
+
+                /* TODO: should loop through all referenced nodes
+                foreach (var n in this.Nodes)
+                {
+                    h *= 17;
+                    h ^= n.GetHierarchyFingerPrint();
+                }*/
+
+                return h;
+            }
+
             #endregion
         }
 
@@ -236,6 +250,19 @@ namespace Epsylon.UberFactory
                 var otherNodes = Nodes.Where(item => item != node).ToArray();
 
                 return otherNodes.Any(item => item.ReferencesNode(node));
+            }
+
+            public int GetHierarchyFingerPrint()
+            {
+                int h = RootIdentifier.GetHashCode();
+
+                foreach(var n in this.Nodes)
+                {
+                    h *= 17;
+                    h ^= n.GetHierarchyFingerPrint();
+                }
+
+                return h;
             }
 
             #endregion

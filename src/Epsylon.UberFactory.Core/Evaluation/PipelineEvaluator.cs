@@ -31,7 +31,8 @@ namespace Epsylon.UberFactory.Evaluation
         {
             _InstanceFactory = filterResolver;
             _SettingsFactory = settingsResolver;            
-            _Pipeline = pipeline;            
+            _Pipeline = pipeline;
+            _PipelineFingerPrint = pipeline.GetHierarchyFingerPrint();
         }        
 
         #endregion
@@ -42,6 +43,7 @@ namespace Epsylon.UberFactory.Evaluation
         private readonly SETTINGSFUNCTION _SettingsFactory;
         
         private readonly ProjectDOM.Pipeline _Pipeline;
+        private readonly int _PipelineFingerPrint;
         
         // evaluation data
 
@@ -100,6 +102,8 @@ namespace Epsylon.UberFactory.Evaluation
                 .Any();
 
             if (!allInstancesReady) throw new InvalidOperationException("Some filters couldn't be instantiated.");
+
+            if (_PipelineFingerPrint != _Pipeline.GetHierarchyFingerPrint()) throw new InvalidOperationException("DOM hierarchy has changed, call Setup again");
         }
 
         /// <summary>

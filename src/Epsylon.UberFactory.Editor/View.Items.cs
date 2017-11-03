@@ -47,7 +47,7 @@ namespace Epsylon.UberFactory
 
             public Project ParentProject => _Parent;
 
-            public String InferredTitle => _PipelineView?._Evaluator.InferredTitle;
+            public String InferredTitle => _PipelineView?._PipelineEvaluator.InferredTitle;
 
             public String DisplayTitle => "Task " + Title;            
 
@@ -129,7 +129,7 @@ namespace Epsylon.UberFactory
 
             public Project          ParentProject   => _Parent;            
 
-            public String           InferredTitle   => _PipelineView?._Evaluator.InferredTitle;
+            public String           InferredTitle   => _PipelineView?._PipelineEvaluator.InferredTitle;
 
             public String           DisplayTitle    => "Task " + Title;
 
