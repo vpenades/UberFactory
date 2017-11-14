@@ -103,7 +103,13 @@
             <DatePicker SelectedDate="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />            
         </GroupBox>
     </DataTemplate>
-    
+
+    <DataTemplate x:Key="BindingView_TimeBox">
+        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
+            <local:TimeSpanControl Value="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />
+        </GroupBox>
+    </DataTemplate>
+
     <!-- Todo BindingView_TimeBox ... or just use three Int Properties -->
 
     <DataTemplate x:Key="BindingView_Slider">

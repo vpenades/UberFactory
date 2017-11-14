@@ -22,12 +22,15 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void _OnClick_ShowColorPaletteDialog(object sender, RoutedEventArgs e)
         {
-            var f = sender as FrameworkElement;
-            var d = f.DataContext as Bindings.InputValueBinding<UInt32>;
-
-            d.Value = _Dialogs.ShowColorPickerDialog(d.Value);            
+            if (sender is FrameworkElement f)
+            {
+                if (f.DataContext is Bindings.InputValueBinding<UInt32> v)
+                {
+                    v.Value = _Dialogs.ShowColorPickerDialog(v.Value);
+                }
+            }            
         }
     }
 }

@@ -9,9 +9,72 @@ namespace Epsylon.UberFactory.Bindings
 {
     public abstract class ValueBinding : MemberBinding
     {
+        #region constants
+
+        internal const string VIEWTEMPLATE_INVALID = "BindingView_Invalid";
+        internal const string VIEWTEMPLATE_TEXTBOX = "BindingView_TextBox";
+        internal const string VIEWTEMPLATE_CHECKBOX = "BindingView_CheckBox";
+        internal const string VIEWTEMPLATE_COMBOBOX = "BindingView_ComboBox";        
+
+        internal const string VIEWTEMPLATE_SLIDER = "BindingView_Slider";
+
+        internal const string VIEWTEMPLATE_COLORPICKER = "BindingView_ColorPicker";
+
+        internal const string VIEWTEMPLATE_TIMEBOX = "BindingView_TimeSpan";
+        internal const string VIEWTEMPLATE_DATEBOX = "BindingView_DateBox";
+
+        internal const string VIEWTEMPLATE_PATHPICKER = "BindingView_PathPicker";
+
+        #endregion
+
         #region lifecycle
 
-        public ValueBinding(Description pvd) : base(pvd)
+        public static MemberBinding Create(Description bindDesc)
+        {
+            var propertyType = bindDesc.Member.GetAssignType();
+
+            if (propertyType == null) throw new ArgumentNullException(nameof(propertyType));            
+
+            if (propertyType.GetTypeInfo().IsEnum) return new InputEnumerationBinding(bindDesc);
+
+            if (propertyType == typeof(String)) return new InputValueBinding<String>(bindDesc);
+            if (propertyType == typeof(Boolean)) return new InputValueBinding<Boolean>(bindDesc);
+
+            if (propertyType == typeof(Char)) return new InputValueBinding<Char>(bindDesc);
+
+            if (propertyType == typeof(SByte)) return new InputValueBinding<SByte>(bindDesc);
+            if (propertyType == typeof(Int16)) return new InputValueBinding<Int16>(bindDesc);
+            if (propertyType == typeof(Int32)) return new InputValueBinding<Int32>(bindDesc);
+            if (propertyType == typeof(Int64)) return new InputValueBinding<Int64>(bindDesc);
+
+            if (propertyType == typeof(Byte)) return new InputValueBinding<Byte>(bindDesc);
+            if (propertyType == typeof(UInt16)) return new InputValueBinding<UInt16>(bindDesc);
+            if (propertyType == typeof(UInt32)) return new InputValueBinding<UInt32>(bindDesc);
+            if (propertyType == typeof(UInt64)) return new InputValueBinding<UInt64>(bindDesc);
+
+            if (propertyType == typeof(Single)) return new InputValueBinding<Single>(bindDesc);
+            if (propertyType == typeof(Double)) return new InputValueBinding<Double>(bindDesc);
+            if (propertyType == typeof(Decimal)) return new InputValueBinding<Decimal>(bindDesc);
+
+            if (propertyType == typeof(TimeSpan)) return new InputTimeSpanBinding(bindDesc);
+            if (propertyType == typeof(DateTime)) return new InputValueBinding<DateTime>(bindDesc);  
+            
+
+            if (propertyType == typeof(System.IO.FileInfo)) return SourceFilePickBinding.CreateFilePick(bindDesc);
+            if (propertyType == typeof(System.IO.DirectoryInfo)) return SourceFilePickBinding.CreateDirectoryPick(bindDesc);
+
+            // we should check metadata to decide if it's a file or a directory
+            if (propertyType == typeof(Uri)) return SourceFilePickBinding.CreateFilePick(bindDesc);
+            if (propertyType == typeof(PathString)) return SourceFilePickBinding.CreateFilePick(bindDesc);
+
+            // Guid
+            // Version
+            // TimeSpan
+
+            return new InvalidBinding(bindDesc);
+        }
+
+        internal ValueBinding(Description pvd) : base(pvd)
         {
             _Properties = pvd.Properties;
         }
@@ -161,11 +224,11 @@ namespace Epsylon.UberFactory.Bindings
     }
 
     [System.Diagnostics.DebuggerDisplay("Value {SerializationKey} = {Value}")]
-    public class InputValueBinding<T> : ValueBinding where T : IConvertible, IComparable, IComparable<T>
+    public sealed class InputValueBinding<T> : ValueBinding where T : IConvertible, IComparable, IComparable<T>
     {
         #region lifecycle
 
-        public InputValueBinding(Description pvd) : base(pvd)
+        internal InputValueBinding(Description pvd) : base(pvd)
         {            
             if (typeof(T) == typeof(Object)) throw new ArgumentException(nameof(T), "Not Supported");
         }
@@ -178,25 +241,25 @@ namespace Epsylon.UberFactory.Bindings
         {
             get
             {
-                if (typeof(T) == typeof(bool)) return "BindingView_CheckBox";
+                if (typeof(T) == typeof(bool)) return VIEWTEMPLATE_CHECKBOX;
 
                 var ctrl = this.GetMetaDataValue<String>("ViewStyle", "TextBox");
 
-                if (ctrl == "ComboBox") return "BindingView_ComboBox";
+                if (ctrl == "ComboBox") return VIEWTEMPLATE_COMBOBOX;
 
-                if (typeof(T) == typeof(DateTime)) return "BindingView_DateBox";                
+                if (typeof(T) == typeof(DateTime)) return VIEWTEMPLATE_DATEBOX;                
 
-                if (ctrl == "TextBox") return "BindingView_TextBox";                
+                if (ctrl == "TextBox") return VIEWTEMPLATE_TEXTBOX;                
 
-                if (typeof(T) == typeof(String)) return "BindingView_Invalid";
+                if (typeof(T) == typeof(String)) return VIEWTEMPLATE_INVALID;
 
-                if (ctrl == "Slider") return "BindingView_Slider"; // note, Minimum & Maximum must be defined
+                if (ctrl == "Slider") return VIEWTEMPLATE_SLIDER; // TODO: check Minimum & Maximum must be defined
 
-                if (typeof(T) != typeof(UInt32)) return "BindingView_Invalid";
+                if (typeof(T) != typeof(UInt32)) return VIEWTEMPLATE_INVALID;
 
-                if (ctrl == "ColorPicker") return "BindingView_ColorPicker";
+                if (ctrl == "ColorPicker") return VIEWTEMPLATE_COLORPICKER;
 
-                return "BindingView_Invalid";
+                return VIEWTEMPLATE_INVALID;
             }
         }
 
@@ -204,7 +267,7 @@ namespace Epsylon.UberFactory.Bindings
 
         public int MaxTextLines => 5;
 
-        public T[] AvailableValues { get { return _GetTypeAvailableValues(); } }
+        public T[] AvailableValues => _GetTypeAvailableValues();
 
         public T Value
         {
@@ -228,9 +291,8 @@ namespace Epsylon.UberFactory.Bindings
 
         private static Object _GetTypeMinimumValue()
         {
-            if (typeof(T) == typeof(String)) return null;
-
             if (typeof(T) == typeof(Boolean)) return false;
+            if (typeof(T) == typeof(Char)) return Char.MinValue;
 
             if (typeof(T) == typeof(SByte)) return SByte.MinValue;
             if (typeof(T) == typeof(Int16)) return Int16.MinValue;
@@ -246,16 +308,19 @@ namespace Epsylon.UberFactory.Bindings
             if (typeof(T) == typeof(Double)) return Double.MinValue;
             if (typeof(T) == typeof(Decimal)) return Decimal.MinValue;
 
+            if (typeof(T) == typeof(TimeSpan)) return TimeSpan.MinValue;
             if (typeof(T) == typeof(DateTime)) return DateTime.MinValue;
+            if (typeof(T) == typeof(DateTimeOffset)) return DateTimeOffset.MinValue;
+            
+            System.Diagnostics.Debug.Assert(false,$"Invalid type {typeof(T)}");
 
-            return 0;
+            return default(T);
         }
 
         private static Object _GetTypeMaximumValue()
         {
-            if (typeof(T) == typeof(String)) return null;
-
             if (typeof(T) == typeof(Boolean)) return true;
+            if (typeof(T) == typeof(Char)) return Char.MaxValue;
 
             if (typeof(T) == typeof(SByte)) return SByte.MaxValue;
             if (typeof(T) == typeof(Int16)) return Int16.MaxValue;
@@ -270,8 +335,12 @@ namespace Epsylon.UberFactory.Bindings
             if (typeof(T) == typeof(Single)) return Single.MaxValue;
             if (typeof(T) == typeof(Double)) return Double.MaxValue;
             if (typeof(T) == typeof(Decimal)) return Decimal.MaxValue;
-
+            
+            if (typeof(T) == typeof(TimeSpan)) return TimeSpan.MaxValue;
             if (typeof(T) == typeof(DateTime)) return DateTime.MaxValue;
+            if (typeof(T) == typeof(DateTimeOffset)) return DateTimeOffset.MaxValue;
+
+            System.Diagnostics.Debug.Assert(false, $"Invalid type {typeof(T)}");
 
             return default(T);
         }
@@ -287,19 +356,19 @@ namespace Epsylon.UberFactory.Bindings
     }
 
     [System.Diagnostics.DebuggerDisplay("Enum {SerializationKey} = {Value}")]
-    public class InputEnumerationBinding : ValueBinding
+    public sealed class InputEnumerationBinding : ValueBinding
     {
         #region lifecycle
 
-        public InputEnumerationBinding(Description pvd) : base(pvd) { }
+        internal InputEnumerationBinding(Description pvd) : base(pvd) { }
 
         #endregion
 
         #region properties        
 
-        public override string ViewTemplate => "BindingView_ComboBox";
+        public override string ViewTemplate => VIEWTEMPLATE_COMBOBOX;
 
-        public Enum[] AvailableValues { get { return _GetTypeAvailableValues(); } }
+        public Enum[] AvailableValues => _GetTypeAvailableValues();
 
         public Enum Value
         {
@@ -340,9 +409,49 @@ namespace Epsylon.UberFactory.Bindings
         #endregion
     }
 
+    [System.Diagnostics.DebuggerDisplay("Enum {SerializationKey} = {Value}")]
+    public sealed class InputTimeSpanBinding : ValueBinding
+    {
+        #region lifecycle
+
+        internal InputTimeSpanBinding(Description pvd) : base(pvd) { }
+
+        #endregion
+
+        #region properties        
+
+        public override string ViewTemplate => VIEWTEMPLATE_TIMEBOX;        
+
+        public TimeSpan Value
+        {
+            get { return new TimeSpan(this.GetValue<long>()); }
+            set
+            {
+                if (value < Minimum) value = Minimum;
+                if (value > Maximum) value = Maximum;
+                this.SetValue<long>(value.Ticks);
+            }
+        }
+
+        public TimeSpan Minimum => this.GetMetaDataValue<TimeSpan>("Minimum", TimeSpan.MinValue);
+
+        public TimeSpan Maximum => this.GetMetaDataValue<TimeSpan>("Maximum", TimeSpan.MaxValue);
+
+        #endregion
+
+        #region API
+
+        public override void CopyToInstance()
+        {
+            SetInstanceValue(Value);
+        }
+
+        #endregion
+    }
+
 
     [System.Diagnostics.DebuggerDisplay("File {SerializationKey} = {FileName}")]
-    public class SourceFilePickBinding : ValueBinding
+    public sealed class SourceFilePickBinding : ValueBinding
     {
         #region lifecycle
 
@@ -356,7 +465,7 @@ namespace Epsylon.UberFactory.Bindings
 
         #region properties
 
-        public override string ViewTemplate => "BindingView_PathPicker";
+        public override string ViewTemplate => VIEWTEMPLATE_PATHPICKER;
 
         public Action ShowPickPathDialogCmd => _PickFileDialog;
 

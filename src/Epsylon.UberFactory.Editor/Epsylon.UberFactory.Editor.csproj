@@ -111,6 +111,9 @@
       <DependentUpon>BindingView.Color.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\DataTemplates\PropertyBindingsSelector.cs" />
+    <Compile Include="Themes\DataTemplates\TimeSpanControl.xaml.cs">
+      <DependentUpon>TimeSpanControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\DialogPanel.About.xaml.cs">
       <DependentUpon>DialogPanel.About.xaml</DependentUpon>
     </Compile>
@@ -167,6 +170,10 @@
     <Compile Include="_Extensions.cs" />
     <Compile Include="View.Utils.cs" />
     <Page Include="Themes\DataTemplates\BindingView.Color.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\DataTemplates\TimeSpanControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -332,11 +339,9 @@
       <Version>1.5.1</Version>
     </PackageReference>
   </ItemGroup>
-
   <Import Project="$(MSBuildThisFileDirectory)..\Shared\StaticVersionInfo.props" />
   <Import Project="$(MSBuildThisFileDirectory)..\Shared\AssemblyInfoGenerator.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

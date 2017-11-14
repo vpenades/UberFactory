@@ -8,7 +8,7 @@
     
     <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}">
         <DockPanel ContextMenu="{StaticResource __clearValueContextMenu}">
-            <Button Click="Button_Click"
+            <Button Click="_OnClick_ShowColorPaletteDialog"
                         
                         BorderBrush="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
                         

@@ -10,6 +10,14 @@ namespace Epsylon.UberFactory.Bindings
     {
         #region lifecycle
 
+        public static MemberBinding Create(Description bindDesc, bool isMulti)
+        {
+            var propertyType = bindDesc.Member.GetAssignType();
+
+            var isArray = propertyType.IsArray;            
+            return isMulti && isArray ? (MemberBinding)new MultiDependencyBinding(bindDesc) : new SingleDependencyBinding(bindDesc);
+        }
+
         public DependencyBinding(Description pvd) : base(pvd)
         {
             _Properties = pvd.Properties;

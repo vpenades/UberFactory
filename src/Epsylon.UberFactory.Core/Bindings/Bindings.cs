@@ -25,10 +25,10 @@ namespace Epsylon.UberFactory.Bindings
         #region lifecycle
 
         public struct Description
-        {
-            public MemberInfo Member;
-            public IPropertyProvider Properties;            
-            public SDK.ContentObject Target;
+        {            
+            public IPropertyProvider Properties;    // properties container from where to read/write values
+            public SDK.ContentObject Target;        // target instance object (write only)
+            public MemberInfo Member;               // member of the target to write to
         }
 
         protected MemberBinding(Description pvd)
@@ -41,8 +41,15 @@ namespace Epsylon.UberFactory.Bindings
 
         #region data
 
-        protected readonly MemberInfo _MemberInfo;        
+        /// <summary>
+        /// Target instance object
+        /// </summary>
         private readonly SDK.ContentObject _TargetInstance;
+
+        /// <summary>
+        /// Target property of _TargetInstance to write to
+        /// </summary>
+        protected readonly MemberInfo _MemberInfo;
 
         #endregion
 
