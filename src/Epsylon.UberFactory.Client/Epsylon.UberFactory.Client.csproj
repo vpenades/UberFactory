@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net47;netcoreapp2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <!-- Source code Switches --><!-- Dependencies -->  
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <Compile Remove="**\*.netstd.cs" />
+    <None Include="**\*.netstd.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net47'">
+    <Compile Remove="**\*.netfx.cs" />
+    <None Include="**\*.netfx.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp2.0'">
+    <Compile Remove="**\*.netcore.cs" />
+    <None Include="**\*.netcore.cs" />
+  </ItemGroup>
+
+  <!-- Dependencies -->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Condition="'$(TargetFramework)' == 'netcoreapp2.0'" Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Condition="'$(TargetFramework)' != 'netstandard2.0'" Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Targets -->
+
+  <Import Project="$(MSBuildThisFileDirectory)\..\Shared\StaticVersionInfo.props" />
+
+</Project>

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,9 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.TestPlugins", "Epsy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.Editor.Tests", "Epsylon.UberFactory.Editor.Tests\Epsylon.UberFactory.Editor.Tests.csproj", "{E5ADCBAA-337B-474D-A547-45F391DB84DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.UberPlugin.CoreTypes", "Epsylon.UberPlugin.CoreTypes\Epsylon.UberPlugin.CoreTypes.csproj", "{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberPlugin.CoreTypes", "Epsylon.UberPlugin.CoreTypes\Epsylon.UberPlugin.CoreTypes.csproj", "{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberPlugin.MathTypes", "Epsylon.UberPlugin.MathTypes\Epsylon.UberPlugin.MathTypes.csproj", "{C773DB8B-DD2B-47FD-A040-8BE545332F94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.UberFactory.Client", "Epsylon.UberFactory.Client\Epsylon.UberFactory.Client.csproj", "{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -108,6 +110,14 @@ Global
 		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Mixed Configurations.ActiveCfg = Release|Any CPU
 		{C773DB8B-DD2B-47FD-A040-8BE545332F94}.Release|Mixed Configurations.Build.0 = Release|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Debug|Mixed Configurations.ActiveCfg = Debug|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Debug|Mixed Configurations.Build.0 = Debug|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|Mixed Configurations.ActiveCfg = Release|Any CPU
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|Mixed Configurations.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +132,7 @@ Global
 		{E5ADCBAA-337B-474D-A547-45F391DB84DE} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{C773DB8B-DD2B-47FD-A040-8BE545332F94} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
+		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}

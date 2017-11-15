@@ -23,10 +23,6 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />    
-  </ItemGroup>
-
   
 
   <ItemGroup>
@@ -42,6 +38,12 @@
 
   <ItemGroup>
     <Folder Include="TestFiles\" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <ProjectReference Include="..\Epsylon.UberFactory.Client\Epsylon.UberFactory.Client.csproj" />
   </ItemGroup>
 
 </Project>

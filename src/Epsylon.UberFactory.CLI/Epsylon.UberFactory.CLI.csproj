@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />    
+    <ProjectReference Include="..\Epsylon.UberFactory.Client\Epsylon.UberFactory.Client.csproj" />    
   </ItemGroup>
 
   <Import Project="..\Shared\StaticVersionInfo.props" />

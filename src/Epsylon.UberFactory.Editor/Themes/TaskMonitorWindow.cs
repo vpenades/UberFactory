@@ -89,8 +89,22 @@ namespace Epsylon.UberFactory.Themes
         }
 
         public void Dispose()
+        {            
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~TaskMonitorWindow()
         {
-            if (_CancelSource != null) { _CancelSource.Dispose(); _CancelSource = null; }
+            Dispose(false);
+        }
+
+        private void Dispose(bool managed)
+        {
+            if (managed)
+            {
+                if (_CancelSource != null) { _CancelSource.Dispose(); _CancelSource = null; }
+            }            
         }
 
         #endregion
