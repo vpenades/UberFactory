@@ -26,12 +26,12 @@ namespace Epsylon.UberFactory
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            var appv = this.DataContext as AppView; if (appv == null) return;
-            var prjv = appv.DocumentView as ProjectVIEW.Project; if (prjv == null) return;
-
-            if (prjv.IsDirty)
+            if (this.DataContext is AppView appv)
             {
-                if (!appv.CloseDocument()) { e.Cancel = true; return; }
+                if (appv.DocumentView is ProjectVIEW.Project prjv)
+                {
+                    if (prjv.IsDirty && !appv.CloseDocument()) { e.Cancel = true; return; }
+                }
             }
         }
     }

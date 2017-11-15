@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Epsylon.UberFactory.Evaluation
+namespace Epsylon.UberFactory.Client
 {
     using ASSEMBLYRESOLVEFUNC = Func<AssemblyName, Assembly>;
 

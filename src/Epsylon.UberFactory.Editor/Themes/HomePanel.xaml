@@ -19,7 +19,7 @@
                     <data:RecentFilesMenuItem LoadCommand="{Binding Application.OpenKnownDocumentCmd}" MaxPathLength="128" />
                 </MenuItem>
                 <Separator />
-                <MenuItem Icon="{StaticResource _ExitIcon}" Header="Exit" Command="{Binding Application.ExitCmd}" />
+                <MenuItem Icon="{StaticResource _ExitIcon}" Header="Exit" Command="{Binding Application.ExitApplicationCmd}" />
             </MenuItem>
 
             <MenuItem Header="View">

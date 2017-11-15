@@ -16,7 +16,7 @@ namespace Epsylon.UberFactory
                 return;
             }
 
-            Evaluation.CommandLineContext.Build(args);
+            Client.CommandLineContext.Build(args);
         }        
     }    
 }

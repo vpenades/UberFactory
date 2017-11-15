@@ -17,7 +17,7 @@
                 <Separator />
                 <MenuItem Icon="{StaticResource _SaveIcon}" Header="Save" Command="{Binding SaveCmd}" />
                 <Separator />
-                <MenuItem Icon="{StaticResource _ExitIcon}" Header="Exit" Command="{Binding Application.ExitCmd}" />
+                <MenuItem Icon="{StaticResource _ExitIcon}" Header="Exit" Command="{Binding Application.ExitApplicationCmd}" />
             </MenuItem>
 
             <MenuItem Header="View">

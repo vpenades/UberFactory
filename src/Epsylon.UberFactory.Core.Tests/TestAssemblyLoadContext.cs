@@ -15,12 +15,12 @@ namespace Epsylon.UberFactory
         public static Assembly[] LoadPlugins()
         {
             // bad image test
-            Evaluation.PluginLoader.Instance.UsePlugin(new PathString("TestFiles\\BadImage.dll".GetAbsolutePath()));
+            Client.PluginLoader.Instance.UsePlugin(new PathString("TestFiles\\BadImage.dll".GetAbsolutePath()));
 
             // plugin test
-            Evaluation.PluginLoader.Instance.UsePlugin(new PathString(TestPluginPath));
+            Client.PluginLoader.Instance.UsePlugin(new PathString(TestPluginPath));
 
-            return Evaluation.PluginLoader.Instance.GetPlugins();
+            return Client.PluginLoader.Instance.GetPlugins();
         }        
 
         [TestMethod]

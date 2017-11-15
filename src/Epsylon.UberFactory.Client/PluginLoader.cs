@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Epsylon.UberFactory.Evaluation
+namespace Epsylon.UberFactory.Client
 {
     // // https://mef.codeplex.com/
     // MEF is a part of the Microsoft.NET Framework, with types primarily under the
@@ -38,14 +38,14 @@ namespace Epsylon.UberFactory.Evaluation
 
     public static class PluginLoader
     {
-        public static IPluginLoader Instance { get { return _PluginsFactoryWithResolver.Default; } }        
+        public static Evaluation.IPluginLoader Instance { get { return _PluginsFactoryWithResolver.Default; } }        
     }    
 
 
     /// <summary>
     /// Basic interface that loads an assembly from a given path. It's unable to resolve secondary dependencies
     /// </summary>
-    sealed class _PluginsFactoryBasic : IPluginLoader
+    sealed class _PluginsFactoryBasic : Evaluation.IPluginLoader
     {
         #region lifecycle
 
@@ -89,7 +89,7 @@ namespace Epsylon.UberFactory.Evaluation
     /// <summary>
     /// Advanced plugin manager that looks into every previously loaded plugin directory to find 2nd level dependencies
     /// </summary>    
-    sealed class _PluginsFactoryWithResolver : IPluginLoader
+    sealed class _PluginsFactoryWithResolver : Evaluation.IPluginLoader
     {
         #region lifecycle
 
@@ -197,7 +197,7 @@ namespace Epsylon.UberFactory.Evaluation
     }
 
 
-    sealed class _PluginsFactoryCopiedToTemp : IPluginLoader
+    sealed class _PluginsFactoryCopiedToTemp : Evaluation.IPluginLoader
     {
         private readonly HashSet<string> _AssemblyFileNames = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 

@@ -36,7 +36,7 @@ namespace Epsylon.UberFactory
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(docFileName));
 
-            var results = Evaluation.CommandLineContext.Build("-SIMULATE", "-CFG:Root", docFileName).ToArray();
+            var results = Client.CommandLineContext.Build("-SIMULATE", "-CFG:Root", docFileName).ToArray();
 
             Assert.AreEqual(1, results.Length);
 

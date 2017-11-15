@@ -7,11 +7,8 @@ using System.Windows.Input;
 
 namespace Epsylon.UberFactory
 {
-    // deberia estar usando : https://github.com/tgjones/gemini + http://documentup.com/tgjones/gemini
-
     public static partial class ProjectVIEW
     {
-
         public static Project CreateFromCommandLine(AppView app, string[] args)
         {
             if (app == null) return null;
@@ -59,7 +56,6 @@ namespace Epsylon.UberFactory
             return Project.Create(app, prj, filePath);
         }
 
-
         public static string GetDisplayName(Object o)
         {
             if (o == null) return null;
@@ -67,10 +63,6 @@ namespace Epsylon.UberFactory
 
             throw new NotSupportedException();
         }
-
-
-                
-
 
         public class Project : BindableBase
         {
@@ -411,17 +403,15 @@ namespace Epsylon.UberFactory
                     .Where(item => item.IsValidAbsoluteFilePath)
                     .ToArray();
 
-                foreach(var apath in paths) Evaluation.PluginLoader.Instance.UsePlugin(apath);
+                foreach(var apath in paths) Client.PluginLoader.Instance.UsePlugin(apath);
                 
-                _Plugins.SetAssemblies( Evaluation.PluginLoader.Instance.GetPlugins() );
+                _Plugins.SetAssemblies(Client.PluginLoader.Instance.GetPlugins() );
 
                 RaiseChanged();
             }
 
             #endregion            
-        }
-
-        
+        }        
 
         public class Configurations : BindableBase
         {
@@ -456,9 +446,9 @@ namespace Epsylon.UberFactory
 
             #region properties
 
-            public bool IsEmpty => _Configurations.Count == 0;
+            public bool IsEmpty             => _Configurations.Count == 0;
 
-            public bool HasRoot => _Configurations.Count > 0;
+            public bool HasRoot             => _Configurations.Count > 0;
 
             public IEnumerable<string> All  => _Configurations.OrderBy(item=>item).ToArray();
 
@@ -475,11 +465,7 @@ namespace Epsylon.UberFactory
             }
 
             #endregion
-
-        }
-
-
-        
+        }       
 
         public class BuildSettings : BindableBase
         {
@@ -509,10 +495,10 @@ namespace Epsylon.UberFactory
             [System.ComponentModel.DisplayName("Browse Target Directory...")]
             public ICommand BrowseTargetDirectoryCmd { get; private set; }
 
-            public String Configuration => _Configuration;
+            public String Configuration         => _Configuration;
 
-            public String SourceDirectory => _SourceDirectory;
-            public String TargetDirectory => _TargetDirectory;
+            public String SourceDirectory       => _SourceDirectory;
+            public String TargetDirectory       => _TargetDirectory;
 
             public String TargetDirectoryShortestDisplay
             {

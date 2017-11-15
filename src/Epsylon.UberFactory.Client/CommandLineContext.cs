@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Epsylon.UberFactory.Evaluation
+namespace Epsylon.UberFactory.Client
 {
     using MONITOR = Func<int, string, bool>;
 
@@ -106,21 +106,21 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API        
 
-        public static IEnumerable<BuildContext> Build(params string[] args)
+        public static IEnumerable<Evaluation.BuildContext> Build(params string[] args)
         {
             using (var context = Create(args))
             {
-                var monitor = MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
+                var monitor = Evaluation.MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
                 
                 return context.Build(_LoadPluginsFunc, monitor);
             }
         }
 
-        public IEnumerable<BuildContext> Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor)
+        public IEnumerable<Evaluation.BuildContext> Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor)
         {
             _CancelRequested = false;
 
-            var bbbccc = new List<BuildContext>();
+            var bbbccc = new List<Evaluation.BuildContext>();
 
             foreach (var filePath in System.IO.Directory.GetFiles(_SrcDir, _SrcMask))
             {
@@ -140,9 +140,9 @@ namespace Epsylon.UberFactory.Evaluation
 
                 var buildSettings = _TargetTask == "SIMULATE"
                     ?
-                    BuildContext.CreateWithSimulatedOutput(_Configuration,prjDir)
+                    Evaluation.BuildContext.CreateWithSimulatedOutput(_Configuration,prjDir)
                     :
-                    BuildContext.Create(_Configuration, prjDir, dstDirPath);                
+                    Evaluation.BuildContext.Create(_Configuration, prjDir, dstDirPath);                
 
                 // do build
                 ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);

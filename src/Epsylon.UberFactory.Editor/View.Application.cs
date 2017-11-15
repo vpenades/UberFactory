@@ -20,7 +20,7 @@ namespace Epsylon.UberFactory
 
             ShowAboutDialogCmd = new RelayCommand(() => _Dialogs.ShowAboutDialog(null));
 
-            ExitCmd = new RelayCommand( () => { if (CloseDocument()) System.Windows.Application.Current.Shutdown(); } );
+            ExitApplicationCmd = new RelayCommand(ExitApplication);
 
             var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
             _Document = ProjectVIEW.CreateFromCommandLine(this, args);
@@ -38,11 +38,11 @@ namespace Epsylon.UberFactory
 
         public ICommand OpenKnownDocumentCmd { get; private set; }
 
-        public ICommand CloseDocumentCmd { get; private set; }
-
-        public ICommand ExitCmd { get; private set; }
+        public ICommand CloseDocumentCmd { get; private set; }        
 
         public ICommand ShowAboutDialogCmd { get; private set; }
+
+        public ICommand ExitApplicationCmd { get; private set; }
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace Epsylon.UberFactory
 
         #region properties        
 
-        public IEnumerable<string> RecentDocuments { get { return RecentFilesManager.RecentFiles.ToArray(); } }
+        public IEnumerable<string> RecentDocuments => RecentFilesManager.RecentFiles.ToArray();
 
         public BindableBase DocumentView
         {
@@ -75,7 +75,6 @@ namespace Epsylon.UberFactory
 
                         _PluginPaths.Add(pp);
                     }
-
                 }
             }
         }
@@ -86,15 +85,33 @@ namespace Epsylon.UberFactory
 
         private bool _CheckKeepCurrentDocument()
         {
-            var prjv = _Document as ProjectVIEW.Project; if (prjv == null) return false;
-            
-            if (!prjv.IsDirty) return false;
+            if (DocumentView is ProjectVIEW.Project prjv)
+            {
+                if (prjv.IsDirty)
+                {
+                    var r = _Dialogs.ShowSaveChangesDialog(prjv.DisplayName);
+                    if (r == System.Windows.MessageBoxResult.Cancel) return true;
+                    if (r == System.Windows.MessageBoxResult.Yes) prjv.Save();
+                }
 
-            var r = _Dialogs.ShowSaveChangesDialog(prjv.DisplayName);
+                DocumentView = new HomeView(this); // saved or discarded, we can get rid of it.
+            }            
+
+            return false;
+        }
+
+        private bool _CheckPluginSystemDirty()
+        {
+            var plugins = Client.PluginLoader.Instance.GetPlugins();
+            if (plugins == null || plugins.Count() == 0) return false;
+
+            var r = System.Windows.MessageBox.Show("There's plugins already loaded, Restart application?", "Warning", System.Windows.MessageBoxButton.YesNoCancel);
             if (r == System.Windows.MessageBoxResult.Cancel) return true;
-            if (r == System.Windows.MessageBoxResult.No) return false;
-
-            prjv.Save();
+            if (r == System.Windows.MessageBoxResult.Yes)
+            {
+                // https://stackoverflow.com/a/44477612
+                this.ExitApplication();
+            }
 
             return false;
         }
@@ -102,6 +119,7 @@ namespace Epsylon.UberFactory
         private void _CreateNewDocument()
         {
             if (_CheckKeepCurrentDocument()) return;
+            if (_CheckPluginSystemDirty()) return;
 
             var doc = ProjectVIEW.CreateNew(this);
             if (doc == null) return;
@@ -116,6 +134,7 @@ namespace Epsylon.UberFactory
         private void _OpenDocument()
         {
             if (_CheckKeepCurrentDocument()) return;
+            if (_CheckPluginSystemDirty()) return;
 
             var dlg = new Microsoft.Win32.OpenFileDialog()
             {
@@ -131,6 +150,7 @@ namespace Epsylon.UberFactory
         private void _OpenDocument(String fPath)
         {
             if (_CheckKeepCurrentDocument()) return;
+            if (_CheckPluginSystemDirty()) return;
 
             var filePath = new PathString(fPath);
 
@@ -139,21 +159,24 @@ namespace Epsylon.UberFactory
 
             RecentFilesManager.InsertFile(doc.DocumentPath);
 
-            DocumentView = doc;
-
-            
+            DocumentView = doc;            
         }
 
         public bool CloseDocument()
         {
             if (_CheckKeepCurrentDocument()) return false;
 
-            _Document = new HomeView(this);
-
-            RaiseChanged(nameof(DocumentView));
+            DocumentView = new HomeView(this);
 
             return true;
         }        
+
+        public void ExitApplication()
+        {
+            if (!CloseDocument()) return;
+
+            System.Windows.Application.Current.Shutdown();
+        }
 
         #endregion
     }
@@ -174,9 +197,13 @@ namespace Epsylon.UberFactory
 
         #endregion
 
-        #region properties        
+        #region data
 
         private readonly AppView _Application;
+
+        #endregion
+
+        #region properties
 
         public AppView Application  => _Application;
 
