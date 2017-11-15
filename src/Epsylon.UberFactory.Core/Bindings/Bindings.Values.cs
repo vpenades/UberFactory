@@ -291,6 +291,8 @@ namespace Epsylon.UberFactory.Bindings
 
         private static Object _GetTypeMinimumValue()
         {
+            if (typeof(T) == typeof(String)) return null; // specifically required for generic Clamp
+
             if (typeof(T) == typeof(Boolean)) return false;
             if (typeof(T) == typeof(Char)) return Char.MinValue;
 
