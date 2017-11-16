@@ -4,6 +4,18 @@ namespace Epsylon.TestPlugins
 {
     using UberFactory;
 
+    [SDK.ContentNode(nameof(AllTypesFilter))]
+    public sealed class AllTypesFilter : SDK.ContentFilter<String>
+    {
+        [SDK.InputValue(nameof(Time))]
+        public TimeSpan Time { get; set; }
+
+        protected override String Evaluate()
+        {
+            return string.Empty;
+        }
+    }
+
     [SDK.ContentNode(nameof(TestSlowProgressBar))]
     public sealed class TestSlowProgressBar : SDK.ContentFilter<String>
     {

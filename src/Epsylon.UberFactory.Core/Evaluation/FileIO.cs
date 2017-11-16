@@ -24,14 +24,27 @@ namespace Epsylon.UberFactory.Evaluation
         {
             var path = new PathString(uri);
 
-            var data = System.IO.File.ReadAllBytes(path);
-            if (data == null) return null;
-
-            return new _ImportContext(new PathString(uri), data,tc);
+            return new _ImportContext(new PathString(uri), tc);
         }
 
-        private _ImportContext(PathString path, Byte[] data, SDK.ITaskFileIOTracker tc) :base(tc)
+        public static IEnumerable<_ImportContext> CreateBatch(Uri uri, bool recurse, SDK.ITaskFileIOTracker tc)
         {
+            var dir = new PathString(uri);
+
+            // dir.IsValidDirectoryAbsolutePath;
+
+            var files = System.IO.Directory.GetFiles(dir, "*.*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+
+            foreach(var f in files)
+            {
+                yield return Create(new Uri(f, UriKind.Absolute), tc);
+            }
+        }
+
+        private _ImportContext(PathString path,  SDK.ITaskFileIOTracker tc) :base(tc)
+        {
+            System.Diagnostics.Debug.Assert(path.IsValidAbsoluteFilePath);
+
             _SourcePath = path;
         }
 
@@ -78,9 +91,11 @@ namespace Epsylon.UberFactory.Evaluation
             return new _ExportContext(path, outDir, tc);
         }
 
-        protected _ExportContext(PathString p, PathString o, SDK.ITaskFileIOTracker tc) : base(tc)
+        protected _ExportContext(PathString path, PathString o, SDK.ITaskFileIOTracker tc) : base(tc)
         {
-            _TargetPath = p;
+            System.Diagnostics.Debug.Assert(path.IsValidAbsoluteFilePath);
+
+            _TargetPath = path;
             _OutDir = o;
         }
 

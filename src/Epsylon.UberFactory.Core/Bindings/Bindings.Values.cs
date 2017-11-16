@@ -20,7 +20,7 @@ namespace Epsylon.UberFactory.Bindings
 
         internal const string VIEWTEMPLATE_COLORPICKER = "BindingView_ColorPicker";
 
-        internal const string VIEWTEMPLATE_TIMEBOX = "BindingView_TimeSpan";
+        internal const string VIEWTEMPLATE_TIMEBOX = "BindingView_TimeBox";
         internal const string VIEWTEMPLATE_DATEBOX = "BindingView_DateBox";
 
         internal const string VIEWTEMPLATE_PATHPICKER = "BindingView_PathPicker";
@@ -321,6 +321,8 @@ namespace Epsylon.UberFactory.Bindings
 
         private static Object _GetTypeMaximumValue()
         {
+            if (typeof(T) == typeof(String)) return null; // specifically required for generic Clamp
+
             if (typeof(T) == typeof(Boolean)) return true;
             if (typeof(T) == typeof(Char)) return Char.MaxValue;
 

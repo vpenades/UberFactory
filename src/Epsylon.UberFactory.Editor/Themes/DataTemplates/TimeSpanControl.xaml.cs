@@ -38,9 +38,9 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
 
         private static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register("Value", typeof(TimeSpan), typeof(TimeSpanControl),
-            new FrameworkPropertyMetadata(TimeSpan.Zero, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
+            new FrameworkPropertyMetadata(TimeSpan.Zero, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, _OnValueChanged));
 
-        private static void OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        private static void _OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var control = obj as TimeSpanControl;
             var newValue = (TimeSpan)e.NewValue;
@@ -80,6 +80,8 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
             get { return _Hours; }
             set
             {
+                value = value.Clamp(-23, 23);
+
                 if (value == _Hours) return;
 
                 _Hours = value;
@@ -96,6 +98,8 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
             get { return _Minutes; }
             set
             {
+                value = value.Clamp(-59, 59);
+
                 if (value == _Minutes) return;
 
                 _Minutes = value;
@@ -112,6 +116,8 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
             get { return _Seconds; }
             set
             {
+                value = value.Clamp(-59, 59);
+
                 if (value == _Seconds) return;
 
                 _Seconds = value;
@@ -128,6 +134,8 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
             get { return _Milliseconds; }
             set
             {
+                value = value.Clamp(-999, 999);
+
                 if (value == _Milliseconds) return;
 
                 _Milliseconds = value;

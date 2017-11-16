@@ -124,8 +124,9 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeDom == null) return;            
 
             // Create node instance
-            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);
-            SDK.ConfigureNode(nodeInst, _BuildSettings, t=> _GetSettingsInstance(t, null) , _FileIOTracker);
+            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);            
+
+            SDK.ConfigureNode(nodeInst, _BuildSettings, t=> _GetSettingsInstance(t, MonitorContext.CreateNull()) , _FileIOTracker);
 
             _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
             
@@ -187,6 +188,9 @@ namespace Epsylon.UberFactory.Evaluation
         
         public Object EvaluateRoot(SDK.IMonitorContext monitor)
         {
+            if (monitor == null) throw new ArgumentNullException(nameof(monitor));            
+            if (monitor.IsCancelRequested) return null;
+
             _SetupIsReady();
 
             _FileIOTracker?.Clear();
@@ -196,6 +200,10 @@ namespace Epsylon.UberFactory.Evaluation
 
         public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId)
         {
+            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
+            if (nodeId == Guid.Empty) throw new ArgumentException(nameof(nodeId));
+            if (monitor.IsCancelRequested) return null;
+
             _SetupIsReady();
 
             _SettingsInstancesCache.Clear();
@@ -235,7 +243,9 @@ namespace Epsylon.UberFactory.Evaluation
 
         private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode)
         {
-            if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
+            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
+
+            if (monitor.IsCancelRequested) throw new OperationCanceledException();
 
             _SetupIsReady();
 
@@ -262,7 +272,9 @@ namespace Epsylon.UberFactory.Evaluation
 
             try
             {
-                var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);                
+                var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);
+
+                System.Diagnostics.Debug.Assert(localMonitor != null);
 
                 if (nodeInst is SDK.ContentFilter filterInst)
                 {

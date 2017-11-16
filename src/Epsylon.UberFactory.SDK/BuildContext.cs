@@ -140,6 +140,9 @@ namespace Epsylon.UberFactory
             /// <returns>An export context</returns>
             ExportContext GetExportContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
 
+            
+            IEnumerable<ImportContext> GetImportBatchContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
+
             /// <summary>
             /// Gets a preview context to 
             /// </summary>            

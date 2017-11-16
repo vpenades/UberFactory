@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47;netcoreapp2.0</TargetFrameworks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
+    <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>    
   </PropertyGroup>
 
-  <!-- Source code Switches --><!-- Dependencies -->  
+  <!-- Source code Switches -->
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
     <Compile Remove="**\*.netstd.cs" />

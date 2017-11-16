@@ -220,7 +220,12 @@ namespace Epsylon.UberFactory.Evaluation
         public SDK.ImportContext GetImportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
         {
             return _ImportContext.Create(absoluteUri,trackerContext);
-        }        
+        }
+
+        public IEnumerable<SDK.ImportContext> GetImportBatchContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
+        {
+            return _ImportContext.CreateBatch(absoluteUri, true, trackerContext);
+        }
 
         public PathString MakeRelativeToTarget(string absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }
 
