@@ -11,92 +11,46 @@
     </Properties>
     <Pipeline>
       <Properties>
-        <RootNodeId>0c1be7c4-45fd-4fa8-8ef0-a381a36237ca</RootNodeId>
+        <RootNodeId>f681e152-5d9c-4d4a-b05a-562c6b016c34</RootNodeId>
       </Properties>
-      <Node Id="0c1be7c4-45fd-4fa8-8ef0-a381a36237ca">
+      <Node Id="f681e152-5d9c-4d4a-b05a-562c6b016c34">
         <Properties>
-          <ClassName>TextWriter</ClassName>
+          <ClassName>UberFactory_CoreTypes_TextWriter</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <FileName>hello world!</FileName>
-            <Value>a64f75b5-47b4-4088-9298-8384c74dc501</Value>
+            <FileName>test</FileName>
+            <Value>d56c3745-41b2-4fb3-8a08-6882d01ecae2</Value>
           </Properties>
         </Configuration>
       </Node>
-      <Node Id="a64f75b5-47b4-4088-9298-8384c74dc501">
+      <Node Id="d56c3745-41b2-4fb3-8a08-6882d01ecae2">
         <Properties>
-          <ClassName>FormatText</ClassName>
+          <ClassName>UberFactory_CoreTypes_FormatText</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Transforms>
-              <Item>677e22b1-0c73-4a71-9a0c-b2866f404634</Item>
-              <Item>900f1791-ad89-4700-9d93-871562f003b3</Item>
-              <Item>b7982e23-1f65-458f-a54a-b88220366e0b</Item>
-            </Transforms>
-            <Value>f16f6d7f-2827-4302-a003-90d61dfced84</Value>
+            <Value>81abb777-7258-47dd-8db4-d971b3470f9d</Value>
+            <Transforms>314afbcc-9f87-4706-8d05-c8c0164e3945</Transforms>
           </Properties>
         </Configuration>
       </Node>
-      <Node Id="cabb55cb-513b-473c-9dec-cd6de6c9f59e">
+      <Node Id="81abb777-7258-47dd-8db4-d971b3470f9d">
         <Properties>
-          <ClassName>AssignTextValue</ClassName>
+          <ClassName>UberFactory_CoreTypes_AssignText</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Value>Hello world</Value>
+            <Value>Hello World!</Value>
           </Properties>
         </Configuration>
       </Node>
-      <Node Id="9d096293-e01f-44c3-b850-7d0b0e2b9235">
+      <Node Id="314afbcc-9f87-4706-8d05-c8c0164e3945">
         <Properties>
-          <ClassName>AppendTextFunction</ClassName>
+          <ClassName>UberFactory_CoreTypes_ChangeTextCaseFunction</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties />
-        </Configuration>
-      </Node>
-      <Node Id="677e22b1-0c73-4a71-9a0c-b2866f404634">
-        <Properties>
-          <ClassName>ReplaceTextFunction</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <OldString>Hello</OldString>
-            <NewString>Hola</NewString>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="900f1791-ad89-4700-9d93-871562f003b3">
-        <Properties>
-          <ClassName>AppendTextFunction</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Text>Good Bye!</Text>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="f16f6d7f-2827-4302-a003-90d61dfced84">
-        <Properties>
-          <ClassName>AssignText</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Value>Hello World</Value>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="b7982e23-1f65-458f-a54a-b88220366e0b">
-        <Properties>
-          <ClassName>InsertTextAtFunction</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <NewString>XoXo</NewString>
-            <Offset>2</Offset>
-          </Properties>
         </Configuration>
       </Node>
     </Pipeline>
@@ -111,6 +65,48 @@
         <Properties>
           <ClassName>TextFormattingSettings</ClassName>
         </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>380cb1e8-8245-46d6-929c-52c5d511e3ed</RootNodeId>
+      </Properties>
+      <Node Id="380cb1e8-8245-46d6-929c-52c5d511e3ed">
+        <Properties>
+          <ClassName>UberFactory_CoreTypes_TextFormattingSettings</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <CultureIdentifier>es</CultureIdentifier>
+            <PostFormatting>
+              <Item>2e6a0dbd-3eef-4088-9739-162b0688c92c</Item>
+              <Item>2aa10279-b067-47ec-beb9-bdba8bb2d427</Item>
+            </PostFormatting>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="2e6a0dbd-3eef-4088-9739-162b0688c92c">
+        <Properties>
+          <ClassName>UberFactory_CoreTypes_AppendTextFunction</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Text>__&gt;</Text>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="2aa10279-b067-47ec-beb9-bdba8bb2d427">
+        <Properties>
+          <ClassName>UberFactory_CoreTypes_PrependTextFunction</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Text>&lt;__</Text>
+          </Properties>
+        </Configuration>
       </Node>
     </Pipeline>
   </Settings>
