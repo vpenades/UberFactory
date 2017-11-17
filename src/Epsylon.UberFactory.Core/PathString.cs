@@ -175,7 +175,15 @@ namespace Epsylon.UberFactory
 
 
             return new PathString(newPath);
-        }        
+        }
+
+        public PathString MakeRelativePath(Uri absUri)
+        {
+            if (absUri == null) throw new ArgumentNullException(nameof(absUri));
+            if (!absUri.IsAbsoluteUri) throw new ArgumentException(nameof(absUri));
+
+            return this.MakeRelativePath(new PathString(absUri));
+        }
 
         public PathString MakeRelativePath(string absFilePath)
         {
@@ -210,6 +218,11 @@ namespace Epsylon.UberFactory
             var cext = System.IO.Path.GetExtension(_Path);
 
             return cext.ToLower().EndsWith(ext.ToLower());
+        }
+
+        public Uri ToUri()
+        {
+            return this.IsAbsolute ? new Uri(_Path, UriKind.Absolute) : new Uri(_Path, UriKind.Relative);
         }
 
         #endregion

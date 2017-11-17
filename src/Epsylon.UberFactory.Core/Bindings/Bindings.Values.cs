@@ -58,18 +58,16 @@ namespace Epsylon.UberFactory.Bindings
 
             if (propertyType == typeof(TimeSpan)) return new InputTimeSpanBinding(bindDesc);
             if (propertyType == typeof(DateTime)) return new InputValueBinding<DateTime>(bindDesc);  
-            
+            // TODO: DateTimeOffset
+
+            // TODO: Guid
+            // TODO: Version            
 
             if (propertyType == typeof(System.IO.FileInfo)) return SourceFilePickBinding.CreateFilePick(bindDesc);
             if (propertyType == typeof(System.IO.DirectoryInfo)) return SourceFilePickBinding.CreateDirectoryPick(bindDesc);
-
-            // we should check metadata to decide if it's a file or a directory
+                        
             if (propertyType == typeof(Uri)) return SourceFilePickBinding.CreateFilePick(bindDesc);
-            if (propertyType == typeof(PathString)) return SourceFilePickBinding.CreateFilePick(bindDesc);
-
-            // Guid
-            // Version
-            // TimeSpan
+            if (propertyType == typeof(PathString)) return SourceFilePickBinding.CreateFilePick(bindDesc);            
 
             return new InvalidBinding(bindDesc);
         }
@@ -93,9 +91,9 @@ namespace Epsylon.UberFactory.Bindings
 
         public virtual string ViewTemplate => "BindingView_Invalid";
 
-        public Action ClearValueCmd { get { return ClearValue; } }
+        public Action ClearValueCmd => ClearValue;
 
-        public bool HasValue { get { return _Properties.Contains(SerializationKey); } }
+        public bool HasValue => _Properties.Contains(SerializationKey);        
 
         // this is the text value to be displayed to know the fallback value after clearing the current value                    
         public String DisplayDefaultValue
@@ -123,13 +121,13 @@ namespace Epsylon.UberFactory.Bindings
 
         public void SetEvaluatedResult(Object value) { SetInstanceValue(value); }
 
-        public abstract void CopyToInstance();
+        public abstract void CopyValueToInstance();
 
         public void ClearValue()
         {
             _Properties.Clear(SerializationKey);
 
-            CopyToInstance();
+            CopyValueToInstance();
 
             RaiseChanged();
         }
@@ -154,7 +152,7 @@ namespace Epsylon.UberFactory.Bindings
         {
             var changed = _Properties.SetValue(SerializationKey, value.ConvertToString());
 
-            CopyToInstance();
+            CopyValueToInstance();
 
             if (changed) RaiseValueChanged();
         }
@@ -180,11 +178,10 @@ namespace Epsylon.UberFactory.Bindings
 
             var changed = _Properties.SetArray(SerializationKey, xarray);
 
-            CopyToInstance();
+            CopyValueToInstance();
 
             if (changed) RaiseValueChanged();
         }
-
 
         protected Byte[] GetBytes(Byte[] defval)
         {
@@ -287,7 +284,7 @@ namespace Epsylon.UberFactory.Bindings
 
         #region API
 
-        public override void CopyToInstance() { SetInstanceValue(Value); }
+        public override void CopyValueToInstance() { SetInstanceValue(Value); }
 
         private static Object _GetTypeMinimumValue()
         {
@@ -396,7 +393,7 @@ namespace Epsylon.UberFactory.Bindings
 
         #region API
 
-        public override void CopyToInstance() { SetInstanceValue(Value); }
+        public override void CopyValueToInstance() { SetInstanceValue(Value); }
 
         private Enum[] _GetTypeAvailableValues()
         {
@@ -445,7 +442,7 @@ namespace Epsylon.UberFactory.Bindings
 
         #region API
 
-        public override void CopyToInstance()
+        public override void CopyValueToInstance()
         {
             SetInstanceValue(Value);
         }
@@ -515,7 +512,7 @@ namespace Epsylon.UberFactory.Bindings
             Value = new Uri(newFile, UriKind.Absolute);
         }        
 
-        public override void CopyToInstance() { SetInstanceValue(Value); }
+        public override void CopyValueToInstance() { SetInstanceValue(Value); }
 
         public string GetFileFilter() { return this.GetMetaDataValue<String>("Filter", "All Files|*.*"); }
 

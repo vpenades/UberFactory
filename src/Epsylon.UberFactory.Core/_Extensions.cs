@@ -36,7 +36,8 @@ namespace Epsylon.UberFactory
 
             var path = uri.IsAbsoluteUri ? uri.AbsolutePath : uri.LocalPath;
 
-            path = Uri.UnescapeDataString(path).Replace(System.IO.Path.AltDirectorySeparatorChar, System.IO.Path.DirectorySeparatorChar);
+            path = Uri.UnescapeDataString(path)
+                .Replace(System.IO.Path.AltDirectorySeparatorChar, System.IO.Path.DirectorySeparatorChar);
 
             return path;
         }

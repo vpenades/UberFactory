@@ -24,7 +24,7 @@ namespace Epsylon.UberFactory
         public static void EvaluateBindings(this SDK.ContentObject source, IPropertyProvider properties, Func<Guid, Object> dependencyEvaluator)
         {
             var bindings = CreateBindings(source, properties);
-            foreach (var binding in bindings.OfType<Bindings.ValueBinding>()) { binding.CopyToInstance(); }
+            foreach (var binding in bindings.OfType<Bindings.ValueBinding>()) { binding.CopyValueToInstance(); }
 
             if (dependencyEvaluator == null) return;
 
