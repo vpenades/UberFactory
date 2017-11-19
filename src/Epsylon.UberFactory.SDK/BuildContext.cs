@@ -99,49 +99,49 @@ namespace Epsylon.UberFactory
             String[] Configuration { get; }
 
             /// <summary>
-            /// Converts an absolute URI path to a path relative to Context's Source path
+            /// Converts an absolute path to a path relative to Context's Source path
             /// </summary>
-            /// <param name="absoluteUri">An absolute URI path</param>
-            /// <returns>A relative path</returns>
-            String GetRelativeToSource(Uri absoluteUri);
+            /// <param name="absolutePath">An absolute path</param>
+            /// <returns>A relative path</returns>            
+            String GetRelativeToSource(String absolutePath);
 
             /// <summary>
-            /// Converts an absolute URI path to a path relative to Context's Target path
+            /// Converts an absolute path to a path relative to Context's Target path
             /// </summary>
-            /// <param name="absoluteUri">An absolute URI path</param>
-            /// <returns>A relative path</returns>
-            String GetRelativeToTarget(Uri absoluteUri);
+            /// <param name="absolutePath">An absolute path</param>
+            /// <returns>A relative path</returns>            
+            String GetRelativeToTarget(String absolutePath);
 
             /// <summary>
             /// Converts a path relative to Context's Source path to an absolute path
             /// </summary>
             /// <param name="relativePath">A path relative to Context's Source</param>
-            /// <returns>An absolute URI path</returns>
-            Uri GetSourceAbsoluteUri(String relativePath);
+            /// <returns>An absolute path</returns>            
+            String GetSourceAbsolutePath(String relativePath);
 
             /// <summary>
             /// Converts a path relative to Context's Target path to an absolute path
             /// </summary>
             /// <param name="relativePath">A path relative to Context's Target</param>
-            /// <returns>An absolute URI path</returns>
-            Uri GetTargetAbsoluteUri(String relativePath);            
+            /// <returns>An absolute path</returns>            
+            String GetTargetAbsolutePath(String relativePath);
 
             /// <summary>
             /// Creates an inport context to read files from the given location
             /// </summary>
-            /// <param name="absoluteUri">A path to the location</param>
+            /// <param name="absolutePath">A path to the location</param>
             /// <returns>An import context</returns>
-            ImportContext GetImportContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
+            ImportContext GetImportContext(String absolutePath, ITaskFileIOTracker trackerContext);
 
             /// <summary>
             /// Creates an Export context to write files to the given location
             /// </summary>
-            /// <param name="absoluteUri">A path to the location</param>
+            /// <param name="absolutePath">A path to the location</param>
             /// <returns>An export context</returns>
-            ExportContext GetExportContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
+            ExportContext GetExportContext(String absolutePath, ITaskFileIOTracker trackerContext);
 
             
-            IEnumerable<ImportContext> GetImportBatchContext(Uri absoluteUri, ITaskFileIOTracker trackerContext);
+            IEnumerable<ImportContext> GetImportBatchContext(String absolutePath, ITaskFileIOTracker trackerContext);
 
             /// <summary>
             /// Gets a preview context to 
@@ -153,7 +153,7 @@ namespace Epsylon.UberFactory
 
         public abstract class PreviewContext
         {
-            public abstract ExportContext CreateMemoryFile(string fileName);
+            public abstract ExportContext CreateMemoryFile(String fileName);
         }
         
     }

@@ -12,10 +12,6 @@ namespace Epsylon.UberFactory
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            DialogHooks.SetFileDialogHook(_Dialogs.ShowOpenFileDialog);
-            DialogHooks.SetDirectoryDialogHook(_Dialogs.ShowBrowseDirectoryDialog);
-            DialogHooks.SetColorPickerDialogHook(_Dialogs.ShowColorPickerDialog);
-
             RecentFilesManager.UseXmlPersister();
 
             base.OnStartup(e);            

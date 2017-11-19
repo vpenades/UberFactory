@@ -52,6 +52,15 @@ namespace Epsylon.UberPlugin.CoreTypes
     }
 
 
+    [SDK.ContentNode(nameof(TextReader))]
+    [SDK.ContentMetaData("Title", "From File")]
+    public sealed class TextReader : SDK.FileReader<String>
+    {
+        public override string GetFileFilter() { return "Text Files|*.txt"; }
+
+        protected override string ReadFile(SDK.ImportContext stream) { return stream.ReadAllText(); }
+    }
+
     [SDK.ContentNode(nameof(TextWriter))]
     [SDK.ContentMetaData("Title", "Write Text to File")]
     public sealed class TextWriter : SDK.FileWriter

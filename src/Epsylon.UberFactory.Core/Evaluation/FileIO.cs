@@ -20,16 +20,16 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _ImportContext Create(Uri uri, SDK.ITaskFileIOTracker tc)
+        public static _ImportContext Create(PathString path, SDK.ITaskFileIOTracker tc)
         {
-            var path = new PathString(uri);
+            if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
 
-            return new _ImportContext(new PathString(uri), tc);
+            return new _ImportContext(path, tc);
         }
 
-        public static IEnumerable<_ImportContext> CreateBatch(Uri uri, bool recurse, SDK.ITaskFileIOTracker tc)
+        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, bool recurse, SDK.ITaskFileIOTracker tc)
         {
-            var dir = new PathString(uri);
+            
 
             // dir.IsValidDirectoryAbsolutePath;
 
@@ -37,7 +37,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             foreach(var f in files)
             {
-                yield return Create(new Uri(f, UriKind.Absolute), tc);
+                yield return Create(new PathString(f), tc);
             }
         }
 
@@ -82,11 +82,9 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _ExportContext Create(Uri uri, PathString outDir, SDK.ITaskFileIOTracker tc)
+        public static _ExportContext Create(PathString path, PathString outDir, SDK.ITaskFileIOTracker tc)
         {
-            // TODO: ensure uri is within the specified target path
-
-            var path = new PathString(uri);
+            if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
 
             return new _ExportContext(path, outDir, tc);
         }
@@ -146,11 +144,9 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _SimulateExportContext Create(Uri uri, Action<string, Byte[]> fileCreationNotifier, SDK.ITaskFileIOTracker tc)
+        public static _SimulateExportContext Create(PathString path, Action<string, Byte[]> fileCreationNotifier, SDK.ITaskFileIOTracker tc)
         {
-            // TODO: ensure uri is within the specified target path
-
-            var path = new PathString(uri);
+            // TODO: ensure path is within the specified target path            
 
             return new _SimulateExportContext(path, fileCreationNotifier, tc);
         }

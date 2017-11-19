@@ -110,6 +110,9 @@
     <Compile Include="Themes\DataTemplates\BindingView.Color.xaml.cs">
       <DependentUpon>BindingView.Color.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Themes\DataTemplates\PathPicker.xaml.cs">
+      <DependentUpon>PathPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\DataTemplates\PropertyBindingsSelector.cs" />
     <Compile Include="Themes\DataTemplates\TimeSpanControl.xaml.cs">
       <DependentUpon>TimeSpanControl.xaml</DependentUpon>
@@ -170,6 +173,10 @@
     <Compile Include="_Extensions.cs" />
     <Compile Include="View.Utils.cs" />
     <Page Include="Themes\DataTemplates\BindingView.Color.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\DataTemplates\PathPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -14,9 +14,10 @@ namespace Epsylon.UberFactory
             public virtual string GetFileFilter() { return "All Files|*.*"; }
 
             [SDK.InputValue("FilePath")]
-            [SDK.InputMetaData("Title","File")]
+            [SDK.InputMetaData("Title","File")]            
+            [SDK.InputMetaData("ViewStyle", "PathPicker")]
             [SDK.InputMetaDataEvaluate("Filter", nameof(GetFileFilter))]
-            public Uri FilePath { get; set; }                  
+            public String FilePath { get; set; }                  
 
             protected override TValue Evaluate()
             {
@@ -47,7 +48,7 @@ namespace Epsylon.UberFactory
             {
                 var rpath = System.IO.Path.ChangeExtension(FileName + ".bin", GetFileExtension());
 
-                var absUri = this.BuildContext.GetTargetAbsoluteUri(rpath);
+                var absUri = this.BuildContext.GetTargetAbsolutePath(rpath);
 
                 var s = this.GetExportContext(absUri);                
                 if (s == null) return null;

@@ -10,9 +10,9 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle        
 
-        public static BuildContext Create(string cfg, PathString sd) { return Create(cfg, sd, PathString.Empty); }
+        public static BuildContext Create(String cfg, PathString sd) { return Create(cfg, sd, PathString.Empty); }
 
-        public static BuildContext Create(string cfg, PathString sd, PathString td)
+        public static BuildContext Create(String cfg, PathString sd, PathString td)
         {
             var xcfg = cfg?.Split('.').ToArray();
 
@@ -21,16 +21,16 @@ namespace Epsylon.UberFactory.Evaluation
 
         public static BuildContext Create(BuildContext other, PathString td) { return new BuildContext(other.Configuration, other.SourceDirectory, td); }
 
-        public static BuildContext CreateWithSimulatedOutput(string cfg, PathString sd)
+        public static BuildContext CreateWithSimulatedOutput(String cfg, PathString sd)
         {
             var xcfg = cfg?.Split('.').ToArray();
 
             return new _TestBuildContext(xcfg, sd);
         }
 
-        protected BuildContext(string[] cfg, PathString sd) : this(cfg, sd, PathString.Empty) { }
+        protected BuildContext(String[] cfg, PathString sd) : this(cfg, sd, PathString.Empty) { }
 
-        private BuildContext(string[] cfg, PathString sd, PathString td)
+        private BuildContext(String[] cfg, PathString sd, PathString td)
         {
             _Configuration = cfg ?? (new string[0]);
             _SourceDirectoryAbsPath = sd;
@@ -83,13 +83,13 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API        
 
-        public static bool IsValidConfiguration(params string[] cfg)
+        public static bool IsValidConfiguration(params String[] cfg)
         {
             if (cfg == null || cfg.Length == 0) return false;
             return cfg.All(item => IsValidConfigurationNode(item) == null);
         }
 
-        public static Exception IsValidConfigurationNode(string cfgNode)
+        public static Exception IsValidConfigurationNode(String cfgNode)
         {
             if (string.IsNullOrWhiteSpace(cfgNode)) return new ArgumentNullException("Text is empty");
 
@@ -109,54 +109,54 @@ namespace Epsylon.UberFactory.Evaluation
             return null;
         }        
 
-        public PathString MakeRelativeToSource(string absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }        
+        public PathString MakeRelativeToSource(String absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }        
 
-        public PathString MakeAbsoluteToSource(string relFilePath) { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }        
+        public PathString MakeAbsoluteToSource(String relFilePath) { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }        
 
         #endregion
 
         #region interface              
 
-        public string GetRelativeToSource(Uri absoluteUri)
+        public String GetRelativeToSource(String absolutePath)
         {
-            return _SourceDirectoryAbsPath.MakeRelativePath(absoluteUri);
+            return _SourceDirectoryAbsPath.MakeRelativePath(absolutePath);
         }
 
-        public string GetRelativeToTarget(Uri absoluteUri)
+        public String GetRelativeToTarget(String absolutePath)
         {
-            return TargetDirectory.MakeRelativePath(absoluteUri);
+            return TargetDirectory.MakeRelativePath(absolutePath);
         }
 
-        public Uri GetSourceAbsoluteUri(string relativePath)
+        public String GetSourceAbsolutePath(String relativePath)
         {
-            return _SourceDirectoryAbsPath.MakeAbsolutePath(relativePath).ToUri();
+            return _SourceDirectoryAbsPath.MakeAbsolutePath(relativePath);
         }
 
-        public Uri GetTargetAbsoluteUri(string relativePath)
+        public String GetTargetAbsolutePath(String relativePath)
         {
-            return TargetDirectory.MakeAbsolutePath(relativePath).ToUri();
+            return TargetDirectory.MakeAbsolutePath(relativePath);
         }       
 
-        public SDK.ImportContext GetImportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
+        public SDK.ImportContext GetImportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ImportContext.Create(absoluteUri,trackerContext);
+            return _ImportContext.Create(new PathString(absolutePath),trackerContext);
         }
 
-        public IEnumerable<SDK.ImportContext> GetImportBatchContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
+        public IEnumerable<SDK.ImportContext> GetImportBatchContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ImportContext.CreateBatch(absoluteUri, true, trackerContext);
+            return _ImportContext.CreateBatch(new PathString(absolutePath), true, trackerContext);
         }
 
-        public PathString MakeRelativeToTarget(string absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }
+        public PathString MakeRelativeToTarget(String absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }
 
-        public PathString MakeAbsoluteToTarget(string relFilePath) { return TargetDirectory.MakeAbsolutePath(relFilePath); }
+        public PathString MakeAbsoluteToTarget(String relFilePath) { return TargetDirectory.MakeAbsolutePath(relFilePath); }
 
-        public virtual SDK.ExportContext GetExportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
+        public virtual SDK.ExportContext GetExportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ExportContext.Create(absoluteUri, _TargetDirectoryAbsPath, trackerContext);
+            return _ExportContext.Create(new PathString(absolutePath), _TargetDirectoryAbsPath, trackerContext);
         }
 
-        private string _GetCurrentError()
+        private String _GetCurrentError()
         {
             if (!IsValidConfiguration(_Configuration)) return "Invalid Configuration";
 
@@ -205,9 +205,9 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API
 
-        public override SDK.ExportContext GetExportContext(Uri absoluteUri, SDK.ITaskFileIOTracker trackerContext)
+        public override SDK.ExportContext GetExportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
         {            
-            return _SimulateExportContext.Create(absoluteUri, _NotifyCreateFileSimulation, trackerContext);           
+            return _SimulateExportContext.Create(new PathString(absolutePath), _NotifyCreateFileSimulation, trackerContext);           
         }
 
         private void _NotifyCreateFileSimulation(string name, Byte[] data)

@@ -132,13 +132,7 @@
 
     <DataTemplate x:Key="BindingView_PathPicker">
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}">
-            <DockPanel ContextMenu="{StaticResource __clearValueContextMenu}">                
-                <Button DockPanel.Dock="Right" Content="{StaticResource _FolderIcon}" Command="{Binding ShowPickPathDialogCmd,Converter={StaticResource __asRelayCommand}}" />
-                <TextBox Text="{Binding FileName,Mode=OneWay}" IsReadOnly="True"
-                         Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
-                         ToolTip="{Binding FilePath,Mode=OneWay}"
-                         />
-            </DockPanel>
+            <local:PathPicker ContextMenu="{StaticResource __clearValueContextMenu}"/>            
         </GroupBox>
     </DataTemplate>
 

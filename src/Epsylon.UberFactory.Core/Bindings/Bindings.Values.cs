@@ -33,11 +33,19 @@ namespace Epsylon.UberFactory.Bindings
         {
             var propertyType = bindDesc.Member.GetAssignType();
 
-            if (propertyType == null) throw new ArgumentNullException(nameof(propertyType));            
+            if (propertyType == null) throw new ArgumentNullException(nameof(propertyType));
+
+            if (propertyType == typeof(String))
+            {
+                var vb = new InputValueBinding<String>(bindDesc);
+
+                if (vb.ViewTemplate == VIEWTEMPLATE_PATHPICKER) return SourceFilePickBinding.CreateFilePick(bindDesc);
+
+                return vb;
+            }
 
             if (propertyType.GetTypeInfo().IsEnum) return new InputEnumerationBinding(bindDesc);
 
-            if (propertyType == typeof(String)) return new InputValueBinding<String>(bindDesc);
             if (propertyType == typeof(Boolean)) return new InputValueBinding<Boolean>(bindDesc);
 
             if (propertyType == typeof(Char)) return new InputValueBinding<Char>(bindDesc);
@@ -61,13 +69,7 @@ namespace Epsylon.UberFactory.Bindings
             // TODO: DateTimeOffset
 
             // TODO: Guid
-            // TODO: Version            
-
-            if (propertyType == typeof(System.IO.FileInfo)) return SourceFilePickBinding.CreateFilePick(bindDesc);
-            if (propertyType == typeof(System.IO.DirectoryInfo)) return SourceFilePickBinding.CreateDirectoryPick(bindDesc);
-                        
-            if (propertyType == typeof(Uri)) return SourceFilePickBinding.CreateFilePick(bindDesc);
-            if (propertyType == typeof(PathString)) return SourceFilePickBinding.CreateFilePick(bindDesc);            
+            // TODO: Version
 
             return new InvalidBinding(bindDesc);
         }
@@ -241,6 +243,8 @@ namespace Epsylon.UberFactory.Bindings
                 if (typeof(T) == typeof(bool)) return VIEWTEMPLATE_CHECKBOX;
 
                 var ctrl = this.GetMetaDataValue<String>("ViewStyle", "TextBox");
+
+                if (ctrl == "PathPicker") return VIEWTEMPLATE_PATHPICKER;
 
                 if (ctrl == "ComboBox") return VIEWTEMPLATE_COMBOBOX;
 
@@ -466,16 +470,14 @@ namespace Epsylon.UberFactory.Bindings
 
         #region properties
 
-        public override string ViewTemplate => VIEWTEMPLATE_PATHPICKER;
+        public override string ViewTemplate => VIEWTEMPLATE_PATHPICKER;        
 
-        public Action ShowPickPathDialogCmd => _PickFileDialog;
-
-        public Uri Value
+        public String Value
         {
             get
             {
                 var path = this.GetValue<String>();
-                return path == null ? null : this.DataContext.BuildContext.GetSourceAbsoluteUri(path);
+                return path == null ? null : this.DataContext.BuildContext.GetSourceAbsolutePath(path);
             }
             set
             {
@@ -484,33 +486,13 @@ namespace Epsylon.UberFactory.Bindings
             }
         }
 
-        public string FilePath => Value.ToFriendlySystemPath();
+        public string FilePath => Value;
 
         public string FileName => System.IO.Path.GetFileName(FilePath);
 
         #endregion
 
-        #region API
-
-        private void _PickDirectoryDialog()
-        {
-            var startDir = this.DataContext.BuildContext.GetSourceAbsoluteUri("dummy.txt");
-
-            var newDir = DialogHooks.ShowDirectoryPickerDialog(new PathString(startDir).DirectoryPath);
-            if (newDir.IsEmpty) return;
-
-            Value = new Uri(newDir, UriKind.Absolute);
-        }
-
-        private void _PickFileDialog()
-        {
-            var startDir = this.DataContext.BuildContext.GetSourceAbsoluteUri("dummy.txt");            
-
-            var newFile = DialogHooks.ShowFilePickerDialog(GetFileFilter(), new PathString(startDir).DirectoryPath);
-            if (newFile.IsEmpty) return;            
-
-            Value = new Uri(newFile, UriKind.Absolute);
-        }        
+        #region API         
 
         public override void CopyValueToInstance() { SetInstanceValue(Value); }
 

@@ -39,9 +39,9 @@ namespace Epsylon.UberFactory
 
             public IBuildContext BuildContext => _BuildContext;            
 
-            public ImportContext GetImportContext(Uri absoluteUri) { return _BuildContext.GetImportContext(absoluteUri, _TrackerContext); }
+            public ImportContext GetImportContext(String absoluteUri) { return _BuildContext.GetImportContext(absoluteUri, _TrackerContext); }
             
-            public ExportContext GetExportContext(Uri absoluteUri) { return _BuildContext.GetExportContext(absoluteUri, _TrackerContext); }
+            public ExportContext GetExportContext(String absoluteUri) { return _BuildContext.GetExportContext(absoluteUri, _TrackerContext); }
 
             public SDK.ContentObject GetSharedSettings(Type t) { return _SharedContentResolver?.Invoke(t); }
 
