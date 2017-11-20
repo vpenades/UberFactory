@@ -142,9 +142,9 @@ namespace Epsylon.UberFactory.Evaluation
             return _ImportContext.Create(new PathString(absolutePath),trackerContext);
         }
 
-        public IEnumerable<SDK.ImportContext> GetImportBatchContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
+        public IEnumerable<SDK.ImportContext> GetImportContextBatch(String absolutePath, String fileMask, bool allDirectories, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ImportContext.CreateBatch(new PathString(absolutePath), true, trackerContext);
+            return _ImportContext.CreateBatch(new PathString(absolutePath), fileMask, allDirectories, trackerContext);
         }
 
         public PathString MakeRelativeToTarget(String absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }

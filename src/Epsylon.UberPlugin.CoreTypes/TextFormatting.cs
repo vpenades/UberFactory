@@ -82,6 +82,35 @@ namespace Epsylon.UberPlugin.CoreTypes
     }
 
 
+    [SDK.ContentNode(nameof(TextBatchProcessor))]
+    [SDK.ContentMetaData("Title", "Process batch of Text Files")]
+    public sealed class TextBatchProcessor : SDK.BatchProcessor<String, String>
+    {
+        [SDK.InputNode("Transforms", true)]
+        [SDK.InputMetaData("Panel", "VerticalList")]
+        public TEXTFUNC[] Transforms { get; set; }
+
+        protected override string GetFileInExtension() { return "txt"; }
+
+        protected override string GetFileOutExtension() { return "txt"; }
+
+        protected override string ReadFile(SDK.ImportContext stream)
+        {
+            return stream.ReadAllText();
+        }
+
+        protected override string Process(string value)
+        {
+            return Transforms.Process(value);
+        }        
+
+        protected override void WriteFile(SDK.ExportContext stream, string value)
+        {
+            stream.WriteAllText(value);
+        }
+    }
+
+
 
     [SDK.ContentNode("FormatText")]
     [SDK.ContentMetaData("Title", "Formatted Text")]

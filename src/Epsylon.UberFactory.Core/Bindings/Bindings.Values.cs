@@ -35,19 +35,10 @@ namespace Epsylon.UberFactory.Bindings
 
             if (propertyType == null) throw new ArgumentNullException(nameof(propertyType));
 
-            if (propertyType == typeof(String))
-            {
-                var vb = new InputValueBinding<String>(bindDesc);
-
-                if (vb.ViewTemplate == VIEWTEMPLATE_PATHPICKER) return SourceFilePickBinding.CreateFilePick(bindDesc);
-
-                return vb;
-            }
-
             if (propertyType.GetTypeInfo().IsEnum) return new InputEnumerationBinding(bindDesc);
 
+            if (propertyType == typeof(String)) return new InputValueBinding<String>(bindDesc);
             if (propertyType == typeof(Boolean)) return new InputValueBinding<Boolean>(bindDesc);
-
             if (propertyType == typeof(Char)) return new InputValueBinding<Char>(bindDesc);
 
             if (propertyType == typeof(SByte)) return new InputValueBinding<SByte>(bindDesc);
@@ -65,9 +56,9 @@ namespace Epsylon.UberFactory.Bindings
             if (propertyType == typeof(Decimal)) return new InputValueBinding<Decimal>(bindDesc);
 
             if (propertyType == typeof(TimeSpan)) return new InputTimeSpanBinding(bindDesc);
-            if (propertyType == typeof(DateTime)) return new InputValueBinding<DateTime>(bindDesc);  
-            // TODO: DateTimeOffset
+            if (propertyType == typeof(DateTime)) return new InputValueBinding<DateTime>(bindDesc);
 
+            // TODO: DateTimeOffset
             // TODO: Guid
             // TODO: Version
 
@@ -244,7 +235,8 @@ namespace Epsylon.UberFactory.Bindings
 
                 var ctrl = this.GetMetaDataValue<String>("ViewStyle", "TextBox");
 
-                if (ctrl == "PathPicker") return VIEWTEMPLATE_PATHPICKER;
+                if (ctrl == "FilePicker") return VIEWTEMPLATE_PATHPICKER;
+                if (ctrl == "DirectoryPicker") return VIEWTEMPLATE_PATHPICKER;
 
                 if (ctrl == "ComboBox") return VIEWTEMPLATE_COMBOBOX;
 
@@ -266,6 +258,19 @@ namespace Epsylon.UberFactory.Bindings
 
         public bool IsMultiLine => this.GetMetaDataValue<Boolean>("MultiLine", false);
 
+        public bool IsFilePicker => this.GetMetaDataValue<String>("ViewStyle", null) == "FilePicker";
+        public bool IsDirectoryPicker => this.GetMetaDataValue<String>("ViewStyle", null) == "DirectoryPicker";
+
+        public String AbsolutePathValue
+        {
+            get
+            {
+                var inputStringBinding = this as InputValueBinding<String>;
+
+                return inputStringBinding == null ? null : InputValueBinding < String > .GetAbsoluteSourcePath(inputStringBinding).ToString();
+            }
+        }
+
         public int MaxTextLines => 5;
 
         public T[] AvailableValues => _GetTypeAvailableValues();
@@ -286,14 +291,13 @@ namespace Epsylon.UberFactory.Bindings
 
         #endregion
 
-        #region API
+        #region API        
 
         public override void CopyValueToInstance() { SetInstanceValue(Value); }
 
         private static Object _GetTypeMinimumValue()
         {
             if (typeof(T) == typeof(String)) return null; // specifically required for generic Clamp
-
             if (typeof(T) == typeof(Boolean)) return false;
             if (typeof(T) == typeof(Char)) return Char.MinValue;
 
@@ -323,7 +327,6 @@ namespace Epsylon.UberFactory.Bindings
         private static Object _GetTypeMaximumValue()
         {
             if (typeof(T) == typeof(String)) return null; // specifically required for generic Clamp
-
             if (typeof(T) == typeof(Boolean)) return true;
             if (typeof(T) == typeof(Char)) return Char.MaxValue;
 
@@ -352,10 +355,22 @@ namespace Epsylon.UberFactory.Bindings
 
         private T[] _GetTypeAvailableValues()
         {
-            var t = this.DataType;
-
             return this.GetMetaDataValue<T[]>("Values", new T[0]);
         }
+
+        public string GetFileFilter() { return this.GetMetaDataValue<String>("Filter", "All Files|*.*"); }        
+
+        public static PathString GetAbsoluteSourcePath(InputValueBinding<string> context)
+        {
+            var absPath = context.DataContext.BuildContext.GetSourceAbsolutePath(context.Value);
+
+            return new PathString(absPath);
+        }
+
+        public static void SetAbsoluteSourcePath(InputValueBinding<string> context, PathString absPath)
+        {
+            context.Value = context.DataContext.BuildContext.GetRelativeToSource(absPath);
+        }        
 
         #endregion
     }
@@ -453,57 +468,5 @@ namespace Epsylon.UberFactory.Bindings
 
         #endregion
     }
-
-
-    [System.Diagnostics.DebuggerDisplay("File {SerializationKey} = {FileName}")]
-    public sealed class SourceFilePickBinding : ValueBinding
-    {
-        #region lifecycle
-
-        public static SourceFilePickBinding CreateFilePick(Description pvd) { return new SourceFilePickBinding(pvd); }
-
-        public static SourceFilePickBinding CreateDirectoryPick(Description pvd) { return new SourceFilePickBinding(pvd); }
-
-        private SourceFilePickBinding(Description pvd) : base(pvd) { }
-
-        #endregion
-
-        #region properties
-
-        public override string ViewTemplate => VIEWTEMPLATE_PATHPICKER;        
-
-        public String Value
-        {
-            get
-            {
-                var path = this.GetValue<String>();
-                return path == null ? null : this.DataContext.BuildContext.GetSourceAbsolutePath(path);
-            }
-            set
-            {
-                var rpath = value == null ? null : this.DataContext.BuildContext.GetRelativeToSource(value);
-                this.SetValue(rpath);
-            }
-        }
-
-        public string FilePath => Value;
-
-        public string FileName => System.IO.Path.GetFileName(FilePath);
-
-        #endregion
-
-        #region API         
-
-        public override void CopyValueToInstance() { SetInstanceValue(Value); }
-
-        public string GetFileFilter() { return this.GetMetaDataValue<String>("Filter", "All Files|*.*"); }
-
-        #endregion
-    }
-    
-    
-
-    
-
-        
+            
 }

@@ -8,9 +8,9 @@
     
     <DockPanel>
         <Button DockPanel.Dock="Right" Content="{StaticResource _FolderIcon}" Click="_OnClick_PickFile" />
-        <TextBox Text="{Binding FileName,Mode=OneWay}" IsReadOnly="True"
+        <TextBox Text="{Binding Value,Mode=OneWay}" IsReadOnly="True"
                          Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
-                         ToolTip="{Binding FilePath,Mode=OneWay}"
+                         ToolTip="{Binding AbsolutePathValue,Mode=OneWay}"
                          />
     </DockPanel>
 </UserControl>

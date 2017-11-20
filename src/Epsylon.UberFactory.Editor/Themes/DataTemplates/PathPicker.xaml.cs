@@ -25,15 +25,18 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
 
         private void _OnClick_PickFile(object sender, RoutedEventArgs e)
         {
-            if (this.DataContext is Bindings.SourceFilePickBinding binding)
+            if (this.DataContext is Bindings.InputValueBinding<String> vbinding)
             {
-                var startDir = binding.DataContext.BuildContext.GetSourceAbsolutePath("dummy.txt");
+                var startDir = new PathString(vbinding.DataContext.BuildContext.GetSourceAbsolutePath("dummy.txt")).DirectoryPath;
 
-                var path = _Dialogs.ShowOpenFileDialog(binding.GetFileFilter(), new PathString(startDir).DirectoryPath);
+                var path = PathString.Empty;
+
+                if (vbinding.IsFilePicker) path = _Dialogs.ShowOpenFileDialog(vbinding.GetFileFilter(), startDir);
+                if (vbinding.IsDirectoryPicker) path = _Dialogs.ShowBrowseDirectoryDialog(startDir);
 
                 if (path.IsEmpty) return;
 
-                binding.Value = path;
+                Bindings.InputValueBinding<String>.SetAbsoluteSourcePath(vbinding, path);
             }
         }
     }

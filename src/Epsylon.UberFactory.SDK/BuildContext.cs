@@ -141,7 +141,7 @@ namespace Epsylon.UberFactory
             ExportContext GetExportContext(String absolutePath, ITaskFileIOTracker trackerContext);
 
             
-            IEnumerable<ImportContext> GetImportBatchContext(String absolutePath, ITaskFileIOTracker trackerContext);
+            IEnumerable<ImportContext> GetImportContextBatch(String absolutePath, String fileMask, bool allDirectories, ITaskFileIOTracker trackerContext);
 
             /// <summary>
             /// Gets a preview context to 

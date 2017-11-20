@@ -16,6 +16,7 @@ namespace Epsylon.UberFactory.Evaluation
         IReadOnlyDictionary<String, Byte[]> Content { get; }
     }
 
+    [System.Diagnostics.DebuggerDisplay("Import Context for: {_SourcePath.ToString()}")]
     class _ImportContext : SDK.ImportContext
     {
         #region lifecycle
@@ -27,13 +28,11 @@ namespace Epsylon.UberFactory.Evaluation
             return new _ImportContext(path, tc);
         }
 
-        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, bool recurse, SDK.ITaskFileIOTracker tc)
+        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, SDK.ITaskFileIOTracker tc)
         {
-            
-
             // dir.IsValidDirectoryAbsolutePath;
 
-            var files = System.IO.Directory.GetFiles(dir, "*.*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+            var files = System.IO.Directory.GetFiles(dir, fileMask, allDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
             foreach(var f in files)
             {
@@ -78,6 +77,7 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion
     }
 
+    [System.Diagnostics.DebuggerDisplay("Export Context for: {_TargetPath.ToString()}")]
     class _ExportContext : SDK.ExportContext
     {
         #region lifecycle
@@ -140,6 +140,7 @@ namespace Epsylon.UberFactory.Evaluation
     /// <summary>
     /// export context that writes nothing, used for simulation and debug.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("Export Context for: {_TargetPath.ToString()}")]
     sealed class _SimulateExportContext : SDK.ExportContext
     {
         #region lifecycle
@@ -192,6 +193,7 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion
     }
 
+    [System.Diagnostics.DebuggerDisplay("Export Context for: {_DefaultFileName}")]
     class _DictionaryExportContext : SDK.ExportContext , IPreviewResult
     {
         #region lifecycle
@@ -240,6 +242,7 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion        
     }
 
+    [System.Diagnostics.DebuggerDisplay("Import Context for: {_DefaultFileName}")]
     class _DictionaryImportContext : SDK.ImportContext
     {
         #region lifecycle
