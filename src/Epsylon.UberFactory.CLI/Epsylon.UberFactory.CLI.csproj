@@ -1,6 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  
+﻿<Project Sdk="Microsoft.NET.Sdk">  
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -18,7 +16,47 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Epsylon.UberFactory.Client\Epsylon.UberFactory.Client.csproj" />    
+    <ProjectReference Include="..\Epsylon.UberFactory.Client\Epsylon.UberFactory.Client.csproj" PrivateAssets="all" />    
+    <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  
+  <!-- https://github.com/NuGet/Home/issues/3891 -->
+  <!-- https://github.com/NuGet/Home/issues/3891#issuecomment-309792369 -->
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\net47/Epsylon.UberFactory.Client.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\net47\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\net47/Epsylon.UberFactory.Core.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\net47\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\net47/Epsylon.UberFactory.SDK.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\net47\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\netcoreapp2.0/Epsylon.UberFactory.Client.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netcoreapp2.0\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\netcoreapp2.0/Epsylon.UberFactory.Core.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netcoreapp2.0\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\netcoreapp2.0/Epsylon.UberFactory.SDK.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netcoreapp2.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
   </ItemGroup>
 
   <Import Project="..\Shared\StaticVersionInfo.props" />

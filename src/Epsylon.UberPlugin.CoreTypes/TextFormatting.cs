@@ -2,6 +2,7 @@
 
 namespace Epsylon.UberPlugin.CoreTypes
 {
+    using System.Collections.Generic;
     using UberFactory;
 
     using TEXTFUNC = Func<String, String>;
@@ -90,7 +91,7 @@ namespace Epsylon.UberPlugin.CoreTypes
         [SDK.InputMetaData("Panel", "VerticalList")]
         public TEXTFUNC[] Transforms { get; set; }
 
-        protected override string GetFileInExtension() { return "txt"; }
+        protected override IEnumerable<string> GetFileInExtensions() { yield return "txt"; }
 
         protected override string GetFileOutExtension() { return "txt"; }
 
@@ -99,7 +100,7 @@ namespace Epsylon.UberPlugin.CoreTypes
             return stream.ReadAllText();
         }
 
-        protected override string Process(string value)
+        protected override string Transform(string value)
         {
             return Transforms.Process(value);
         }        
