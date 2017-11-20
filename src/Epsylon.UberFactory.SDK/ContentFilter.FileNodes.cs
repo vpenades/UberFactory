@@ -48,7 +48,7 @@ namespace Epsylon.UberFactory
 
             protected override object EvaluateObject()
             {
-                var relPath = System.IO.Path.ChangeExtension(FileName + ".bin", GetFileExtension());                
+                var relPath = System.IO.Path.ChangeExtension(FileName + ".bin", GetFileExtension());
 
                 var s = this.GetExportContext(relPath);                
                 if (s == null) return null;
@@ -65,7 +65,7 @@ namespace Epsylon.UberFactory
 
 
 
-        public abstract class BatchProcessor<TValueIn,TValueOut> : ContentFilter
+        public abstract class BatchFilter<TValueIn, TValueOut> : ContentFilter
         {
             // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
 
@@ -85,8 +85,11 @@ namespace Epsylon.UberFactory
             [SDK.InputMetaData("Group", "Source Directory")]
             [SDK.InputMetaData("Title", "All Directories")]
             [SDK.InputMetaData("Default", false)]
-            public Boolean AllDirectories { get; set; }
+            public Boolean AllDirectories { get; set; }            
+        }
 
+        public abstract class BatchProcessor<TValueIn,TValueOut> : BatchFilter<TValueIn,TValueOut>
+        {
             protected override Object EvaluateObject()
             {
                 var fileInMask = System.IO.Path.ChangeExtension(FileMask, GetFileInExtension());
@@ -114,6 +117,48 @@ namespace Epsylon.UberFactory
             protected abstract TValueIn ReadFile(ImportContext stream);
 
             protected abstract TValueOut Process(TValueIn value);
+
+            protected abstract String GetFileOutExtension();
+
+            protected abstract void WriteFile(ExportContext stream, TValueOut value);
+        }
+
+        public abstract class BatchMerge<TValueIn, TValueOut> : BatchFilter<TValueIn,TValueOut>
+        {
+            [SDK.InputMetaData("Group", "Target File")]
+            [SDK.InputValue("FileName")]
+            [SDK.InputMetaData("Title", "File Name")]
+            public String FileName { get; set; }
+
+            protected override Object EvaluateObject()
+            {
+                var fileInMask = System.IO.Path.ChangeExtension(FileMask, GetFileInExtension());
+
+                var importers = this.GetImportContextBatch(DirectoryName, fileInMask, AllDirectories).ToArray();
+
+                var valOut = default(TValueOut);
+
+                foreach (var importer in importers)
+                {
+                    var valIn = ReadFile(importer); if (valIn == null) continue;
+
+                    valOut = Process(valOut, valIn); if (valOut == null) continue;                    
+                }
+
+                var fileOutName = System.IO.Path.ChangeExtension(FileName, GetFileOutExtension());
+
+                var exporter = this.GetExportContext(fileOutName);
+
+                WriteFile(exporter, valOut);
+
+                return null;
+            }
+
+            protected abstract String GetFileInExtension();
+
+            protected abstract TValueIn ReadFile(ImportContext stream);
+
+            protected abstract TValueOut Process(TValueOut product, TValueIn value);
 
             protected abstract String GetFileOutExtension();
 
