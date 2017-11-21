@@ -96,10 +96,10 @@ namespace Epsylon.UberFactory
 
                 var task = tasks[i];
 
-                var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
+                var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
                 evaluator.Setup(bsettings);
 
-                var srcData = evaluator.EvaluateRoot(monitor.GetProgressPart(i, tasks.Length));
+                var srcData = evaluator.GetEvaluator(monitor.GetProgressPart(i, tasks.Length)).EvaluateRoot();
                 if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
             }
         }

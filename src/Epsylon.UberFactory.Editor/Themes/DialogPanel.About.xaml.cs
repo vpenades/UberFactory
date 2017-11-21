@@ -27,7 +27,7 @@ namespace Epsylon.UberFactory.Themes
         private void AboutPanel_Loaded(object sender, RoutedEventArgs e)
         {
             var assembly_SDK = typeof(SDK.ContentFilter).Assembly;
-            var assembly_Core = typeof(Evaluation.PipelineEvaluator).Assembly;
+            var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
             var assembly_Editor = typeof(AppView).Assembly;
 
             this.mySDKVersion.Text = assembly_SDK.InformationalVersion();

@@ -13,14 +13,23 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            internal void _Initialize(IBuildContext bc, Func<Type, ContentObject> scr, ITaskFileIOTracker trackerContext)
+            internal void _Initialize(IBuildContext bc)
             {
-                if (_BuildContext != null || _SharedContentResolver != null) throw new InvalidOperationException("already initialized");
+                if (_BuildContext != null) throw new InvalidOperationException("already initialized");
                 
-                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
-                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
+                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));                
+            }
 
+            internal void BeginProcessing(Func<Type, ContentObject> scr, ITaskFileIOTracker trackerContext)
+            {
+                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
                 _TrackerContext = trackerContext;
+            }
+
+            internal void EndProcessing()
+            {
+                _SharedContentResolver = null;
+                _TrackerContext = null;
             }
 
             #endregion
@@ -35,12 +44,14 @@ namespace Epsylon.UberFactory
 
             #endregion
 
-            #region API     
+            #region API           
 
             public IBuildContext BuildContext => _BuildContext;            
 
             public ImportContext GetImportContext(String relativePath)
             {
+                if (_TrackerContext == null) throw new InvalidOperationException("Processing not started");
+
                 var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
 
                 return _BuildContext.GetImportContext(absolutePath, _TrackerContext);
@@ -48,6 +59,8 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<ImportContext> GetImportContextBatch(String relativePath, String fileMask, bool allDirectories)
             {
+                if (_TrackerContext == null) throw new InvalidOperationException("Processing not started");
+
                 var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
 
                 return _BuildContext.GetImportContextBatch(absolutePath, fileMask, allDirectories, _TrackerContext);
@@ -55,6 +68,8 @@ namespace Epsylon.UberFactory
 
             public ExportContext GetExportContext(String relativePath)
             {
+                if (_TrackerContext == null) throw new InvalidOperationException("Processing not started");
+
                 var absolutePath = this.BuildContext.GetTargetAbsolutePath(relativePath);
 
                 return _BuildContext.GetExportContext(absolutePath, _TrackerContext);

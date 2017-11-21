@@ -5,221 +5,148 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
 namespace Epsylon.UberFactory.Evaluation
 {
-    
-    using INSTANCEFACTORY = Func<String, SDK.ContentObject>;
-    using SETTINGSFUNCTION = Func<Type, ProjectDOM.Settings>;
-
     using SETTINGSINSTANCES = HashSet<SDK.ContentObject>;
+
+
 
     public class PipelineEvaluator
     {
-        #region lifecycle        
+        #region lifecycle
 
-        public static PipelineEvaluator CreatePipelineInstance(ProjectDOM.Pipeline pipeline, INSTANCEFACTORY filterResolver, SETTINGSFUNCTION settingsResolver)
+        public static PipelineEvaluator Create
+            (
+            SDK.IMonitorContext monitor,
+            SDK.IBuildContext bsettings,
+            Guid rootId,
+            Guid[] nodeIds,
+            Func<Guid, SDK.ContentObject> instanceFunc,
+            Func<Type, SDK.ContentObject> settingsFunc,
+            Func<Guid, IPropertyProvider> propertiesFunc
+            )
         {
-            if (pipeline == null) throw new ArgumentNullException(nameof(pipeline));
-            if (filterResolver == null) throw new ArgumentNullException(nameof(filterResolver));            
+            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
+            if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
 
-            return new PipelineEvaluator(pipeline, filterResolver, settingsResolver);
-        }        
+            if (nodeIds == null) throw new ArgumentNullException(nameof(nodeIds));
+            if (!nodeIds.Contains(rootId)) throw new ArgumentNullException(nameof(rootId));
 
-        private PipelineEvaluator(ProjectDOM.Pipeline pipeline, INSTANCEFACTORY filterResolver, SETTINGSFUNCTION settingsResolver)
-        {
-            _InstanceFactory = filterResolver;
-            _SettingsFactory = settingsResolver;            
-            _Pipeline = pipeline;
-            _PipelineFingerPrint = pipeline.GetHierarchyFingerPrint();
-        }        
+            if (instanceFunc == null) throw new ArgumentNullException(nameof(instanceFunc));
+            if (settingsFunc == null) throw new ArgumentNullException(nameof(settingsFunc));
+            if (propertiesFunc == null) throw new ArgumentNullException(nameof(propertiesFunc));
 
-        #endregion
-
-        #region data        
-
-        private readonly INSTANCEFACTORY _InstanceFactory;
-        private readonly SETTINGSFUNCTION _SettingsFactory;
-        
-        private readonly ProjectDOM.Pipeline _Pipeline;
-        private readonly int _PipelineFingerPrint;
-        
-        // evaluation data
-
-        private SDK.IBuildContext _BuildSettings;
-
-        private readonly Dictionary<Guid, SDK.ContentObject> _NodeInstances = new Dictionary<Guid, SDK.ContentObject>();        
-
-        private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();
-
-        private readonly List<Guid> _NodeOrder = new List<Guid>(); // ids in order of evaluation
-
-        private _TaskFileIOTracker _FileIOTracker;
-
-        #endregion
-
-        #region properties
-
-        public string InferredTitle
-        {
-            get
-            {
-                // tries to generate a title based on the content of the nodes
-
-                var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
-
-                return rootInstance is SDK.FileWriter exportInstance ? exportInstance.FileName : "Unknown";
-            }
-        }        
-
-        #endregion
-
-        #region API - Setup
-
-        public void Setup(SDK.IBuildContext bsettings)
-        {
-            _BuildSettings = bsettings ?? throw new ArgumentNullException(nameof(bsettings));
-
-            _FileIOTracker = new _TaskFileIOTracker(_BuildSettings);
-
-            _NodeInstances.Clear();
-            _NodeOrder.Clear();            
-
-            var nodeIds = new Stack<Guid>();
-
-            _CreateNodeInstancesRecursive(_Pipeline.RootIdentifier, nodeIds);
-
-            _NodeOrder.AddRange(nodeIds.Reverse());
-        }
-
-        private void _SetupIsReady()
-        {
-            if (_BuildSettings == null) throw new InvalidOperationException($"Call {nameof(Setup)} first");
-
-            bool allInstancesReady = !_NodeInstances.Values
+            bool allInstancesReady = !nodeIds
+                .Select(item => instanceFunc(item))
                 .OfType<_UnknownNode>()
                 .Any();
 
-            if (!allInstancesReady) throw new InvalidOperationException("Some filters couldn't be instantiated.");
+            if (!allInstancesReady) throw new ArgumentException("Some filters couldn't be instantiated.");
 
-            if (_PipelineFingerPrint != _Pipeline.GetHierarchyFingerPrint()) throw new InvalidOperationException("DOM hierarchy has changed, call Setup again");
+            var tracker = new _TaskFileIOTracker(bsettings);
+
+            return new PipelineEvaluator(monitor, tracker, rootId, nodeIds, instanceFunc, settingsFunc, propertiesFunc);
         }
 
-        /// <summary>
-        /// Creates a filter instance for a given node ID
-        /// </summary>
-        /// <remarks>
-        /// Creates the instace for the current ID, and resolves the dependencies of the whole tree.
-        /// </remarks>
-        /// <param name="nodeId">root node id</param>
-        private void _CreateNodeInstancesRecursive(Guid nodeId, Stack<Guid> idStack)
+        private PipelineEvaluator
+            (SDK.IMonitorContext monitor,
+            _TaskFileIOTracker tracker,
+            Guid rootId,
+            Guid[] nodeIds,
+            Func<Guid, SDK.ContentObject> instanceFunc,
+            Func<Type, SDK.ContentObject> settingsFunc,
+            Func<Guid, IPropertyProvider> propertyFunc
+            )
         {
-            _SetupIsReady();
+            _Monitor = monitor;
+            _FileIOTracker = tracker;
 
-            if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));            
+            _NodeOrder = nodeIds;
+            _RootIdentifier = rootId;
+            _NodeInstanceFunc = instanceFunc;
+            _SettingsInstanceFunc = settingsFunc;
+            _NodePropertiesFunc = propertyFunc;
 
-            // Find node DOM
-            var nodeDom = _Pipeline.GetNode(nodeId);
-            if (nodeDom == null) return;            
+            _AcquireInstances();            
+        }
 
-            // Create node instance
-            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);            
+        // public void Dispose() { _ReleaseInstances(); }
 
-            SDK.ConfigureNode(nodeInst, _BuildSettings, t=> _GetSettingsInstance(t, MonitorContext.CreateNull()) , _FileIOTracker);
+        private void _AcquireInstances()
+        {
+            _SettingsInstancesCache.Clear();
 
-            _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
-            
-            // retrieve property values from current cunfiguration
-            var properties = nodeDom
-                .GetPropertiesForConfiguration(_BuildSettings.Configuration)
-                .AsReadOnly();
-
-            // bind property dependencies to instance
-            var bindings = nodeInst.CreateBindings(properties).OfType<Bindings.DependencyBinding>();
-
-            // recursively create dependencies
-            foreach(var binding in bindings)
+            foreach (var id in _NodeOrder)
             {
-                if (binding is Bindings.SingleDependencyBinding)
-                {
-                    var id = ((Bindings.SingleDependencyBinding)binding).GetDependency();
+                var instance = _NodeInstanceFunc(id);
 
-                    _CreateNodeInstancesRecursive(id, idStack);
-                }
+                instance.BeginProcessing(_GetSharedSettings, _FileIOTracker);
+            }
+        }
 
-                if (binding is Bindings.MultiDependencyBinding)
-                {
-                    var ids = ((Bindings.MultiDependencyBinding)binding).GetDependencies();
+        private void _ReleaseInstances()
+        {
+            foreach (var id in _NodeOrder)
+            {
+                var instance = _NodeInstanceFunc(id);
 
-                    foreach(var id in ids) _CreateNodeInstancesRecursive(id, idStack);
-                }
+                instance.EndProcessing();
             }
 
-            idStack.Push(nodeId);
-        }        
+            foreach(var si in _SettingsInstancesCache)
+            {
+                si.EndProcessing();
+            }
+
+            _SettingsInstancesCache.Clear();
+        }
 
         #endregion
 
-        #region API - Evaluation
+        #region data
 
-        public SDK.ContentObject GetNodeInstance(Guid id)
-        {
-            _SetupIsReady();
+        private readonly SDK.IMonitorContext _Monitor;
+        private readonly _TaskFileIOTracker _FileIOTracker;
 
-            return _NodeInstances.GetValueOrDefault(id);
-        }                
+        private readonly Guid _RootIdentifier;
 
-        public IEnumerable<Bindings.MemberBinding> CreateBindings(Guid nodeId)
-        {
-            _SetupIsReady();
+        private readonly Guid[] _NodeOrder;        
 
-            // get source and destination objects            
-            var nodeProps = _Pipeline.GetNode(nodeId)?.GetPropertiesForConfiguration(_BuildSettings.Configuration);
-            var nodeInst = _NodeInstances.GetValueOrDefault(nodeId);            
+        private readonly Func<Guid, SDK.ContentObject> _NodeInstanceFunc;
+        private readonly Func<Type, SDK.ContentObject> _SettingsInstanceFunc;
+        private readonly Func<Guid, IPropertyProvider> _NodePropertiesFunc;
 
-            // evaluate only the values
-            nodeInst.EvaluateBindings(nodeProps, null); // we don't pass the dependency evaluator callback because we only want to assign the initial values, we don't want a full chain evaluation
+        private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();
 
-            return nodeInst.CreateBindings(nodeProps);
-        }       
-        
-        
-        
-        public Object EvaluateRoot(SDK.IMonitorContext monitor)
-        {
-            if (monitor == null) throw new ArgumentNullException(nameof(monitor));            
-            if (monitor.IsCancelRequested) return null;
+        #endregion
 
-            _SetupIsReady();
+        #region API
+
+        public Object EvaluateRoot()
+        {            
+            if (_Monitor.IsCancelRequested) return null;            
 
             _FileIOTracker?.Clear();
 
-            return EvaluateNode(monitor, _Pipeline.RootIdentifier);
+            return EvaluateNode(_RootIdentifier);
         }
 
-        public Object EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId)
-        {
-            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
-            if (nodeId == Guid.Empty) throw new ArgumentException(nameof(nodeId));
-            if (monitor.IsCancelRequested) return null;
+        public Object EvaluateNode(Guid nodeId)
+        {            
+            if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
 
-            _SetupIsReady();
+            if (_Monitor.IsCancelRequested) return null;                        
 
-            _SettingsInstancesCache.Clear();
-
-            return _EvaluateNode(monitor, nodeId, false);
+            return _EvaluateNode(nodeId, false);
         }
 
-        public IPreviewResult PreviewNode(SDK.IMonitorContext monitor, Guid nodeId)
+        public IPreviewResult PreviewNode(Guid nodeId)
         {
-            _SetupIsReady();
+            if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
 
-            _FileIOTracker?.Clear();
+            _FileIOTracker?.Clear();            
 
-            _SettingsInstancesCache.Clear();
-
-            var previewObject =  _EvaluateNode(monitor, nodeId, true);
+            var previewObject = _EvaluateNode( nodeId, true);
 
             if (previewObject is _DictionaryExportContext expDict)
             {
@@ -241,38 +168,31 @@ namespace Epsylon.UberFactory.Evaluation
             return null;
         }
 
-        private Object _EvaluateNode(SDK.IMonitorContext monitor, Guid nodeId, bool previewMode)
+        private Object _EvaluateNode(Guid nodeId, bool previewMode)
         {
-            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
-
-            if (monitor.IsCancelRequested) throw new OperationCanceledException();
-
-            _SetupIsReady();
+            if (_Monitor.IsCancelRequested) throw new OperationCanceledException();            
 
             // Get the current node being evaluated
-            var nodeInst = _NodeInstances.GetValueOrDefault(nodeId);
+            var nodeInst = _NodeInstanceFunc(nodeId);
             if (nodeInst == null) return null;
             if (nodeInst is _UnknownNode) return null;
 
-            _FileIOTracker.RegisterAssemblyFile(nodeInst.GetType().Assembly.Location);            
+            _FileIOTracker.RegisterAssemblyFile(nodeInst.GetType().Assembly.Location);
 
             // Next, we retrieve the property values for this node from the DOM
-            var nodeProps = _Pipeline
-                .GetNode(nodeId)?
-                .GetPropertiesForConfiguration(_BuildSettings.Configuration)
-                .AsReadOnly();
+            var nodeProps = _NodePropertiesFunc(nodeId);
             if (nodeProps == null) return null;
 
             // Assign values and node dependencies. Dependecies are evaluated to its values.
-            nodeInst.EvaluateBindings(nodeProps,xid => _EvaluateNode(monitor, xid, previewMode));            
+            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(xid, previewMode));
 
-            if (monitor != null && monitor.IsCancelRequested) throw new OperationCanceledException();
+            if (_Monitor.IsCancelRequested) throw new OperationCanceledException();
 
             // evaluate the current node            
 
             try
             {
-                var localMonitor = monitor?.GetProgressPart(_NodeOrder.IndexOf(nodeId), _NodeOrder.Count);
+                var localMonitor = _Monitor?.GetProgressPart(_NodeOrder.IndexOf(item=> item == nodeId), _NodeOrder.Length);
 
                 System.Diagnostics.Debug.Assert(localMonitor != null);
 
@@ -287,7 +207,7 @@ namespace Epsylon.UberFactory.Evaluation
                 }
                 else if (nodeInst is SDK.ContentObject) return nodeInst;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new PluginException(ex);
             }
@@ -295,42 +215,26 @@ namespace Epsylon.UberFactory.Evaluation
             throw new NotImplementedException();
         }
 
-        private SDK.ContentObject _GetSettingsInstance(Type t, SDK.IMonitorContext monitor)
+        private SDK.ContentObject _GetSharedSettings(Type t)
         {
-            _SetupIsReady();
+            if (t == null) return null;
 
             var si = _SettingsInstancesCache.FirstOrDefault(item => item.GetType() == t);
 
             if (si != null) return si;
-            if (_SettingsFactory == null) return null;
 
-            var sdom = _SettingsFactory.Invoke(t);
-            var spip = CreatePipelineInstance(sdom.Pipeline, _InstanceFactory, _SettingsFactory);
-            spip.Setup(_BuildSettings);
-
-            var r = spip.EvaluateRoot(monitor);
-
-            si = r as SDK.ContentObject;
+            si = _SettingsInstanceFunc(t);
 
             _SettingsInstancesCache.Add(si);
+
+            si.BeginProcessing(_GetSharedSettings, _FileIOTracker);
 
             return si;
         }
 
-        #endregion        
+        #endregion
 
     }
-
-
-    [SDK.ContentNode("PLUGIN ERROR")]
-    class _UnknownNode : SDK.ContentFilter
-    {
-        protected override object EvaluateObject()
-        {
-            return null;
-        }
-    }
-
 
     class _TaskFileIOTracker : SDK.ITaskFileIOTracker
     {

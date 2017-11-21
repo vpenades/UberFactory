@@ -27,7 +27,7 @@ namespace Epsylon.UberFactory
         public void TestAssemblyVersion()
         {
             var assembly_SDK = typeof(SDK.ContentFilter).Assembly;
-            var assembly_Core = typeof(Evaluation.PipelineEvaluator).Assembly;
+            var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
 
             Assert.IsTrue(assembly_SDK.Version() >= new Version(1, 0, 0));
             Assert.IsTrue(assembly_Core.Version() >= new Version(1, 0, 0));

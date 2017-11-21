@@ -19,9 +19,9 @@ namespace Epsylon.UberFactory
             return node;
         }
 
-        internal static void ConfigureNode(this ContentObject node, IBuildContext bsettings, Func<Type,ContentObject> settingsResolver, ITaskFileIOTracker trackerContext)
+        internal static void ConfigureNode(this ContentObject node, IBuildContext bsettings)
         {
-            node._Initialize(bsettings, settingsResolver, trackerContext);
+            node._Initialize(bsettings);
         }
 
         internal static Object DebugNode(ContentFilter node, IMonitorContext monitor)

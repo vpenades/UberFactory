@@ -64,7 +64,7 @@ namespace Epsylon.UberFactory
 
             internal readonly ProjectDOM.Pipeline _PipelineDom;
 
-            internal Evaluation.PipelineEvaluator _PipelineEvaluator;
+            internal Evaluation.PipelineInstance _PipelineEvaluator;
             internal Evaluation.UpToDateEvaluator _UpToDateEvaluator;
 
             private Exception _Exception;
@@ -100,7 +100,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 {
-                    var evaluator = Evaluation.PipelineEvaluator.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings);
+                    var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _PipelineEvaluator = evaluator;
                     _UpToDateEvaluator = new Evaluation.UpToDateEvaluator();
@@ -147,7 +147,7 @@ namespace Epsylon.UberFactory
             public void SetAsCurrentResultView(Guid nodeId)
             {
                 if (_PipelineEvaluator == null) return;
-                var result = _PipelineEvaluator.PreviewNode(Evaluation.MonitorContext.CreateNull(), nodeId);
+                var result = _PipelineEvaluator.GetEvaluator(Evaluation.MonitorContext.CreateNull()).PreviewNode(nodeId);
 
                 PreviewManager.ShowPreview(result);
             }

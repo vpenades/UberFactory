@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Epsylon.UberFactory.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "Test1.UberFactory",
+      "workingDirectory": "D:\\Work\\UberFactory\\Source\\Epsylon.ToolExamples"
+    }
+  }
+}

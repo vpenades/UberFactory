@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Epsylon.UberFactory.Evaluation
 {
+    [System.Diagnostics.DebuggerDisplay("BuildContext {ConfigurationJoined} Ready:{CanBuild} Input:{SourceDirectory.ToString()} Output:{TargetDirectory.ToString()} Errors:{CurrentError}")]
     public class BuildContext : SDK.IBuildContext
     {
         #region lifecycle        
@@ -107,57 +108,60 @@ namespace Epsylon.UberFactory.Evaluation
             if (invalidChars.Any()) return new ArgumentException($"Text contains invalid characters '{String.Join(" ",invalidChars)}'");            
 
             return null;
+        }
+
+        protected bool IsValidInputFilePath(PathString path)
+        {
+            if (!path.IsValidAbsoluteFilePath) return false;
+
+            if (!_TargetDirectoryAbsPath.IsEmpty && _TargetDirectoryAbsPath.Contains(path)) return false;
+
+            return true;
+        }
+
+        protected bool IsValidOutputFilePath(PathString path)
+        {
+            if (!path.IsValidAbsoluteFilePath) return false;
+
+            if (!_TargetDirectoryAbsPath.IsEmpty && !_TargetDirectoryAbsPath.Contains(path)) return false;
+
+            return true;
         }        
-
-        public PathString MakeRelativeToSource(String absFilePath) { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }        
-
-        public PathString MakeAbsoluteToSource(String relFilePath) { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }        
-
-        #endregion
-
-        #region interface              
-
-        public String GetRelativeToSource(String absolutePath)
-        {
-            return _SourceDirectoryAbsPath.MakeRelativePath(absolutePath);
-        }
-
-        public String GetRelativeToTarget(String absolutePath)
-        {
-            return TargetDirectory.MakeRelativePath(absolutePath);
-        }
-
-        public String GetSourceAbsolutePath(String relativePath)
-        {
-            return _SourceDirectoryAbsPath.MakeAbsolutePath(relativePath);
-        }
-
-        public String GetTargetAbsolutePath(String relativePath)
-        {
-            return TargetDirectory.MakeAbsolutePath(relativePath);
-        }       
+        
+        public String GetRelativeToSource(String absFilePath)      { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }
+        
+        public String GetSourceAbsolutePath(String relFilePath)    { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }
+        
+        public String GetRelativeToTarget(String absFilePath)      { return TargetDirectory.MakeRelativePath(absFilePath); }
+        
+        public String GetTargetAbsolutePath(String relFilePath)    { return TargetDirectory.MakeAbsolutePath(relFilePath); }
 
         public SDK.ImportContext GetImportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
         {
             var path = new PathString(absolutePath);
 
-            if (!_TargetDirectoryAbsPath.IsEmpty && _TargetDirectoryAbsPath.Contains(path)) throw new ArgumentException($"Source file {absolutePath} points to a file in the output directory.", nameof(absolutePath));
+            if (!IsValidInputFilePath(path)) throw new ArgumentException($"Source file {absolutePath} points to a file in the output directory.", nameof(absolutePath));
 
             return _ImportContext.Create(path,trackerContext);
         }
 
         public IEnumerable<SDK.ImportContext> GetImportContextBatch(String absolutePath, String fileMask, bool allDirectories, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ImportContext.CreateBatch(new PathString(absolutePath), fileMask, allDirectories, _TargetDirectoryAbsPath, trackerContext);
-        }
-
-        public PathString MakeRelativeToTarget(String absFilePath) { return TargetDirectory.MakeRelativePath(absFilePath); }
-
-        public PathString MakeAbsoluteToTarget(String relFilePath) { return TargetDirectory.MakeAbsolutePath(relFilePath); }
+            return _ImportContext.CreateBatch(new PathString(absolutePath), fileMask, allDirectories, IsValidInputFilePath, trackerContext);
+        }        
 
         public virtual SDK.ExportContext GetExportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
         {
-            return _ExportContext.Create(new PathString(absolutePath), _TargetDirectoryAbsPath, trackerContext);
+            var path = new PathString(absolutePath);
+
+            if (!IsValidOutputFilePath(path)) throw new ArgumentException($"Source file {absolutePath} points to a file in the output directory.", nameof(absolutePath));
+
+            return _ExportContext.Create(path, _TargetDirectoryAbsPath, trackerContext);
+        }        
+
+        public SDK.PreviewContext GetPreviewContext()
+        {
+            return new _PreviewContext();
         }
 
         private String _GetCurrentError()
@@ -174,11 +178,6 @@ namespace Epsylon.UberFactory.Evaluation
             if (string.Equals(SourceDirectory, TargetDirectory, StringComparison.CurrentCultureIgnoreCase)) return "Source and Target directories must be different";
 
             return null;
-        }
-
-        public SDK.PreviewContext GetPreviewContext()
-        {
-            return new _PreviewContext();
         }
 
         #endregion
