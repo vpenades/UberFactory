@@ -14,10 +14,9 @@ namespace Epsylon.UberFactory
     {        
         public interface IPipelineViewServices
         {
-            Factory.Collection GetPluginManager();
             Evaluation.BuildContext GetBuildSettings();
-
-            ProjectDOM.Settings GetSettings(Type t);
+            Factory.Collection GetPluginManager();            
+            ProjectDOM.Settings GetSharedSettings(Type t);
 
             Type GetRootOutputType();
         }
@@ -100,7 +99,7 @@ namespace Epsylon.UberFactory
                 
                 try
                 {
-                    var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings);
+                    var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSharedSettings);
                     evaluator.Setup(_Parent.GetBuildSettings());
                     _PipelineInstance = evaluator;
                     _UpToDateEvaluator = new Evaluation.UpToDateEvaluator();

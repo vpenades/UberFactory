@@ -9,10 +9,6 @@ namespace Epsylon.UberFactory
 {
     public static partial class ProjectVIEW
     {
-        internal sealed class NULL_Type { private NULL_Type() { } }
-
-
-
         public class SettingsView : BindableBase, IPipelineViewServices
         {
             #region lifecycle
@@ -43,19 +39,15 @@ namespace Epsylon.UberFactory
 
             #region properties
 
-            public ProjectDOM.Settings Source => _Source;
+            public ProjectDOM.Settings  Source          => _Source;
 
-            public Project ParentProject => _Parent;
+            public Project              ParentProject   => _Parent;
 
-            public String InferredTitle => _PipelineView?._PipelineInstance.InferredTitle;
+            public String               InferredTitle   => _PipelineView?._PipelineInstance.InferredTitle;
 
-            public String DisplayTitle => "Task " + Title;            
+            public String               DisplayTitle    => $"Task {Title}";
 
-            public String Title
-            {
-                get { return _Source.ClassName; }
-                set { }
-            }
+            public String Title { get { return _Source.ClassName; } set { } }
 
             public Pipeline Pipeline
             {
@@ -74,22 +66,9 @@ namespace Epsylon.UberFactory
 
             public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }            
 
-            public ProjectDOM.Settings GetSettings(Type t)
-            {
-                return _Parent.GetSharedSettings(t);
-            }
+            public ProjectDOM.Settings GetSharedSettings(Type t) { return _Parent.GetSharedSettings(t); }
             
-            public Type GetRootOutputType() { return null; }
-
-            /// <summary>
-            /// Template Available return types
-            /// </summary>
-            public IEnumerable<Type> AvailableReturnTypes => Enumerable.Empty<Type>();
-
-            /// <summary>
-            /// Template current return type
-            /// </summary>
-            public Type ActiveReturnType { get { return null; } set { } }
+            public Type GetRootOutputType() { return null; }                       
 
             #endregion
         }
@@ -131,7 +110,7 @@ namespace Epsylon.UberFactory
 
             public String           InferredTitle   => _PipelineView?._PipelineInstance.InferredTitle;
 
-            public String           DisplayTitle    => "Task " + Title;
+            public String           DisplayTitle    => $"Task {Title}";
 
             public Boolean Enabled { get { return _Source.Enabled; } set { _Source.Enabled = value; } }
 
@@ -149,33 +128,20 @@ namespace Epsylon.UberFactory
                     return _PipelineView;
                 }
             }
-
-            /// <summary>
-            /// Template Available return types
-            /// </summary>
-            public IEnumerable<Type> AvailableReturnTypes=> Enumerable.Empty<Type>();
-
-            /// <summary>
-            /// Template current return type
-            /// </summary>
-            public Type ActiveReturnType { get { return null; } set { } }
-
+            
             public IEnumerable<string> ProcessedInputFiles => _Parent.GetProcessingResultsFor(this)?.InputFiles;
 
             public IEnumerable<string> ProcessedOutputFiles => _Parent.GetProcessingResultsFor(this)?.OutputFiles;
 
             #endregion
 
-            #region API - Pipeline services
+            #region API
 
             public Factory.Collection GetPluginManager() { return _Parent._Plugins; }
 
             public Evaluation.BuildContext GetBuildSettings() { return _Parent.GetBuildSettings(); }            
 
-            public ProjectDOM.Settings GetSettings(Type t)
-            {
-                return _Parent.GetSharedSettings(t);
-            }            
+            public ProjectDOM.Settings GetSharedSettings(Type t) { return _Parent.GetSharedSettings(t); }            
 
             public Type GetRootOutputType() { return null; }
 
