@@ -65,6 +65,7 @@ namespace Epsylon.UberFactory
             if (name == typeof(PluginReference).Name) return new PluginReference(unk);
             if (name == typeof(Project).Name) return new Project(unk);
             if (name == typeof(Settings).Name) return new Settings(unk);
+            if (name == typeof(DocumentInfo).Name) return new DocumentInfo(unk);
 
             return unk;
         }

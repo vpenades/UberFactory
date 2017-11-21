@@ -408,6 +408,11 @@ namespace Epsylon.UberFactory
             internal PluginReference(Unknown s) : base(s) { }
         }
 
+        public partial class DocumentInfo : ObjectBase
+        {
+            internal DocumentInfo(Unknown s) : base(s) { }
+        }
+
         public partial class Project : ObjectBase
         {
             internal Project(Unknown s) : base(s)
@@ -419,6 +424,14 @@ namespace Epsylon.UberFactory
 
             public String GetBody()
             {
+                var assembly = System.Reflection.Assembly.GetEntryAssembly();
+                if (assembly != null)
+                {
+                    this.Generator = $"{assembly.GetName().Name} {assembly.GetName().Version.ToString()}";
+                }
+
+                this.Date = DateTime.Now;
+
                 var root = new Unknown(this).ToXml();
                 return root.ToString(SaveOptions.OmitDuplicateNamespaces);
             }

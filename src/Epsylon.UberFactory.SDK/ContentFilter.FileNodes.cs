@@ -55,7 +55,115 @@ namespace Epsylon.UberFactory
             }
 
             protected abstract void WriteFile(ExportContext stream);
-        }           
+        }
+
+        public abstract class BatchReader<TValue> : ContentFilter<IReadOnlyDictionary<string,TValue>>
+        {
+            // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
+
+            [SDK.InputValue("DirectoryName")]
+            [SDK.InputMetaData("Group", "Source Directory")]
+            [SDK.InputMetaData("Title", "Path")]
+            [SDK.InputMetaData("ViewStyle", "DirectoryPicker")]
+            public String DirectoryName { get; set; }
+
+            [SDK.InputValue("FileMask")]
+            [SDK.InputMetaData("Group", "Source Directory")]
+            [SDK.InputMetaData("Title", "Mask")]
+            [SDK.InputMetaData("Default", "*")]
+            public String FileMask { get; set; }
+
+            [SDK.InputValue("AllDirectories")]
+            [SDK.InputMetaData("Group", "Source Directory")]
+            [SDK.InputMetaData("Title", "All Directories")]
+            [SDK.InputMetaData("Default", false)]
+            public Boolean AllDirectories { get; set; }
+
+            protected override IReadOnlyDictionary<string, TValue> Evaluate()
+            {
+                var importers = GetFileInExtensions()
+                    .SelectMany(ext => _FindFileImporters(ext))
+                    .Where(item => item != null)
+                    .ToArray();
+
+                var values = new Dictionary<string,TValue>();
+
+                foreach (var importer in importers)
+                {
+                    var value = ReadFile(importer); if (value == null) continue;
+
+                    values[importer.FileName] = value;
+                }
+
+                return values;
+            }
+
+            private IEnumerable<ImportContext> _FindFileImporters(string extension)
+            {
+                var fileInMask = System.IO.Path.ChangeExtension(FileMask, extension);
+
+                return this.GetImportContextBatch(DirectoryName, fileInMask, AllDirectories);
+            }
+
+            protected abstract IEnumerable<String> GetFileInExtensions();
+
+            protected abstract TValue ReadFile(ImportContext stream);
+        }
+
+        public abstract class BatchMerge<TValueIn, TValueOut> : ContentFilter<TValueOut>
+        {
+            // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
+
+            [SDK.InputValue("DirectoryName")]
+            [SDK.InputMetaData("Group", "Source Directory")]
+            [SDK.InputMetaData("Title", "Path")]
+            [SDK.InputMetaData("ViewStyle", "DirectoryPicker")]
+            public String DirectoryName { get; set; }
+
+            [SDK.InputValue("FileMask")]
+            [SDK.InputMetaData("Group", "Source Directory")]
+            [SDK.InputMetaData("Title", "Mask")]
+            [SDK.InputMetaData("Default", "*")]
+            public String FileMask { get; set; }
+
+            [SDK.InputValue("AllDirectories")]
+            [SDK.InputMetaData("Group", "Source Directory")]
+            [SDK.InputMetaData("Title", "All Directories")]
+            [SDK.InputMetaData("Default", false)]
+            public Boolean AllDirectories { get; set; }
+
+            protected override TValueOut Evaluate()
+            {
+                var importers = GetFileInExtensions()
+                    .SelectMany(ext => _FindFileImporters(ext))
+                    .Where(item => item != null)
+                    .ToArray();
+
+                var valOut = default(TValueOut);
+
+                foreach (var importer in importers)
+                {
+                    var valIn = ReadFile(importer); if (valIn == null) continue;
+
+                    valOut = Merge(valOut, valIn); if (valOut == null) continue;
+                }
+
+                return valOut;
+            }
+
+            private IEnumerable<ImportContext> _FindFileImporters(string extension)
+            {
+                var fileInMask = System.IO.Path.ChangeExtension(FileMask, extension);
+
+                return this.GetImportContextBatch(DirectoryName, fileInMask, AllDirectories);
+            }
+
+            protected abstract IEnumerable<String> GetFileInExtensions();
+
+            protected abstract TValueIn ReadFile(ImportContext stream);
+
+            protected abstract TValueOut Merge(TValueOut product, TValueIn value);
+        }        
 
         public abstract class BatchProcessor<TValueIn,TValueOut> : ContentFilter
         {
@@ -122,59 +230,6 @@ namespace Epsylon.UberFactory
             protected abstract void WriteFile(ExportContext stream, TValueOut value);
         }
 
-        public abstract class BatchMerge<TValueIn, TValueOut> : ContentFilter<TValueOut>
-        {
-            // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
-
-            [SDK.InputValue("DirectoryName")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Path")]
-            [SDK.InputMetaData("ViewStyle", "DirectoryPicker")]
-            public String DirectoryName { get; set; }
-
-            [SDK.InputValue("FileMask")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Mask")]
-            [SDK.InputMetaData("Default", "*")]
-            public String FileMask { get; set; }
-
-            [SDK.InputValue("AllDirectories")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "All Directories")]
-            [SDK.InputMetaData("Default", false)]
-            public Boolean AllDirectories { get; set; }
-
-            protected override TValueOut Evaluate()
-            {
-                var importers = GetFileInExtensions()
-                    .SelectMany(ext => _FindFileImporters(ext))
-                    .Where(item => item != null)
-                    .ToArray();
-
-                var valOut = default(TValueOut);
-
-                foreach (var importer in importers)
-                {
-                    var valIn = ReadFile(importer); if (valIn == null) continue;
-
-                    valOut = Merge(valOut, valIn); if (valOut == null) continue;                    
-                }
-
-                return valOut;
-            }
-
-            private IEnumerable<ImportContext> _FindFileImporters(string extension)
-            {
-                var fileInMask = System.IO.Path.ChangeExtension(FileMask, extension);
-
-                return this.GetImportContextBatch(DirectoryName, fileInMask, AllDirectories);
-            }
-
-            protected abstract IEnumerable<String> GetFileInExtensions();
-
-            protected abstract TValueIn ReadFile(ImportContext stream);
-
-            protected abstract TValueOut Merge(TValueOut product, TValueIn value);            
-        }
+        
     }
 }

@@ -354,10 +354,14 @@ namespace Epsylon.UberFactory
         }        
 
         public partial class PluginReference : Item
-        {            
+        {
+            #region constants
+
             private const string PROP_ASSEMBLYPATH = "AssemblyPath";
             private const string PROP_PACKAGEID = "PackageId";
             private const string PROP_VERSION = "Version";
+
+            #endregion
 
             #region lifecycle
 
@@ -381,7 +385,50 @@ namespace Epsylon.UberFactory
 
             #endregion
         }
-        
+
+        public partial class DocumentInfo : ObjectBase
+        {
+            #region constants
+
+            private const string PROP_COPYRIGHT = "Copyright";
+            private const string PROP_GENERATOR = "Generator";
+            private const string PROP_DATE = "Date";
+
+            #endregion
+
+            #region lifecycle
+
+            internal DocumentInfo() { }
+
+            #endregion
+
+            #region properties
+
+            public String Copyright
+            {
+                get { return Properties.GetValue(PROP_COPYRIGHT, null); }
+                set { Properties.SetValue(PROP_COPYRIGHT, value); }
+            }
+
+            public String Generator
+            {
+                get { return Properties.GetValue(PROP_GENERATOR, null); }
+                set { Properties.SetValue(PROP_GENERATOR, value); }
+            }
+
+            public DateTime Date
+            {
+                get
+                {
+                    var val = Properties.GetValue(PROP_DATE, DateTime.Now.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    return DateTime.TryParse(val, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeLocal, out DateTime date) ? date : DateTime.Now;
+                }
+                set { Properties.SetValue(PROP_DATE, value.ToString()); }
+            }
+
+            #endregion
+        }
+
         public partial class Project : ObjectBase
         {
             #region lifecycle
@@ -397,11 +444,25 @@ namespace Epsylon.UberFactory
 
             public IReadOnlyList<Item> Items => GetLogicalChildren<Item>().ToArray();
 
-            public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.AssemblyPath).ToArray();           
+            public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.AssemblyPath).ToArray();
 
-            #endregion            
+            public string Copyright { get { return _UseDocumentInfo().Copyright; } set { _UseDocumentInfo().Copyright = value; } }
 
-            #region API            
+            public string Generator { get { return _UseDocumentInfo().Generator; } set { _UseDocumentInfo().Generator = value; } }
+
+            public DateTime Date { get { return _UseDocumentInfo().Date; } set { _UseDocumentInfo().Date = value; } }
+
+            #endregion
+
+            #region API
+
+            private DocumentInfo _UseDocumentInfo()
+            {
+                var info = this.GetLogicalChildren<DocumentInfo>().FirstOrDefault();
+                if (info == null) { info = new DocumentInfo(); this.AddLogicalChild(info); }
+
+                return info;
+            }
 
             public bool ContainsReference(PathString rpath)
             {
