@@ -20,7 +20,7 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            protected ExportContext(ITaskFileIOTracker trackerContext)
+            protected ExportContext(IFileTracker trackerContext)
             {
                 this._TrackerContext = trackerContext;
             }
@@ -42,7 +42,7 @@ namespace Epsylon.UberFactory
 
             #region data
 
-            private readonly ITaskFileIOTracker _TrackerContext;
+            private readonly IFileTracker _TrackerContext;
 
             #endregion
 

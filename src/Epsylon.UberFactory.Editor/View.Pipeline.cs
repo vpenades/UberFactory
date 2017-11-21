@@ -64,7 +64,7 @@ namespace Epsylon.UberFactory
 
             internal readonly ProjectDOM.Pipeline _PipelineDom;
 
-            internal Evaluation.PipelineInstance _PipelineEvaluator;
+            internal Evaluation.PipelineInstance _PipelineInstance;
             internal Evaluation.UpToDateEvaluator _UpToDateEvaluator;
 
             private Exception _Exception;
@@ -102,7 +102,7 @@ namespace Epsylon.UberFactory
                 {
                     var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSettings);
                     evaluator.Setup(_Parent.GetBuildSettings());
-                    _PipelineEvaluator = evaluator;
+                    _PipelineInstance = evaluator;
                     _UpToDateEvaluator = new Evaluation.UpToDateEvaluator();
                     _Exception = null;
 
@@ -110,7 +110,7 @@ namespace Epsylon.UberFactory
                 catch (Exception ex)
                 {
                     _Exception = ex;
-                    _PipelineEvaluator = null;
+                    _PipelineInstance = null;
                     _UpToDateEvaluator = null;
                 }
 
@@ -146,8 +146,14 @@ namespace Epsylon.UberFactory
 
             public void SetAsCurrentResultView(Guid nodeId)
             {
-                if (_PipelineEvaluator == null) return;
-                var result = _PipelineEvaluator.GetEvaluator(Evaluation.MonitorContext.CreateNull()).PreviewNode(nodeId);
+                if (_PipelineInstance == null) return;
+
+                Evaluation.IPreviewResult result = null;
+
+                using (var evaluator = _PipelineInstance.CreateEvaluator(Evaluation.MonitorContext.CreateNull()))
+                {
+                    result = evaluator.PreviewNode(nodeId);
+                }                    
 
                 PreviewManager.ShowPreview(result);
             }
@@ -156,14 +162,14 @@ namespace Epsylon.UberFactory
 
             public string GetNodeDisplayName(Guid id)
             {
-                return _PipelineEvaluator.GetNodeInstance(id)?
+                return _PipelineInstance.GetNodeInstance(id)?
                     .GetContentInfo()?
                     .DisplayName;
             }
 
             public string GetNodeDisplayFormat(Guid id)
             {
-                return _PipelineEvaluator
+                return _PipelineInstance
                     .GetNodeInstance(id)?
                     .GetContentInfo()?
                     .DisplayFormatName;
@@ -171,7 +177,7 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id)
             {
-                return _PipelineEvaluator.CreateBindings(id);
+                return _PipelineInstance.CreateBindings(id);
             }
 
             public Guid AddNode(Factory.ContentBaseInfo cbinfo)

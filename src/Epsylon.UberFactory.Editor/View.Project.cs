@@ -165,6 +165,8 @@ namespace Epsylon.UberFactory
             private BindableBase _ActiveItemView;
             private String _ActiveConfiguration;
 
+            private IReadOnlyDictionary<Guid, Evaluation.PipelineFileManager> _ProcessedFiles;
+
             #endregion
 
             #region properties
@@ -230,7 +232,7 @@ namespace Epsylon.UberFactory
                         .ExceptNulls()
                         .ToArray();
                 }
-            }            
+            }
 
             public BindableBase ActiveDocument
             {
@@ -261,20 +263,17 @@ namespace Epsylon.UberFactory
                 }
             }
 
-
             #endregion
 
             #region API
 
-            public Evaluation.BuildContext GetBuildSettings(bool isTest=false)
+            public Evaluation.BuildContext GetBuildSettings(bool isSimulation=false)
             {
                 var cfg = _ActiveConfiguration;
 
-                if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;
+                if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;                
 
-                if (isTest) return Evaluation.BuildContext.CreateWithSimulatedOutput(cfg, _DocumentPath.DirectoryPath);
-
-                return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath);
+                return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath, isSimulation);
             }
 
             private void _EditPlugin()
@@ -369,7 +368,7 @@ namespace Epsylon.UberFactory
 
                         var monitor = Evaluation.MonitorContext.Create(xlogger, ctoken, progress);
 
-                        ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
+                        _ProcessedFiles = ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
                     }
                 };
 
@@ -408,6 +407,15 @@ namespace Epsylon.UberFactory
                 _Plugins.SetAssemblies(Client.PluginLoader.Instance.GetPlugins() );
 
                 RaiseChanged();
+            }
+
+            public Evaluation.PipelineFileManager GetProcessingResultsFor(Task task)
+            {
+                if (_ProcessedFiles == null) return null;
+
+                var id = task.Pipeline._PipelineDom.RootIdentifier;
+
+                return _ProcessedFiles.TryGetValue(id, out Evaluation.PipelineFileManager result) ? result : null;                
             }
 
             #endregion            
@@ -532,7 +540,7 @@ namespace Epsylon.UberFactory
 
             public Evaluation.BuildContext GetBuildSettings()
             {
-                return Evaluation.BuildContext.Create(_Configuration, _SourceDirectory, _TargetDirectory);
+                return Evaluation.BuildContext.Create(_Configuration, _SourceDirectory, _TargetDirectory,false);
             }
 
             #endregion

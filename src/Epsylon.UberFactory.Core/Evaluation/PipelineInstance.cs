@@ -10,6 +10,7 @@ namespace Epsylon.UberFactory.Evaluation
     using INSTANCEFACTORY = Func<String, SDK.ContentObject>;
     using SETTINGSFUNCTION = Func<Type, ProjectDOM.Settings>;
 
+    [System.Diagnostics.DebuggerDisplay("Pipeline {InferredTitle}")]
     public class PipelineInstance
     {
         #region lifecycle        
@@ -42,7 +43,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         // evaluation data
 
-        private SDK.IBuildContext _BuildSettings;
+        private BuildContext _BuildSettings;
 
         private readonly Dictionary<Guid, SDK.ContentObject> _NodeInstances = new Dictionary<Guid, SDK.ContentObject>();        
 
@@ -52,23 +53,13 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region properties
 
-        public string InferredTitle
-        {
-            get
-            {
-                // tries to generate a title based on the content of the nodes
-
-                var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
-
-                return rootInstance is SDK.FileWriter exportInstance ? exportInstance.FileName : "Unknown";
-            }
-        }
+        public string InferredTitle => _InferTitleFromRootNode();        
 
         #endregion
 
         #region API - Setup
 
-        public void Setup(SDK.IBuildContext bsettings)
+        public void Setup(BuildContext bsettings)
         {
             _BuildSettings = bsettings ?? throw new ArgumentNullException(nameof(bsettings));
 
@@ -113,9 +104,7 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeDom == null) return;
 
             // Create node instance
-            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);
-
-            SDK.ConfigureNode(nodeInst, _BuildSettings);
+            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);            
 
             _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
 
@@ -152,29 +141,63 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region API - Evaluation
 
+        private string _InferTitleFromRootNode()
+        {
+            // tries to generate a title based on the content of the nodes
+
+            var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
+
+            if (rootInstance is SDK.FileWriter writer)
+            {
+                return writer.FileName;
+            }
+
+            if (rootInstance is SDK.ContentFilter filter)
+            {
+                return filter.GetType().Name;
+            }
+
+            if (rootInstance is SDK.ContentObject settings)
+            {
+                return settings.GetType().Name;
+            }
+
+            return "Unknown";
+        }
+
+        /// <summary>
+        /// Gets the instance object of a given ID
+        /// </summary>
+        /// <param name="nodeId">the ID of the node</param>
+        /// <returns>A Content Instance</returns>
         public SDK.ContentObject GetNodeInstance(Guid nodeId)
         {
             return _NodeInstances.GetValueOrDefault(nodeId);
         }
 
+        /// <summary>
+        /// Gets the stored property values of a given ID
+        /// </summary>
+        /// <param name="nodeId">the ID of the node</param>
+        /// <returns>A property values container</returns>
         private IPropertyProvider _GetNodeProperties(Guid nodeId)
         {
             return _Pipeline
                  .GetNode(nodeId)?
-                 .GetPropertiesForConfiguration(_BuildSettings.Configuration)
-                 .AsReadOnly();
+                 .GetPropertiesForConfiguration(_BuildSettings.Configuration);
         }
 
         public IEnumerable<Bindings.MemberBinding> CreateBindings(Guid nodeId)
         {
             _SetupIsReady();
+            
+            var nodeInst = GetNodeInstance(nodeId);
+            var nodeProps = _GetNodeProperties(nodeId);
 
-            // get source and destination objects            
-            var nodeProps = _Pipeline.GetNode(nodeId)?.GetPropertiesForConfiguration(_BuildSettings.Configuration);
-            var nodeInst = _NodeInstances.GetValueOrDefault(nodeId);
+            if (nodeInst == null || nodeProps == null) return Enumerable.Empty<Bindings.MemberBinding>();            
 
             // evaluate only the values
-            nodeInst.EvaluateBindings(nodeProps, null); // we don't pass the dependency evaluator callback because we only want to assign the initial values, we don't want a full chain evaluation
+            nodeInst.EvaluateBindings(nodeProps, null); // we don't pass the dependency evaluator callback because we only want to assign the value properties, we don't want a full recursi evaluation
 
             return nodeInst.CreateBindings(nodeProps);
         }
@@ -187,17 +210,22 @@ namespace Epsylon.UberFactory.Evaluation
             var spip = CreatePipelineInstance(sdom.Pipeline, _InstanceFactory, _SettingsFactory);
             spip.Setup(_BuildSettings);
 
-            return spip.GetEvaluator(MonitorContext.CreateNull()).EvaluateRoot() as SDK.ContentObject;
+            using (var evaluator = spip.CreateEvaluator(MonitorContext.CreateNull()))
+            {
+                return evaluator.EvaluateRoot() as SDK.ContentObject;
+            }                
         }
 
-        public PipelineEvaluator GetEvaluator(SDK.IMonitorContext monitor)
+        public PipelineEvaluator CreateEvaluator(SDK.IMonitorContext monitor)
         {
             _SetupIsReady();
+
+            var fileManager = PipelineFileManager.Create(_BuildSettings.SourceDirectory, _BuildSettings.TargetDirectory, _BuildSettings.IsSimulation);
 
             return PipelineEvaluator.Create
                 (
                 monitor,
-                _BuildSettings,
+                fileManager,
                 _Pipeline.RootIdentifier,
                 _NodeOrder.ToArray(),
                 GetNodeInstance,

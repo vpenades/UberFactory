@@ -47,7 +47,7 @@ namespace Epsylon.UberFactory
 
             public Project ParentProject => _Parent;
 
-            public String InferredTitle => _PipelineView?._PipelineEvaluator.InferredTitle;
+            public String InferredTitle => _PipelineView?._PipelineInstance.InferredTitle;
 
             public String DisplayTitle => "Task " + Title;            
 
@@ -129,7 +129,7 @@ namespace Epsylon.UberFactory
 
             public Project          ParentProject   => _Parent;            
 
-            public String           InferredTitle   => _PipelineView?._PipelineEvaluator.InferredTitle;
+            public String           InferredTitle   => _PipelineView?._PipelineInstance.InferredTitle;
 
             public String           DisplayTitle    => "Task " + Title;
 
@@ -159,6 +159,10 @@ namespace Epsylon.UberFactory
             /// Template current return type
             /// </summary>
             public Type ActiveReturnType { get { return null; } set { } }
+
+            public IEnumerable<string> ProcessedInputFiles => _Parent.GetProcessingResultsFor(this)?.InputFiles;
+
+            public IEnumerable<string> ProcessedOutputFiles => _Parent.GetProcessingResultsFor(this)?.OutputFiles;
 
             #endregion
 

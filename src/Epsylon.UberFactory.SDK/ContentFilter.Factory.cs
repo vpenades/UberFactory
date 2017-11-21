@@ -17,12 +17,7 @@ namespace Epsylon.UberFactory
             var node = (ContentObject)System.Activator.CreateInstance(type);            
 
             return node;
-        }
-
-        internal static void ConfigureNode(this ContentObject node, IBuildContext bsettings)
-        {
-            node._Initialize(bsettings);
-        }
+        }        
 
         internal static Object DebugNode(ContentFilter node, IMonitorContext monitor)
         {

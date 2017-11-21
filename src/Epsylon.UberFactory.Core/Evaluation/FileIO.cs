@@ -21,14 +21,14 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _ImportContext Create(PathString path, SDK.ITaskFileIOTracker tc)
+        public static _ImportContext Create(PathString path, SDK.IFileTracker tc)
         {
             if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
 
             return new _ImportContext(path, tc);
         }
 
-        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, Func<PathString,bool> pathValidator, SDK.ITaskFileIOTracker tc)
+        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, Func<PathString,bool> pathValidator, SDK.IFileTracker tc)
         {
             var files = System.IO.Directory.GetFiles(dir, fileMask, allDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
@@ -42,7 +42,7 @@ namespace Epsylon.UberFactory.Evaluation
             }
         }
 
-        private _ImportContext(PathString path,  SDK.ITaskFileIOTracker tc) :base(tc)
+        private _ImportContext(PathString path,  SDK.IFileTracker tc) :base(tc)
         {
             System.Diagnostics.Debug.Assert(path.IsValidAbsoluteFilePath);
 
@@ -84,14 +84,14 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _ExportContext Create(PathString path, PathString outDir, SDK.ITaskFileIOTracker tc)
+        public static _ExportContext Create(PathString path, PathString outDir, SDK.IFileTracker tc)
         {
             if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
 
             return new _ExportContext(path, outDir, tc);
         }
 
-        protected _ExportContext(PathString path, PathString o, SDK.ITaskFileIOTracker tc) : base(tc)
+        protected _ExportContext(PathString path, PathString o, SDK.IFileTracker tc) : base(tc)
         {
             System.Diagnostics.Debug.Assert(path.IsValidAbsoluteFilePath);
 
@@ -147,14 +147,14 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _SimulateExportContext Create(PathString path, Action<string, Byte[]> fileCreationNotifier, SDK.ITaskFileIOTracker tc)
+        public static _SimulateExportContext Create(PathString path, Action<string, Byte[]> fileCreationNotifier, SDK.IFileTracker tc)
         {
             // TODO: ensure path is within the specified target path            
 
             return new _SimulateExportContext(path, fileCreationNotifier, tc);
         }
 
-        private _SimulateExportContext(PathString p, Action<string, Byte[]> fileCreationNotifier, SDK.ITaskFileIOTracker tc) : base(tc)
+        private _SimulateExportContext(PathString p, Action<string, Byte[]> fileCreationNotifier, SDK.IFileTracker tc) : base(tc)
         {
             _TargetPath = p;
             _FileCreationNotifier = fileCreationNotifier;
@@ -200,7 +200,7 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
-        public static _DictionaryExportContext Create(string fileName, SDK.ITaskFileIOTracker tc)
+        public static _DictionaryExportContext Create(string fileName, SDK.IFileTracker tc)
         {
             var fp = new PathString(fileName);
             if (!fp.IsValidRelativeFilePath) return null;            
@@ -208,7 +208,7 @@ namespace Epsylon.UberFactory.Evaluation
             return new _DictionaryExportContext(fileName,tc);
         }
 
-        private _DictionaryExportContext(string fileName, SDK.ITaskFileIOTracker tc) : base(tc)
+        private _DictionaryExportContext(string fileName, SDK.IFileTracker tc) : base(tc)
         {
             _DefaultFileName = fileName;
         }
@@ -262,7 +262,7 @@ namespace Epsylon.UberFactory.Evaluation
             return Create(dict, "preview.txt", null);
         }
 
-        public static _DictionaryImportContext Create(IReadOnlyDictionary<string,Byte[]> files, string fileName, SDK.ITaskFileIOTracker tc)
+        public static _DictionaryImportContext Create(IReadOnlyDictionary<string,Byte[]> files, string fileName, SDK.IFileTracker tc)
         {
             var fp = new PathString(fileName);
             if (!fp.IsValidRelativeFilePath) return null;
@@ -270,7 +270,7 @@ namespace Epsylon.UberFactory.Evaluation
             return new _DictionaryImportContext(files, fileName,tc);
         }
 
-        private _DictionaryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName, SDK.ITaskFileIOTracker tc) :base(tc)
+        private _DictionaryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName, SDK.IFileTracker tc) :base(tc)
         {
             _DefaultFileName = fileName;
             _Files = files;

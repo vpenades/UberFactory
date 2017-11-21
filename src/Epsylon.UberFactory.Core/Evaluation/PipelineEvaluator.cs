@@ -9,25 +9,23 @@ namespace Epsylon.UberFactory.Evaluation
 {
     using SETTINGSINSTANCES = HashSet<SDK.ContentObject>;
 
-
-
-    public class PipelineEvaluator
+    public class PipelineEvaluator : IDisposable
     {
         #region lifecycle
 
         public static PipelineEvaluator Create
             (
             SDK.IMonitorContext monitor,
-            SDK.IBuildContext bsettings,
+            PipelineFileManager fileManager,
             Guid rootId,
             Guid[] nodeIds,
             Func<Guid, SDK.ContentObject> instanceFunc,
             Func<Type, SDK.ContentObject> settingsFunc,
-            Func<Guid, IPropertyProvider> propertiesFunc
+            Func<Guid, IPropertyProvider> propertiesFunc            
             )
         {
             if (monitor == null) throw new ArgumentNullException(nameof(monitor));
-            if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
+            if (fileManager == null) throw new ArgumentNullException(nameof(fileManager));
 
             if (nodeIds == null) throw new ArgumentNullException(nameof(nodeIds));
             if (!nodeIds.Contains(rootId)) throw new ArgumentNullException(nameof(rootId));
@@ -36,41 +34,43 @@ namespace Epsylon.UberFactory.Evaluation
             if (settingsFunc == null) throw new ArgumentNullException(nameof(settingsFunc));
             if (propertiesFunc == null) throw new ArgumentNullException(nameof(propertiesFunc));
 
-            bool allInstancesReady = !nodeIds
-                .Select(item => instanceFunc(item))
-                .OfType<_UnknownNode>()
-                .Any();
+            foreach(var id in nodeIds)
+            {
+                if (id == Guid.Empty) throw new ArgumentException("Empty Guid found in collection",nameof(nodeIds));
 
-            if (!allInstancesReady) throw new ArgumentException("Some filters couldn't be instantiated.");
+                var instance = instanceFunc(id);
+                if (instance == null || instance is _UnknownNode) throw new KeyNotFoundException($"Instance {id} not found");
 
-            var tracker = new _TaskFileIOTracker(bsettings);
+                var properties = propertiesFunc(id);
+                if (properties == null) throw new KeyNotFoundException($"Properties {id} not found");
+            }
 
-            return new PipelineEvaluator(monitor, tracker, rootId, nodeIds, instanceFunc, settingsFunc, propertiesFunc);
+            return new PipelineEvaluator(monitor, fileManager, rootId, nodeIds, instanceFunc, settingsFunc, propertiesFunc);
         }
 
         private PipelineEvaluator
             (SDK.IMonitorContext monitor,
-            _TaskFileIOTracker tracker,
+            PipelineFileManager fileManager,
             Guid rootId,
             Guid[] nodeIds,
             Func<Guid, SDK.ContentObject> instanceFunc,
             Func<Type, SDK.ContentObject> settingsFunc,
-            Func<Guid, IPropertyProvider> propertyFunc
+            Func<Guid, IPropertyProvider> propertyFunc            
             )
         {
             _Monitor = monitor;
-            _FileIOTracker = tracker;
+            _FileManager = fileManager;
 
             _NodeOrder = nodeIds;
             _RootIdentifier = rootId;
-            _NodeInstanceFunc = instanceFunc;
-            _SettingsInstanceFunc = settingsFunc;
-            _NodePropertiesFunc = propertyFunc;
+            _InstanceFunc = instanceFunc;
+            _SettingsFunc = settingsFunc;
+            _PropertiesFunc = propertyFunc;           
 
             _AcquireInstances();            
         }
 
-        // public void Dispose() { _ReleaseInstances(); }
+        public void Dispose() { _ReleaseInstances(); }
 
         private void _AcquireInstances()
         {
@@ -78,9 +78,9 @@ namespace Epsylon.UberFactory.Evaluation
 
             foreach (var id in _NodeOrder)
             {
-                var instance = _NodeInstanceFunc(id);
+                var instance = _InstanceFunc(id);
 
-                instance.BeginProcessing(_GetSharedSettings, _FileIOTracker);
+                instance.BeginProcessing(_FileManager, _GetSharedSettings);
             }
         }
 
@@ -88,7 +88,7 @@ namespace Epsylon.UberFactory.Evaluation
         {
             foreach (var id in _NodeOrder)
             {
-                var instance = _NodeInstanceFunc(id);
+                var instance = _InstanceFunc(id);
 
                 instance.EndProcessing();
             }
@@ -106,17 +106,23 @@ namespace Epsylon.UberFactory.Evaluation
         #region data
 
         private readonly SDK.IMonitorContext _Monitor;
-        private readonly _TaskFileIOTracker _FileIOTracker;
+        private readonly PipelineFileManager _FileManager;
 
         private readonly Guid _RootIdentifier;
 
         private readonly Guid[] _NodeOrder;        
 
-        private readonly Func<Guid, SDK.ContentObject> _NodeInstanceFunc;
-        private readonly Func<Type, SDK.ContentObject> _SettingsInstanceFunc;
-        private readonly Func<Guid, IPropertyProvider> _NodePropertiesFunc;
+        private readonly Func<Guid, SDK.ContentObject> _InstanceFunc;
+        private readonly Func<Type, SDK.ContentObject> _SettingsFunc;
+        private readonly Func<Guid, IPropertyProvider> _PropertiesFunc;
 
         private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();
+
+        #endregion
+
+        #region properties
+
+        public PipelineFileManager FileManager => _FileManager;
 
         #endregion
 
@@ -124,9 +130,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public Object EvaluateRoot()
         {            
-            if (_Monitor.IsCancelRequested) return null;            
-
-            _FileIOTracker?.Clear();
+            if (_Monitor.IsCancelRequested) return null;
 
             return EvaluateNode(_RootIdentifier);
         }
@@ -142,9 +146,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public IPreviewResult PreviewNode(Guid nodeId)
         {
-            if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
-
-            _FileIOTracker?.Clear();            
+            if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));            
 
             var previewObject = _EvaluateNode( nodeId, true);
 
@@ -173,14 +175,12 @@ namespace Epsylon.UberFactory.Evaluation
             if (_Monitor.IsCancelRequested) throw new OperationCanceledException();            
 
             // Get the current node being evaluated
-            var nodeInst = _NodeInstanceFunc(nodeId);
+            var nodeInst = _InstanceFunc(nodeId);
             if (nodeInst == null) return null;
-            if (nodeInst is _UnknownNode) return null;
-
-            _FileIOTracker.RegisterAssemblyFile(nodeInst.GetType().Assembly.Location);
+            if (nodeInst is _UnknownNode) return null;            
 
             // Next, we retrieve the property values for this node from the DOM
-            var nodeProps = _NodePropertiesFunc(nodeId);
+            var nodeProps = _PropertiesFunc(nodeId).AsReadOnly();
             if (nodeProps == null) return null;
 
             // Assign values and node dependencies. Dependecies are evaluated to its values.
@@ -223,64 +223,15 @@ namespace Epsylon.UberFactory.Evaluation
 
             if (si != null) return si;
 
-            si = _SettingsInstanceFunc(t);
+            si = _SettingsFunc(t);
 
             _SettingsInstancesCache.Add(si);
 
-            si.BeginProcessing(_GetSharedSettings, _FileIOTracker);
+            si.BeginProcessing(_FileManager, _GetSharedSettings);
 
             return si;
         }
 
-        #endregion
-
-    }
-
-    class _TaskFileIOTracker : SDK.ITaskFileIOTracker
-    {
-        public _TaskFileIOTracker(SDK.IBuildContext bc)
-        {
-
-        }
-
-
-        private readonly HashSet<String> _AssemblyFiles = new HashSet<String>(StringComparer.OrdinalIgnoreCase);// assembly files used by this pipeline
-        private readonly HashSet<String> _InputFiles = new HashSet<String>(StringComparer.OrdinalIgnoreCase);   // files read from Source directory
-        private readonly HashSet<String> _OutputFiles = new HashSet<String>(StringComparer.OrdinalIgnoreCase);  // files written to temporary directory
-
-        public IEnumerable<String> InputFiles
-        {
-            get
-            {
-                return _InputFiles;
-            }
-        }
-
-        public IEnumerable<String> OutputFiles
-        {
-            get
-            {
-                return _OutputFiles;
-            }
-        }
-
-        public void Clear()
-        {
-            _AssemblyFiles.Clear();
-            _InputFiles.Clear();
-            _OutputFiles.Clear();
-        }
-
-        public void RegisterAssemblyFile(string filePath) { _AssemblyFiles.Add(filePath); }
-
-        void SDK.ITaskFileIOTracker.RegisterInputFile(string filePath, string parentFilePath)
-        {
-            _InputFiles.Add(filePath);
-        }
-
-        void SDK.ITaskFileIOTracker.RegisterOutputFile(string filePath, string parentFilePath)
-        {
-            _OutputFiles.Add(filePath);
-        }
-    }
+        #endregion        
+    }   
 }

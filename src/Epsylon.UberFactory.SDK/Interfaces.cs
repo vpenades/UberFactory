@@ -78,14 +78,14 @@ namespace Epsylon.UberFactory
         /// <summary>
         /// Tells the evaluator which child files depend on which parent files
         /// </summary>
-        public interface ITaskFileIOTracker
+        public interface IFileTracker
         {
             void RegisterInputFile(string filePath, string parentFilePath);
             void RegisterOutputFile(string filePath, string parentFilePath);
         }
 
         /// <summary>
-        /// The build context provides a number of services to the contet filters
+        /// The file manager provides a number of services to the contet filters
         /// </summary>
         /// <remarks>
         /// Content Filters use the build context to:
@@ -94,10 +94,8 @@ namespace Epsylon.UberFactory
         /// - Get a context to write product files
         /// - Write to the log
         /// </remarks>
-        public interface IBuildContext
+        public interface IFileManager
         {
-            String[] Configuration { get; }
-
             /// <summary>
             /// Converts an absolute path to a path relative to Context's Source path
             /// </summary>
@@ -131,30 +129,24 @@ namespace Epsylon.UberFactory
             /// </summary>
             /// <param name="absolutePath">A path to the location</param>
             /// <returns>An import context</returns>
-            ImportContext GetImportContext(String absolutePath, ITaskFileIOTracker trackerContext);
+            ImportContext GetImportContext(String absolutePath);
 
             /// <summary>
             /// Creates an Export context to write files to the given location
             /// </summary>
             /// <param name="absolutePath">A path to the location</param>
             /// <returns>An export context</returns>
-            ExportContext GetExportContext(String absolutePath, ITaskFileIOTracker trackerContext);
+            ExportContext GetExportContext(String absolutePath);
 
             
-            IEnumerable<ImportContext> GetImportContextBatch(String absolutePath, String fileMask, bool allDirectories, ITaskFileIOTracker trackerContext);
+            IEnumerable<ImportContext> GetImportContextBatch(String absolutePath, String fileMask, bool allDirectories);
 
             /// <summary>
             /// Gets a preview context to 
             /// </summary>            
             /// <returns>A preview context</returns>
             PreviewContext GetPreviewContext();
-        }
-              
-
-        public abstract class PreviewContext
-        {
-            public abstract ExportContext CreateMemoryFile(String fileName);
-        }
+        }       
         
     }
 

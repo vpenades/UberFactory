@@ -11,25 +11,20 @@ namespace Epsylon.UberFactory
 
         public abstract class ContentObject
         {
-            #region lifecycle
+            #region lifecycle            
 
-            internal void _Initialize(IBuildContext bc)
+            internal void BeginProcessing(IFileManager bc, Func<Type, ContentObject> scr)
             {
                 if (_BuildContext != null) throw new InvalidOperationException("already initialized");
-                
-                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));                
-            }
 
-            internal void BeginProcessing(Func<Type, ContentObject> scr, ITaskFileIOTracker trackerContext)
-            {
-                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
-                _TrackerContext = trackerContext;
+                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
+                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));                
             }
 
             internal void EndProcessing()
             {
-                _SharedContentResolver = null;
-                _TrackerContext = null;
+                _SharedContentResolver = null;                
+                _BuildContext = null;
             }
 
             #endregion
@@ -37,42 +32,35 @@ namespace Epsylon.UberFactory
             #region data
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
-
-            private ITaskFileIOTracker _TrackerContext;
-            private IBuildContext _BuildContext;            
+                        
+            private IFileManager _BuildContext;            
             private Func<Type, ContentObject> _SharedContentResolver;
 
             #endregion
 
             #region API           
 
-            public IBuildContext BuildContext => _BuildContext;            
+            public IFileManager BuildContext => _BuildContext;            
 
             public ImportContext GetImportContext(String relativePath)
             {
-                if (_TrackerContext == null) throw new InvalidOperationException("Processing not started");
-
                 var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
 
-                return _BuildContext.GetImportContext(absolutePath, _TrackerContext);
+                return _BuildContext.GetImportContext(absolutePath);
             }
 
             public IEnumerable<ImportContext> GetImportContextBatch(String relativePath, String fileMask, bool allDirectories)
             {
-                if (_TrackerContext == null) throw new InvalidOperationException("Processing not started");
-
                 var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
 
-                return _BuildContext.GetImportContextBatch(absolutePath, fileMask, allDirectories, _TrackerContext);
+                return _BuildContext.GetImportContextBatch(absolutePath, fileMask, allDirectories);
             }
 
             public ExportContext GetExportContext(String relativePath)
             {
-                if (_TrackerContext == null) throw new InvalidOperationException("Processing not started");
-
                 var absolutePath = this.BuildContext.GetTargetAbsolutePath(relativePath);
 
-                return _BuildContext.GetExportContext(absolutePath, _TrackerContext);
+                return _BuildContext.GetExportContext(absolutePath);
             }
 
             public SDK.ContentObject GetSharedSettings(Type t) { return _SharedContentResolver?.Invoke(t); }

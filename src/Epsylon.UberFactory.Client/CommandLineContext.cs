@@ -135,14 +135,10 @@ namespace Epsylon.UberFactory.Client
                 // load plugins
                 var prjDir = prjFilePath.DirectoryPath;
                 var plugins = evalPlugins(document, prjDir);
-                
+
                 // create build context
 
-                var buildSettings = _TargetTask == "SIMULATE"
-                    ?
-                    Evaluation.BuildContext.CreateWithSimulatedOutput(_Configuration,prjDir)
-                    :
-                    Evaluation.BuildContext.Create(_Configuration, prjDir, dstDirPath);                
+                var buildSettings = Evaluation.BuildContext.Create(_Configuration, prjDir, dstDirPath, _TargetTask == "SIMULATE");                
 
                 // do build
                 ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);

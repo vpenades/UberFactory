@@ -70,7 +70,7 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static void BuildProject(Project srcDoc, Evaluation.BuildContext bsettings, Func<String, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor)
+        public static IReadOnlyDictionary<Guid,Evaluation.PipelineFileManager> BuildProject(Project srcDoc, Evaluation.BuildContext bsettings, Func<String, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor)
         {
             if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
             if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
@@ -88,7 +88,9 @@ namespace Epsylon.UberFactory
             // 3- we're able to create instances of all the filters
             // 4- all the source files are available            
 
-            _ValidateFactory(bsettings, filterFactory, tasks);            
+            _ValidateFactory(bsettings, filterFactory, tasks);
+
+            var results = new Dictionary<Guid, Evaluation.PipelineFileManager>();
 
             for (int i = 0; i < tasks.Length; ++i)
             {
@@ -96,12 +98,21 @@ namespace Epsylon.UberFactory
 
                 var task = tasks[i];
 
-                var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
-                evaluator.Setup(bsettings);
+                var instance = Evaluation.PipelineInstance.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
+                instance.Setup(bsettings);
 
-                var srcData = evaluator.GetEvaluator(monitor.GetProgressPart(i, tasks.Length)).EvaluateRoot();
-                if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
+                using (var evaluator = instance.CreateEvaluator(monitor.GetProgressPart(i, tasks.Length)))
+                {
+                    var srcData = evaluator.EvaluateRoot();
+                    if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
+
+                    var fileReport = evaluator.FileManager;
+
+                    results[task.Pipeline.RootIdentifier] = fileReport;
+                }                    
             }
+
+            return results;
         }
 
         private static void _ValidateFactory(Evaluation.BuildContext bsettings, Func<string, SDK.ContentObject> filterFactory, Task[] tasks)

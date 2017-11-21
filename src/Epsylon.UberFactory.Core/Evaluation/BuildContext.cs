@@ -7,35 +7,29 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory.Evaluation
 {
     [System.Diagnostics.DebuggerDisplay("BuildContext {ConfigurationJoined} Ready:{CanBuild} Input:{SourceDirectory.ToString()} Output:{TargetDirectory.ToString()} Errors:{CurrentError}")]
-    public class BuildContext : SDK.IBuildContext
+    public class BuildContext
     {
         #region lifecycle        
 
-        public static BuildContext Create(String cfg, PathString sd) { return Create(cfg, sd, PathString.Empty); }
+        public static BuildContext Create(String cfg, PathString sd, bool simul = false) { return Create(cfg, sd, PathString.Empty, simul); }
 
-        public static BuildContext Create(String cfg, PathString sd, PathString td)
+        public static BuildContext Create(String cfg, PathString sd, PathString td, bool simul = false)
         {
             var xcfg = cfg?.Split('.').ToArray();
 
-            return new BuildContext(xcfg, sd, td);
+            return new BuildContext(xcfg, sd, td, simul);
         }
 
-        public static BuildContext Create(BuildContext other, PathString td) { return new BuildContext(other.Configuration, other.SourceDirectory, td); }
+        public static BuildContext Create(BuildContext other, PathString td, bool simul = false) { return new BuildContext(other.Configuration, other.SourceDirectory, td, simul); }
+        
+        protected BuildContext(String[] cfg, PathString sd, bool simul) : this(cfg, sd, PathString.Empty, simul) { }
 
-        public static BuildContext CreateWithSimulatedOutput(String cfg, PathString sd)
-        {
-            var xcfg = cfg?.Split('.').ToArray();
-
-            return new _TestBuildContext(xcfg, sd);
-        }
-
-        protected BuildContext(String[] cfg, PathString sd) : this(cfg, sd, PathString.Empty) { }
-
-        private BuildContext(String[] cfg, PathString sd, PathString td)
+        private BuildContext(String[] cfg, PathString sd, PathString td, bool simul)
         {
             _Configuration = cfg ?? (new string[0]);
             _SourceDirectoryAbsPath = sd;
             _TargetDirectoryAbsPath = td;
+            IsSimulation = simul;
 
             if (string.IsNullOrWhiteSpace(_TargetDirectoryAbsPath))
             {
@@ -54,8 +48,8 @@ namespace Epsylon.UberFactory.Evaluation
         public const Char ConfigurationSeparator = '.';
             
         private readonly String[] _Configuration;
-        private readonly PathString _SourceDirectoryAbsPath;
-        // private readonly PathString _IntermediateDirectoryAbsPath; if input hasn't changed and intermediate exists, copy from intermediate to output without processing.
+
+        private readonly PathString _SourceDirectoryAbsPath;        
         private readonly PathString _TargetDirectoryAbsPath;
 
         #endregion
@@ -79,6 +73,8 @@ namespace Epsylon.UberFactory.Evaluation
         public bool CanBuild                => CurrentError == null;
 
         public String CurrentError          => _GetCurrentError();
+
+        public bool IsSimulation { get; private set; }
 
         #endregion
 
@@ -109,61 +105,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             return null;
         }
-
-        protected bool IsValidInputFilePath(PathString path)
-        {
-            if (!path.IsValidAbsoluteFilePath) return false;
-
-            if (!_TargetDirectoryAbsPath.IsEmpty && _TargetDirectoryAbsPath.Contains(path)) return false;
-
-            return true;
-        }
-
-        protected bool IsValidOutputFilePath(PathString path)
-        {
-            if (!path.IsValidAbsoluteFilePath) return false;
-
-            if (!_TargetDirectoryAbsPath.IsEmpty && !_TargetDirectoryAbsPath.Contains(path)) return false;
-
-            return true;
-        }        
         
-        public String GetRelativeToSource(String absFilePath)      { return _SourceDirectoryAbsPath.MakeRelativePath(absFilePath); }
-        
-        public String GetSourceAbsolutePath(String relFilePath)    { return _SourceDirectoryAbsPath.MakeAbsolutePath(relFilePath); }
-        
-        public String GetRelativeToTarget(String absFilePath)      { return TargetDirectory.MakeRelativePath(absFilePath); }
-        
-        public String GetTargetAbsolutePath(String relFilePath)    { return TargetDirectory.MakeAbsolutePath(relFilePath); }
-
-        public SDK.ImportContext GetImportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
-        {
-            var path = new PathString(absolutePath);
-
-            if (!IsValidInputFilePath(path)) throw new ArgumentException($"Source file {absolutePath} points to a file in the output directory.", nameof(absolutePath));
-
-            return _ImportContext.Create(path,trackerContext);
-        }
-
-        public IEnumerable<SDK.ImportContext> GetImportContextBatch(String absolutePath, String fileMask, bool allDirectories, SDK.ITaskFileIOTracker trackerContext)
-        {
-            return _ImportContext.CreateBatch(new PathString(absolutePath), fileMask, allDirectories, IsValidInputFilePath, trackerContext);
-        }        
-
-        public virtual SDK.ExportContext GetExportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
-        {
-            var path = new PathString(absolutePath);
-
-            if (!IsValidOutputFilePath(path)) throw new ArgumentException($"Source file {absolutePath} points to a file in the output directory.", nameof(absolutePath));
-
-            return _ExportContext.Create(path, _TargetDirectoryAbsPath, trackerContext);
-        }        
-
-        public SDK.PreviewContext GetPreviewContext()
-        {
-            return new _PreviewContext();
-        }
-
         private String _GetCurrentError()
         {
             if (!IsValidConfiguration(_Configuration)) return "Invalid Configuration";
@@ -183,46 +125,5 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion
     }    
 
-    /// <summary>
-    /// Build context designed for testing and validation
-    /// It performs a full processing without actually writing anything to the hard drive
-    /// </summary>
-    sealed class _TestBuildContext : BuildContext
-    {
-        #region lifecycle
-
-        internal _TestBuildContext(string[] cfg, PathString sd) : base(cfg,sd)
-        {
-            _Checksum = System.Security.Cryptography.MD5.Create();
-        }
-
-        #endregion
-
-        #region data
-
-        private readonly System.Security.Cryptography.MD5 _Checksum;
-
-        private readonly Dictionary<string, string> _SimulatedOutputFiles = new Dictionary<string, string>();
-
-        #endregion
-
-        #region API
-
-        public override SDK.ExportContext GetExportContext(String absolutePath, SDK.ITaskFileIOTracker trackerContext)
-        {            
-            return _SimulateExportContext.Create(new PathString(absolutePath), _NotifyCreateFileSimulation, trackerContext);           
-        }
-
-        private void _NotifyCreateFileSimulation(string name, Byte[] data)
-        {
-            var hash = _Checksum.ComputeHash(data);
-
-            var b64hash = Convert.ToBase64String(hash);
-
-            _SimulatedOutputFiles[name] = b64hash;
-        }
-
-        #endregion
-
-    }
+    
 }

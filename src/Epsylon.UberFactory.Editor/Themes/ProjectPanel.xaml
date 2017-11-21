@@ -105,6 +105,27 @@
                                 <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Enabled}" />
                                 <DataGridTextColumn Header="User Title" Binding="{Binding Title}" />
                                 <DataGridTextColumn Header="Inferred Title" Binding="{Binding InferredTitle}" IsReadOnly="True" />
+
+                                <DataGridTemplateColumn Header="Input Files" >
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Expander IsExpanded="False">
+                                                <ListBox ItemsSource="{Binding ProcessedInputFiles}"/>
+                                            </Expander>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Output Files" >
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Expander IsExpanded="False">
+                                                <ListBox ItemsSource="{Binding ProcessedOutputFiles}"/>
+                                            </Expander>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
                             </DataGrid.Columns>
 
                         </DataGrid>

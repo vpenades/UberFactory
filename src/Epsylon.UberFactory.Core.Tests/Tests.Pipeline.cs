@@ -86,12 +86,15 @@ namespace Epsylon.UberFactory
             var srcDir = new PathString(System.Environment.CurrentDirectory);
 
             var instance = Evaluation.PipelineInstance.CreatePipelineInstance(pipeline, TestFiltersFactory.CreateInstance, null);
-            instance.Setup(Evaluation.BuildContext.CreateWithSimulatedOutput(configuration, srcDir));
+            instance.Setup(Evaluation.BuildContext.Create(configuration, srcDir,true));
 
             // run evaluation
 
-            // note we're using the secondary evaluator instead of the primary one, to prevent creating the target directory.
-            return (int)instance.GetEvaluator(Evaluation.MonitorContext.CreateNull()).EvaluateRoot();
+            using (var evaluator = instance.CreateEvaluator(Evaluation.MonitorContext.CreateNull()))
+            {
+                // note we're using the secondary evaluator instead of the primary one, to prevent creating the target directory.
+                return (int)evaluator.EvaluateRoot();
+            }                
         }
     }
 
