@@ -217,12 +217,12 @@ namespace Epsylon.UberFactory
     {
         #region lifecycle
 
-        public PluginsCollectionView(AppView app, Func<string, bool> check, Action<string> insert, Action<string> remove)
+        public PluginsCollectionView(AppView app, Func<string, bool> check, Action<string, string> insertAssembly, Action<string> remove)
         {
             _Application = app;
 
             _CheckAction = check;
-            _InsertAction = insert;
+            _InsertAssemblyAction = insertAssembly;
             _RemoveAction = remove;
 
             DiscoverCmd = new RelayCommand(DiscoverPlugins);
@@ -236,7 +236,7 @@ namespace Epsylon.UberFactory
         private readonly AppView _Application;
 
         private readonly Func<string, bool> _CheckAction;
-        private readonly Action<string> _InsertAction;
+        private readonly Action<string,string> _InsertAssemblyAction;
         private readonly Action<string> _RemoveAction;
 
         #endregion
@@ -256,7 +256,7 @@ namespace Epsylon.UberFactory
             get
             {
                 return _Application._PluginPaths
-                    .Select(item => PluginView.Create(item,_CheckAction,_InsertAction,_RemoveAction))
+                    .Select(item => PluginView.Create(item,_CheckAction,_InsertAssemblyAction,_RemoveAction))
                     .ExceptNulls()
                     .ToArray();
             }
@@ -311,13 +311,13 @@ namespace Epsylon.UberFactory
     {
         #region lifecycle
 
-        public static PluginView Create(string basePath, string relPath, Func<string, bool> check, Action<string> insert, Action<string> remove)
+        public static PluginView Create(string basePath, string relPath, Func<string, bool> check, Action<string,string> insert, Action<string> remove)
         {
             var absPath = System.IO.Path.Combine(basePath, relPath);
             return Create(absPath, check,insert,remove);
         }
 
-        public static PluginView Create(string absPath, Func<string, bool> check, Action<string> insert, Action<string> remove)
+        public static PluginView Create(string absPath, Func<string, bool> check, Action<string,string> insert, Action<string> remove)
         {
             try
             {
@@ -332,7 +332,7 @@ namespace Epsylon.UberFactory
             }
         }
 
-        private PluginView(System.Diagnostics.FileVersionInfo ainfo, Func<string, bool> check, Action<string> insert, Action<string> remove)
+        private PluginView(System.Diagnostics.FileVersionInfo ainfo, Func<string, bool> check, Action<string,string> insert, Action<string> remove)
         {
             _AssemblyInfo = ainfo;
             _AssemblyName = System.Reflection.AssemblyName.GetAssemblyName(ainfo.FileName);
@@ -356,7 +356,7 @@ namespace Epsylon.UberFactory
         private readonly System.Reflection.AssemblyName _AssemblyName;
 
         private readonly Func<string,bool> _CheckAction;
-        private readonly Action<string> _InsertAction;
+        private readonly Action<string,string> _InsertAction;
         private readonly Action<string> _RemoveAction;
 
         #endregion
@@ -380,7 +380,7 @@ namespace Epsylon.UberFactory
             get { return _CheckAction == null ? false: _CheckAction(FilePath); }
             set
             {
-                if ( value && _InsertAction != null) _InsertAction(FilePath);
+                if ( value && _InsertAction != null) _InsertAction(FilePath, ProductVersion);
                 if (!value && _RemoveAction != null) _RemoveAction(FilePath);
             }
         }

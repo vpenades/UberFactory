@@ -138,7 +138,7 @@ namespace Epsylon.UberFactory
             _Dialogs.ShowGenericDialog<Themes.PluginsPanel>(null, "Plugins Manager", new PluginsCollectionView(app,null,null,null));
         }
 
-        public static void ShowPluginsManagerDialog(AppView app, Func<string,bool> check, Action<string> insert, Action<string> remove)
+        public static void ShowPluginsManagerDialog(AppView app, Func<string,bool> check, Action<string, string> insert, Action<string> remove)
         {
             _Dialogs.ShowGenericDialog<Themes.PluginsPanel>(null, "Plugins Manager", new PluginsCollectionView(app,check,insert,remove));
         }

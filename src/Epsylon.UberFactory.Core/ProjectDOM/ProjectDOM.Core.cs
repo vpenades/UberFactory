@@ -354,9 +354,10 @@ namespace Epsylon.UberFactory
         }        
 
         public partial class PluginReference : Item
-        {
-            private const string PROP_ABSPATH = "AbsolutePath";
-            private const string PROP_RELPATH = "RelativePath";
+        {            
+            private const string PROP_ASSEMBLYPATH = "AssemblyPath";
+            private const string PROP_PACKAGEID = "PackageId";
+            private const string PROP_VERSION = "Version";
 
             #region lifecycle
 
@@ -366,10 +367,16 @@ namespace Epsylon.UberFactory
 
             #region properties
 
-            public PathString RelativePath
+            public PathString AssemblyPath
             {
-                get { return new PathString(Properties.GetValue(PROP_RELPATH, null)); }
-                set { Properties.SetValue(PROP_RELPATH, value); }
+                get { return new PathString(Properties.GetValue(PROP_ASSEMBLYPATH, null)); }
+                set { Properties.SetValue(PROP_ASSEMBLYPATH, value); }
+            }
+
+            public String Version
+            {
+                get { return Properties.GetValue(PROP_VERSION, null); }
+                set { Properties.SetValue(PROP_VERSION, value); }
             }
 
             #endregion
@@ -390,7 +397,7 @@ namespace Epsylon.UberFactory
 
             public IReadOnlyList<Item> Items => GetLogicalChildren<Item>().ToArray();
 
-            public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.RelativePath).ToArray();           
+            public IReadOnlyList<PathString> References => GetLogicalChildren<PluginReference>().Select(item => item.AssemblyPath).ToArray();           
 
             #endregion            
 
@@ -398,22 +405,26 @@ namespace Epsylon.UberFactory
 
             public bool ContainsReference(PathString rpath)
             {
-                return GetLogicalChildren<PluginReference>().Any(item => item.RelativePath == rpath);
+                return GetLogicalChildren<PluginReference>().Any(item => item.AssemblyPath == rpath);
             }
 
-            public void InsertReference(PathString rpath)
+            public void UseAssemblyReference(PathString rpath, String version)
             {
-                var pr = new PluginReference
-                {
-                    RelativePath = rpath
-                };
+                var child = GetLogicalChildren<PluginReference>().FirstOrDefault(item => item.AssemblyPath == rpath);
 
-                AddLogicalChild(pr);
+                if (child == null)
+                {
+                    child = new PluginReference { AssemblyPath = rpath };
+
+                    AddLogicalChild(child);
+                }
+
+                child.Version = version;                
             }
 
             public void RemoveReference(PathString rpath)
             {
-                var child = GetLogicalChildren<PluginReference>().FirstOrDefault(item => item.RelativePath == rpath);
+                var child = GetLogicalChildren<PluginReference>().FirstOrDefault(item => item.AssemblyPath == rpath);
                 if (child == null) return;
 
                 RemoveLogicalChild(child);

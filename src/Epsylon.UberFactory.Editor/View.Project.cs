@@ -283,7 +283,7 @@ namespace Epsylon.UberFactory
                     (
                     _Application,
                     path => _Source.ContainsReference(_DocumentPath.DirectoryPath.MakeRelativePath(path)),
-                    path => _Source.InsertReference(_DocumentPath.DirectoryPath.MakeRelativePath(path)),
+                    (path,ver) => _Source.UseAssemblyReference(_DocumentPath.DirectoryPath.MakeRelativePath(path),ver),
                     path => _Source.RemoveReference(_DocumentPath.DirectoryPath.MakeRelativePath(path))
                     );
                 _ReloadPlugins();

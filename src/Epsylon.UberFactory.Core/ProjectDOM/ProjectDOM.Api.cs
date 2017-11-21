@@ -15,7 +15,7 @@ namespace Epsylon.UberFactory
             if (o is Configuration) return ((Configuration)o).ConfigurationFullName;
             if (o is Node) return ((Node)o).ClassIdentifier;
             if (o is Task) return ((Task)o).Title;            
-            if (o is PluginReference) return ((PluginReference)o).RelativePath;
+            if (o is PluginReference) return ((PluginReference)o).AssemblyPath;
 
             throw new NotSupportedException();
         }

@@ -92,7 +92,9 @@ namespace Epsylon.UberFactory
 
                     var valOut = Transform(valIn); if (valOut == null) continue;
 
-                    var fileOutName = System.IO.Path.ChangeExtension(importer.FileName, GetFileOutExtension());
+                    var relPath = this.BuildContext.GetRelativeToSource(importer.FilePath);
+
+                    var fileOutName = System.IO.Path.ChangeExtension(relPath, GetFileOutExtension());
 
                     var exporter = this.GetExportContext(fileOutName);
 

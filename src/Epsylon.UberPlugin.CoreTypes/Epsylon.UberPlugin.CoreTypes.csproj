@@ -9,4 +9,6 @@
     <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />
   </ItemGroup>
 
+  <Import Project="$(MSBuildThisFileDirectory)\..\Shared\StaticVersionInfo.props" />
+
 </Project>

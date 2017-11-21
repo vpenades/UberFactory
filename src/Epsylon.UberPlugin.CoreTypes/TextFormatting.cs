@@ -111,6 +111,23 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
+    [SDK.ContentNode(nameof(TextBatchMerger))]
+    [SDK.ContentMetaData("Title", "Merge batch of Text Files")]
+    public sealed class TextBatchMerger : SDK.BatchMerge<String, String>
+    {
+        protected override IEnumerable<string> GetFileInExtensions() { yield return "txt"; }
+
+        protected override string ReadFile(SDK.ImportContext stream)
+        {
+            return stream.ReadAllText();
+        }
+
+        protected override string Merge(string product, string value)
+        {
+            return product + value;
+        }        
+    }
+
 
 
     [SDK.ContentNode("FormatText")]
