@@ -153,6 +153,20 @@ namespace Epsylon.UberFactory
 
         #region API
 
+        public bool Contains(PathString other)
+        {
+            if (!this.IsValidDirectoryPath) return false;
+
+            var thisPath = this.AsAbsolute().ToString();
+            var otherPath = other.AsAbsolute().ToString();
+
+            if (otherPath.Length < thisPath.Length) return false;
+
+            otherPath = otherPath.Substring(0, thisPath.Length);
+
+            return new PathString(thisPath) == new PathString(otherPath);
+        }
+
         public PathString AsAbsolute()
         {
             if (IsEmpty) return Empty;

@@ -28,15 +28,19 @@ namespace Epsylon.UberFactory.Evaluation
             return new _ImportContext(path, tc);
         }
 
-        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, SDK.ITaskFileIOTracker tc)
+        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, PathString directoryToDiscard, SDK.ITaskFileIOTracker tc)
         {
-            // dir.IsValidDirectoryAbsolutePath;
+            if (!directoryToDiscard.IsValidDirectoryAbsolutePath) throw new ArgumentException(nameof(directoryToDiscard));
 
             var files = System.IO.Directory.GetFiles(dir, fileMask, allDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
             foreach(var f in files)
             {
-                yield return Create(new PathString(f), tc);
+                var fp = new PathString(f);
+
+                if (directoryToDiscard.Contains(fp)) continue;
+
+                yield return Create(fp, tc);
             }
         }
 

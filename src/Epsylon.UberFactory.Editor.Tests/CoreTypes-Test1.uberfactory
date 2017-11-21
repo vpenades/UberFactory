@@ -2,7 +2,7 @@
   <Properties />
   <PluginReference>
     <Properties>
-      <RelativePath>..\Epsylon.UberPlugin.CoreTypes\bin\Debug\netstandard2.0\Epsylon.UberPlugin.CoreTypes.dll</RelativePath>
+      <AssemblyPath>..\Epsylon.UberPlugin.CoreTypes\bin\Debug\netstandard2.0\Epsylon.UberPlugin.CoreTypes.dll</AssemblyPath>
     </Properties>
   </PluginReference>
   <Task>

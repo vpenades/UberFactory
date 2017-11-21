@@ -46,7 +46,39 @@
   </Task>
   <PluginReference>
     <Properties>
-      <RelativePath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\Epsylon.TestPlugins.dll</RelativePath>
+      <AssemblyPath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\Epsylon.TestPlugins.dll</AssemblyPath>
+    </Properties>
+  </PluginReference>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>50c697f8-7815-4b5f-9dcd-e7892ac3e002</RootNodeId>
+      </Properties>
+      <Node Id="50c697f8-7815-4b5f-9dcd-e7892ac3e002">
+        <Properties>
+          <ClassName>MainSettings2</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>898f4d9d-5c36-4383-91ba-b3c9737cf818</RootNodeId>
+      </Properties>
+      <Node Id="898f4d9d-5c36-4383-91ba-b3c9737cf818">
+        <Properties>
+          <ClassName>MainSettings3</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <PluginReference>
+    <Properties>
+      <AssemblyPath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\Epsylon.TestPlugins.dll</AssemblyPath>
+      <Version>1.0.0</Version>
     </Properties>
   </PluginReference>
 </Project>

@@ -33,7 +33,7 @@
   </Task>
   <PluginReference>
     <Properties>
-      <RelativePath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\MISSINGPLUGIN.dll</RelativePath>
+      <AssemblyPath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\MISSINGPLUGIN.dll</AssemblyPath>
     </Properties>
   </PluginReference>
 </Project>

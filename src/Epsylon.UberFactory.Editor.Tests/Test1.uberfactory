@@ -46,7 +46,7 @@
   </Task>
   <PluginReference>
     <Properties>
-      <RelativePath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\Epsylon.TestPlugins.dll</RelativePath>
+      <AssemblyPath>..\Epsylon.TestPlugins\bin\Debug\netstandard1.5\Epsylon.TestPlugins.dll</AssemblyPath>
     </Properties>
   </PluginReference>
 </Project>
