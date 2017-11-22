@@ -154,12 +154,12 @@ namespace Epsylon.UberFactory.Evaluation
 
             if (rootInstance is SDK.ContentFilter filter)
             {
-                return filter.GetType().Name;
+                return filter.GetContentInfo().DisplayName;                
             }
 
             if (rootInstance is SDK.ContentObject settings)
             {
-                return settings.GetType().Name;
+                return settings.GetContentInfo().DisplayName;                
             }
 
             return "Unknown";
@@ -187,7 +187,7 @@ namespace Epsylon.UberFactory.Evaluation
                  .GetPropertiesForConfiguration(_BuildSettings.Configuration);
         }
 
-        public IEnumerable<Bindings.MemberBinding> CreateBindings(Guid nodeId)
+        public IEnumerable<Bindings.MemberBinding> CreateValueBindings(Guid nodeId)
         {
             _SetupIsReady();
             

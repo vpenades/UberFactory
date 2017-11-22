@@ -176,7 +176,7 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id)
             {
-                return _PipelineInstance.CreateBindings(id);
+                return _PipelineInstance.CreateValueBindings(id);
             }
 
             public Guid AddNode(Factory.ContentBaseInfo cbinfo)

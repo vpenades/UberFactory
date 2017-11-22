@@ -8,12 +8,30 @@ namespace Epsylon.UberPlugin.CoreTypes
 
     using TEXTFUNC = Func<String, String>;
 
+    [SDK.ContentNode("FormatText")]
+    [SDK.ContentMetaData("Title", "Formatted Text")]
+    [SDK.ContentMetaData("TitleFormat", "{0} Formatted")]
+    public sealed class FormatText : SDK.ContentFilter<String>
+    {
+        [SDK.InputNode(nameof(Value))]
+        public String Value { get; set; }
+
+        [SDK.InputNode("Transforms", true)]
+        [SDK.InputMetaData("Panel", "VerticalList")]
+        public TEXTFUNC[] Transforms { get; set; }
+
+        protected override string Evaluate()
+        {
+            return Transforms.Process(Value);
+        }
+    }
+
     public abstract class TextFunction : SDK.ContentFilter<TEXTFUNC>
     {
-        public const string DefaultGroupTitle = "$"; // this must be a character that enables grouping but resolves to empty
+        
 
         [SDK.InputValue(nameof(Boolean))]
-        [SDK.InputMetaData("Group", DefaultGroupTitle), SDK.InputMetaData("Title", "Enabled")]
+        [SDK.InputMetaData("Group", TextFormatting.INVISIBLE_GROUP), SDK.InputMetaData("Title", TextFormatting.ENABLED_ICON)]
         [SDK.InputMetaData("Default", true)]
         public Boolean Enabled { get; set; }
 
@@ -32,7 +50,7 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class AppendTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(Escape))]
-        [SDK.InputMetaData("Group", DefaultGroupTitle), SDK.InputMetaData("Title", "Esc")]
+        [SDK.InputMetaData("Group", TextFormatting.INVISIBLE_GROUP), SDK.InputMetaData("Title", TextFormatting.ESCAPETEXT_ICON)]
         [SDK.InputMetaData("Default", true)]
         public bool Escape { get; set; }
 
@@ -55,7 +73,7 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class PrependTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(Escape))]
-        [SDK.InputMetaData("Group", DefaultGroupTitle), SDK.InputMetaData("Title", "Esc")]
+        [SDK.InputMetaData("Group", TextFormatting.INVISIBLE_GROUP), SDK.InputMetaData("Title", TextFormatting.ESCAPETEXT_ICON)]
         // [SDK.InputMetaData("DockToLeftOf", nameof(Text))]
         [SDK.InputMetaData("Default", true)]
         public bool Escape { get; set; }
@@ -107,12 +125,12 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class TrimTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(TrimStart))]
-        [SDK.InputMetaData("Group", DefaultGroupTitle), SDK.InputMetaData("Title", "Start")]
+        [SDK.InputMetaData("Group", TextFormatting.INVISIBLE_GROUP), SDK.InputMetaData("Title", "Start")]
         [SDK.InputMetaData("Default", true)]
         public Boolean TrimStart { get; set; }
 
         [SDK.InputValue(nameof(TrimEnd))]
-        [SDK.InputMetaData("Group", DefaultGroupTitle), SDK.InputMetaData("Title", "End")]
+        [SDK.InputMetaData("Group", TextFormatting.INVISIBLE_GROUP), SDK.InputMetaData("Title", "End")]
         [SDK.InputMetaData("Default", true)]
         public Boolean TrimEnd { get; set; }
 
@@ -133,7 +151,7 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class InsertTextAtFunction : TextFunction
     {
         [SDK.InputValue(nameof(NewEscape))]
-        [SDK.InputMetaData("Group", "Text to Insert"), SDK.InputMetaData("Title", "Esc")]
+        [SDK.InputMetaData("Group", "Text to Insert"), SDK.InputMetaData("Title", TextFormatting.ESCAPETEXT_ICON)]
         [SDK.InputMetaData("Default", true)]
         public bool NewEscape { get; set; }
 

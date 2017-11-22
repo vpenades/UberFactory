@@ -47,10 +47,17 @@ namespace Epsylon.UberPlugin.CoreTypes
 
                 return System.Globalization.CultureInfo.GetCultureInfo(CultureIdentifier);
             }
-        }        
+        }
 
 
-        public void WriteText(SDK.ExportContext stream, string value)
+        public String ReadText(SDK.ImportContext stream)
+        {
+            var value = stream.ReadAllText();
+
+            return value == null ? null : PreFormatting.Process(value);
+        }
+
+        public void WriteText(SDK.ExportContext stream, String value)
         {
             value = PostFormatting.Process(value);
 
@@ -58,6 +65,8 @@ namespace Epsylon.UberPlugin.CoreTypes
 
             stream.WriteAllText(value);
         }
+
+
     }
 
 }

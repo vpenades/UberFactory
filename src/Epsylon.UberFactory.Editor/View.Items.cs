@@ -43,11 +43,15 @@ namespace Epsylon.UberFactory
 
             public Project              ParentProject   => _Parent;
 
-            public String               InferredTitle   => _PipelineView?._PipelineInstance.InferredTitle;
+            public String               InferredTitle   => Pipeline?._PipelineInstance.InferredTitle;
 
-            public String               DisplayTitle    => $"Task {Title}";
+            public String               DisplayTitle    => $"Settings {Title}";
 
-            public String Title { get { return _Source.ClassName; } set { } }
+            public String Title
+            {
+                get { return InferredTitle; }
+                set { }
+            }
 
             public Pipeline Pipeline
             {
@@ -108,7 +112,7 @@ namespace Epsylon.UberFactory
 
             public Project          ParentProject   => _Parent;            
 
-            public String           InferredTitle   => _PipelineView?._PipelineInstance.InferredTitle;
+            public String           InferredTitle   => Pipeline?._PipelineInstance.InferredTitle;
 
             public String           DisplayTitle    => $"Task {Title}";
 
