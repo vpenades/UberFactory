@@ -299,24 +299,23 @@ namespace Epsylon.UberFactory
         {
             object value = defval;
 
-            if (attrib is SDK.ContentMetaDataAttribute)
+            if (attrib is SDK.ContentMetaDataAttribute contentValue)
             {
-                value = ((SDK.ContentMetaDataAttribute)attrib).Value;
+                value = contentValue.Value;
             }
 
-            if (attrib is SDK.InputMetaDataAttribute)
+            if (attrib is SDK.InputMetaDataAttribute inputValue)
             {
-                value = ((SDK.InputMetaDataAttribute)attrib).Value;
+                value = inputValue.Value;
             }
 
-            if (attrib is SDK.InputMetaDataEvaluateAttribute)
+            if (attrib is SDK.InputMetaDataEvaluateAttribute evalValue)
             {
                 if (instance == null) throw new ArgumentNullException(nameof(instance));
+                
+                if (evalValue.SharedType != null) instance = instance.GetSharedSettings(evalValue.SharedType);
 
-                var xattrib = attrib as SDK.InputMetaDataEvaluateAttribute;                
-                if (xattrib.SharedType != null) instance = instance.GetSharedSettings(xattrib.SharedType);
-
-                var propName = xattrib.PropertyName;
+                var propName = evalValue.PropertyName;
                 value = instance.TryEvaluate(propName);
             }
 
