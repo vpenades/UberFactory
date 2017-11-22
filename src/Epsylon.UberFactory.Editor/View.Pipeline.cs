@@ -63,8 +63,7 @@ namespace Epsylon.UberFactory
 
             internal readonly ProjectDOM.Pipeline _PipelineDom;
 
-            internal Evaluation.PipelineInstance _PipelineInstance;
-            internal Evaluation.UpToDateEvaluator _UpToDateEvaluator;
+            internal Evaluation.PipelineInstance _PipelineInstance;            
 
             private Exception _Exception;
 
@@ -72,13 +71,13 @@ namespace Epsylon.UberFactory
 
             #region properties            
 
-            public Node[] Nodes         => _PipelineDom?.Nodes.Select(f => Node.Create(this, f.Identifier)).ToArray();
+            public Node[] Nodes             => _PipelineDom?.Nodes.Select(f => Node.Create(this, f.Identifier)).ToArray();
 
-            public bool IsEmpty         => _PipelineDom?.Nodes.Count == 0 && _Exception == null;            
+            public bool IsEmpty             => _PipelineDom?.Nodes.Count == 0 && _Exception == null;            
 
-            public bool IsInstanced     => !IsEmpty;            
+            public bool IsInstanced         => !IsEmpty;            
 
-            public Object Content       => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
+            public Object Content           => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
 
             public Boolean CanEditHierarchy => true;
 
@@ -99,18 +98,15 @@ namespace Epsylon.UberFactory
                 
                 try
                 {
-                    var evaluator = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSharedSettings);
-                    evaluator.Setup(_Parent.GetBuildSettings());
-                    _PipelineInstance = evaluator;
-                    _UpToDateEvaluator = new Evaluation.UpToDateEvaluator();
                     _Exception = null;
+                    _PipelineInstance = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSharedSettings);
+                    _PipelineInstance.Setup(_Parent.GetBuildSettings());
 
                 }
                 catch (Exception ex)
                 {
                     _Exception = ex;
-                    _PipelineInstance = null;
-                    _UpToDateEvaluator = null;
+                    _PipelineInstance = null;                    
                 }
 
                 RaiseChanged();                

@@ -67,6 +67,8 @@ namespace Epsylon.UberFactory
 
             public IReadOnlyList<ContentObjectInfo> SettingsTypes => _SettingsTypes;
 
+            public IReadOnlyList<String> SettingsClassIds => SettingsTypes.Select(item => item.SerializationKey).Distinct().ToArray();
+
             public IReadOnlyList<ContentFilterInfo> PluginTypes => _PluginTypes;
 
             public SDK.ContentObject CreateInstance(string classId)

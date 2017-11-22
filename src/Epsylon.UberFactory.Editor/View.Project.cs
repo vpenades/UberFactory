@@ -194,6 +194,9 @@ namespace Epsylon.UberFactory
                 {
                     if (_ActiveConfiguration == value) return;
                     _ActiveConfiguration = value;
+
+                    _ProcessedFiles = null;
+
                     RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks),nameof(SharedSettings), nameof(IsRootConfiguration));
                     ActiveDocument = null; // we must flush active document because it might be in the wrong configuration
                 }
@@ -203,17 +206,12 @@ namespace Epsylon.UberFactory
             {
                 get
                 {
-                    if (_ActiveConfiguration == null) return null;
+                    if (_ActiveConfiguration == null) return null;                    
 
-                    var currentClassIds = this._Plugins
-                        .SettingsTypes
-                        .Select(item => item.SerializationKey)
-                        .Distinct()
-                        .ToArray();
-
-                    return currentClassIds
+                    return this._Plugins
+                        .SettingsClassIds
                         .Select(clsid => _Source.UseSettings(clsid))
-                        .Select(item => ProjectVIEW.SettingsView.Create(this, item))
+                        .Select(item => SettingsView.Create(this, item))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -228,7 +226,7 @@ namespace Epsylon.UberFactory
                     return _Source
                         .Items
                         .OfType<ProjectDOM.Task>()
-                        .Select(item => ProjectVIEW.Task.Create(this, item))
+                        .Select(item => Task.Create(this, item))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -338,9 +336,9 @@ namespace Epsylon.UberFactory
 
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }
 
-            public void Test() { _BuildOrTest(true); }
+            public void Test() { _BuildOrTest(true); RaiseChanged(nameof(Tasks)); }
 
-            public void Build() { _BuildOrTest(false); }
+            public void Build() { _BuildOrTest(false); RaiseChanged(nameof(Tasks)); }
 
             private void _BuildOrTest(bool isTest)
             {

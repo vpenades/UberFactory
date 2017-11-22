@@ -43,15 +43,11 @@ namespace Epsylon.UberFactory
 
             public Project              ParentProject   => _Parent;
 
-            public String               InferredTitle   => Pipeline?._PipelineInstance.InferredTitle;
+            public String               InferredTitle   => Pipeline?._PipelineInstance?.InferredTitle;
 
             public String               DisplayTitle    => $"Settings {Title}";
 
-            public String Title
-            {
-                get { return InferredTitle; }
-                set { }
-            }
+            public String               Title           => InferredTitle;
 
             public Pipeline Pipeline
             {
@@ -112,11 +108,15 @@ namespace Epsylon.UberFactory
 
             public Project          ParentProject   => _Parent;            
 
-            public String           InferredTitle   => Pipeline?._PipelineInstance.InferredTitle;
+            public String           InferredTitle   => Pipeline?._PipelineInstance?.InferredTitle;
 
             public String           DisplayTitle    => $"Task {Title}";
 
-            public Boolean Enabled { get { return _Source.Enabled; } set { _Source.Enabled = value; } }
+            public Boolean Enabled
+            {
+                get { return _Source.Enabled; }
+                set { _Source.Enabled = value; RaiseChanged(nameof(Enabled)); }
+            }
 
             public String Title
             {
@@ -133,9 +133,9 @@ namespace Epsylon.UberFactory
                 }
             }
             
-            public IEnumerable<string> ProcessedInputFiles => _Parent.GetProcessingResultsFor(this)?.InputFiles;
+            public IEnumerable<string> ProcessedInputFiles => _Parent.GetProcessingResultsFor(this)?.InputFiles.ToArray();
 
-            public IEnumerable<string> ProcessedOutputFiles => _Parent.GetProcessingResultsFor(this)?.OutputFiles;
+            public IEnumerable<string> ProcessedOutputFiles => _Parent.GetProcessingResultsFor(this)?.OutputFiles.ToArray();
 
             #endregion
 
