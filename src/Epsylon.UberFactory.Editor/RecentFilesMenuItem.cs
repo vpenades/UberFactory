@@ -24,6 +24,13 @@ namespace Epsylon.UberFactory
             MaxNumberOfFiles = 9;
         }
 
+        public static void UseRegistryPersister()           { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister()); }
+        public static void UseRegistryPersister(string key) { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister(key)); }
+
+        public static void UseXmlPersister()                { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister()); }
+        public static void UseXmlPersister(string filepath) { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(filepath)); }
+        public static void UseXmlPersister(Stream stream)   { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(stream)); }
+
         #endregion
 
         #region types
@@ -37,19 +44,10 @@ namespace Epsylon.UberFactory
 
         private static class _ApplicationAttributes
         {
-            static readonly Assembly _Assembly = null;
-
-            internal static readonly AssemblyTitleAttribute _Title = null;
-            internal static readonly AssemblyCompanyAttribute _Company = null;
-            internal static readonly AssemblyCopyrightAttribute _Copyright = null;
-            internal static readonly AssemblyProductAttribute _Product = null;
-
             public static string Title { get; private set; }
             public static string CompanyName { get; private set; }
             public static string Copyright { get; private set; }
-            public static string ProductName { get; private set; }
-
-            static Version _Version = null;
+            public static string ProductName { get; private set; }            
             public static string Version { get; private set; }
 
             static _ApplicationAttributes()
@@ -62,32 +60,24 @@ namespace Epsylon.UberFactory
                     ProductName = String.Empty;
                     Version = String.Empty;
 
-                    _Assembly = Assembly.GetEntryAssembly();
+                    var assembly = Assembly.GetEntryAssembly();
 
-                    if (_Assembly != null)
+                    if (assembly != null)
                     {
-                        object[] attributes = _Assembly.GetCustomAttributes(false);
+                        var attributes = assembly.GetCustomAttributes(false);
 
                         foreach (object attribute in attributes)
                         {
-                            Type type = attribute.GetType();
-
-                            if (type == typeof(AssemblyTitleAttribute)) _Title = (AssemblyTitleAttribute)attribute;
-                            if (type == typeof(AssemblyCompanyAttribute)) _Company = (AssemblyCompanyAttribute)attribute;
-                            if (type == typeof(AssemblyCopyrightAttribute)) _Copyright = (AssemblyCopyrightAttribute)attribute;
-                            if (type == typeof(AssemblyProductAttribute)) _Product = (AssemblyProductAttribute)attribute;
+                            if (attribute is AssemblyTitleAttribute title) Title = title.Title;
+                            if (attribute is AssemblyCompanyAttribute company) CompanyName = company.Company;
+                            if (attribute is AssemblyCopyrightAttribute copyright) Copyright = copyright.Copyright;
+                            if (attribute is AssemblyProductAttribute product) ProductName = product.Product;
                         }
 
-                        _Version = _Assembly.GetName().Version;
-                    }
-
-                    if (_Title != null) Title = _Title.Title;
-                    if (_Company != null) CompanyName = _Company.Company;
-                    if (_Copyright != null) Copyright = _Copyright.Copyright;
-                    if (_Product != null) ProductName = _Product.Product;
-                    if (_Version != null) Version = _Version.ToString();
+                        Version = assembly.GetName().Version.ToString();
+                    }                    
                 }
-                catch { }
+                catch { }                
             }
         }
 
@@ -97,11 +87,7 @@ namespace Epsylon.UberFactory
 
             public _RegistryPersister()
             {
-                RegistryKey =
-                    "Software\\" +
-                    _ApplicationAttributes.CompanyName + "\\" +
-                    _ApplicationAttributes.ProductName + "\\" +
-                    "RecentFileList";
+                RegistryKey = $"Software\\{_ApplicationAttributes.CompanyName}\\{_ApplicationAttributes.ProductName}\\RecentFileList";
             }
 
             public _RegistryPersister(string key)
@@ -192,22 +178,34 @@ namespace Epsylon.UberFactory
 
         internal class _XmlPersister : IPersist
         {
-            public string Filepath { get; set; }
-            public Stream Stream { get; set; }
+            #region lifecycle
 
             public _XmlPersister()
             {
-                Filepath =
-                    Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        _ApplicationAttributes.CompanyName + "\\" +
-                        _ApplicationAttributes.ProductName + "\\" +
-                        "RecentFileList.xml");
+                var a = _ApplicationAttributes.CompanyName;
+                var b = _ApplicationAttributes.ProductName;                
+
+                var path = $"{a}\\{b}\\RecentFileList.xml";
+
+                if (string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b)) path = $"{typeof(RecentFilesManager).Assembly.GetName().Name}\\RecentFileList.xml";
+
+                Filepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), path);
             }
 
             public _XmlPersister(string filepath) { Filepath = filepath; }
 
             public _XmlPersister(Stream stream) { Stream = stream; }
+
+            #endregion
+
+            #region data
+
+            public string Filepath { get; set; }
+            public Stream Stream { get; set; }
+
+            #endregion
+
+            #region API
 
             public IEnumerable<string> RecentFiles(int max) { return Load(max); }
 
@@ -388,6 +386,8 @@ namespace Epsylon.UberFactory
                     }
                 }                
             }
+
+            #endregion
         }
 
         internal class _JumpListPersister : IPersist
@@ -458,18 +458,11 @@ namespace Epsylon.UberFactory
 
         public static int MaxNumberOfFiles { get; set; }
 
-        public static IEnumerable<string> RecentFiles { get { return _Persister?.RecentFiles(MaxNumberOfFiles); } }
+        public static IEnumerable<string> RecentFiles => _Persister?.RecentFiles(MaxNumberOfFiles);
 
         #endregion
 
         #region API        
-
-        public static void UseRegistryPersister() { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister()); }
-        public static void UseRegistryPersister(string key) { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister(key)); }
-
-        public static void UseXmlPersister() { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister()); }
-        public static void UseXmlPersister(string filepath) { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(filepath)); }
-        public static void UseXmlPersister(Stream stream) { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(stream)); }
 
         public static void RemoveFile(string filepath)
         {

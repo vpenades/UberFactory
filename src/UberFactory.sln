@@ -2,12 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"
-	ProjectSection(SolutionItems) = preProject
-		Shared\AssemblyInfoGenerator.targets = Shared\AssemblyInfoGenerator.targets
-		Shared\AutoVersionInfo.targets = Shared\AutoVersionInfo.targets
-		Shared\StaticVersionInfo.props = Shared\StaticVersionInfo.props
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"	
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.CLI", "Epsylon.UberFactory.CLI\Epsylon.UberFactory.CLI.csproj", "{6E832875-0893-4AD2-9AE9-762E1A5EA856}"
 EndProject
@@ -36,6 +31,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{1A979F46-F761-425A-94CC-591B9C08EF7A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugs", "Plugs", "{4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{C2D80D18-CBE6-402C-B904-D711676DC636}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\AssemblyInfoGenerator.targets = Shared\AssemblyInfoGenerator.targets
+		Shared\AutoVersionInfo.targets = Shared\AutoVersionInfo.targets
+		Shared\StaticVersionInfo.props = Shared\StaticVersionInfo.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -229,6 +231,7 @@ Global
 		{CCD9B10E-5B1F-4AC2-A88A-1A0EF56A00C5} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{1A979F46-F761-425A-94CC-591B9C08EF7A} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
+		{C2D80D18-CBE6-402C-B904-D711676DC636} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}

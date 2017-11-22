@@ -37,26 +37,26 @@ namespace Epsylon.UberFactory.Bindings
 
             if (propertyType.GetTypeInfo().IsEnum) return new InputEnumerationBinding(bindDesc);
 
-            if (propertyType == typeof(String)) return new InputValueBinding<String>(bindDesc);
-            if (propertyType == typeof(Boolean)) return new InputValueBinding<Boolean>(bindDesc);
-            if (propertyType == typeof(Char)) return new InputValueBinding<Char>(bindDesc);
+            if (propertyType == typeof(String)) return new InputStringBinding(bindDesc);
+            if (propertyType == typeof(Boolean)) return new InputBooleanBinding(bindDesc);
+            if (propertyType == typeof(Char)) return new InputNumberBinding<Char>(bindDesc);
 
-            if (propertyType == typeof(SByte)) return new InputValueBinding<SByte>(bindDesc);
-            if (propertyType == typeof(Int16)) return new InputValueBinding<Int16>(bindDesc);
-            if (propertyType == typeof(Int32)) return new InputValueBinding<Int32>(bindDesc);
-            if (propertyType == typeof(Int64)) return new InputValueBinding<Int64>(bindDesc);
+            if (propertyType == typeof(SByte)) return new InputNumberBinding<SByte>(bindDesc);
+            if (propertyType == typeof(Int16)) return new InputNumberBinding<Int16>(bindDesc);
+            if (propertyType == typeof(Int32)) return new InputNumberBinding<Int32>(bindDesc);
+            if (propertyType == typeof(Int64)) return new InputNumberBinding<Int64>(bindDesc);
 
-            if (propertyType == typeof(Byte)) return new InputValueBinding<Byte>(bindDesc);
-            if (propertyType == typeof(UInt16)) return new InputValueBinding<UInt16>(bindDesc);
-            if (propertyType == typeof(UInt32)) return new InputValueBinding<UInt32>(bindDesc);
-            if (propertyType == typeof(UInt64)) return new InputValueBinding<UInt64>(bindDesc);
+            if (propertyType == typeof(Byte)) return new InputNumberBinding<Byte>(bindDesc);
+            if (propertyType == typeof(UInt16)) return new InputNumberBinding<UInt16>(bindDesc);
+            if (propertyType == typeof(UInt32)) return new InputNumberBinding<UInt32>(bindDesc);
+            if (propertyType == typeof(UInt64)) return new InputNumberBinding<UInt64>(bindDesc);
 
-            if (propertyType == typeof(Single)) return new InputValueBinding<Single>(bindDesc);
-            if (propertyType == typeof(Double)) return new InputValueBinding<Double>(bindDesc);
-            if (propertyType == typeof(Decimal)) return new InputValueBinding<Decimal>(bindDesc);
+            if (propertyType == typeof(Single)) return new InputNumberBinding<Single>(bindDesc);
+            if (propertyType == typeof(Double)) return new InputNumberBinding<Double>(bindDesc);
+            if (propertyType == typeof(Decimal)) return new InputNumberBinding<Decimal>(bindDesc);
 
             if (propertyType == typeof(TimeSpan)) return new InputTimeSpanBinding(bindDesc);
-            if (propertyType == typeof(DateTime)) return new InputValueBinding<DateTime>(bindDesc);
+            if (propertyType == typeof(DateTime)) return new InputDateTimeBinding(bindDesc);
 
             // TODO: DateTimeOffset
             // TODO: Guid
@@ -213,44 +213,90 @@ namespace Epsylon.UberFactory.Bindings
         #endregion
     }
 
-    [System.Diagnostics.DebuggerDisplay("Value {SerializationKey} = {Value}")]
-    public sealed class InputValueBinding<T> : ValueBinding where T : IConvertible, IComparable, IComparable<T>
+    
+    public abstract class InputConvertibleBinding<T> : ValueBinding where T : IConvertible, IComparable, IComparable<T>
     {
         #region lifecycle
 
-        internal InputValueBinding(Description pvd) : base(pvd)
+        internal InputConvertibleBinding(Description pvd) : base(pvd)
         {            
-            if (typeof(T) == typeof(Object)) throw new ArgumentException(nameof(T), "Not Supported");
+            if (typeof(T) == typeof(Object)) throw new ArgumentException("Not Supported", nameof(T));
         }
 
         #endregion
 
         #region properties        
 
+        public T[] AvailableValues => _GetTypeAvailableValues();
+
+        public T Value
+        {
+            get { return this.GetValue<T>(); }
+            set
+            {
+                value = ApplyValueConstraints(value);
+                this.SetValue(value);
+            }
+        }
+
+        #endregion
+
+        #region API
+
+        protected abstract T ApplyValueConstraints(T value);
+
+        public override void CopyValueToInstance() { SetInstanceValue(Value); }        
+
+        private T[] _GetTypeAvailableValues()
+        {
+            return this.GetMetaDataValue<T[]>("Values", new T[0]);
+        }        
+
+        #endregion
+    }
+
+    public sealed class InputBooleanBinding : InputConvertibleBinding<Boolean>
+    {
+        #region lifecycle
+
+        internal InputBooleanBinding(Description pvd) : base(pvd) { }
+
+        #endregion
+
+        #region properties
+
+        public override string ViewTemplate => VIEWTEMPLATE_CHECKBOX;
+
+        #endregion
+
+        #region API
+
+        protected override bool ApplyValueConstraints(bool value) { return value; }
+
+        #endregion
+    }
+
+    [System.Diagnostics.DebuggerDisplay("Value {SerializationKey} = {Value}")]
+    public sealed class InputStringBinding : InputConvertibleBinding<String>
+    {
+        #region lifecycle
+
+        internal InputStringBinding(Description pvd) : base(pvd) { }
+
+        #endregion
+
+        #region properties
+
         public override string ViewTemplate
         {
             get
             {
-                if (typeof(T) == typeof(bool)) return VIEWTEMPLATE_CHECKBOX;
-
                 var ctrl = this.GetMetaDataValue<String>("ViewStyle", "TextBox");
 
                 if (ctrl == "FilePicker") return VIEWTEMPLATE_PATHPICKER;
                 if (ctrl == "DirectoryPicker") return VIEWTEMPLATE_PATHPICKER;
-
                 if (ctrl == "ComboBox") return VIEWTEMPLATE_COMBOBOX;
-
-                if (typeof(T) == typeof(DateTime)) return VIEWTEMPLATE_DATEBOX;                
-
-                if (ctrl == "TextBox") return VIEWTEMPLATE_TEXTBOX;                
-
-                if (typeof(T) == typeof(String)) return VIEWTEMPLATE_INVALID;
-
-                if (ctrl == "Slider") return VIEWTEMPLATE_SLIDER; // TODO: check Minimum & Maximum must be defined
-
-                if (typeof(T) != typeof(UInt32)) return VIEWTEMPLATE_INVALID;
-
-                if (ctrl == "ColorPicker") return VIEWTEMPLATE_COLORPICKER;
+                if (ctrl == "TextBox") return VIEWTEMPLATE_TEXTBOX;
 
                 return VIEWTEMPLATE_INVALID;
             }
@@ -265,23 +311,74 @@ namespace Epsylon.UberFactory.Bindings
         {
             get
             {
-                var inputStringBinding = this as InputValueBinding<String>;
+                var inputStringBinding = this as InputStringBinding;
 
-                return inputStringBinding == null ? null : InputValueBinding < String > .GetAbsoluteSourcePath(inputStringBinding).ToString();
+                return inputStringBinding == null ? null : InputStringBinding.GetAbsoluteSourcePath(inputStringBinding).ToString();
             }
         }
 
         public int MaxTextLines => 5;
 
-        public T[] AvailableValues => _GetTypeAvailableValues();
+        #endregion
 
-        public T Value
+        #region API
+
+        public string GetFileFilter() { return this.GetMetaDataValue<String>("Filter", "All Files|*.*"); }
+
+        public static PathString GetAbsoluteSourcePath(InputStringBinding context)
         {
-            get { return this.GetValue<T>(); }
-            set
+            var absPath = context.DataContext.BuildContext.GetSourceAbsolutePath(context.Value);
+
+            return new PathString(absPath);
+        }
+
+        public static void SetAbsoluteSourcePath(InputStringBinding context, PathString absPath)
+        {
+            context.Value = context.DataContext.BuildContext.GetRelativeToSource(absPath);
+        }
+
+        #endregion
+
+        #region API
+
+        protected override String ApplyValueConstraints(String value) { return value; }
+
+        #endregion
+    }
+
+    [System.Diagnostics.DebuggerDisplay("Value {SerializationKey} = {Value}")]
+    public sealed class InputNumberBinding<T> : InputConvertibleBinding<T> where T : struct, IConvertible, IComparable, IComparable<T>
+    {
+        #region lifecycle
+
+        internal InputNumberBinding(Description pvd) : base(pvd)
+        {
+            if (typeof(T) == typeof(String)) throw new ArgumentException("Not Supported", nameof(T));
+            if (typeof(T) == typeof(Boolean)) throw new ArgumentException("Not Supported", nameof(T));
+            if (typeof(T) == typeof(DateTime)) throw new ArgumentException("Not Supported", nameof(T));
+        }
+
+        #endregion
+
+        #region properties
+
+        public override string ViewTemplate
+        {
+            get
             {
-                value = value.Clamp(Minimum, Maximum);
-                this.SetValue(value);
+                if (typeof(T) == typeof(bool)) return VIEWTEMPLATE_CHECKBOX;
+
+                var ctrl = this.GetMetaDataValue<String>("ViewStyle", "TextBox");                
+
+                if (ctrl == "ComboBox") return VIEWTEMPLATE_COMBOBOX;
+                if (ctrl == "TextBox") return VIEWTEMPLATE_TEXTBOX;
+                if (ctrl == "Slider") return VIEWTEMPLATE_SLIDER; // TODO: Minimum & Maximum must be defined to use this view
+
+                if (typeof(T) != typeof(UInt32)) return VIEWTEMPLATE_INVALID;
+
+                if (ctrl == "ColorPicker") return VIEWTEMPLATE_COLORPICKER;
+
+                return VIEWTEMPLATE_INVALID;
             }
         }
 
@@ -293,12 +390,10 @@ namespace Epsylon.UberFactory.Bindings
 
         #region API        
 
-        public override void CopyValueToInstance() { SetInstanceValue(Value); }
+        protected override T ApplyValueConstraints(T value) { return value.Clamp(Minimum,Maximum); }        
 
         private static Object _GetTypeMinimumValue()
-        {
-            if (typeof(T) == typeof(String)) return null; // specifically required for generic Clamp
-            if (typeof(T) == typeof(Boolean)) return false;
+        {            
             if (typeof(T) == typeof(Char)) return Char.MinValue;
 
             if (typeof(T) == typeof(SByte)) return SByte.MinValue;
@@ -313,21 +408,15 @@ namespace Epsylon.UberFactory.Bindings
 
             if (typeof(T) == typeof(Single)) return Single.MinValue;
             if (typeof(T) == typeof(Double)) return Double.MinValue;
-            if (typeof(T) == typeof(Decimal)) return Decimal.MinValue;
+            if (typeof(T) == typeof(Decimal)) return Decimal.MinValue;            
 
-            if (typeof(T) == typeof(TimeSpan)) return TimeSpan.MinValue;
-            if (typeof(T) == typeof(DateTime)) return DateTime.MinValue;
-            if (typeof(T) == typeof(DateTimeOffset)) return DateTimeOffset.MinValue;
-            
-            System.Diagnostics.Debug.Assert(false,$"Invalid type {typeof(T)}");
+            System.Diagnostics.Debug.Assert(false, $"Invalid type {typeof(T)}");
 
             return default(T);
         }
 
         private static Object _GetTypeMaximumValue()
-        {
-            if (typeof(T) == typeof(String)) return null; // specifically required for generic Clamp
-            if (typeof(T) == typeof(Boolean)) return true;
+        {            
             if (typeof(T) == typeof(Char)) return Char.MaxValue;
 
             if (typeof(T) == typeof(SByte)) return SByte.MaxValue;
@@ -342,38 +431,16 @@ namespace Epsylon.UberFactory.Bindings
 
             if (typeof(T) == typeof(Single)) return Single.MaxValue;
             if (typeof(T) == typeof(Double)) return Double.MaxValue;
-            if (typeof(T) == typeof(Decimal)) return Decimal.MaxValue;
-            
-            if (typeof(T) == typeof(TimeSpan)) return TimeSpan.MaxValue;
-            if (typeof(T) == typeof(DateTime)) return DateTime.MaxValue;
-            if (typeof(T) == typeof(DateTimeOffset)) return DateTimeOffset.MaxValue;
+            if (typeof(T) == typeof(Decimal)) return Decimal.MaxValue;            
 
             System.Diagnostics.Debug.Assert(false, $"Invalid type {typeof(T)}");
 
             return default(T);
         }
 
-        private T[] _GetTypeAvailableValues()
-        {
-            return this.GetMetaDataValue<T[]>("Values", new T[0]);
-        }
-
-        public string GetFileFilter() { return this.GetMetaDataValue<String>("Filter", "All Files|*.*"); }        
-
-        public static PathString GetAbsoluteSourcePath(InputValueBinding<string> context)
-        {
-            var absPath = context.DataContext.BuildContext.GetSourceAbsolutePath(context.Value);
-
-            return new PathString(absPath);
-        }
-
-        public static void SetAbsoluteSourcePath(InputValueBinding<string> context, PathString absPath)
-        {
-            context.Value = context.DataContext.BuildContext.GetRelativeToSource(absPath);
-        }        
-
         #endregion
     }
+
 
     [System.Diagnostics.DebuggerDisplay("Enum {SerializationKey} = {Value}")]
     public sealed class InputEnumerationBinding : ValueBinding
@@ -429,7 +496,7 @@ namespace Epsylon.UberFactory.Bindings
         #endregion
     }
 
-    [System.Diagnostics.DebuggerDisplay("Enum {SerializationKey} = {Value}")]
+    [System.Diagnostics.DebuggerDisplay("TimeSpan {SerializationKey} = {Value}")]
     public sealed class InputTimeSpanBinding : ValueBinding
     {
         #region lifecycle
@@ -468,5 +535,42 @@ namespace Epsylon.UberFactory.Bindings
 
         #endregion
     }
-            
+
+    [System.Diagnostics.DebuggerDisplay("DateTime {SerializationKey} = {Value}")]
+    public sealed class InputDateTimeBinding : ValueBinding
+    {
+        #region lifecycle
+
+        internal InputDateTimeBinding(Description pvd) : base(pvd) { }
+
+        #endregion
+
+        #region properties        
+
+        public override string ViewTemplate => VIEWTEMPLATE_DATEBOX;
+
+        public DateTime Value
+        {
+            get { return new DateTime(this.GetValue<long>()); }
+            set
+            {
+                if (value < Minimum) value = Minimum;
+                if (value > Maximum) value = Maximum;
+                this.SetValue<long>(value.Ticks);
+            }
+        }
+
+        public DateTime Minimum => this.GetMetaDataValue<DateTime>("Minimum", DateTime.MinValue);
+
+        public DateTime Maximum => this.GetMetaDataValue<DateTime>("Maximum", DateTime.MaxValue);
+
+        #endregion
+
+        #region API
+
+        public override void CopyValueToInstance() { SetInstanceValue(Value); }
+
+        #endregion
+    }
+
 }

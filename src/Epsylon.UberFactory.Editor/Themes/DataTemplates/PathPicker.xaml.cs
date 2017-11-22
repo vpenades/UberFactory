@@ -25,7 +25,7 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
 
         private void _OnClick_PickFile(object sender, RoutedEventArgs e)
         {
-            if (this.DataContext is Bindings.InputValueBinding<String> vbinding)
+            if (this.DataContext is Bindings.InputStringBinding vbinding)
             {
                 var startDir = new PathString(vbinding.DataContext.BuildContext.GetSourceAbsolutePath("dummy.txt")).DirectoryPath;
 
@@ -36,7 +36,7 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
 
                 if (path.IsEmpty) return;
 
-                Bindings.InputValueBinding<String>.SetAbsoluteSourcePath(vbinding, path);
+                Bindings.InputStringBinding.SetAbsoluteSourcePath(vbinding, path);
             }
         }
     }

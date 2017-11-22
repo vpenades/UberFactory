@@ -26,7 +26,7 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
         {
             if (sender is FrameworkElement f)
             {
-                if (f.DataContext is Bindings.InputValueBinding<UInt32> v)
+                if (f.DataContext is Bindings.InputNumberBinding<UInt32> v)
                 {
                     v.Value = _Dialogs.ShowColorPickerDialog(v.Value);
                 }
