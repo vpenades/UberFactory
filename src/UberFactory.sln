@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"	
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.CLI", "Epsylon.UberFactory.CLI\Epsylon.UberFactory.CLI.csproj", "{6E832875-0893-4AD2-9AE9-762E1A5EA856}"
 EndProject
@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{C2D80D
 		Shared\AutoVersionInfo.targets = Shared\AutoVersionInfo.targets
 		Shared\StaticVersionInfo.props = Shared\StaticVersionInfo.props
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberPlugin.ImageSharp", "Epsylon.UberPlugin.ImageSharp\Epsylon.UberPlugin.ImageSharp.csproj", "{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -212,6 +214,22 @@ Global
 		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|x64.Build.0 = Release|Any CPU
 		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{28455575-BDB3-4C0C-A2CA-EE6105ECC4C5}.Release|x86.Build.0 = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|Mixed Configurations.ActiveCfg = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|Mixed Configurations.Build.0 = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|x64.Build.0 = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Debug|x86.Build.0 = Debug|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|Mixed Configurations.ActiveCfg = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|Mixed Configurations.Build.0 = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|x64.ActiveCfg = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|x64.Build.0 = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|x86.ActiveCfg = Release|Any CPU
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,6 +250,7 @@ Global
 		{1A979F46-F761-425A-94CC-591B9C08EF7A} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
 		{C2D80D18-CBE6-402C-B904-D711676DC636} = {3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9} = {4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}
