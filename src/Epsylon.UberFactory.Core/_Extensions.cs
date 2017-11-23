@@ -297,19 +297,14 @@ namespace Epsylon.UberFactory
 
         public static T GetValue<T>(this SDK.MetaDataKeyAttribute attrib, SDK.ContentObject instance, object defval)
         {
-            object value = defval;
+            object value = defval;            
 
-            if (attrib is SDK.ContentMetaDataAttribute contentValue)
-            {
-                value = contentValue.Value;
-            }
-
-            if (attrib is SDK.InputMetaDataAttribute inputValue)
+            if (attrib is SDK.MetaDataAttribute inputValue)
             {
                 value = inputValue.Value;
             }
 
-            if (attrib is SDK.InputMetaDataEvaluateAttribute evalValue)
+            if (attrib is SDK.MetaDataEvaluateAttribute evalValue)
             {
                 if (instance == null) throw new ArgumentNullException(nameof(instance));
                 

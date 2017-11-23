@@ -9,33 +9,7 @@ namespace Epsylon.UberFactory
 {
     partial class SDK
     {
-        #region input metadata modifiers       
-
-        /// <summary>
-        /// defines extra information for a given input property
-        /// </summary>
-        [AttributeUsageAttribute(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-        public class InputMetaDataAttribute : MetaDataKeyAttribute
-        {
-            public InputMetaDataAttribute(string key,Object value) :base(key) { Value = value; }
-            public Object Value { get; private set; }            
-        }
-
-        /// <summary>
-        /// defines extra information for a given input property
-        /// </summary>
-        [AttributeUsageAttribute(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-        public class InputMetaDataEvaluateAttribute : MetaDataKeyAttribute
-        {
-            public InputMetaDataEvaluateAttribute(string key, string propertyName) : base(key) { PropertyName = propertyName; }
-
-            public InputMetaDataEvaluateAttribute(string key, Type st, string propertyName) : base(key) { SharedType = st; PropertyName = propertyName; }
-
-            public Type SharedType { get; private set; }
-            public string PropertyName { get; private set; }
-        }
-
-        #endregion
+        
 
         #region input properties
 

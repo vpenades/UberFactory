@@ -9,7 +9,7 @@ namespace Epsylon.TestPlugins
     using UberFactory;
     
     [SDK.ContentNode("MainSettings1")]
-    [SDK.ContentMetaData("Title","Main Settings")]
+    [SDK.Title("Main Settings")]
     public class MainSettings1 : SDK.ContentObject
     {
         [SDK.InputValue(nameof(Value1))]
@@ -20,7 +20,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode("MainSettings2")]
-    [SDK.ContentMetaData("Title", "Main Settings")]
+    [SDK.Title("Main Settings")]
     public class MainSettings2 : SDK.ContentObject
     {
         [SDK.InputValue(nameof(Value1))]
@@ -31,7 +31,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode("MainSettings3")]
-    [SDK.ContentMetaData("Title", "Main Settings")]
+    [SDK.Title("Main Settings")]
     public class MainSettings3 : SDK.ContentObject
     {
         [SDK.InputNode(nameof(Value1))]

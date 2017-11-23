@@ -121,7 +121,7 @@ namespace Epsylon.UberFactory
                 if (_Type == null) return defval;
 
                 var attrib = _Type.GetTypeInfo().GetCustomAttributes(true)
-                    .OfType<SDK.ContentMetaDataAttribute>()
+                    .OfType<SDK.MetaDataAttribute>()
                     .FirstOrDefault(item => item.Key == key);
 
                 if (attrib == null) return defval;

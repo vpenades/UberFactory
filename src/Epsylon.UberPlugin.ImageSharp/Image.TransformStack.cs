@@ -21,17 +21,16 @@ namespace Epsylon.UberPlugin
 
 
     [SDK.ContentNode("TransformStack")]
-    [SDK.ContentMetaData("Title", "Transforms")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Transforms")]
+    [SDK.Title("Transforms"), SDK.TitleFormat("{0} Transforms")]
     public sealed class TransformStack : SDK.ContentFilter<IMAGE32>
     {
         [SDK.InputNode("Source")]
-        [SDK.InputMetaData("Title", "Source Image")]
+        [SDK.Title("Source Image")]
         public IMAGE32 Source { get; set; }
 
         [SDK.InputNode("Transforms",true)]
-        [SDK.InputMetaData("Title", "Transforms")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Transforms")]
+        [SDK.ItemsPanel("VerticalList")]
         public IMGTRANSFORM[] Transforms { get; set; }
 
         protected override IMAGE32 Evaluate()
@@ -59,8 +58,8 @@ namespace Epsylon.UberPlugin
     public abstract class BaseImageTransform : SDK.ContentFilter<IMGTRANSFORM>
     {
         [SDK.InputValue("Enabled")]
-        [SDK.InputMetaData("Title", "Enabled")]
-        [SDK.InputMetaData("Default", true)]
+        [SDK.Title("Enabled")]
+        [SDK.Default(true)]
         public Boolean Enabled { get; set; }        
 
         protected override IMGTRANSFORM Evaluate()
@@ -76,13 +75,12 @@ namespace Epsylon.UberPlugin
 
 
     [SDK.ContentNode("GlowTransform")]
-    [SDK.ContentMetaData("Title", "Glow")]
-    [SDK.ContentMetaData("TitleFormat", "{0} with Glow")]
+    [SDK.Title("Glow"), SDK.TitleFormat("{0} with Glow")]
     public sealed class ImageGlowTransform : BaseImageTransform
     {
         [SDK.InputValue("Radius")]
-        [SDK.InputMetaData("Title", "Radius")]
-        [SDK.InputMetaData("Default", 1)]
+        [SDK.Title("Radius")]
+        [SDK.Default(1)]
         public float Radius { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -96,19 +94,17 @@ namespace Epsylon.UberPlugin
     public enum BlurMode { Box,Gaussian }
 
     [SDK.ContentNode("BlurTransform")]
-    [SDK.ContentMetaData("Title", "Blur")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Blurred")]
+    [SDK.Title("Blur"), SDK.TitleFormat("{0} Blurred")]
     public sealed class ImageBlurTransform : BaseImageTransform
     {
-
         [SDK.InputValue("Mode")]
-        [SDK.InputMetaData("Title", "Mode")]
-        [SDK.InputMetaData("Default", BlurMode.Gaussian)]
+        [SDK.Title("Mode")]
+        [SDK.Default(BlurMode.Gaussian)]
         public BlurMode Mode { get; set; }
 
         [SDK.InputValue("Radius")]
-        [SDK.InputMetaData("Title", "Radius")]
-        [SDK.InputMetaData("Default", 5)]
+        [SDK.Title("Radius")]
+        [SDK.Minimum(0), SDK.Default(5)]
         public float Radius { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -121,20 +117,17 @@ namespace Epsylon.UberPlugin
     }
     
     [SDK.ContentNode("OilPaintTransform")]
-    [SDK.ContentMetaData("Title", "Oil Paint")]
-    [SDK.ContentMetaData("TitleFormat", "{0} as Old Paint")]
+    [SDK.Title("Oil Paint"), SDK.TitleFormat("{0} as Old Paint")]
     public sealed class ImageOilPaintTransform : BaseImageTransform
     {
         [SDK.InputValue("Levels")]
-        [SDK.InputMetaData("Title", "Levels")]
-        [SDK.InputMetaData("Minimum", 1)]
-        [SDK.InputMetaData("Default", 10)]
+        [SDK.Title("Levels")]
+        [SDK.Minimum(1), SDK.Default(10)]
         public int Levels { get; set; }
 
         [SDK.InputValue("BrushSize")]
-        [SDK.InputMetaData("Title", "Brush Size")]
-        [SDK.InputMetaData("Minimum", 1)]
-        [SDK.InputMetaData("Default", 15)]
+        [SDK.Title("Brush Size")]
+        [SDK.Minimum(1), SDK.Default(15)]
         public int BrushSize { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -146,13 +139,12 @@ namespace Epsylon.UberPlugin
     public enum OldPhotoEffect { Kodachrome, Polaroid, Lomograph,Sepia }
 
     [SDK.ContentNode("OldPhotoTransform")]
-    [SDK.ContentMetaData("Title", "Old Photo")]
-    [SDK.ContentMetaData("TitleFormat", "{0} as Old Photo")]
+    [SDK.Title("Old Photo"), SDK.TitleFormat("{0} as Old Photo")]
     public sealed class ImageOldPhotoTransform : BaseImageTransform
     {
         [SDK.InputValue("Effect")]
-        [SDK.InputMetaData("Title", "Camera Effect")]
-        [SDK.InputMetaData("Default", OldPhotoEffect.Kodachrome)]
+        [SDK.Title("Camera Effect")]
+        [SDK.Default(OldPhotoEffect.Kodachrome)]
         public OldPhotoEffect Effect { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -169,8 +161,7 @@ namespace Epsylon.UberPlugin
     
 
     [SDK.ContentNode("InvertTransform")]
-    [SDK.ContentMetaData("Title", "Invert")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Inverted")]
+    [SDK.Title("Invert"), SDK.TitleFormat("{0} Inverted")]
     public sealed class ImageInvertTransform : BaseImageTransform
     {
         protected override IMGTRANSFORM TransformImage()
@@ -180,13 +171,12 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("HueTransform")]
-    [SDK.ContentMetaData("Title", "Hue")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Hued")]
+    [SDK.Title("Hue"), SDK.TitleFormat("{0} Hued")]
     public sealed class ImageHueTransform : BaseImageTransform
     {
         [SDK.InputValue("Degrees")]
-        [SDK.InputMetaData("Title", "Degrees")]
-        [SDK.InputMetaData("Default", 0)]
+        [SDK.Title("Degrees")]
+        [SDK.Default(0)]
         public float Degrees { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -201,35 +191,33 @@ namespace Epsylon.UberPlugin
     
 
     [SDK.ContentNode("ResizeTransform")]
-    [SDK.ContentMetaData("Title", "Resize")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Resized")]
+    [SDK.Title("Resize"), SDK.TitleFormat("{0} Resized")]
     public sealed class ImageResizeTransform : BaseImageTransform
     {
-        [SDK.InputValue("ResizeMode")]
-        [SDK.InputMetaData("Group", "Resize")]
-        [SDK.InputMetaData("Title", "Mode")]
+        [SDK.InputValue("ResizeMode")]        
+        [SDK.Title("Mode"), SDK.Group("Resize")]
         public SixLabors.ImageSharp.Processing.ResizeMode Mode { get; set; }
 
         [SDK.InputValue("AnchorPosition")]
-        [SDK.InputMetaData("Group", "Resize"),SDK.InputMetaData("Title", "Anchor")]
+        [SDK.Title("Anchor"), SDK.Group("Resize")]
         public SixLabors.ImageSharp.Processing.AnchorPosition Position { get; set; }
 
         [SDK.InputValue("CenterX")]
-        [SDK.InputMetaData("Group", "Center"),SDK.InputMetaData("Title", "X")]
+        [SDK.Title("X"), SDK.Group("Center")]
         public float CenterX { get; set; }
 
         [SDK.InputValue("Center")]
-        [SDK.InputMetaData("Group", "Center"),SDK.InputMetaData("Title", "Y")]
+        [SDK.Title("Y"), SDK.Group("Center")]
         public float CenterY { get; set; }
 
         [SDK.InputValue("Width")]
-        [SDK.InputMetaData("Group", "Size"),SDK.InputMetaData("Title", "W")]
-        [SDK.InputMetaData("Minimum",1),SDK.InputMetaData("Default",256)]
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
         public int Width { get; set; }
 
         [SDK.InputValue("Height")]
-        [SDK.InputMetaData("Group", "Size"),SDK.InputMetaData("Title", "H")]
-        [SDK.InputMetaData("Minimum", 1), SDK.InputMetaData("Default", 256)]
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
         public int Height { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -254,26 +242,25 @@ namespace Epsylon.UberPlugin
     
 
     [SDK.ContentNode("SpecialEffectsTransform")]
-    [SDK.ContentMetaData("Title", "Photoshop Effects")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Effects")]
+    [SDK.Title("Photoshop Effects"), SDK.TitleFormat("{0} Effects")]
     public sealed class SpecialEffectsTransform : BaseImageTransform
     {
         #region drop shadow
 
         [SDK.InputValue("EnableDropShadow")]
-        [SDK.InputMetaData("Group", "Drop Shadow"), SDK.InputMetaData("Title", "")]        
+        [SDK.Title(""), SDK.Group("Drop Shadow")]        
         public bool EnableDropShadow { get; set; }
 
         [SDK.InputValue("DropShadowColor")]
-        [SDK.InputMetaData("Group", "Drop Shadow"), SDK.InputMetaData("Title", "")]
-        [SDK.InputMetaData("Default", (UInt32)0xff000000)]
-        [SDK.InputMetaData("ViewStyle", "ColorPicker")]
+        [SDK.Title("Title"), SDK.Group("Drop Shadow")]
+        [SDK.Default((UInt32)0xff000000)]
+        [SDK.ViewStyle("ColorPicker")]
         public UInt32 DropShadowColor { get; set; }
 
         [SDK.InputValue("DropShadowOpacity")]
-        [SDK.InputMetaData("Group", "Drop Shadow"), SDK.InputMetaData("Title", "Opacity")]
-        [SDK.InputMetaData("Minimum", 0), SDK.InputMetaData("Default", 75), SDK.InputMetaData("Maximum", 100)]
-        [SDK.InputMetaData("ViewStyle", "Slider")]
+        [SDK.Title("Opacity"), SDK.Group("Drop Shadow")]
+        [SDK.Minimum(0), SDK.Default(75), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
         public int DropShadowOpacity { get; set; }
 
         #endregion
@@ -281,19 +268,19 @@ namespace Epsylon.UberPlugin
         #region outer shadow
 
         [SDK.InputValue("EnableOuterGlow")]
-        [SDK.InputMetaData("Group","Outer Glow"), SDK.InputMetaData("Title", "")]        
+        [SDK.Title(""), SDK.Group("Outer Glow")]        
         public bool EnableOuterGlow { get; set; }
 
         [SDK.InputValue("OuterGlowColor")]
-        [SDK.InputMetaData("Group", "Outer Glow"), SDK.InputMetaData("Title", "")]
-        [SDK.InputMetaData("Default", (UInt32)0xffff8000)]
-        [SDK.InputMetaData("ViewStyle", "ColorPicker")]
+        [SDK.Title(""), SDK.Group("Outer Glow")]
+        [SDK.Default((UInt32)0xffff8000)]
+        [SDK.ViewStyle("ColorPicker")]
         public UInt32 OuterGlowColor { get; set; }
 
         [SDK.InputValue("OuterGlowOpacity")]
-        [SDK.InputMetaData("Group", "Outer Glow"), SDK.InputMetaData("Title", "Opacity")]        
-        [SDK.InputMetaData("Minimum", 0), SDK.InputMetaData("Default", 75), SDK.InputMetaData("Maximum", 100)]
-        [SDK.InputMetaData("ViewStyle", "Slider")]
+        [SDK.Title("Opacity"), SDK.Group("Outer Glow")]        
+        [SDK.Minimum(0), SDK.Default(75), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
         public int OuterGlowOpacity { get; set; }
 
         #endregion

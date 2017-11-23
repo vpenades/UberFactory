@@ -9,7 +9,7 @@ namespace Epsylon.TestPlugins
     using UberFactory;
 
     [SDK.ContentNode(nameof(TextSink))]
-    [SDK.ContentMetaData("Title", "Text Sink")]
+    [SDK.Title("Text Sink")]
     public sealed class TextSink : SDK.ContentFilter
     {
         [SDK.InputNode(nameof(Source))]
@@ -22,7 +22,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(MultiTextSink))]
-    [SDK.ContentMetaData("Title", "Text Array Sink")]
+    [SDK.Title("Text Array Sink")]
     public sealed class MultiTextSink : SDK.ContentFilter
     {
         [SDK.InputNode(nameof(Source),true)]
@@ -35,7 +35,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(IntegerSink))]
-    [SDK.ContentMetaData("Title", "Integer Sink")]
+    [SDK.Title("Integer Sink")]
     public sealed class IntegerSink : SDK.ContentFilter
     {
         [SDK.InputNode(nameof(Source))]
@@ -48,7 +48,7 @@ namespace Epsylon.TestPlugins
     }
 
     [SDK.ContentNode(nameof(IntegerWriter))]
-    [SDK.ContentMetaData("Title", "Write Integer to File")]
+    [SDK.Title("Write Integer to File")]
     public sealed class IntegerWriter : SDK.FileWriter
     {
         [SDK.InputNode(nameof(Source))]

@@ -7,10 +7,10 @@ namespace Epsylon.UberPlugin.CoreTypes
     using System.Linq;
     using UberFactory;
 
-    using TEXTFUNC = Func<String, String>;
-
+    using TEXTFUNC = Func<String, String>;    
+    
     [SDK.ContentNode("TextFormattingSettings")]
-    [SDK.ContentMetaData("Title", "Text Formatting Settings")]
+    [SDK.Title("Text Formatting Settings")]
     public class TextFormattingSettings : SDK.ContentObject
     {
         private static string[] _GetAvailableCultureIdentifiers()
@@ -23,20 +23,20 @@ namespace Epsylon.UberPlugin.CoreTypes
         private static string _GetDefaultCultureIndentifier() { return _GetAvailableCultureIdentifiers().First(); }
 
         [SDK.InputValue(nameof(CultureIdentifier))]
-        [SDK.InputMetaData("Title","Culture")]
-        [SDK.InputMetaData("ViewStyle", "ComboBox")]
-        [SDK.InputMetaDataEvaluate("Default",nameof(_GetDefaultCultureIndentifier))]
-        [SDK.InputMetaDataEvaluate("Values", nameof(_GetAvailableCultureIdentifiers))]
+        [SDK.Title("Culture")]
+        [SDK.ViewStyle("ComboBox")]
+        [SDK.MetaDataEvaluate("Default",nameof(_GetDefaultCultureIndentifier))]
+        [SDK.MetaDataEvaluate("Values", nameof(_GetAvailableCultureIdentifiers))]
         public string CultureIdentifier { get; set; }
 
         [SDK.InputNode("PreFormatting", true)]
-        [SDK.InputMetaData("Title", "Pre Formatting")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Pre Formatting")]
+        [SDK.ItemsPanel("VerticalList")]
         public TEXTFUNC[] PreFormatting { get; set; }
 
         [SDK.InputNode("PostFormatting", true)]
-        [SDK.InputMetaData("Title", "Post Formatting")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Post Formatting")]
+        [SDK.ItemsPanel("VerticalList")]
         public TEXTFUNC[] PostFormatting { get; set; }
 
         public System.Globalization.CultureInfo CurrentCulture

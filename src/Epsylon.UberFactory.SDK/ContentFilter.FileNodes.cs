@@ -13,9 +13,9 @@ namespace Epsylon.UberFactory
             public virtual string GetFileFilter() { return "All Files|*.*"; }
 
             [SDK.InputValue("FileName")]
-            [SDK.InputMetaData("Title","File")]            
-            [SDK.InputMetaData("ViewStyle", "FilePicker")]
-            [SDK.InputMetaDataEvaluate("Filter", nameof(GetFileFilter))]
+            [SDK.Title("File")]            
+            [SDK.ViewStyle("FilePicker")]
+            [SDK.MetaDataEvaluate("Filter", nameof(GetFileFilter))]
             public String FileName { get; set; }                  
 
             protected override TValue Evaluate()
@@ -37,7 +37,7 @@ namespace Epsylon.UberFactory
         public abstract class FileWriter : ContentFilter
         {
             [SDK.InputValue("FileName")]
-            [SDK.InputMetaData("Title", "File Name")]
+            [SDK.Title("File Name")]
             public String FileName { get; set; }
 
             protected abstract String GetFileExtension();
@@ -62,21 +62,21 @@ namespace Epsylon.UberFactory
             // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
 
             [SDK.InputValue("DirectoryName")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Path")]
-            [SDK.InputMetaData("ViewStyle", "DirectoryPicker")]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("Path")]
+            [SDK.ViewStyle("DirectoryPicker")]
             public String DirectoryName { get; set; }
 
             [SDK.InputValue("FileMask")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Mask")]
-            [SDK.InputMetaData("Default", "*")]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("Mask")]
+            [SDK.Default("*")]
             public String FileMask { get; set; }
 
             [SDK.InputValue("AllDirectories")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "All Directories")]
-            [SDK.InputMetaData("Default", false)]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("All Directories")]
+            [SDK.Default(false)]
             public Boolean AllDirectories { get; set; }
 
             protected override IReadOnlyDictionary<string, TValue> Evaluate()
@@ -115,21 +115,21 @@ namespace Epsylon.UberFactory
             // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
 
             [SDK.InputValue("DirectoryName")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Path")]
-            [SDK.InputMetaData("ViewStyle", "DirectoryPicker")]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("Path")]
+            [SDK.ViewStyle("DirectoryPicker")]
             public String DirectoryName { get; set; }
 
             [SDK.InputValue("FileMask")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Mask")]
-            [SDK.InputMetaData("Default", "*")]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("Mask")]
+            [SDK.Default("*")]
             public String FileMask { get; set; }
 
             [SDK.InputValue("AllDirectories")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "All Directories")]
-            [SDK.InputMetaData("Default", false)]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("All Directories")]
+            [SDK.Default(false)]
             public Boolean AllDirectories { get; set; }
 
             protected override TValueOut Evaluate()
@@ -170,21 +170,21 @@ namespace Epsylon.UberFactory
             // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
 
             [SDK.InputValue("DirectoryName")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Path")]
-            [SDK.InputMetaData("ViewStyle", "DirectoryPicker")]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("Path")]
+            [SDK.ViewStyle("DirectoryPicker")]
             public String DirectoryName { get; set; }
 
             [SDK.InputValue("FileMask")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "Mask")]
-            [SDK.InputMetaData("Default", "*")]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("Mask")]
+            [SDK.Default("*")]
             public String FileMask { get; set; }
 
             [SDK.InputValue("AllDirectories")]
-            [SDK.InputMetaData("Group", "Source Directory")]
-            [SDK.InputMetaData("Title", "All Directories")]
-            [SDK.InputMetaData("Default", false)]
+            [SDK.Group("Source Directory")]
+            [SDK.Title("All Directories")]
+            [SDK.Default(false)]
             public Boolean AllDirectories { get; set; }
 
             protected override Object EvaluateObject()

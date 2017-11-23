@@ -17,8 +17,8 @@ namespace Epsylon.UberPlugin
     using IMAGE32DC = IImageProcessingContext<Rgba32>;
 
     [SDK.ContentNode("ImageReader")]
-    [SDK.ContentMetaData("Title", "File")]
-    [SDK.ContentMetaData("TitleFormat", "{0} File")]
+    [SDK.Title("File")]
+    [SDK.TitleFormat( "{0} File")]
     public sealed class ImageReader : SDK.FileReader<IMAGE32>
     {
         public override string GetFileFilter()
@@ -39,14 +39,14 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("ImageWriter")]
-    [SDK.ContentMetaData("Title", "Save ImageSharp File (Advanced)")]
+    [SDK.Title("Save ImageSharp File (Advanced)")]
     public sealed class ImageWriter : SDK.FileWriter
     {
         [SDK.InputNode("Image")]
         public IMAGE32 Image { get; set; }
 
         [SDK.InputNode("Encoder")]
-        [SDK.InputMetaData("Title", "Encoder")]
+        [SDK.Title("Encoder")]
         public IMAGEENCODER Encoder { get; set; }        
 
         protected override string GetFileExtension() { return Encoder.Value == null ? "default" : Encoder.Key; }
@@ -83,14 +83,14 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("ImageWriterBasic")]
-    [SDK.ContentMetaData("Title", "Save ImageSharp File (Basic)")]
+    [SDK.Title("Save ImageSharp File (Basic)")]
     public sealed class ImageWriterBasic : SDK.FileWriter
     {
         [SDK.InputNode("Image")]
         public IMAGE32 Image { get; set; }
 
         [SDK.InputNode("Format")]
-        [SDK.InputMetaData("Title", "Format")]
+        [SDK.Title("Format")]
         public ImageWriterBasicFormat Format { get; set; }
 
         protected override string GetFileExtension()
@@ -124,16 +124,16 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("BatchProcessor")]
-    [SDK.ContentMetaData("Title", "Process ImageSharp Batch")]
+    [SDK.Title("Process ImageSharp Batch")]
     public sealed class BatchProcessor : SDK.BatchProcessor<IMAGE32,IMAGE32>
     {
         [SDK.InputNode("Transforms", true)]
-        [SDK.InputMetaData("Title", "Transforms")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Transforms")]
+        [SDK.ItemsPanel("VerticalList")]
         public IMGTRANSFORM[] Transforms { get; set; }
 
         [SDK.InputNode("Encoder")]
-        [SDK.InputMetaData("Title", "Encoder")]
+        [SDK.Title("Encoder")]
         public IMAGEENCODER Encoder { get; set; }
 
         protected override IEnumerable<string> GetFileInExtensions()

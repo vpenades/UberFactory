@@ -74,28 +74,28 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("LayersStack")]
-    [SDK.ContentMetaData("Title", "Layers")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Layers")]
+    [SDK.Title("Layers")]
+    [SDK.TitleFormat("{0} Layers")]
     public sealed class LayersStack : SDK.ContentFilter<IMAGE32>
     {        
         [SDK.InputValue("Width")]
-        [SDK.InputMetaData("Group", "Image Size"), SDK.InputMetaData("Title", "Width")]
-        [SDK.InputMetaData("Minimum", 1),SDK.InputMetaData("Default", 256)]        
+        [SDK.Title("Width"), SDK.Group("Image Size")]
+        [SDK.Minimum(1),SDK.Default(256)]        
         public int Width { get; set; }
 
         [SDK.InputValue("Height")]
-        [SDK.InputMetaData("Group", "Image Size"),SDK.InputMetaData("Title", "Height")]
-        [SDK.InputMetaData("Minimum", 1),SDK.InputMetaData("Default", 256)]        
+        [SDK.Title("Height"), SDK.Group("Image Size")]
+        [SDK.Minimum(1),SDK.Default(256)]        
         public int Height { get; set; }
 
         [SDK.InputValue("DotsPerInch")]
-        [SDK.InputMetaData("Group", "Image Size"), SDK.InputMetaData("Title", "DPI")]
-        [SDK.InputMetaData("Minimum", 0.001f), SDK.InputMetaData("Default", 96)]
+        [SDK.Title("DPI"), SDK.Group("Image Size")]
+        [SDK.Minimum(0.001f), SDK.Default(96)]
         public double DotsPerInch { get; set; }        
 
         [SDK.InputNode("Layers", true)]
-        [SDK.InputMetaData("Title", "Layers")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Layers")]
+        [SDK.ItemsPanel("VerticalList")]
         public LayerInfo[] Layers { get; set; }
 
         protected override IMAGE32 Evaluate()
@@ -120,34 +120,34 @@ namespace Epsylon.UberPlugin
     }
     
     [SDK.ContentNode("Layer")]
-    [SDK.ContentMetaData("Title", "Layer")]
-    [SDK.ContentMetaData("TitleFormat", "Layer {0}")]
+    [SDK.Title("Layer")]
+    [SDK.TitleFormat("Layer {0}")]
     public sealed class Layer : SDK.ContentFilter<LayerInfo>
     {
         [SDK.InputValue("Enabled")]
-        [SDK.InputMetaData("Group", "Opacity"),SDK.InputMetaData("Title", "")]
-        [SDK.InputMetaData("Default", true)]
+        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Default(true)]
         public Boolean Enabled { get; set; }
 
         [SDK.InputValue("Opacity")]
-        [SDK.InputMetaData("Group", "Opacity"),SDK.InputMetaData("Title", "")]
-        [SDK.InputMetaData("Minimum", 0),SDK.InputMetaData("Default", 100),SDK.InputMetaData("Maximum", 100)]
-        [SDK.InputMetaData("ViewStyle", "Slider")]
+        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Minimum(0),SDK.Default(100),SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
         public int Opacity { get; set; }
 
         [SDK.InputValue("BlendMode")]
-        [SDK.InputMetaData("Group", "Opacity"), SDK.InputMetaData("Title", "Mode")]
-        [SDK.InputMetaData("Default", SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal)]
+        [SDK.Title("Mode"), SDK.Group("Opacity")]
+        [SDK.Default(SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal)]
         public SixLabors.ImageSharp.PixelFormats.PixelBlenderMode BlendMode { get; set; }
 
         [SDK.InputValue("OffsetX")]
-        [SDK.InputMetaData("Group", "Offset"), SDK.InputMetaData("Title", "X")]
-        [SDK.InputMetaData("Default", 0)]
+        [SDK.Title("X"), SDK.Group("Offset")]
+        [SDK.Default(0)]
         public int OffsetX { get; set; }
 
         [SDK.InputValue("OffsetY")]
-        [SDK.InputMetaData("Group", "Offset"), SDK.InputMetaData("Title", "Y")]
-        [SDK.InputMetaData("Default", 0)]
+        [SDK.Title("Y"), SDK.Group("Offset")]
+        [SDK.Default(0)]
         public int OffsetY { get; set; }
 
         [SDK.InputNode("Image")]        

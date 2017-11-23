@@ -8,8 +8,6 @@ namespace Epsylon.UberFactory
 {
     partial class SDK
     {
-        
-
         [AttributeUsageAttribute(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
         public class ContentNodeAttribute : Attribute
         {
@@ -34,13 +32,6 @@ namespace Epsylon.UberFactory
             public string SerializationKey { get; private set; }             
 
             #endregion           
-        }
-
-        [AttributeUsageAttribute(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
-        public class ContentMetaDataAttribute : MetaDataKeyAttribute
-        {
-            public ContentMetaDataAttribute(string key, Object value) : base(key) {Value = value; }            
-            public Object Value { get; private set; }           
-        }
+        }        
     }
 }

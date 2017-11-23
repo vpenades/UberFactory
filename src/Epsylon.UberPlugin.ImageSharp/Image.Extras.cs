@@ -16,39 +16,31 @@ namespace Epsylon.UberPlugin
     public enum NoiseTypes { Perlin, ImprovedPerlin }
 
     [SDK.ContentNode("CreateNoise")]
-    [SDK.ContentMetaData("Title", "Noise")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Noise")]
+    [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
     public sealed class ImageSharpCreateNoise : SDK.ContentFilter<IMAGE32>
     {
-        [SDK.InputValue("Width")]
-        [SDK.InputMetaData("Group", "Size")]
-        [SDK.InputMetaData("Title", "W")]
-        [SDK.InputMetaData("Default", 256)]
+        [SDK.InputValue("Width")]        
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Default(256)]
         public int Width { get; set; }
 
-        [SDK.InputValue("Height")]
-        [SDK.InputMetaData("Group", "Size")]
-        [SDK.InputMetaData("Title", "H")]
-        [SDK.InputMetaData("Default", 256)]
+        [SDK.InputValue("Height")]        
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Default(256)]
         public int Height { get; set; }
 
-        [SDK.InputValue("NoiseType")]
-        [SDK.InputMetaData("Group", "Noise")]
-        [SDK.InputMetaData("Title", "Type")]
+        [SDK.InputValue("NoiseType")]        
+        [SDK.Title("Type"),SDK.Group("Noise")]
         public NoiseTypes NoiseType { get; set; }
 
-        [SDK.InputValue("RandomSeed")]
-        [SDK.InputMetaData("Group", "Noise")]
-        [SDK.InputMetaData("Title", "Seed")]
-        [SDK.InputMetaData("Minimum", 0)]
-        [SDK.InputMetaData("Default", 177)]
-        [SDK.InputMetaData("Maximum", 255)]
+        [SDK.InputValue("RandomSeed")]        
+        [SDK.Title("Seed"), SDK.Group("Noise")]
+        [SDK.Minimum(0),SDK.Default(177),SDK.Maximum( 255)]
         public int RandomSeed { get; set; }
 
         [SDK.InputValue("Scale")]
-        [SDK.InputMetaData("Title", "Scale")]
-        [SDK.InputMetaData("Minimum", 2)]
-        [SDK.InputMetaData("Default", 16)]
+        [SDK.Title("Scale")]
+        [SDK.Minimum(2),SDK.Default(16)]
         public float Scale { get; set; }
 
         protected override IMAGE32 Evaluate()
@@ -66,32 +58,27 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("CreateText")]
-    [SDK.ContentMetaData("Title", "Text")]
-    [SDK.ContentMetaData("TitleFormat", "{0} Text")]
+    [SDK.Title("Text"),SDK.TitleFormat( "{0} Text")]
     public sealed class ImageSharpCreateText : SDK.ContentFilter<IMAGE32>
     {
         [SDK.InputNode("Text")]
         public String Text { get; set; }
 
         [SDK.InputNode("FontFamily")]
-        [SDK.InputMetaData("Default",typeof(SixLaborsSystemFont))]
+        [SDK.Default(typeof(SixLaborsSystemFont))]
         public SixLabors.Fonts.FontFamily FontFamily { get; set; }
 
         [SDK.InputValue("Size")]
-        [SDK.InputMetaData("Minimum",1)]
-        [SDK.InputMetaData("Default",12)]
-        [SDK.InputMetaData("Maximum",1000)]
+        [SDK.Minimum(1),SDK.Default(12),SDK.Maximum(1000)]
         public float Size { get; set; }
 
         [SDK.InputValue("Padding")]
-        [SDK.InputMetaData("Minimum", 0)]
-        [SDK.InputMetaData("Default", 1)]
-        [SDK.InputMetaData("Maximum", 1000)]
+        [SDK.Minimum(0),SDK.Default(1),SDK.Maximum( 1000)]
         public float Padding { get; set; }
 
         [SDK.InputValue("Color")]        
-        [SDK.InputMetaData("Default", (UInt32)0xff000000)]
-        [SDK.InputMetaData("ViewStyle", "ColorPicker")]
+        [SDK.Default((UInt32)0xff000000)]
+        [SDK.ViewStyle("ColorPicker")]
         public UInt32 Color { get; set; }
 
         protected override IMAGE32 Evaluate()
@@ -110,13 +97,13 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("SixLaborsSystemFont")]
-    [SDK.ContentMetaData("Title", "System Font")]
+    [SDK.Title("System Font")]
     public sealed class SixLaborsSystemFont : SDK.ContentFilter<SixLabors.Fonts.FontFamily>
     {
         [SDK.InputValue("FontFamily")]
-        [SDK.InputMetaData("ViewStyle", "ComboBox")]
-        [SDK.InputMetaData("Default","Arial")]
-        [SDK.InputMetaDataEvaluate("Values",nameof(AvailableFontFamilies))]
+        [SDK.ViewStyle("ComboBox")]
+        [SDK.Default("Arial")]
+        [SDK.MetaDataEvaluate("Values",nameof(AvailableFontFamilies))]
         public String FontFamily { get; set; }
 
         public String[] AvailableFontFamilies => new SixLabors.Fonts.FontCollection().Families.Select(item => item.Name).ToArray();

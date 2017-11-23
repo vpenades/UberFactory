@@ -16,17 +16,15 @@ namespace Epsylon.UberPlugin
     using IMAGEENCODER = Action<UberFactory.SDK.ExportContext, IMAGE32>;
 
     [SDK.ContentNode("GlobalSettings")]
-    [SDK.ContentMetaData("Title", "ImageSharp Settings")]
+    [SDK.Title("ImageSharp Settings")]
     public class GlobalSettings : SDK.ContentObject
     {
         [SDK.InputNode("PreFormatting", true)]
-        [SDK.InputMetaData("Title", "Pre Processing")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Pre Processing"), SDK.Group("Transforms"), SDK.ItemsPanel("VerticalList")]
         public IMGTRANSFORM[] PreProcessing { get; set; }
 
         [SDK.InputNode("PostFormatting", true)]
-        [SDK.InputMetaData("Title", "Post Processing")]
-        [SDK.InputMetaData("Panel", "VerticalList")]
+        [SDK.Title("Post Processing"), SDK.Group("Transforms"), SDK.ItemsPanel("VerticalList")]
         public IMGTRANSFORM[] PostProcessing { get; set; }
 
         public IMAGE32 ReadImage(SDK.ImportContext stream)
@@ -79,14 +77,12 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("JpegGlobalSettings")]
-    [SDK.ContentMetaData("Title", "ImageSharp JPEG Settings")]
+    [SDK.Title("ImageSharp JPEG Settings")]
     public class JpegGlobalSettings : SDK.ContentObject
     {
         [SDK.InputValue("Quality")]
-        [SDK.InputMetaData("Minimum", 0)]
-        [SDK.InputMetaData("Default", 80)]
-        [SDK.InputMetaData("Maximum", 100)]
-        [SDK.InputMetaData("ViewStyle", "Slider")]
+        [SDK.Minimum(0), SDK.Default(80), SDK.Maximum( 100)]
+        [SDK.ViewStyle("Slider")]
         public int Quality { get; set; }
     }
 }
