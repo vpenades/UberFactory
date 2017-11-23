@@ -10,7 +10,7 @@ namespace Epsylon.UberFactory
     [TestClass]
     public class TestAssemblyLoadContext
     {
-        public static string TestPluginPath => @"Epsylon.TestPlugins\bin\Debug\netstandard1.5\Epsylon.TestPlugins.dll".GetAbsolutePath();
+        public static string TestPluginPath => @"Epsylon.UberPlugin.TestTypes\bin\Debug\netstandard2.0\Epsylon.UberPlugin.TestTypes.dll".GetAbsolutePath();
 
         public static Assembly[] LoadPlugins()
         {

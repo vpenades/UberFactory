@@ -57,6 +57,43 @@ namespace Epsylon.UberFactory
             protected abstract void WriteFile(ExportContext stream);
         }
 
+        public abstract class FileProcessor<TValueIn,TValueOut> : ContentFilter
+        {
+            [SDK.InputValue("FileName")]
+            [SDK.Title("File")]
+            [SDK.ViewStyle("FilePicker")]
+            [SDK.MetaDataEvaluate("Filter", nameof(GetFileInFilter))]
+            public String SourceFileName { get; set; }
+
+            [SDK.InputValue("FileName")]
+            [SDK.Title("File Name")]
+            public String TargetFileName { get; set; }            
+
+            protected override object EvaluateObject()
+            {
+                var valueIn = ReadFile(this.GetImportContext(SourceFileName));
+                if (valueIn == null) return null;
+
+                var valueOut = Transform(valueIn);
+                if (valueIn == null) return null;
+
+                var relPath = System.IO.Path.ChangeExtension(TargetFileName + ".bin", GetFileOutExtension());
+                WriteFile(this.GetExportContext(relPath), valueOut);
+
+                return null;
+            }
+
+            public virtual string GetFileInFilter() { return "All Files|*.*"; }
+
+            protected abstract TValueIn ReadFile(ImportContext stream);
+
+            protected abstract TValueOut Transform(TValueIn value);
+
+            protected abstract String GetFileOutExtension();
+
+            protected abstract void WriteFile(ExportContext stream,TValueOut value);
+        }
+
         public abstract class BatchReader<TValue> : ContentFilter<IReadOnlyDictionary<string,TValue>>
         {
             // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.

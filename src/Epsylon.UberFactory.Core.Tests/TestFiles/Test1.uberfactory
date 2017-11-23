@@ -1,0 +1,114 @@
+<Project Version="1.0" xmlns="http://www.uberfactory.com">
+  <Properties />
+  <DocumentInfo>
+    <Properties>
+      <Generator>UberFactoryEditor 0.0.0.0</Generator>
+      <Date>23/11/2017 23:17:11</Date>
+    </Properties>
+  </DocumentInfo>
+  <PluginReference>
+    <Properties>
+      <AssemblyPath>..\..\Epsylon.UberPlugin.TestTypes\bin\Debug\netstandard2.0\Epsylon.UberPlugin.TestTypes.dll</AssemblyPath>
+      <Version>1.0.0</Version>
+    </Properties>
+  </PluginReference>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>c0f64e8b-c64d-40b5-b4f1-fd7f0db64b75</RootNodeId>
+      </Properties>
+      <Node Id="c0f64e8b-c64d-40b5-b4f1-fd7f0db64b75">
+        <Properties>
+          <ClassName>MainSettings1</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>49866527-b3ab-4ea9-a72e-6042fd8c7e02</RootNodeId>
+      </Properties>
+      <Node Id="49866527-b3ab-4ea9-a72e-6042fd8c7e02">
+        <Properties>
+          <ClassName>MainSettings2</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>84b8280d-ef58-4a2f-bbe5-cd156ebad12d</RootNodeId>
+      </Properties>
+      <Node Id="84b8280d-ef58-4a2f-bbe5-cd156ebad12d">
+        <Properties>
+          <ClassName>MainSettings3</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Task>
+    <Properties>
+      <Title>New Task 1</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>f6c054fd-5a8d-4db0-8614-1cfc140a2b8b</RootNodeId>
+      </Properties>
+      <Node Id="f6c054fd-5a8d-4db0-8614-1cfc140a2b8b">
+        <Properties>
+          <ClassName>IntegerWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Source>99edc385-c094-4afc-92fc-eb0afce12bf3</Source>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="99edc385-c094-4afc-92fc-eb0afce12bf3">
+        <Properties>
+          <ClassName>AddIntegerValues</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value1>c5dca692-adfe-45f2-a2f2-a265e4dcebd7</Value1>
+            <Value2>3d811d65-7d83-4bbe-95e8-3f36ff58ad7a</Value2>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="c5dca692-adfe-45f2-a2f2-a265e4dcebd7">
+        <Properties>
+          <ClassName>AssignIntegerValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value>1</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="3d811d65-7d83-4bbe-95e8-3f36ff58ad7a">
+        <Properties>
+          <ClassName>AssignIntegerValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value>2</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+</Project>
