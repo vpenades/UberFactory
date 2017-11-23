@@ -99,6 +99,14 @@ namespace Epsylon.UberFactory.Evaluation
             }
 
             _SettingsInstancesCache.Clear();
+
+            foreach(var byProduct in _ByProducts)
+            {
+                try { byProduct.Dispose(); }    // some objects might throw an "AlreadyDisposedException"
+                catch { }
+            }
+
+            _ByProducts.Clear();
         }
 
         #endregion
@@ -117,6 +125,8 @@ namespace Epsylon.UberFactory.Evaluation
         private readonly Func<Guid, IPropertyProvider> _PropertiesFunc;
 
         private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();
+
+        private readonly HashSet<IDisposable> _ByProducts = new HashSet<IDisposable>();
 
         #endregion
 
@@ -141,7 +151,11 @@ namespace Epsylon.UberFactory.Evaluation
 
             if (_Monitor.IsCancelRequested) return null;                        
 
-            return _EvaluateNode(nodeId, false);
+            var result = _EvaluateNode(nodeId, false);
+
+            if (result is IDisposable disposable) _ByProducts.Add(disposable);
+
+            return result;
         }
 
         public IPreviewResult PreviewNode(Guid nodeId)
