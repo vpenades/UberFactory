@@ -163,9 +163,9 @@ namespace Epsylon.UberFactory
             private readonly EventLoggerProvider _Logger = new EventLoggerProvider();
 
             private BindableBase _ActiveItemView;
-            private String _ActiveConfiguration;
+            private String _ActiveConfiguration;            
 
-            private IReadOnlyDictionary<Guid, Evaluation.PipelineFileManager> _ProcessedFiles;
+            private Evaluation.PipelineState.Dictionary _ProjectState = new Evaluation.PipelineState.Dictionary();
 
             #endregion
 
@@ -187,31 +187,22 @@ namespace Epsylon.UberFactory
 
             public Boolean IsRootConfiguration  => _ActiveConfiguration == _Configurations.RootConfiguration;
 
-            public String ActiveConfiguration
-            {
-                get { return _ActiveConfiguration; }
-                set
-                {
-                    if (_ActiveConfiguration == value) return;
-                    _ActiveConfiguration = value;
+            public String TargetDirectory       => GetBuildSettings().TargetDirectory;
 
-                    _ProcessedFiles = null;
-
-                    RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks),nameof(SharedSettings), nameof(IsRootConfiguration));
-                    ActiveDocument = null; // we must flush active document because it might be in the wrong configuration
-                }
-            }
+            public String ActiveConfiguration { get { return _ActiveConfiguration; } set { _SetActiveConfiguration(value); } }
 
             public IEnumerable<SettingsView> SharedSettings
             {
                 get
                 {
-                    if (_ActiveConfiguration == null) return null;                    
+                    if (_ActiveConfiguration == null) return null;
+
+                    _UpdatePipelineState();
 
                     return this._Plugins
                         .SettingsClassIds
                         .Select(clsid => _Source.UseSettings(clsid))
-                        .Select(item => SettingsView.Create(this, item))
+                        .Select(item => SettingsView.Create(this, item, _ProjectState[item.Pipeline]))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -223,10 +214,12 @@ namespace Epsylon.UberFactory
                 {
                     if (_ActiveConfiguration == null) return null;
 
+                    _UpdatePipelineState();
+
                     return _Source
                         .Items
                         .OfType<ProjectDOM.Task>()
-                        .Select(item => Task.Create(this, item))
+                        .Select(item => Task.Create(this, item, _ProjectState[item.Pipeline]))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -240,16 +233,7 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<PathString> AbsoluteFilePaths => _Source.References.Select(item => _DocumentPath.DirectoryPath.MakeAbsolutePath(item));
 
-            public String TargetDirectory       => GetBuildSettings().TargetDirectory;
-
-            public bool CanAddItems
-            {
-                get
-                {
-                    if (_ActiveConfiguration == null) return false;
-                    return true;
-                }
-            }
+            public bool CanAddItems => _ActiveConfiguration != null;
 
             public bool CanBuild
             {
@@ -272,6 +256,34 @@ namespace Epsylon.UberFactory
                 if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;                
 
                 return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath, isSimulation);
+            }
+
+            private void _UpdatePipelineState()
+            {
+                var tasks = _Source.Items
+                    .OfType<ProjectDOM.Task>()
+                    .Select(item => item.Pipeline);
+
+                var settings = _Source.Items
+                    .OfType<ProjectDOM.Settings>()
+                    .Select(item => item.Pipeline);
+
+                var pipelines = tasks
+                    .Concat(settings)
+                    .ToArray();
+
+                _ProjectState.Update(pipelines);
+            }
+
+            private void _SetActiveConfiguration(string value)
+            {
+                if (_ActiveConfiguration == value) return;
+                _ActiveConfiguration = value;
+
+                _ProjectState.Clear();
+
+                RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks), nameof(SharedSettings), nameof(IsRootConfiguration),nameof(CanAddItems),nameof(CanBuild));
+                ActiveDocument = null; // we must flush active document because it might be in the wrong configuration                
             }
 
             private void _EditPlugin()
@@ -364,9 +376,11 @@ namespace Epsylon.UberFactory
                     {
                         xlogger.AddProvider(_Logger);
 
-                        var monitor = Evaluation.MonitorContext.Create(xlogger, ctoken, progress);
+                        var monitor = Evaluation.MonitorContext.Create(xlogger, ctoken, progress);                        
 
-                        _ProcessedFiles = ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
+                        var resultsFiles = ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
+
+                        _ProjectState.Update(resultsFiles);
                     }
                 };
 
@@ -405,16 +419,7 @@ namespace Epsylon.UberFactory
                 _Plugins.SetAssemblies(Client.PluginLoader.Instance.GetPlugins() );
 
                 RaiseChanged();
-            }
-
-            public Evaluation.PipelineFileManager GetProcessingResultsFor(Task task)
-            {
-                if (_ProcessedFiles == null) return null;
-
-                var id = task.Pipeline._PipelineDom.RootIdentifier;
-
-                return _ProcessedFiles.TryGetValue(id, out Evaluation.PipelineFileManager result) ? result : null;                
-            }
+            }           
 
             #endregion            
         }        
