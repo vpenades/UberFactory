@@ -106,17 +106,17 @@ namespace Epsylon.UberFactory.Client
 
         #region API        
 
-        public static IEnumerable<Evaluation.BuildContext> Build(params string[] args)
+        public static void Build(params string[] args)
         {
             using (var context = Create(args))
             {
                 var monitor = Evaluation.MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
                 
-                return context.Build(_LoadPluginsFunc, monitor);
+                context.Build(_LoadPluginsFunc, monitor);
             }
         }
 
-        public IEnumerable<Evaluation.BuildContext> Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor)
+        public void Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor)
         {
             _CancelRequested = false;
 
@@ -124,6 +124,8 @@ namespace Epsylon.UberFactory.Client
 
             foreach (var filePath in System.IO.Directory.GetFiles(_SrcDir, _SrcMask))
             {
+                var state = new Evaluation.PipelineState.Manager();
+
                 var prjFilePath = new PathString(filePath);
 
                 prjFilePath = prjFilePath.AsAbsolute();
@@ -141,12 +143,12 @@ namespace Epsylon.UberFactory.Client
                 var buildSettings = Evaluation.BuildContext.Create(_Configuration, prjDir, dstDirPath, _TargetTask == "SIMULATE");                
 
                 // do build
-                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor);
+                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor, state);
 
                 bbbccc.Add(buildSettings);
             }
 
-            return bbbccc;
+            
         }
 
         private static void LoadProjectAssemblies(ProjectDOM.Project project, PathString prjDir)

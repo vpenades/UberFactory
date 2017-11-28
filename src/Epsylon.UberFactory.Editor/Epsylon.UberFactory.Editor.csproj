@@ -164,7 +164,6 @@
     </Compile>
     <Compile Include="Themes\TaskMonitorWindow.cs" />
     <Compile Include="View.Application.cs" />
-    <Compile Include="EventLogger.cs" />
     <Compile Include="_Dialogs.cs" />
     <Compile Include="Themes\Converters.cs" />
     <Compile Include="Themes\Dialog.Generic.xaml.cs">
@@ -350,7 +349,7 @@
       <Version>1.5.1</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\Shared\StaticVersionInfo.props" />  
+  <Import Project="$(MSBuildThisFileDirectory)..\Shared\StaticVersionInfo.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

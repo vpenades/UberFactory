@@ -5,17 +5,27 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
+using MSLOGGING = Microsoft.Extensions.Logging;
+
 namespace Epsylon.UberFactory.Evaluation
 {
     /// <summary>
     /// holds the persistent state of a given pipeline
     /// </summary>
-    public class PipelineState : INotifyPropertyChanged
+    public class PipelineState : INotifyPropertyChanged , MSLOGGING.ILogger
     {
-        private PipelineState(ProjectDOM.Pipeline pipeline) { _Pipeline = pipeline; }
+        // TODO: with the current API, the updates are received from the processing thread, and the notifications are sent to the UI thread.
 
-        private readonly ProjectDOM.Pipeline _Pipeline;
-        
+        #region lifecycle
+
+        private PipelineState() { }
+
+        #endregion
+
+        #region data
+
+        private readonly Object _Mutex = new object();
+
         private struct _FileInfo
         {            
             public DateTime Time;
@@ -25,57 +35,133 @@ namespace Epsylon.UberFactory.Evaluation
         private readonly Dictionary<string, _FileInfo> _InputFiles = new Dictionary<string, _FileInfo>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, _FileInfo> _OutputFiles = new Dictionary<string, _FileInfo>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly List<String> _Log = new List<string>();
+
+        #endregion
+
+        #region properties
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public class Dictionary : IReadOnlyDictionary<ProjectDOM.Pipeline,PipelineState>
+        public IEnumerable<string> Log { get { lock (_Mutex) { return _Log.ToArray(); } } }
+
+        #endregion
+
+        #region API
+
+        public void Update(Object result, PipelineFileManager results)
         {
+        }
+
+        bool MSLOGGING.ILogger.IsEnabled(MSLOGGING.LogLevel logLevel) { return true; }
+
+        private class _NoopDisposable : IDisposable
+        {
+            public static _NoopDisposable Instance = new _NoopDisposable();
+
+            public void Dispose() { }
+        }
+
+        IDisposable MSLOGGING.ILogger.BeginScope<TState>(TState state) { return _NoopDisposable.Instance; }
+
+        void MSLOGGING.ILogger.Log<TState>(MSLOGGING.LogLevel logLevel, MSLOGGING.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            var text = formatter(state, exception);
+
+            lock(_Mutex) { _Log.Add(text); }
+
+            _RaiseChanged(nameof(Log));
+
+        }
+
+        private void _RaiseChanged(params string[] ps)
+        {
+            if (PropertyChanged == null) return;
+
+            if (ps == null || ps.Length == 0) { PropertyChanged(this, new PropertyChangedEventArgs(null)); return; }
+
+            foreach (var p in ps) PropertyChanged(this, new PropertyChangedEventArgs(p));
+        }
+
+        #endregion
+
+        #region collection
+
+        public class Manager : IReadOnlyDictionary<Guid, PipelineState>, MSLOGGING.ILoggerProvider
+        {
+            #region lifecycle
+
+            public void Dispose() // required by ILoggerProvider
+            {
+
+            }
+
+            #endregion
+
             #region data
 
-            private readonly Dictionary<ProjectDOM.Pipeline, PipelineState> _InternalDict = new Dictionary<ProjectDOM.Pipeline, PipelineState>(ReferenceComparer<ProjectDOM.Pipeline>.GetInstance());
+            private readonly Object _Mutex = new object();
+
+            private readonly Dictionary<Guid, PipelineState> _InternalDict = new Dictionary<Guid, PipelineState>();
 
             #endregion
 
             #region API
 
-            public PipelineState this[ProjectDOM.Pipeline key] => _InternalDict[key];
+            public PipelineState this[Guid key] { get { lock (_Mutex) { return _InternalDict[key]; } } }
 
-            public IEnumerable<ProjectDOM.Pipeline> Keys => _InternalDict.Keys;
+            public IEnumerable<Guid> Keys { get { lock (_Mutex) { return _InternalDict.Keys.ToList(); } } }
 
-            public IEnumerable<PipelineState> Values => _InternalDict.Values;
+            public IEnumerable<PipelineState> Values { get { lock (_Mutex) { return _InternalDict.Values.ToList(); } } }
 
-            public int Count => _InternalDict.Count;
+            public int Count { get { lock (_Mutex) { return _InternalDict.Count; } } }
 
-            public bool ContainsKey(ProjectDOM.Pipeline key) { return _InternalDict.ContainsKey(key); }            
+            public bool ContainsKey(Guid key) { lock (_Mutex) { return _InternalDict.ContainsKey(key); } }
 
-            public bool TryGetValue(ProjectDOM.Pipeline key, out PipelineState value) { return _InternalDict.TryGetValue(key, out value); }
+            public bool TryGetValue(Guid key, out PipelineState value) { lock (_Mutex) { return _InternalDict.TryGetValue(key, out value); } }
 
-            public IEnumerator<KeyValuePair<ProjectDOM.Pipeline, PipelineState>> GetEnumerator() { return _InternalDict.GetEnumerator(); }
+            public IEnumerator<KeyValuePair<Guid, PipelineState>> GetEnumerator() { lock (_Mutex) { return _InternalDict.ToList().GetEnumerator(); } }
 
-            IEnumerator IEnumerable.GetEnumerator() { return _InternalDict.GetEnumerator(); }
+            IEnumerator IEnumerable.GetEnumerator() { lock (_Mutex) { return _InternalDict.ToList().GetEnumerator(); } }
 
-            public void Clear() { _InternalDict.Clear(); }
+            public void Clear() { lock (_Mutex) { _InternalDict.Clear(); } }
 
-            public void Update(IEnumerable<ProjectDOM.Pipeline> items)
+            public void Recycle(IEnumerable<Guid> items)
             {
-                var toInsert = items
-                    .Where(item => !_InternalDict.ContainsKey(item))
-                    .ToArray();
+                lock (_Mutex)
+                {
+                    var toInsert = items
+                        .Where(item => !_InternalDict.ContainsKey(item))
+                        .ToArray();
 
-                var toRemove = _InternalDict
-                    .Keys
-                    .Where(item => !items.Contains(item, ReferenceComparer<ProjectDOM.Pipeline>.GetInstance()))
-                    .ToArray();
+                    var toRemove = _InternalDict
+                        .Keys
+                        .Where(item => !items.Contains(item))
+                        .ToArray();
 
-                foreach (var tr in toRemove) _InternalDict.Remove(tr);
-                foreach (var ta in toInsert) _InternalDict.Add(ta, new PipelineState(ta));
+                    foreach (var tr in toRemove) _InternalDict.Remove(tr);
+                    foreach (var ta in toInsert) _InternalDict.Add(ta, new PipelineState());
+                }
+            }            
+
+            public void Update(Guid key, Object result, PipelineFileManager results)
+            {
+                if (this.TryGetValue(key, out PipelineState state)) state.Update(result, results);
             }
 
-            public void Update(IReadOnlyDictionary<Guid, PipelineFileManager> buildResults)
+            public MSLOGGING.ILogger CreateLogger(string categoryName)
             {
+                if (Guid.TryParse(categoryName, out Guid key))
+                {
+                    if (this.TryGetValue(key, out PipelineState state)) return state;
+                }
 
+                return MSLOGGING.Abstractions.NullLogger.Instance;
             }
 
             #endregion
         }
+
+        #endregion
     }
 }

@@ -158,14 +158,12 @@ namespace Epsylon.UberFactory
             private readonly PathString _DocumentPath;
 
             private readonly Configurations _Configurations;
-            internal readonly Factory.Collection _Plugins = new Factory.Collection();
-
-            private readonly EventLoggerProvider _Logger = new EventLoggerProvider();
+            internal readonly Factory.Collection _Plugins = new Factory.Collection();            
 
             private BindableBase _ActiveItemView;
-            private String _ActiveConfiguration;            
-
-            private Evaluation.PipelineState.Dictionary _ProjectState = new Evaluation.PipelineState.Dictionary();
+            private String _ActiveConfiguration;
+            
+            private Evaluation.PipelineState.Manager _ProjectState = new Evaluation.PipelineState.Manager();
 
             #endregion
 
@@ -202,7 +200,7 @@ namespace Epsylon.UberFactory
                     return this._Plugins
                         .SettingsClassIds
                         .Select(clsid => _Source.UseSettings(clsid))
-                        .Select(item => SettingsView.Create(this, item, _ProjectState[item.Pipeline]))
+                        .Select(item => SettingsView.Create(this, item, _ProjectState[item.Pipeline.RootIdentifier]))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -219,7 +217,7 @@ namespace Epsylon.UberFactory
                     return _Source
                         .Items
                         .OfType<ProjectDOM.Task>()
-                        .Select(item => Task.Create(this, item, _ProjectState[item.Pipeline]))
+                        .Select(item => Task.Create(this, item, _ProjectState[item.Pipeline.RootIdentifier]))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -269,10 +267,9 @@ namespace Epsylon.UberFactory
                     .Select(item => item.Pipeline);
 
                 var pipelines = tasks
-                    .Concat(settings)
-                    .ToArray();
+                    .Concat(settings);
 
-                _ProjectState.Update(pipelines);
+                _ProjectState.Recycle(pipelines.Select(item => item.RootIdentifier) );
             }
 
             private void _SetActiveConfiguration(string value)
@@ -374,13 +371,11 @@ namespace Epsylon.UberFactory
                 {
                     using (var xlogger = new Microsoft.Extensions.Logging.LoggerFactory())
                     {
-                        xlogger.AddProvider(_Logger);
+                        xlogger.AddProvider(_ProjectState);                        
 
                         var monitor = Evaluation.MonitorContext.Create(xlogger, ctoken, progress);                        
 
-                        var resultsFiles = ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor);
-
-                        _ProjectState.Update(resultsFiles);
+                        ProjectDOM.BuildProject(_Source, bs, _Plugins.CreateInstance, monitor,_ProjectState);                        
                     }
                 };
 

@@ -70,7 +70,7 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static IReadOnlyDictionary<Guid,Evaluation.PipelineFileManager> BuildProject(Project srcDoc, Evaluation.BuildContext bsettings, Func<String, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor)
+        public static void BuildProject(Project srcDoc, Evaluation.BuildContext bsettings, Func<String, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor, Evaluation.PipelineState.Manager outState)
         {
             if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
             if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));
@@ -90,7 +90,7 @@ namespace Epsylon.UberFactory
 
             _ValidateFactory(bsettings, filterFactory, tasks);
 
-            var results = new Dictionary<Guid, Evaluation.PipelineFileManager>();
+            
 
             for (int i = 0; i < tasks.Length; ++i)
             {
@@ -103,16 +103,16 @@ namespace Epsylon.UberFactory
 
                 using (var evaluator = instance.CreateEvaluator(monitor.GetProgressPart(i, tasks.Length)))
                 {
-                    var srcData = evaluator.EvaluateRoot();
-                    if (srcData is Exception) { throw new InvalidOperationException("Failed processing " + task.Title, (Exception)srcData); }
+                    var result = evaluator.EvaluateRoot();
+                    if (result is Exception ex) throw new InvalidOperationException($"Failed processing {task.Title}", ex);
 
                     var fileReport = evaluator.FileManager;
 
-                    results[task.Pipeline.RootIdentifier] = fileReport;
+                    outState?.Update(task.Pipeline.RootIdentifier, result, fileReport);
                 }                    
             }
 
-            return results;
+            
         }
 
         private static void _ValidateFactory(Evaluation.BuildContext bsettings, Func<string, SDK.ContentObject> filterFactory, Task[] tasks)

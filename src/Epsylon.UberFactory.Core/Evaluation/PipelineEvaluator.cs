@@ -186,7 +186,14 @@ namespace Epsylon.UberFactory.Evaluation
 
         private Object _EvaluateNode(Guid nodeId, bool previewMode)
         {
-            if (_Monitor.IsCancelRequested) throw new OperationCanceledException();            
+            if (_Monitor.IsCancelRequested) throw new OperationCanceledException();
+
+            var localMonitor = _Monitor?.GetProgressPart(_NodeOrder.IndexOf(item => item == nodeId), _NodeOrder.Length);
+            System.Diagnostics.Debug.Assert(localMonitor != null);
+
+            localMonitor.LogInfo(nodeId.ToString(), "Begin Evaluation...");
+
+            
 
             // Get the current node being evaluated
             var nodeInst = _InstanceFunc(nodeId);
@@ -206,10 +213,6 @@ namespace Epsylon.UberFactory.Evaluation
 
             try
             {
-                var localMonitor = _Monitor?.GetProgressPart(_NodeOrder.IndexOf(item=> item == nodeId), _NodeOrder.Length);
-
-                System.Diagnostics.Debug.Assert(localMonitor != null);
-
                 if (nodeInst is SDK.ContentFilter filterInst)
                 {
                     if (previewMode) return SDK.PreviewNode(filterInst, localMonitor);
