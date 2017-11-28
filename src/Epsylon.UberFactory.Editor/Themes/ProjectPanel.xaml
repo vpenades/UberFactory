@@ -106,6 +106,9 @@
                                 <DataGridTextColumn Header="User Title" Binding="{Binding Title}" />
                                 <DataGridTextColumn Header="Inferred Title" Binding="{Binding InferredTitle}" IsReadOnly="True" />
 
+
+                                <DataGridTextColumn Header="Last Time" Binding="{Binding PersistentState.LastTime}" IsReadOnly="True" />
+
                                 <DataGridTemplateColumn Header="Input Files" >
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>

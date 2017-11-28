@@ -60,7 +60,9 @@ namespace Epsylon.UberFactory
                     if (_PipelineView == null) _PipelineView = Pipeline.Create(this, _Source.Pipeline);
                     return _PipelineView;
                 }
-            }            
+            }
+
+            public Evaluation.PipelineState PersistentState => _State;
 
             #endregion
 
@@ -140,6 +142,8 @@ namespace Epsylon.UberFactory
                     return _PipelineView;
                 }
             }
+
+            public Evaluation.PipelineState PersistentState => _State;
 
             public IEnumerable<string> ProcessedInputFiles => null;
 

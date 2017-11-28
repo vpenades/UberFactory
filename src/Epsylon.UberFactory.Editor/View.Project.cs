@@ -267,7 +267,8 @@ namespace Epsylon.UberFactory
                     .Select(item => item.Pipeline);
 
                 var pipelines = tasks
-                    .Concat(settings);
+                    .Concat(settings)
+                    .Where(item => item.RootIdentifier != Guid.Empty);
 
                 _ProjectState.Recycle(pipelines.Select(item => item.RootIdentifier) );
             }

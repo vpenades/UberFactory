@@ -96,7 +96,11 @@ namespace Epsylon.UberFactory
             {
                 if (monitor.IsCancelRequested) throw new OperationCanceledException();
 
-                var task = tasks[i];
+                var watch = new System.Diagnostics.Stopwatch();
+
+                watch.Start();
+
+                var task = tasks[i];                
 
                 var instance = Evaluation.PipelineInstance.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
                 instance.Setup(bsettings);
@@ -108,7 +112,9 @@ namespace Epsylon.UberFactory
 
                     var fileReport = evaluator.FileManager;
 
-                    outState?.Update(task.Pipeline.RootIdentifier, result, fileReport);
+                    watch.Stop();
+
+                    outState?.SetResults(task.Pipeline.RootIdentifier, result, watch.Elapsed, fileReport);
                 }                    
             }
 

@@ -37,6 +37,9 @@ namespace Epsylon.UberFactory.Evaluation
 
         private readonly List<String> _Log = new List<string>();
 
+        private Object _LastResult;
+        private TimeSpan _LastExecutionTime;
+
         #endregion
 
         #region properties
@@ -45,12 +48,23 @@ namespace Epsylon.UberFactory.Evaluation
 
         public IEnumerable<string> Log { get { lock (_Mutex) { return _Log.ToArray(); } } }
 
+        public Object LastResult { get { lock(_Mutex) { return _LastResult; } } }
+
+        public TimeSpan LastTime { get { lock(_Mutex) { return _LastExecutionTime; } } }
+
         #endregion
 
         #region API
 
-        public void Update(Object result, PipelineFileManager results)
+        public void Update(Object result,TimeSpan exeTime, PipelineFileManager results)
         {
+            lock (_Mutex)
+            {
+                _LastResult = result;
+                _LastExecutionTime = exeTime;
+            }
+
+            _RaiseChanged(nameof(LastResult),nameof(LastTime));
         }
 
         bool MSLOGGING.ILogger.IsEnabled(MSLOGGING.LogLevel logLevel) { return true; }
@@ -108,7 +122,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             #region API
 
-            public PipelineState this[Guid key] { get { lock (_Mutex) { return _InternalDict[key]; } } }
+            public PipelineState this[Guid key] { get { lock (_Mutex) { return key == Guid.Empty ? null : _InternalDict[key]; } } }
 
             public IEnumerable<Guid> Keys { get { lock (_Mutex) { return _InternalDict.Keys.ToList(); } } }
 
@@ -144,9 +158,9 @@ namespace Epsylon.UberFactory.Evaluation
                 }
             }            
 
-            public void Update(Guid key, Object result, PipelineFileManager results)
+            public void SetResults(Guid key, Object result,TimeSpan exeTime, PipelineFileManager results)
             {
-                if (this.TryGetValue(key, out PipelineState state)) state.Update(result, results);
+                if (this.TryGetValue(key, out PipelineState state)) state.Update(result, exeTime, results);
             }
 
             public MSLOGGING.ILogger CreateLogger(string categoryName)
