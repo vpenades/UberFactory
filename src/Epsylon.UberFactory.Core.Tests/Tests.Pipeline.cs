@@ -90,10 +90,10 @@ namespace Epsylon.UberFactory
 
             // run evaluation
 
-            using (var evaluator = instance.CreateEvaluator(Evaluation.MonitorContext.CreateNull()))
+            using (var evaluator = instance.CreateEvaluator())
             {
                 // note we're using the secondary evaluator instead of the primary one, to prevent creating the target directory.
-                return (int)evaluator.EvaluateRoot();
+                return (int)evaluator.EvaluateRoot().Result;
             }                
         }
     }

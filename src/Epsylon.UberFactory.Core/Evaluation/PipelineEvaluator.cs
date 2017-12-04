@@ -14,18 +14,19 @@ namespace Epsylon.UberFactory.Evaluation
         #region lifecycle
 
         public static PipelineEvaluator Create
-            (
-            SDK.IMonitorContext monitor,
-            PipelineFileManager fileManager,
+            (            
+            BuildContext buildSettings,
             Guid rootId,
             Guid[] nodeIds,
             Func<Guid, SDK.ContentObject> instanceFunc,
             Func<Type, SDK.ContentObject> settingsFunc,
-            Func<Guid, IPropertyProvider> propertiesFunc            
+            Func<Guid, IPropertyProvider> propertiesFunc,
+            SDK.IMonitorContext monitor = null
             )
-        {
-            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
-            if (fileManager == null) throw new ArgumentNullException(nameof(fileManager));
+        {            
+            if (buildSettings == null) throw new ArgumentNullException(nameof(buildSettings));
+
+            if (!buildSettings.CanBuild) throw new ArgumentException(buildSettings.CurrentError, nameof(buildSettings));
 
             if (nodeIds == null) throw new ArgumentNullException(nameof(nodeIds));
             if (!nodeIds.Contains(rootId)) throw new ArgumentNullException(nameof(rootId));
@@ -45,27 +46,32 @@ namespace Epsylon.UberFactory.Evaluation
                 if (properties == null) throw new KeyNotFoundException($"Properties {id} not found");
             }
 
-            return new PipelineEvaluator(monitor, fileManager, rootId, nodeIds, instanceFunc, settingsFunc, propertiesFunc);
+            var fileManager = PipelineFileManager.Create(buildSettings.SourceDirectory, buildSettings.TargetDirectory, buildSettings.IsSimulation);                       
+
+            return new PipelineEvaluator(fileManager, rootId, nodeIds, instanceFunc, settingsFunc, propertiesFunc, monitor);
         }
 
         private PipelineEvaluator
-            (SDK.IMonitorContext monitor,
+            (
             PipelineFileManager fileManager,
             Guid rootId,
             Guid[] nodeIds,
             Func<Guid, SDK.ContentObject> instanceFunc,
             Func<Type, SDK.ContentObject> settingsFunc,
-            Func<Guid, IPropertyProvider> propertyFunc            
+            Func<Guid, IPropertyProvider> propertyFunc,
+            SDK.IMonitorContext monitor
             )
         {
-            _Monitor = monitor;
+            
             _FileManager = fileManager;
 
             _NodeOrder = nodeIds;
             _RootIdentifier = rootId;
             _InstanceFunc = instanceFunc;
             _SettingsFunc = settingsFunc;
-            _PropertiesFunc = propertyFunc;           
+            _PropertiesFunc = propertyFunc;
+
+            _Monitor = monitor;            
 
             _AcquireInstances();            
         }
@@ -100,20 +106,15 @@ namespace Epsylon.UberFactory.Evaluation
 
             _SettingsInstancesCache.Clear();
 
-            foreach(var byProduct in _ByProducts)
-            {
-                try { byProduct.Dispose(); }    // some objects might throw an "AlreadyDisposedException"
-                catch { }
-            }
-
-            _ByProducts.Clear();
+            
         }
 
         #endregion
 
         #region data
 
-        private readonly SDK.IMonitorContext _Monitor;
+        private readonly SDK.IMonitorContext _Monitor;        
+
         private readonly PipelineFileManager _FileManager;
 
         private readonly Guid _RootIdentifier;
@@ -124,76 +125,58 @@ namespace Epsylon.UberFactory.Evaluation
         private readonly Func<Type, SDK.ContentObject> _SettingsFunc;
         private readonly Func<Guid, IPropertyProvider> _PropertiesFunc;
 
-        private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();
+        private readonly SETTINGSINSTANCES _SettingsInstancesCache = new SETTINGSINSTANCES();        
 
-        private readonly HashSet<IDisposable> _ByProducts = new HashSet<IDisposable>();
-
-        #endregion
-
-        #region properties
-
-        public PipelineFileManager FileManager => _FileManager;
-
-        #endregion
+        #endregion        
 
         #region API
 
-        public Object EvaluateRoot()
-        {            
-            if (_Monitor.IsCancelRequested) return null;
-
-            return EvaluateNode(_RootIdentifier);
+        private void CheckCancellation()
+        {
+            if (_Monitor != null && _Monitor.IsCancelRequested) throw new OperationCanceledException();
         }
 
-        public Object EvaluateNode(Guid nodeId)
+        private SDK.IMonitorContext GetLocalProgressMonitor(Guid nodeId)
+        {
+            if (_Monitor == null) return _Monitor;
+
+            var idx = _NodeOrder.IndexOf(item => item == nodeId);
+            if (idx < 0) return null;
+
+            return _Monitor?.CreatePart(idx, _NodeOrder.Length);
+        }
+
+        public EvaluationResult EvaluateRoot() { return EvaluateNode(_RootIdentifier); }
+
+        public EvaluationResult EvaluateNode(Guid nodeId)
         {            
             if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
 
-            if (_Monitor.IsCancelRequested) return null;                        
+            CheckCancellation();
 
-            var result = _EvaluateNode(nodeId, false);
+            var estate = new EvaluationResult();
+            estate._Files = _FileManager;
+            estate._Result = _EvaluateNode(estate, nodeId, false);            
 
-            if (result is IDisposable disposable) _ByProducts.Add(disposable);
-
-            return result;
+            return estate;
         }
 
-        public IPreviewResult PreviewNode(Guid nodeId)
+        public EvaluationResult PreviewNode(Guid nodeId)
         {
-            if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));            
+            if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
 
-            var previewObject = _EvaluateNode( nodeId, true);
+            var estate = new EvaluationResult();
+            estate._Files = _FileManager;
+            estate._Result = _EvaluateNode(estate, nodeId, true);           
 
-            if (previewObject is _DictionaryExportContext expDict)
-            {
-                return expDict;
-            }
-
-            if (previewObject is IConvertible convertible)
-            {
-                var text = convertible.ToString();
-                var data = Encoding.UTF8.GetBytes(text);
-
-                var dict = _DictionaryExportContext.Create("preview.txt", null);
-
-                dict.WriteAllBytes(data);
-
-                return dict;
-            }
-
-            return null;
+            return estate;
         }
 
-        private Object _EvaluateNode(Guid nodeId, bool previewMode)
+        private Object _EvaluateNode(EvaluationResult result, Guid nodeId, bool previewMode)
         {
-            if (_Monitor.IsCancelRequested) throw new OperationCanceledException();
+            CheckCancellation();
 
-            var localMonitor = _Monitor?.GetProgressPart(_NodeOrder.IndexOf(item => item == nodeId), _NodeOrder.Length);
-            System.Diagnostics.Debug.Assert(localMonitor != null);
-
-            localMonitor.LogInfo(nodeId.ToString(), "Begin Evaluation...");
-
-            
+            result.Logger?.LogInfo(nodeId.ToString(), "Begin Evaluation...");            
 
             // Get the current node being evaluated
             var nodeInst = _InstanceFunc(nodeId);
@@ -205,21 +188,23 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeProps == null) return null;
 
             // Assign values and node dependencies. Dependecies are evaluated to its values.
-            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(xid, previewMode));
+            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(result, xid, previewMode));
 
-            if (_Monitor.IsCancelRequested) throw new OperationCanceledException();
+            CheckCancellation();
 
             // evaluate the current node            
 
             try
             {
+                var localMonitor = GetLocalProgressMonitor(nodeId);
+
                 if (nodeInst is SDK.ContentFilter filterInst)
                 {
-                    if (previewMode) return SDK.PreviewNode(filterInst, localMonitor);
+                    if (previewMode) return SDK.PreviewNode(filterInst, localMonitor,result.Logger);
                     else
                     {
-                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode(filterInst, localMonitor);
-                        else return SDK.EvaluateNode(filterInst, localMonitor);
+                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode(filterInst, localMonitor, result.Logger);
+                        else return SDK.EvaluateNode(filterInst, localMonitor, result.Logger);
                     }
                 }
                 else if (nodeInst is SDK.ContentObject) return nodeInst;
@@ -244,11 +229,85 @@ namespace Epsylon.UberFactory.Evaluation
 
             _SettingsInstancesCache.Add(si);
 
-            si.BeginProcessing(_FileManager, _GetSharedSettings);
+            si.BeginProcessing(_FileManager, _GetSharedSettings); // si.EndProcessing is done at _ReleaseInstances
 
             return si;
         }
 
         #endregion        
-    }   
+    }
+
+    public class EvaluationResult
+    {
+        #region lifecycle
+
+        public void Dispose()
+        {
+            foreach (var byProduct in _ByProducts)
+            {
+                try { byProduct.Dispose(); }    // some objects might throw an "AlreadyDisposedException"
+                catch { }
+            }
+
+            _ByProducts.Clear();
+        }
+
+        #endregion
+
+        #region data
+
+        internal PipelineFileManager _Files;
+        private readonly BasicLogger _Logger = new BasicLogger();
+
+        internal Object _Result;
+
+        private readonly HashSet<IDisposable> _ByProducts = new HashSet<IDisposable>();
+
+        #endregion
+
+        #region properties
+
+        public PipelineFileManager FileManager => _Files;
+
+        public BasicLogger Logger => _Logger;
+
+        public Object Result => _Result;
+
+        public IPreviewResult PreviewResult
+        {
+            get
+            {
+                if (_Result is _DictionaryExportContext expDict) return expDict;
+
+                if (_Result is IConvertible convertible)
+                {
+                    var text = convertible.ToString();
+                    var data = Encoding.UTF8.GetBytes(text);
+
+                    var dict = _DictionaryExportContext.Create("preview.txt", null);
+
+                    dict.WriteAllBytes(data);
+
+                    return dict;
+                }
+
+                return _Result as IPreviewResult;
+            }
+        }
+
+        #endregion
+
+        #region API
+
+        internal void _AddByProduct(Object instance)
+        {            
+            if (instance is IDisposable disposable)
+            {
+                _ByProducts.Add(disposable);
+            }
+
+        }
+
+        #endregion
+    }
 }

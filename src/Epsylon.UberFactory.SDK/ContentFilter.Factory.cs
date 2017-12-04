@@ -19,29 +19,27 @@ namespace Epsylon.UberFactory
             return node;
         }        
 
-        internal static Object DebugNode(ContentFilter node, IMonitorContext monitor)
+        internal static Object DebugNode(ContentFilter node, IMonitorContext monitor, ILogger logger)
         {
             #if DEBUG
             if (!System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Launch();
             #endif
 
-            return EvaluateNode(node, monitor);
+            return EvaluateNode(node, monitor, logger);
         }
 
-        internal static Object EvaluateNode(ContentFilter node, IMonitorContext monitor)
+        internal static Object EvaluateNode(ContentFilter node, IMonitorContext monitor, ILogger logger)
         {
-            if (node == null) return null;
-            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
+            if (node == null) return null;            
 
-            return node._EvaluateObject(monitor);
+            return node._EvaluateObject(monitor, logger);
         }
 
-        internal static Object PreviewNode(ContentFilter node, IMonitorContext monitor)
+        internal static Object PreviewNode(ContentFilter node, IMonitorContext monitor, ILogger logger)
         {
-            if (node == null) return null;
-            if (monitor == null) throw new ArgumentNullException(nameof(monitor));
+            if (node == null) return null;            
 
-            return node._EvaluatePreview(monitor);
+            return node._EvaluatePreview(monitor, logger);
         }
     }
 }

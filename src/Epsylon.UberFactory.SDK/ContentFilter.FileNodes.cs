@@ -127,6 +127,8 @@ namespace Epsylon.UberFactory
 
                 foreach (var importer in importers)
                 {
+                    this.CheckCancelation();
+
                     var value = ReadFile(importer); if (value == null) continue;
 
                     values[importer.FileName] = value;
@@ -180,7 +182,11 @@ namespace Epsylon.UberFactory
 
                 foreach (var importer in importers)
                 {
+                    this.CheckCancelation();
+
                     var valIn = ReadFile(importer); if (valIn == null) continue;
+
+                    this.CheckCancelation();
 
                     valOut = Merge(valOut, valIn); if (valOut == null) continue;
                 }
@@ -233,9 +239,15 @@ namespace Epsylon.UberFactory
 
                 foreach (var importer in importers)
                 {
+                    this.CheckCancelation();
+
                     var valIn = ReadFile(importer); if (valIn == null) continue;
 
+                    this.CheckCancelation();
+
                     var valOut = Transform(valIn); if (valOut == null) continue;
+
+                    this.CheckCancelation();
 
                     var relPath = this.BuildContext.GetRelativeToSource(importer.FilePath);
 

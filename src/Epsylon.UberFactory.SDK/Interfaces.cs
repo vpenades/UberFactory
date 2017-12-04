@@ -21,17 +21,21 @@ namespace Epsylon.UberFactory
 
                 return attribute?.InformationalVersion;
             }
-        }        
+        }
 
         public interface IMonitorContext : IProgress<float>
         {
-            IMonitorContext GetProgressPart(int part, int total);
-
             /// <summary>
-            /// True if host has requested operation cancellation
+            /// True when host has requested operation cancellation
             /// </summary>
+            /// <remarks>
+            /// When the called checks this property is true, it must throw a <see cref="OperationCanceledException"/> 
+            /// </remarks>
             bool IsCancelRequested { get; }
+        }
 
+        public interface ILogger
+        { 
             /// <summary>
             /// Writes a Trace message to the log event system
             /// </summary>

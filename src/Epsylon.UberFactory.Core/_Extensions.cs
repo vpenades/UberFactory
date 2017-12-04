@@ -410,6 +410,33 @@ namespace Epsylon.UberFactory
             }
         }
 
+        public static SDK.IMonitorContext CreatePart(this SDK.IMonitorContext target, int part, int total)
+        {
+            if (target == null) return null;
+            return new _SDKMonitorContextPart(target, part, total);
+        }
+
+        private struct _SDKMonitorContextPart : SDK.IMonitorContext
+        {
+            public _SDKMonitorContextPart(SDK.IMonitorContext target, int part, int total)
+            {
+                _Target = target;
+                _Scale = 1.0f / (float)total;
+                _Offset = (float)part / (float)total;
+            }
+
+            private readonly SDK.IMonitorContext _Target;
+            private readonly float _Scale;
+            private readonly float _Offset;
+
+            public bool IsCancelRequested => _Target.IsCancelRequested;
+
+            public void Report(float value)
+            {
+                _Target.Report((value * _Scale + _Offset).Clamp(0, 1));
+            }
+        }
+
         #endregion        
     }    
 }

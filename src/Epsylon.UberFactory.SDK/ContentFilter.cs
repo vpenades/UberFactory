@@ -7,69 +7,6 @@ namespace Epsylon.UberFactory
 {
     public static partial class SDK
     {
-        #region Content Nodes
-
-        public abstract class ContentObject
-        {
-            #region lifecycle            
-
-            internal void BeginProcessing(IFileManager bc, Func<Type, ContentObject> scr)
-            {
-                if (_BuildContext != null) throw new InvalidOperationException("already initialized");
-
-                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
-                _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));                
-            }
-
-            internal void EndProcessing()
-            {
-                _SharedContentResolver = null;                
-                _BuildContext = null;
-            }
-
-            #endregion
-
-            #region data
-
-            // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
-                        
-            private IFileManager _BuildContext;            
-            private Func<Type, ContentObject> _SharedContentResolver;
-
-            #endregion
-
-            #region API           
-
-            public IFileManager BuildContext => _BuildContext;            
-
-            public ImportContext GetImportContext(String relativePath)
-            {
-                var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
-
-                return _BuildContext.GetImportContext(absolutePath);
-            }
-
-            public IEnumerable<ImportContext> GetImportContextBatch(String relativePath, String fileMask, bool allDirectories)
-            {
-                var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
-
-                return _BuildContext.GetImportContextBatch(absolutePath, fileMask, allDirectories);
-            }
-
-            public ExportContext GetExportContext(String relativePath)
-            {
-                var absolutePath = this.BuildContext.GetTargetAbsolutePath(relativePath);
-
-                return _BuildContext.GetExportContext(absolutePath);
-            }
-
-            public SDK.ContentObject GetSharedSettings(Type t) { return _SharedContentResolver?.Invoke(t); }
-
-            public T GetSharedSettings<T>() where T : ContentObject { return _SharedContentResolver?.Invoke(typeof(T)) as T; }
-
-            #endregion   
-        }
-
         public abstract class ContentFilter : ContentObject // ContentEvaluator
         {
             #region lifecycle
@@ -82,28 +19,28 @@ namespace Epsylon.UberFactory
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline            
 
-            internal IMonitorContext _MonitorContext;            
+            internal IMonitorContext _MonitorContext;
+            internal ILogger _Logger;
 
-            #endregion            
+            #endregion
 
             #region user's API
 
-            protected bool IsCancelled      => _MonitorContext.IsCancelRequested;
-
-            protected bool IsRunning        => !IsCancelled;
-
-            protected void CheckCancelation() { if (IsCancelled) throw new OperationCanceledException(); }            
+            protected void CheckCancelation()
+            {
+                if (_MonitorContext != null && _MonitorContext.IsCancelRequested) throw new OperationCanceledException();
+            }
 
             protected void SetProgressPercent(int percent) { SetProgress((float)percent / 100.0f); }
 
-            protected void SetProgress(float value) { CheckCancelation(); _MonitorContext.Report(value); }
+            protected void SetProgress(float value) { _MonitorContext?.Report(value); CheckCancelation(); }            
 
-            public void LogTrace(string message) { _MonitorContext.LogTrace(this.GetType().Name,message); }
-            public void LogDebug(string message) { _MonitorContext.LogDebug(this.GetType().Name, message); }
-            public void LogInfo(string message) { _MonitorContext.LogInfo(this.GetType().Name, message); }
-            public void LogWarning(string message) { _MonitorContext.LogWarning(this.GetType().Name, message); }
-            public void LogError(string message) { _MonitorContext.LogError(this.GetType().Name, message); }
-            public void LogCritical(string message) { _MonitorContext.LogCritical(this.GetType().Name, message); }
+            public void LogTrace(string message)    { _Logger?.LogTrace(this.GetType().Name,message); CheckCancelation(); }
+            public void LogDebug(string message)    { _Logger?.LogDebug(this.GetType().Name, message); CheckCancelation(); }
+            public void LogInfo(string message)     { _Logger?.LogInfo(this.GetType().Name, message); CheckCancelation(); }
+            public void LogWarning(string message)  { _Logger?.LogWarning(this.GetType().Name, message); CheckCancelation(); }
+            public void LogError(string message)    { _Logger?.LogError(this.GetType().Name, message); CheckCancelation(); }
+            public void LogCritical(string message) { _Logger?.LogCritical(this.GetType().Name, message); CheckCancelation(); }
 
             protected abstract Object EvaluateObject();
 
@@ -113,20 +50,22 @@ namespace Epsylon.UberFactory
 
             #region internals
 
-            internal Object _EvaluateObject(IMonitorContext monitor)
+            internal Object _EvaluateObject(IMonitorContext monitor, ILogger logger)
             {
                 if (BuildContext == null) throw new InvalidOperationException($"{this.GetType().Name} not initialized");
 
                 _MonitorContext = monitor;
+                _Logger = logger;
 
                 var r = EvaluateObject();
 
+                _Logger = null;
                 _MonitorContext = null;
 
                 return r;                
             }
 
-            internal Object _EvaluatePreview(IMonitorContext monitor)
+            internal Object _EvaluatePreview(IMonitorContext monitor, ILogger logger)
             {
                 if (BuildContext == null) throw new InvalidOperationException($"{this.GetType().Name} not initialized");                
 
@@ -134,9 +73,11 @@ namespace Epsylon.UberFactory
                 if (previewContext == null) throw new InvalidOperationException($"{nameof(PreviewContext)} is Null");
 
                 _MonitorContext = monitor;
+                _Logger = logger;
 
                 var r = EvaluatePreview(previewContext);
 
+                _Logger = null;
                 _MonitorContext = null;
 
                 return r;
@@ -151,8 +92,6 @@ namespace Epsylon.UberFactory
 
             protected abstract TValue Evaluate();
         }
-        
-        #endregion
     }
 
       

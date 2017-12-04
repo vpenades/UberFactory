@@ -105,12 +105,12 @@ namespace Epsylon.UberFactory
                 var instance = Evaluation.PipelineInstance.CreatePipelineInstance(task.Pipeline, filterFactory, srcDoc.UseSettings);
                 instance.Setup(bsettings);
 
-                using (var evaluator = instance.CreateEvaluator(monitor.GetProgressPart(i, tasks.Length)))
+                using (var evaluator = instance.CreateEvaluator(monitor.CreatePart(i, tasks.Length)))
                 {
                     var result = evaluator.EvaluateRoot();
-                    if (result is Exception ex) throw new InvalidOperationException($"Failed processing {task.Title}", ex);
+                    // if (result is Exception ex) throw new InvalidOperationException($"Failed processing {task.Title}", ex);
 
-                    var fileReport = evaluator.FileManager;
+                    var fileReport = result.FileManager;
 
                     watch.Stop();
 

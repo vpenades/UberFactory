@@ -210,27 +210,25 @@ namespace Epsylon.UberFactory.Evaluation
             var spip = CreatePipelineInstance(sdom.Pipeline, _InstanceFactory, _SettingsFactory);
             spip.Setup(_BuildSettings);
 
-            using (var evaluator = spip.CreateEvaluator(MonitorContext.CreateNull()))
+            using (var evaluator = spip.CreateEvaluator())
             {
-                return evaluator.EvaluateRoot() as SDK.ContentObject;
+                return evaluator.EvaluateRoot().Result as SDK.ContentObject;
             }                
         }
 
-        public PipelineEvaluator CreateEvaluator(SDK.IMonitorContext monitor)
+        public PipelineEvaluator CreateEvaluator(SDK.IMonitorContext monitor=null)
         {
-            _SetupIsReady();
-
-            var fileManager = PipelineFileManager.Create(_BuildSettings.SourceDirectory, _BuildSettings.TargetDirectory, _BuildSettings.IsSimulation);
+            _SetupIsReady();            
 
             return PipelineEvaluator.Create
-                (
-                monitor,
-                fileManager,
+                (                
+                _BuildSettings,
                 _Pipeline.RootIdentifier,
                 _NodeOrder.ToArray(),
                 GetNodeInstance,
                 _CreateSettingsInstance,
-                _GetNodeProperties
+                _GetNodeProperties,
+                monitor
                 );
         }        
 

@@ -145,9 +145,9 @@ namespace Epsylon.UberFactory
 
                 Evaluation.IPreviewResult result = null;
 
-                using (var evaluator = _PipelineInstance.CreateEvaluator(Evaluation.MonitorContext.CreateNull()))
+                using (var evaluator = _PipelineInstance.CreateEvaluator())
                 {
-                    result = evaluator.PreviewNode(nodeId);
+                    result = evaluator.PreviewNode(nodeId).PreviewResult;
                 }                    
 
                 PreviewManager.ShowPreview(result);
