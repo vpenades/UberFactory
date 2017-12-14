@@ -56,9 +56,9 @@ namespace Epsylon.UberFactory
 
         public override string ToString() { return (String)this; }
 
-        #endregion
+        #endregion        
 
-        #region API        
+        #region properties
 
         public PathString Normalized
         {
@@ -152,6 +152,11 @@ namespace Epsylon.UberFactory
         #endregion
 
         #region API
+
+        public static PathString operator +(PathString a, PathString b)
+        {
+            return new PathString(System.IO.Path.Combine(a, b));
+        }
 
         public bool Contains(PathString other)
         {

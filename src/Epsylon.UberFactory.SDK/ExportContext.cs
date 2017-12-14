@@ -18,15 +18,6 @@ namespace Epsylon.UberFactory
         /// </remarks>
         public abstract class ExportContext
         {
-            #region lifecycle
-
-            protected ExportContext(IFileTracker trackerContext)
-            {
-                this._TrackerContext = trackerContext;
-            }
-
-            #endregion
-
             #region Constants
 
             /// <summary>
@@ -38,26 +29,14 @@ namespace Epsylon.UberFactory
             /// <see cref="http://referencesource.microsoft.com/#mscorlib/system/io/streamwriter.cs,106"/>
             public static readonly Encoding DefaultEncoding = new UTF8Encoding(false, true);
 
-            #endregion
-
-            #region data
-
-            private readonly IFileTracker _TrackerContext;
-
-            #endregion
+            #endregion            
 
             #region API - Abstract
 
             /// <summary>
             /// Name of the default file being exported.
             /// </summary>            
-            public abstract String FileName { get; }
-
-            [Obsolete("Avoid using full file path whenever possible")]
-            public abstract String FilePath { get; }
-
-            [Obsolete("Avoid using output directory path whenever possible")]
-            public abstract String OutputDirectory { get; }
+            public abstract String FileName { get; }            
 
             protected abstract System.IO.Stream OpenFileCore(String localName);
 
@@ -66,8 +45,7 @@ namespace Epsylon.UberFactory
             #region API
 
             public System.IO.Stream OpenFile(String localName)
-            {
-                _TrackerContext?.RegisterOutputFile(localName, string.Equals(localName, this.FileName, StringComparison.OrdinalIgnoreCase) ? null : this.FileName);
+            {                
                 return OpenFileCore(localName);
             }
 
@@ -130,6 +108,17 @@ namespace Epsylon.UberFactory
             public void WriteAllText(Encoding encoding, String data) { WriteAllText(FileName, encoding, data); }
 
             public void WriteAllText(String data) { WriteAllText(FileName, data); }
+
+            #endregion
+        }
+
+        public abstract class ExportContextEx : ExportContext
+        {
+            #region API - Abstract
+
+            public abstract String FilePath { get; }
+
+            public abstract String OutputDirectory { get; }
 
             #endregion
         }

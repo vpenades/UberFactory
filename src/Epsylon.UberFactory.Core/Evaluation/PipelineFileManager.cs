@@ -5,7 +5,7 @@ using System.Text;
 namespace Epsylon.UberFactory.Evaluation
 {
     [System.Diagnostics.DebuggerDisplay("File Manager Input:{_SourceDirectoryAbsPath.ToString()} Output:{_TargetDirectoryAbsPath.ToString()}")]
-    public class PipelineFileManager : SDK.IFileManager, SDK.IFileTracker
+    public class PipelineFileManager : SDK.IFileManager, IFileTracker
     {
         #region lifecycle
 
@@ -121,12 +121,12 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region evaluation context for io trackers
 
-        void SDK.IFileTracker.RegisterInputFile(string filePath, string parentFilePath)
+        void IFileTracker.RegisterInputFile(string filePath, string parentFilePath)
         {
             _InputFiles.Add(filePath);
         }
 
-        void SDK.IFileTracker.RegisterOutputFile(string filePath, string parentFilePath)
+        void IFileTracker.RegisterOutputFile(string filePath, string parentFilePath)
         {
             _OutputFiles.Add(filePath);
         }

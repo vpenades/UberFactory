@@ -18,15 +18,6 @@ namespace Epsylon.UberFactory
         /// </remarks>        
         public abstract class ImportContext
         {
-            #region lifecycle
-
-            protected ImportContext(IFileTracker trackerContext)
-            {
-                this._TrackerContext = trackerContext;
-            }
-
-            #endregion
-
             #region Constants
 
             /// <summary>
@@ -42,23 +33,14 @@ namespace Epsylon.UberFactory
             /// <seealso cref="http://referencesource.microsoft.com/#mscorlib/system/io/file.cs,794"/>
             public static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-            #endregion
-
-            #region data
-
-            private readonly IFileTracker _TrackerContext;
-
-            #endregion
+            #endregion            
 
             #region API - Abstract
 
             /// <summary>
             /// Name of the default file being imported.
             /// </summary>            
-            public abstract string FileName { get; }
-
-            [Obsolete("Avoid using full file path whenever possible")]
-            public abstract String FilePath { get; }
+            public abstract string FileName { get; }            
 
             protected abstract System.IO.Stream OpenFileCore(String relativePath);
 
@@ -72,8 +54,7 @@ namespace Epsylon.UberFactory
             /// <param name="relativePath">path relative to the current context</param>
             /// <returns>a read stream</returns>
             public System.IO.Stream OpenFile(String relativePath)
-            {
-                _TrackerContext?.RegisterInputFile(relativePath, string.Equals(relativePath, this.FileName, StringComparison.OrdinalIgnoreCase) ? null : this.FileName);
+            {                
                 return OpenFileCore(relativePath);
             }
 
@@ -251,6 +232,15 @@ namespace Epsylon.UberFactory
             /// </summary>
             /// <returns>The content text</returns>
             public String ReadAllText() { return ReadAllText(FileName); }
+
+            #endregion
+        }
+
+        public abstract class ImportContextEx : ImportContext
+        {
+            #region API - Abstract
+            
+            public abstract String FilePath { get; }
 
             #endregion
         }

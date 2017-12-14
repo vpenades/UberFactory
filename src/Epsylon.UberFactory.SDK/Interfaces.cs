@@ -79,14 +79,7 @@ namespace Epsylon.UberFactory
             void LogCritical(string categoryName, string message);
         }
 
-        /// <summary>
-        /// Tells the evaluator which child files depend on which parent files
-        /// </summary>
-        public interface IFileTracker
-        {
-            void RegisterInputFile(string filePath, string parentFilePath);
-            void RegisterOutputFile(string filePath, string parentFilePath);
-        }
+        
 
         /// <summary>
         /// The file manager provides a number of services to the contet filters

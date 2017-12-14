@@ -237,7 +237,7 @@ namespace Epsylon.UberFactory
                     .Where(item => item != null)
                     .ToArray();
 
-                foreach (var importer in importers)
+                foreach (var importer in importers.Cast<ImportContextEx>())
                 {
                     this.CheckCancelation();
 

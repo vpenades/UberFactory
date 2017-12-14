@@ -284,7 +284,7 @@ namespace Epsylon.UberFactory.Evaluation
                     var text = convertible.ToString();
                     var data = Encoding.UTF8.GetBytes(text);
 
-                    var dict = _DictionaryExportContext.Create("preview.txt", null);
+                    var dict = _DictionaryExportContext.Create("preview.txt");
 
                     dict.WriteAllBytes(data);
 
