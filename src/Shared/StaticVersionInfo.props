@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <AssemblyVersion>1.0.0</AssemblyVersion>
-    <PrereleaseVersion>-Alpha100</PrereleaseVersion>
+    <PrereleaseVersion>-Alpha101</PrereleaseVersion>
   </PropertyGroup>
 
   <PropertyGroup>
