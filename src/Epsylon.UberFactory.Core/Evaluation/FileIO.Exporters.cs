@@ -44,18 +44,18 @@ namespace Epsylon.UberFactory.Evaluation
     }
 
     [System.Diagnostics.DebuggerDisplay("Export Context for: {_TargetPath.ToString()}")]
-    class _ExportContext : _ExportContextBase
+    class _FileSystemExportContext : _ExportContextBase
     {
         #region lifecycle
 
-        public static _ExportContext Create(PathString path, PathString outDir, IFileTracker tc)
+        public static _FileSystemExportContext Create(PathString path, PathString outDir, IFileTracker tc)
         {
             if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
 
-            return new _ExportContext(path, outDir, tc);
+            return new _FileSystemExportContext(path, outDir, tc);
         }
 
-        protected _ExportContext(PathString path, PathString o, IFileTracker tc) : base(path, tc)
+        protected _FileSystemExportContext(PathString path, PathString o, IFileTracker tc) : base(path, tc)
         {
             System.Diagnostics.Debug.Assert(path.IsValidAbsoluteFilePath);
             
@@ -142,21 +142,23 @@ namespace Epsylon.UberFactory.Evaluation
     }
 
 
-
+    /// <summary>
+    /// export context that stores everything in memory, used for preview and testing
+    /// </summary>
     [System.Diagnostics.DebuggerDisplay("Export Context for: {_DefaultFileName}")]
-    class _DictionaryExportContext : SDK.ExportContext, IPreviewResult
+    class _MemoryExportContext : SDK.ExportContext, IPreviewResult
     {
         #region lifecycle
 
-        public static _DictionaryExportContext Create(String fileName)
+        public static _MemoryExportContext Create(String fileName)
         {
             var fp = new PathString(fileName);
             if (!fp.IsValidRelativeFilePath) return null;
 
-            return new _DictionaryExportContext(fp);
+            return new _MemoryExportContext(fp);
         }
 
-        private _DictionaryExportContext(String fileName)
+        private _MemoryExportContext(String fileName)
         {
             _DefaultFileName = fileName;
         }

@@ -1,35 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="@10" Category="CodeSchema_Class" Bounds="221.785221354166,46.1621091250002,77.7166666666672,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Project" Icon="Microsoft.VisualStudio.Class.Public" Label="Project" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=382 StartCharacterOffset=29 EndLineNumber=382 EndCharacterOffset=36)" UseManualLocation="True" />
-    <Node Id="@11" Category="CodeSchema_Class" Bounds="589.087005208334,131.332031,63.1033333333326,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Task" Icon="Microsoft.VisualStudio.Class.Public" Label="Task" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=360 StartCharacterOffset=29 EndLineNumber=360 EndCharacterOffset=33)" UseManualLocation="True" />
-    <Node Id="@12" Category="CodeSchema_Class" Bounds="482.82990234375,211.0322263125,89.1399999999994,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Template" Icon="Microsoft.VisualStudio.Class.Public" Label="Template" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=372 StartCharacterOffset=29 EndLineNumber=372 EndCharacterOffset=37)" UseManualLocation="True" />
-    <Node Id="@13" Category="CodeSchema_Class" Bounds="309.862369791666,212.8310544375,142.966666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="TemplateParameter" Icon="Microsoft.VisualStudio.Class.Public" Label="TemplateParameter" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=365 StartCharacterOffset=29 EndLineNumber=365 EndCharacterOffset=46)" UseManualLocation="True" />
-    <Node Id="@14" Category="CodeSchema_Class" Bounds="332.002578125001,59.6621091250001,91.2799999999988,26" CodeSchemaProperty_IsFinal="True" CodeSchemaProperty_IsPublic="True" CommonLabel="Unknown" Icon="Microsoft.VisualStudio.Class.Public" Label="Unknown" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=264 StartCharacterOffset=28 EndLineNumber=264 EndCharacterOffset=35)" UseManualLocation="True" />
-    <Node Id="@4" Category="CodeSchema_Class" Bounds="166.020227864583,214.162109125,113.843333333334,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Configuration" Icon="Microsoft.VisualStudio.Class.Public" Label="Configuration" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=335 StartCharacterOffset=29 EndLineNumber=335 EndCharacterOffset=42)" UseManualLocation="True" />
-    <Node Id="@5" Category="CodeSchema_Class" Bounds="493.202005208334,132.0322263125,64.873333333333,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="Item" Icon="Microsoft.VisualStudio.Class.Public" Label="Item" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=353 StartCharacterOffset=38 EndLineNumber=353 EndCharacterOffset=42)" UseManualLocation="True" />
-    <Node Id="@6" Category="CodeSchema_Class" Bounds="160.701953125001,158.162109125,70.3499999999985,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Node" Icon="Microsoft.VisualStudio.Class.Public" Label="Node" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=341 StartCharacterOffset=29 EndLineNumber=341 EndCharacterOffset=33)" UseManualLocation="True" />
-    <Node Id="@7" Category="CodeSchema_Class" Bounds="327.517578125,133.8310544375,100.25,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="ObjectBase" Icon="Microsoft.VisualStudio.Class.Public" Label="ObjectBase" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=211 StartCharacterOffset=30 EndLineNumber=211 EndCharacterOffset=40)" />
-    <Node Id="@8" Category="CodeSchema_Class" Bounds="160.221803385417,102.162109125,82.8366666666661,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Pipeline" Icon="Microsoft.VisualStudio.Class.Public" Label="Pipeline" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=346 StartCharacterOffset=29 EndLineNumber=346 EndCharacterOffset=37)" UseManualLocation="True" />
-    <Node Id="@9" Category="CodeSchema_Class" Bounds="464.450338541667,65.7812497500001,126.376666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="PluginReference" Icon="Microsoft.VisualStudio.Class.Public" Label="PluginReference" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=377 StartCharacterOffset=29 EndLineNumber=377 EndCharacterOffset=44)" UseManualLocation="True" />
-    <Node Id="ClassInheritance" Bounds="140.222857320379,6.16200912500015,531.966427286324,254.0005" Group="Expanded" Label="Class Inheritance" UseManualLocation="True" />
+    <Node Id="@10" Category="CodeSchema_Class" Bounds="512.943380533854,12.9229736328125,126.376666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="PluginReference" Icon="Microsoft.VisualStudio.Class.Public" Label="PluginReference" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=377 StartCharacterOffset=29 EndLineNumber=377 EndCharacterOffset=44)" UseManualLocation="True" />
+    <Node Id="@11" Category="CodeSchema_Class" Bounds="81.8635599772133,58.1808013916016,77.7166666666671,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Project" Icon="Microsoft.VisualStudio.Class.Public" Label="Project" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=382 StartCharacterOffset=29 EndLineNumber=382 EndCharacterOffset=36)" UseManualLocation="True" />
+    <Node Id="@12" Category="CodeSchema_Class" Bounds="551.861579589844,183.923263549805,83.64,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Settings" Icon="Microsoft.VisualStudio.Class.Public" Label="Settings" SourceLocation="(Assembly=file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/ProjectDOM/ProjectDOM.Core.cs StartLineNumber=271 StartCharacterOffset=29 EndLineNumber=271 EndCharacterOffset=37)" UseManualLocation="True" />
+    <Node Id="@13" Category="CodeSchema_Class" Bounds="573.83999593099,124.92317199707,63.1033333333326,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Task" Icon="Microsoft.VisualStudio.Class.Public" Label="Task" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=360 StartCharacterOffset=29 EndLineNumber=360 EndCharacterOffset=33)" UseManualLocation="True" />
+    <Node Id="@14" Category="CodeSchema_Class" Bounds="550.191596679688,68.9230728149414,89.1399999999994,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Template" Icon="Microsoft.VisualStudio.Class.Public" Label="Template" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=372 StartCharacterOffset=29 EndLineNumber=372 EndCharacterOffset=37)" UseManualLocation="True" />
+    <Node Id="@15" Category="CodeSchema_Class" Bounds="0.238559977213413,119.05517578125,142.966666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="TemplateParameter" Icon="Microsoft.VisualStudio.Class.Public" Label="TemplateParameter" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=365 StartCharacterOffset=29 EndLineNumber=365 EndCharacterOffset=46)" UseManualLocation="True" />
+    <Node Id="@16" Category="CodeSchema_Class" Bounds="191.081923828125,10.7305131861912,91.2799999999989,26" CodeSchemaProperty_IsFinal="True" CodeSchemaProperty_IsPublic="True" CommonLabel="Unknown" Icon="Microsoft.VisualStudio.Class.Public" Label="Unknown" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=264 StartCharacterOffset=28 EndLineNumber=264 EndCharacterOffset=35)" UseManualLocation="True" />
+    <Node Id="@4" Category="CodeSchema_Class" Bounds="42.1702522786455,175.055282592773,113.843333333334,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Configuration" Icon="Microsoft.VisualStudio.Class.Public" Label="Configuration" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=335 StartCharacterOffset=29 EndLineNumber=335 EndCharacterOffset=42)" UseManualLocation="True" />
+    <Node Id="@5" Category="CodeSchema_Class" Bounds="186.013608805339,179.542457058262,117.016666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="DocumentInfo" Icon="Microsoft.VisualStudio.Class.Public" Label="DocumentInfo" SourceLocation="(Assembly=file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/ProjectDOM/ProjectDOM.Core.cs StartLineNumber=388 StartCharacterOffset=29 EndLineNumber=388 EndCharacterOffset=41)" UseManualLocation="True" />
+    <Node Id="@6" Category="CodeSchema_Class" Bounds="443.285196126302,123.180801391602,64.873333333333,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="Item" Icon="Microsoft.VisualStudio.Class.Public" Label="Item" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=353 StartCharacterOffset=38 EndLineNumber=353 EndCharacterOffset=42)" UseManualLocation="True" />
+    <Node Id="@7" Category="CodeSchema_Class" Bounds="336.03026123047,179.730613186191,70.3499999999985,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Node" Icon="Microsoft.VisualStudio.Class.Public" Label="Node" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=341 StartCharacterOffset=29 EndLineNumber=341 EndCharacterOffset=33)" UseManualLocation="True" />
+    <Node Id="@8" Category="CodeSchema_Class" Bounds="187.596893310547,123.542350246738,100.25,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="ObjectBase" Icon="Microsoft.VisualStudio.Class.Public" Label="ObjectBase" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=211 StartCharacterOffset=30 EndLineNumber=211 EndCharacterOffset=40)" />
+    <Node Id="@9" Category="CodeSchema_Class" Bounds="296.303590494792,66.7306131861912,82.8366666666661,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Pipeline" Icon="Microsoft.VisualStudio.Class.Public" Label="Pipeline" SourceLocation="(Assembly=file:///D:/Work/UberFactory/Epsylon.UberFactory.Core/ProjectDOM.Data.cs StartLineNumber=346 StartCharacterOffset=29 EndLineNumber=346 EndCharacterOffset=37)" UseManualLocation="True" />
+    <Node Id="ClassInheritance" Bounds="-19.7614400227867,-29.2695868138088,679.093036702474,259.192950363614" Group="Expanded" Label="Class Inheritance" UseManualLocation="True" />
   </Nodes>
   <Links>
-    <Link Source="@10" Target="@7" Bounds="277.992768766996,72.1621091250001,75.0982225834933,56.2721106046648" />
-    <Link Source="@11" Target="@5" Bounds="567.075094088514,144.564584662608,22.0108571848579,0.16223231586585" />
-    <Link Source="@12" Target="@5" Bounds="526.12909127488,167.029990783582,0.980988333505707,44.0022357789179" />
-    <Link Source="@13" Target="@7" Bounds="378.673531070598,168.821180085863,2.06329473043081,44.0098746016365" />
-    <Link Source="@14" Target="@7" Bounds="377.642578125,85.662109375,0,39.1689453125" />
-    <Link Source="@4" Target="@7" Bounds="247.976562392915,163.978623524032,96.6434076307033,50.1837856009678" />
-    <Link Source="@5" Target="@7" Bounds="436.766913398136,145.426480132326,56.4350918101972,0.685943985498881" />
-    <Link Source="@6" Target="@7" Bounds="231.051953124999,154.734911491086,87.5451912553196,11.7188512581121" />
-    <Link Source="@8" Target="@7" Bounds="243.059523987046,122.614825383514,75.6003041714606,13.6031561550876" />
-    <Link Source="@9" Target="@5" Bounds="526.302689311707,91.78125,0.943535517995656,31.2550747443103" />
+    <Link Source="@10" Target="@6" Bounds="493.620570245511,38.9229736328125,70.6722720525321,77.6036407960921" />
+    <Link Source="@11" Target="@8" Bounds="143.992455692278,84.1808013916016,62.601789032086,34.9722213011934" />
+    <Link Source="@12" Target="@6" Bounds="508.968844028005,153.301088045416,59.4671913043524,30.622175504389" />
+    <Link Source="@13" Target="@6" Bounds="517.157701825009,136.737574103072,56.682294105981,0.761638805858183" />
+    <Link Source="@14" Target="@6" Bounds="512.43288148929,94.9230804443359,53.8071202565508,24.5250156927609" />
+    <Link Source="@15" Target="@8" Bounds="143.20522664388,133.987454022463,35.3949529448944,0.95676704253907" />
+    <Link Source="@16" Target="@8" Bounds="236.837156445643,36.7305131861912,0.689730953759579,77.8121906107343" />
+    <Link Source="@4" Target="@8" Bounds="134.077107803169,152.677194745064,60.223202279216,22.378087847709" />
+    <Link Source="@5" Target="@8" Bounds="240.385366829635,158.476722385607,2.55799555626734,21.0657346726541" />
+    <Link Source="@6" Target="@8" Bounds="296.846882925894,136.230076357792,146.43829794162,0.222456340975498" />
+    <Link Source="@7" Target="@8" Bounds="276.90033409733,153.034062249223,63.4215437650124,26.6965590886675" />
+    <Link Source="@9" Target="@8" Bounds="268.429822021469,92.7306131861912,46.4094993024756,26.3660346685636" />
     <Link Source="ClassInheritance" Target="@10" Category="Contains" />
     <Link Source="ClassInheritance" Target="@11" Category="Contains" />
     <Link Source="ClassInheritance" Target="@12" Category="Contains" />
     <Link Source="ClassInheritance" Target="@13" Category="Contains" />
     <Link Source="ClassInheritance" Target="@14" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@15" Category="Contains" />
+    <Link Source="ClassInheritance" Target="@16" Category="Contains" />
     <Link Source="ClassInheritance" Target="@4" Category="Contains" />
     <Link Source="ClassInheritance" Target="@5" Category="Contains" />
     <Link Source="ClassInheritance" Target="@6" Category="Contains" />
@@ -81,16 +87,18 @@
     <Alias n="2" Id="Namespace=Epsylon.UberFactory" />
     <Alias n="3" Id="ParentType=ProjectDOM" />
     <Alias n="4" Id="(@1 @2 Type=(Name=Configuration @3))" />
-    <Alias n="5" Id="(@1 @2 Type=(Name=Item @3))" />
-    <Alias n="6" Id="(@1 @2 Type=(Name=Node @3))" />
-    <Alias n="7" Id="(@1 @2 Type=(Name=ObjectBase @3))" />
-    <Alias n="8" Id="(@1 @2 Type=(Name=Pipeline @3))" />
-    <Alias n="9" Id="(@1 @2 Type=(Name=PluginReference @3))" />
-    <Alias n="10" Id="(@1 @2 Type=(Name=Project @3))" />
-    <Alias n="11" Id="(@1 @2 Type=(Name=Task @3))" />
-    <Alias n="12" Id="(@1 @2 Type=(Name=Template @3))" />
-    <Alias n="13" Id="(@1 @2 Type=(Name=TemplateParameter @3))" />
-    <Alias n="14" Id="(@1 @2 Type=(Name=Unknown @3))" />
+    <Alias n="5" Id="(@1 @2 Type=(Name=DocumentInfo @3))" />
+    <Alias n="6" Id="(@1 @2 Type=(Name=Item @3))" />
+    <Alias n="7" Id="(@1 @2 Type=(Name=Node @3))" />
+    <Alias n="8" Id="(@1 @2 Type=(Name=ObjectBase @3))" />
+    <Alias n="9" Id="(@1 @2 Type=(Name=Pipeline @3))" />
+    <Alias n="10" Id="(@1 @2 Type=(Name=PluginReference @3))" />
+    <Alias n="11" Id="(@1 @2 Type=(Name=Project @3))" />
+    <Alias n="12" Id="(@1 @2 Type=(Name=Settings @3))" />
+    <Alias n="13" Id="(@1 @2 Type=(Name=Task @3))" />
+    <Alias n="14" Id="(@1 @2 Type=(Name=Template @3))" />
+    <Alias n="15" Id="(@1 @2 Type=(Name=TemplateParameter @3))" />
+    <Alias n="16" Id="(@1 @2 Type=(Name=Unknown @3))" />
   </IdentifierAliases>
   <Styles>
     <Style TargetType="Node" GroupLabel="Circular References" ToolTip="Node is part of a strongly coupled component" ValueLabel="Nodes">
@@ -114,7 +122,7 @@
     </Style>
   </Styles>
   <Paths>
-    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPath" Value="D:\Work\UberFactory\src\Epsylon.UberFactory.Core\bin\Debug\netstandard1.3\Epsylon.UberFactory.Core.dll" />
-    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPathUri" Value="file:///D:/Work/UberFactory/src/Epsylon.UberFactory.Core/bin/Debug/netstandard1.3/Epsylon.UberFactory.Core.dll" />
+    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPath" Value="D:\Github\UberFactory\src\Epsylon.UberFactory.Core\bin\Debug\netstandard2.0\Epsylon.UberFactory.Core.dll" />
+    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPathUri" Value="file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/bin/Debug/netstandard2.0/Epsylon.UberFactory.Core.dll" />
   </Paths>
 </DirectedGraph>

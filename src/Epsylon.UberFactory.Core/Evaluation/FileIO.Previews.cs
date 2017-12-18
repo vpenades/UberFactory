@@ -8,7 +8,7 @@ namespace Epsylon.UberFactory.Evaluation
     {
         public override SDK.ExportContext CreateMemoryFile(string fileName)
         {
-            return _DictionaryExportContext.Create(fileName);
+            return _MemoryExportContext.Create(fileName);
         }
     }
 }

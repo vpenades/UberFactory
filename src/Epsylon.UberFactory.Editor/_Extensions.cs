@@ -236,7 +236,7 @@ namespace Epsylon.UberFactory
             var title = assembly.InfoProductName();
 
             if (displayCompany) title = assembly.InfoCompany() + " " + title;
-            if (displayVersion) title = title + " " + assembly.Version().ToString();
+            if (displayVersion) title = title + " " + assembly.InformationalVersion();
 
             if (!string.IsNullOrWhiteSpace(currentDocument)) title = currentDocument.Trim() + " - " + title;
 

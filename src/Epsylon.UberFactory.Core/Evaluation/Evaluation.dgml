@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="(@1 Namespace=Epsylon.UberFactory.Evaluation Type=EvaluationResult)" Category="CodeSchema_Class" Bounds="-9583.25026339722,-9649.5,127.48,26" CodeSchemaProperty_IsPublic="True" CommonLabel="EvaluationResult" Icon="Microsoft.VisualStudio.Class.Public" Label="EvaluationResult" SourceLocation="(Assembly=file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/Evaluation/PipelineEvaluator.cs StartLineNumber=239 StartCharacterOffset=17 EndLineNumber=239 EndCharacterOffset=33)" UseManualLocation="True" />
+    <Node Id="(@1 Namespace=Epsylon.UberFactory.Evaluation Type=PipelineInstance)" Category="CodeSchema_Class" Bounds="-9587,-9768,126.696666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="PipelineInstance" Icon="Microsoft.VisualStudio.Class.Public" Label="PipelineInstance" SourceLocation="(Assembly=file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/Evaluation/PipelineInstance.cs StartLineNumber=13 StartCharacterOffset=17 EndLineNumber=13 EndCharacterOffset=33)" UseManualLocation="True" />
+    <Node Id="@2" Category="CodeSchema_Class" Bounds="-9583.65166666667,-9710.5,131.833333333336,26" CodeSchemaProperty_IsPublic="True" CommonLabel="PipelineEvaluator" Icon="Microsoft.VisualStudio.Class.Public" Label="PipelineEvaluator" SourceLocation="(Assembly=file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/Evaluation/PipelineEvaluator.cs StartLineNumber=11 StartCharacterOffset=17 EndLineNumber=11 EndCharacterOffset=34)" UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="(@1 Namespace=Epsylon.UberFactory.Evaluation Type=PipelineInstance)" Target="@2" Bounds="-9522.31395459692,-9742,2.32013538864339,22.5472736132833" />
+    <Link Source="@2" Target="(@1 Namespace=Epsylon.UberFactory.Evaluation Type=EvaluationResult)" Bounds="-9518.87005996448,-9684.5,0.756834746758614,26.003809472837" />
+  </Links>
+  <Categories>
+    <Category Id="CodeSchema_Class" Label="Class" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Classes" />
+    <Category Id="CodeSchema_Type" Label="Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Types" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsPublic" Label="Is Public" Description="Flag to indicate the scope is Public" DataType="System.Boolean" />
+    <Property Id="CommonLabel" DataType="System.String" />
+    <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
+    <Property Id="Icon" Label="Icon" Description="Icon" DataType="System.String" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="SourceLocation" Label="Start Line Number" DataType="Microsoft.VisualStudio.GraphModel.CodeSchema.SourceLocation" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+  </Properties>
+  <QualifiedNames>
+    <Name Id="Assembly" Label="Assembly" ValueType="Uri" />
+    <Name Id="Namespace" Label="Namespace" ValueType="System.String" />
+    <Name Id="Type" Label="Type" ValueType="System.Object" />
+  </QualifiedNames>
+  <IdentifierAliases>
+    <Alias n="1" Uri="Assembly=$(faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPathUri)" />
+    <Alias n="2" Id="(@1 Namespace=Epsylon.UberFactory.Evaluation Type=PipelineEvaluator)" />
+  </IdentifierAliases>
+  <Paths>
+    <Path Id="faeab33b-0005-487d-bb66-a0b2c61a3b77.OutputPathUri" Value="file:///D:/Github/UberFactory/src/Epsylon.UberFactory.Core/bin/Debug/netstandard2.0/Epsylon.UberFactory.Core.dll" />
+  </Paths>
+</DirectedGraph>

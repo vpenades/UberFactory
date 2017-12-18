@@ -6,18 +6,11 @@ using System.Text;
 namespace Epsylon.UberFactory.Evaluation
 {
     [System.Diagnostics.DebuggerDisplay("Import Context for: {_SourcePath.ToString()}")]
-    class _ImportContext : SDK.ImportContextEx
+    class _FileSystemImportContext : SDK.ImportContextEx
     {
         #region lifecycle
 
-        public static _ImportContext Create(PathString path, IFileTracker tc)
-        {
-            if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
-
-            return new _ImportContext(path, tc);
-        }
-
-        public static IEnumerable<_ImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, Func<PathString, bool> pathValidator, IFileTracker tc)
+        public static IEnumerable<_FileSystemImportContext> CreateBatch(PathString dir, string fileMask, bool allDirectories, Func<PathString, bool> pathValidator, IFileTracker tc)
         {
             var files = System.IO.Directory.GetFiles(dir, fileMask, allDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
@@ -31,7 +24,14 @@ namespace Epsylon.UberFactory.Evaluation
             }
         }
 
-        private _ImportContext(PathString path, IFileTracker tc)
+        public static _FileSystemImportContext Create(PathString path, IFileTracker tc)
+        {
+            if (!path.IsValidAbsoluteFilePath) throw new ArgumentException(nameof(path));
+
+            return new _FileSystemImportContext(path, tc);
+        }        
+
+        private _FileSystemImportContext(PathString path, IFileTracker tc)
         {
             System.Diagnostics.Debug.Assert(path.IsValidAbsoluteFilePath);
             
@@ -73,11 +73,19 @@ namespace Epsylon.UberFactory.Evaluation
     }
 
     [System.Diagnostics.DebuggerDisplay("Import Context for: {_DefaultFileName}")]
-    class _DictionaryImportContext : SDK.ImportContext
+    class _MemoryImportContext : SDK.ImportContext
     {
         #region lifecycle
 
-        public static _DictionaryImportContext Create(IConvertible value)
+        public static _MemoryImportContext Create(IReadOnlyDictionary<string, Byte[]> files, string fileName)
+        {
+            var fp = new PathString(fileName);
+            if (!fp.IsValidRelativeFilePath) return null;
+
+            return new _MemoryImportContext(files, fileName);
+        }
+
+        public static _MemoryImportContext CreatePreview(IConvertible value)
         {
             var text = value.ToString();
             var data = Encoding.UTF8.GetBytes(text);
@@ -88,17 +96,9 @@ namespace Epsylon.UberFactory.Evaluation
             };
 
             return Create(dict, "preview.txt");
-        }
+        }        
 
-        public static _DictionaryImportContext Create(IReadOnlyDictionary<string, Byte[]> files, string fileName)
-        {
-            var fp = new PathString(fileName);
-            if (!fp.IsValidRelativeFilePath) return null;
-
-            return new _DictionaryImportContext(files, fileName);
-        }
-
-        private _DictionaryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName)
+        private _MemoryImportContext(IReadOnlyDictionary<string, Byte[]> files, string fileName)
         {
             _DefaultFileName = fileName;
             _Files = files;

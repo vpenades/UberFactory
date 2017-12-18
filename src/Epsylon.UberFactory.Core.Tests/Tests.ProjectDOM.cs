@@ -49,6 +49,17 @@ namespace Epsylon.UberFactory
             // check if Guid.Empty is stored correctly
             pg.SetReferenceIds("RefIds", Guid.NewGuid(), Guid.Empty, Guid.NewGuid());
             Assert.AreEqual(3, pg.GetReferenceIds("RefIds").Length);
+
+
+            // check XML characters serialization
+            var xmlchars = "<test attr=\"&lt;&gt;\"/>";
+            pg.SetValue("XMLChars", xmlchars);
+            var xmlElement = new System.Xml.Linq.XElement("Properties");
+            pg._ToXml(xmlElement);
+            var pgg = new ProjectDOM.PropertyGroup();
+            pgg._ParseXml(xmlElement);
+            var xmlchars2 = pgg.GetValue("XMLChars",null);
+            Assert.AreEqual(xmlchars, xmlchars2);
             
         }
 

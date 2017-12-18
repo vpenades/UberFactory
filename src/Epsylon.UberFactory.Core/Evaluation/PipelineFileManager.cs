@@ -84,7 +84,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             if (!IsValidInputFilePath(path)) throw new ArgumentException($"Source file {absolutePath} points to a file in the output directory.", nameof(absolutePath));
 
-            return _ImportContext.Create(path, this);
+            return _FileSystemImportContext.Create(path, this);
         }
 
         SDK.ExportContext SDK.IFileManager.GetExportContext(string absolutePath)
@@ -95,12 +95,12 @@ namespace Epsylon.UberFactory.Evaluation
 
             if (_IsSimulation) return _SimulateExportContext.Create(new PathString(absolutePath), _NotifyCreateFileSimulation, this);
 
-            return _ExportContext.Create(path, _TargetDirectoryAbsPath, this);
+            return _FileSystemExportContext.Create(path, _TargetDirectoryAbsPath, this);
         }
 
         IEnumerable<SDK.ImportContext> SDK.IFileManager.GetImportContextBatch(string absolutePath, string fileMask, bool allDirectories)
         {
-            return _ImportContext.CreateBatch(new PathString(absolutePath), fileMask, allDirectories, IsValidInputFilePath, this);
+            return _FileSystemImportContext.CreateBatch(new PathString(absolutePath), fileMask, allDirectories, IsValidInputFilePath, this);
         }
 
         SDK.PreviewContext SDK.IFileManager.GetPreviewContext()

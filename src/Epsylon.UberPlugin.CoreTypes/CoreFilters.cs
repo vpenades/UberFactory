@@ -10,11 +10,6 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Copy File")]
     public class FileCopy : SDK.ContentFilter
     {
-        [SDK.InputValue("Enabled")]
-        [SDK.Title("Enabled")]
-        [SDK.Default(true)]
-        public Boolean Enabled { get; set; }
-
         [SDK.InputValue("SourceFileName")]
         [SDK.Title("Source File")]
         [SDK.ViewStyle("FilePicker")]
@@ -27,8 +22,6 @@ namespace Epsylon.UberPlugin
 
         protected override object EvaluateObject()
         {
-            if (!Enabled) return null;
-
             var inPath = SourceFileName;
             var outPath = string.IsNullOrWhiteSpace(TargetFileName) ? System.IO.Path.GetFileName(inPath) : TargetFileName;
 

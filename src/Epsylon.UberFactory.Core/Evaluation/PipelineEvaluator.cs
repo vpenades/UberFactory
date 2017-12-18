@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory.Evaluation
 {
     using SETTINGSINSTANCES = HashSet<SDK.ContentObject>;
-
+    
     public class PipelineEvaluator : IDisposable
     {
         #region lifecycle
@@ -156,7 +156,7 @@ namespace Epsylon.UberFactory.Evaluation
 
             var estate = new EvaluationResult();
             estate._Files = _FileManager;
-            estate._Result = _EvaluateNode(estate, nodeId, false);            
+            estate._Result = _EvaluateNode(estate.Logger, nodeId, false);            
 
             return estate;
         }
@@ -167,16 +167,16 @@ namespace Epsylon.UberFactory.Evaluation
 
             var estate = new EvaluationResult();
             estate._Files = _FileManager;
-            estate._Result = _EvaluateNode(estate, nodeId, true);           
+            estate._Result = _EvaluateNode(estate.Logger, nodeId, true);           
 
             return estate;
         }
 
-        private Object _EvaluateNode(EvaluationResult result, Guid nodeId, bool previewMode)
+        private Object _EvaluateNode(SDK.ILogger logger, Guid nodeId, bool previewMode)
         {
             CheckCancellation();
 
-            result.Logger?.LogInfo(nodeId.ToString(), "Begin Evaluation...");            
+            logger?.LogInfo(nodeId.ToString(), "Begin Evaluation...");            
 
             // Get the current node being evaluated
             var nodeInst = _InstanceFunc(nodeId);
@@ -188,7 +188,7 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeProps == null) return null;
 
             // Assign values and node dependencies. Dependecies are evaluated to its values.
-            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(result, xid, previewMode));
+            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(logger, xid, previewMode));
 
             CheckCancellation();
 
@@ -200,11 +200,11 @@ namespace Epsylon.UberFactory.Evaluation
 
                 if (nodeInst is SDK.ContentFilter filterInst)
                 {
-                    if (previewMode) return SDK.PreviewNode(filterInst, localMonitor,result.Logger);
+                    if (previewMode) return SDK.PreviewNode(filterInst, localMonitor, logger);
                     else
                     {
-                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode(filterInst, localMonitor, result.Logger);
-                        else return SDK.EvaluateNode(filterInst, localMonitor, result.Logger);
+                        if (System.Diagnostics.Debugger.IsAttached) return SDK.DebugNode(filterInst, localMonitor, logger);
+                        else return SDK.EvaluateNode(filterInst, localMonitor, logger);
                     }
                 }
                 else if (nodeInst is SDK.ContentObject) return nodeInst;
@@ -277,14 +277,14 @@ namespace Epsylon.UberFactory.Evaluation
         {
             get
             {
-                if (_Result is _DictionaryExportContext expDict) return expDict;
+                if (_Result is _MemoryExportContext expDict) return expDict;
 
                 if (_Result is IConvertible convertible)
                 {
                     var text = convertible.ToString();
                     var data = Encoding.UTF8.GetBytes(text);
 
-                    var dict = _DictionaryExportContext.Create("preview.txt");
+                    var dict = _MemoryExportContext.Create("preview.txt");
 
                     dict.WriteAllBytes(data);
 
