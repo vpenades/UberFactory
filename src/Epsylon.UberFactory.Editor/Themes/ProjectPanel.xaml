@@ -103,6 +103,7 @@
 
                             <DataGrid.Columns>
                                 <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Enabled}" />
+                                <DataGridTextColumn Header="State" Binding="{Binding Pipeline.FailedState.Message}" TextBlock.Foreground="Red" IsReadOnly="True" />
                                 <DataGridTextColumn Header="User Title" Binding="{Binding Title}" />
                                 <DataGridTextColumn Header="Inferred Title" Binding="{Binding InferredTitle}" IsReadOnly="True" />
 

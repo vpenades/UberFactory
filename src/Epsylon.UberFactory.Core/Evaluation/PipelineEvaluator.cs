@@ -113,6 +113,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region data
 
+        private readonly SingleThreadAffinity _ThreadAffinity = new SingleThreadAffinity();
+
         private readonly SDK.IMonitorContext _Monitor;        
 
         private readonly PipelineFileManager _FileManager;
@@ -133,11 +135,15 @@ namespace Epsylon.UberFactory.Evaluation
 
         private void CheckCancellation()
         {
+            _ThreadAffinity.Check();
+
             if (_Monitor != null && _Monitor.IsCancelRequested) throw new OperationCanceledException();
         }
 
         private SDK.IMonitorContext GetLocalProgressMonitor(Guid nodeId)
         {
+            _ThreadAffinity.Check();
+
             if (_Monitor == null) return _Monitor;
 
             var idx = _NodeOrder.IndexOf(item => item == nodeId);
@@ -149,31 +155,41 @@ namespace Epsylon.UberFactory.Evaluation
         public EvaluationResult EvaluateRoot() { return EvaluateNode(_RootIdentifier); }
 
         public EvaluationResult EvaluateNode(Guid nodeId)
-        {            
+        {
+            _ThreadAffinity.Check();
+
             if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
 
             CheckCancellation();
 
-            var estate = new EvaluationResult();
-            estate._Files = _FileManager;
-            estate._Result = _EvaluateNode(estate.Logger, nodeId, false);            
+            var estate = new EvaluationResult(_FileManager);
+            
+            var r = _EvaluateNode(estate.Logger, nodeId, false);
+
+            estate._SetResult(r);
 
             return estate;
         }
 
         public EvaluationResult PreviewNode(Guid nodeId)
         {
+            _ThreadAffinity.Check();
+
             if (!_NodeOrder.Contains(nodeId)) throw new ArgumentException("Not found", nameof(nodeId));
 
-            var estate = new EvaluationResult();
-            estate._Files = _FileManager;
-            estate._Result = _EvaluateNode(estate.Logger, nodeId, true);           
+            var estate = new EvaluationResult(_FileManager);
+
+            var r = _EvaluateNode(estate.Logger, nodeId, true);
+
+            estate._SetResult(r);
 
             return estate;
         }
 
         private Object _EvaluateNode(SDK.ILogger logger, Guid nodeId, bool previewMode)
         {
+            _ThreadAffinity.Check();
+
             CheckCancellation();
 
             logger?.LogInfo(nodeId.ToString(), "Begin Evaluation...");            
@@ -219,6 +235,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         private SDK.ContentObject _GetSharedSettings(Type t)
         {
+            _ThreadAffinity.Check();
+
             if (t == null) return null;
 
             var si = _SettingsInstancesCache.FirstOrDefault(item => item.GetType() == t);
@@ -241,6 +259,8 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle
 
+        internal EvaluationResult(PipelineFileManager files) { _Files = files; }
+
         public void Dispose()
         {
             foreach (var byProduct in _ByProducts)
@@ -256,12 +276,15 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region data
 
-        internal PipelineFileManager _Files;
-        private readonly BasicLogger _Logger = new BasicLogger();
+        private readonly SingleThreadAffinity _ThreadAffinity = new SingleThreadAffinity();
 
-        internal Object _Result;
+        private readonly PipelineFileManager _Files;
+
+        private readonly BasicLogger _Logger = new BasicLogger();        
 
         private readonly HashSet<IDisposable> _ByProducts = new HashSet<IDisposable>();
+
+        private Object _Result;
 
         #endregion
 
@@ -297,10 +320,19 @@ namespace Epsylon.UberFactory.Evaluation
 
         #endregion
 
-        #region API
+        #region API        
+
+        internal void _SetResult(Object result)
+        {
+            _ThreadAffinity.Check();
+
+            _Result = result;
+        }
 
         internal void _AddByProduct(Object instance)
-        {            
+        {
+            _ThreadAffinity.Check();
+
             if (instance is IDisposable disposable)
             {
                 _ByProducts.Add(disposable);

@@ -35,6 +35,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region data
 
+        private readonly SingleThreadAffinity _ThreadAffinity = new SingleThreadAffinity();
+
         private readonly INSTANCEFACTORY _InstanceFactory;
         private readonly SETTINGSFUNCTION _SettingsFactory;
 
@@ -53,7 +55,27 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region properties
 
-        public string InferredTitle => _InferTitleFromRootNode();        
+        public string InferredTitle => _InferTitleFromRootNode();
+
+        public bool CanEvaluate => FailedState == null;
+
+        public Exception FailedState
+        {
+            get
+            {
+                _ThreadAffinity.Check();
+
+                try
+                {
+                    _SetupIsReady();
+                    return null;
+                }
+                catch(Exception ex)
+                {
+                    return ex;
+                }
+            }
+        }
 
         #endregion
 
@@ -61,6 +83,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         public void Setup(BuildContext bsettings)
         {
+            _ThreadAffinity.Check();
+
             _BuildSettings = bsettings ?? throw new ArgumentNullException(nameof(bsettings));
 
             _NodeInstances.Clear();
@@ -81,7 +105,15 @@ namespace Epsylon.UberFactory.Evaluation
                 .OfType<_UnknownNode>()
                 .Any();
 
-            if (!allInstancesReady) throw new InvalidOperationException("Some filters couldn't be instantiated.");
+            if (!allInstancesReady)
+            {
+                var filtersNotFound = _NodeInstances.Values
+                    .OfType<_UnknownNode>()
+                    .Select(item => item.ClassId)
+                    .Join(", ");
+
+                throw new InvalidOperationException($"{filtersNotFound} filters couldn't be instantiated.");
+            }
 
             if (_PipelineFingerPrint != _Pipeline.GetHierarchyFingerPrint()) throw new InvalidOperationException("DOM hierarchy has changed, call Setup again");
         }
@@ -95,6 +127,8 @@ namespace Epsylon.UberFactory.Evaluation
         /// <param name="nodeId">root node id</param>
         private void _CreateNodeInstancesRecursive(Guid nodeId, Stack<Guid> idStack)
         {
+            _ThreadAffinity.Check();
+
             _SetupIsReady();
 
             if (idStack.Contains(nodeId)) throw new ArgumentException("Circular reference detected: " + nodeId, nameof(nodeId));
@@ -143,6 +177,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         private string _InferTitleFromRootNode()
         {
+            _ThreadAffinity.Check();
+
             // tries to generate a title based on the content of the nodes
 
             var rootInstance = _NodeInstances.GetValueOrDefault(_Pipeline.RootIdentifier);
@@ -172,6 +208,8 @@ namespace Epsylon.UberFactory.Evaluation
         /// <returns>A Content Instance</returns>
         public SDK.ContentObject GetNodeInstance(Guid nodeId)
         {
+            _ThreadAffinity.Check();
+
             return _NodeInstances.GetValueOrDefault(nodeId);
         }
 
@@ -182,6 +220,8 @@ namespace Epsylon.UberFactory.Evaluation
         /// <returns>A property values container</returns>
         private IPropertyProvider _GetNodeProperties(Guid nodeId)
         {
+            _ThreadAffinity.Check();
+
             return _Pipeline
                  .GetNode(nodeId)?
                  .GetPropertiesForConfiguration(_BuildSettings.Configuration);
@@ -189,6 +229,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         public IEnumerable<Bindings.MemberBinding> CreateValueBindings(Guid nodeId)
         {
+            _ThreadAffinity.Check();
+
             _SetupIsReady();
             
             var nodeInst = GetNodeInstance(nodeId);
@@ -204,6 +246,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         private SDK.ContentObject _CreateSettingsInstance(Type t)
         {
+            _ThreadAffinity.Check();
+
             if (_SettingsFactory == null) return null;
 
             var sdom = _SettingsFactory.Invoke(t);
@@ -218,7 +262,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public PipelineEvaluator CreateEvaluator(SDK.IMonitorContext monitor=null)
         {
-            _SetupIsReady();            
+            _SetupIsReady();
 
             return PipelineEvaluator.Create
                 (                
@@ -235,12 +279,15 @@ namespace Epsylon.UberFactory.Evaluation
         #endregion
     }
 
-    [SDK.ContentNode("PLUGIN ERROR")]
-    class _UnknownNode : SDK.ContentFilter
+    [SDK.ContentNode("⚠ {_ClassId}")]
+    sealed class _UnknownNode : SDK.ContentFilter
     {
-        protected override object EvaluateObject()
-        {
-            return null;
-        }
+        public _UnknownNode(string classId) { _ClassId = classId; }
+
+        private readonly string _ClassId;
+
+        public string ClassId => _ClassId;
+
+        protected override object EvaluateObject() => null;
     }
 }

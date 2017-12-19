@@ -70,7 +70,7 @@ namespace Epsylon.UberFactory
             return unk;
         }
 
-        public static void BuildProject(Project srcDoc, Evaluation.BuildContext bsettings, Func<String, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor, Evaluation.PipelineState.Manager outState)
+        public static void BuildProject(Project srcDoc, Evaluation.BuildContext bsettings, Func<String, SDK.ContentObject> filterFactory,  SDK.IMonitorContext monitor, Evaluation.PipelineClientState.Manager outState)
         {
             if (srcDoc == null) throw new ArgumentNullException(nameof(srcDoc));
             if (bsettings == null) throw new ArgumentNullException(nameof(bsettings));

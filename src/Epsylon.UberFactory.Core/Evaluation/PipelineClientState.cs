@@ -12,13 +12,13 @@ namespace Epsylon.UberFactory.Evaluation
     /// <summary>
     /// holds the persistent state of a given pipeline
     /// </summary>
-    public class PipelineState : INotifyPropertyChanged , MSLOGGING.ILogger
+    public class PipelineClientState : INotifyPropertyChanged , MSLOGGING.ILogger
     {
         // TODO: with the current API, the updates are received from the processing thread, and the notifications are sent to the UI thread.
 
         #region lifecycle
 
-        private PipelineState() { }
+        private PipelineClientState() { }
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region collection
 
-        public class Manager : IReadOnlyDictionary<Guid, PipelineState>, MSLOGGING.ILoggerProvider
+        public class Manager : IReadOnlyDictionary<Guid, PipelineClientState>, MSLOGGING.ILoggerProvider
         {
             #region lifecycle
 
@@ -116,25 +116,25 @@ namespace Epsylon.UberFactory.Evaluation
 
             private readonly Object _Mutex = new object();
 
-            private readonly Dictionary<Guid, PipelineState> _InternalDict = new Dictionary<Guid, PipelineState>();
+            private readonly Dictionary<Guid, PipelineClientState> _InternalDict = new Dictionary<Guid, PipelineClientState>();
 
             #endregion
 
             #region API
 
-            public PipelineState this[Guid key] { get { lock (_Mutex) { return key == Guid.Empty ? null : _InternalDict[key]; } } }
+            public PipelineClientState this[Guid key] { get { lock (_Mutex) { return key == Guid.Empty ? null : _InternalDict[key]; } } }
 
             public IEnumerable<Guid> Keys { get { lock (_Mutex) { return _InternalDict.Keys.ToList(); } } }
 
-            public IEnumerable<PipelineState> Values { get { lock (_Mutex) { return _InternalDict.Values.ToList(); } } }
+            public IEnumerable<PipelineClientState> Values { get { lock (_Mutex) { return _InternalDict.Values.ToList(); } } }
 
             public int Count { get { lock (_Mutex) { return _InternalDict.Count; } } }
 
             public bool ContainsKey(Guid key) { lock (_Mutex) { return _InternalDict.ContainsKey(key); } }
 
-            public bool TryGetValue(Guid key, out PipelineState value) { lock (_Mutex) { return _InternalDict.TryGetValue(key, out value); } }
+            public bool TryGetValue(Guid key, out PipelineClientState value) { lock (_Mutex) { return _InternalDict.TryGetValue(key, out value); } }
 
-            public IEnumerator<KeyValuePair<Guid, PipelineState>> GetEnumerator() { lock (_Mutex) { return _InternalDict.ToList().GetEnumerator(); } }
+            public IEnumerator<KeyValuePair<Guid, PipelineClientState>> GetEnumerator() { lock (_Mutex) { return _InternalDict.ToList().GetEnumerator(); } }
 
             IEnumerator IEnumerable.GetEnumerator() { lock (_Mutex) { return _InternalDict.ToList().GetEnumerator(); } }
 
@@ -154,20 +154,20 @@ namespace Epsylon.UberFactory.Evaluation
                         .ToArray();
 
                     foreach (var tr in toRemove) _InternalDict.Remove(tr);
-                    foreach (var ta in toInsert) _InternalDict.Add(ta, new PipelineState());
+                    foreach (var ta in toInsert) _InternalDict.Add(ta, new PipelineClientState());
                 }
             }            
 
             public void SetResults(Guid key, Object result,TimeSpan exeTime, PipelineFileManager results)
             {
-                if (this.TryGetValue(key, out PipelineState state)) state.Update(result, exeTime, results);
+                if (this.TryGetValue(key, out PipelineClientState state)) state.Update(result, exeTime, results);
             }
 
             public MSLOGGING.ILogger CreateLogger(string categoryName)
             {
                 if (Guid.TryParse(categoryName, out Guid key))
                 {
-                    if (this.TryGetValue(key, out PipelineState state)) return state;
+                    if (this.TryGetValue(key, out PipelineClientState state)) return state;
                 }
 
                 return MSLOGGING.Abstractions.NullLogger.Instance;

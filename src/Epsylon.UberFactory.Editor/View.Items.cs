@@ -13,7 +13,7 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static SettingsView Create(Project d, ProjectDOM.Settings c, Evaluation.PipelineState s)
+            public static SettingsView Create(Project d, ProjectDOM.Settings c, Evaluation.PipelineClientState s)
             {
                 if (d == null) throw new ArgumentNullException(nameof(d));
                 if (c == null) throw new ArgumentNullException(nameof(c));
@@ -22,7 +22,7 @@ namespace Epsylon.UberFactory
                 return new SettingsView(d, c, s);
             }
 
-            private SettingsView(Project d, ProjectDOM.Settings c, Evaluation.PipelineState s)
+            private SettingsView(Project d, ProjectDOM.Settings c, Evaluation.PipelineClientState s)
             {
                 _Parent = d;
                 _Source = c;
@@ -35,7 +35,7 @@ namespace Epsylon.UberFactory
 
             private readonly Project _Parent;
             private readonly ProjectDOM.Settings _Source;
-            private readonly Evaluation.PipelineState _State;
+            private readonly Evaluation.PipelineClientState _State;
 
             private Pipeline _PipelineView;
 
@@ -62,7 +62,7 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            public Evaluation.PipelineState PersistentState => _State;
+            public Evaluation.PipelineClientState PersistentState => _State;
 
             #endregion
 
@@ -84,7 +84,7 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static Task Create(Project d, ProjectDOM.Task c, Evaluation.PipelineState s)
+            public static Task Create(Project d, ProjectDOM.Task c, Evaluation.PipelineClientState s)
             {
                 if (d == null) throw new ArgumentNullException(nameof(d));
                 if (c == null) throw new ArgumentNullException(nameof(c));
@@ -93,7 +93,7 @@ namespace Epsylon.UberFactory
                 return new Task(d, c, s);
             }
 
-            private Task(Project d, ProjectDOM.Task c, Evaluation.PipelineState s)
+            private Task(Project d, ProjectDOM.Task c, Evaluation.PipelineClientState s)
             {
                 _Parent = d;
                 _Source = c;
@@ -106,7 +106,7 @@ namespace Epsylon.UberFactory
 
             private readonly Project _Parent;
             private readonly ProjectDOM.Task _Source;
-            private readonly Evaluation.PipelineState _State;
+            private readonly Evaluation.PipelineClientState _State;
 
             private Pipeline _PipelineView;
 
@@ -143,7 +143,7 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            public Evaluation.PipelineState PersistentState => _State;
+            public Evaluation.PipelineClientState PersistentState => _State;
 
             public IEnumerable<string> ProcessedInputFiles => null;
 

@@ -75,9 +75,11 @@ namespace Epsylon.UberFactory
 
             public bool IsEmpty             => _PipelineDom?.Nodes.Count == 0 && _Exception == null;            
 
-            public bool IsInstanced         => !IsEmpty;            
+            public bool IsInstanced         => !IsEmpty;
 
             public Object Content           => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
+
+            public Exception FailedState    => _Exception;
 
             public Boolean CanEditHierarchy => true;
 
@@ -101,6 +103,8 @@ namespace Epsylon.UberFactory
                     _Exception = null;
                     _PipelineInstance = Evaluation.PipelineInstance.CreatePipelineInstance(_PipelineDom, _Parent.GetPluginManager().CreateInstance, _Parent.GetSharedSettings);
                     _PipelineInstance.Setup(_Parent.GetBuildSettings());
+
+                    _Exception = _PipelineInstance.FailedState;
 
                 }
                 catch (Exception ex)

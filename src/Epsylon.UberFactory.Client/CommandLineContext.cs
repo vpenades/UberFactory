@@ -124,7 +124,7 @@ namespace Epsylon.UberFactory.Client
 
             foreach (var filePath in System.IO.Directory.GetFiles(_SrcDir, _SrcMask))
             {
-                var state = new Evaluation.PipelineState.Manager();
+                var state = new Evaluation.PipelineClientState.Manager();
 
                 var prjFilePath = new PathString(filePath);
 

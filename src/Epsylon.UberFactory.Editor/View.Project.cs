@@ -163,7 +163,7 @@ namespace Epsylon.UberFactory
             private BindableBase _ActiveItemView;
             private String _ActiveConfiguration;
             
-            private Evaluation.PipelineState.Manager _ProjectState = new Evaluation.PipelineState.Manager();
+            private Evaluation.PipelineClientState.Manager _ProjectState = new Evaluation.PipelineClientState.Manager();
 
             #endregion
 

@@ -81,7 +81,7 @@ namespace Epsylon.UberFactory
                 var factory2 = _SettingsTypes.FirstOrDefault(item => item.SerializationKey == classId);
                 if (factory2 != null) return factory2.CreateInstance();
 
-                return new Evaluation._UnknownNode();
+                return new Evaluation._UnknownNode(classId);
             }
 
             #endregion
