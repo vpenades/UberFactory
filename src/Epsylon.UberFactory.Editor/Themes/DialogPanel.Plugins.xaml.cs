@@ -14,15 +14,16 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Epsylon.UberFactory.Themes
-{
-    /// <summary>
-    /// Interaction logic for PluginsPanel.xaml
-    /// </summary>
+{    
     public partial class PluginsPanel : UserControl
     {
         public PluginsPanel()
         {
             InitializeComponent();
+
+            var cpuarch = IntPtr.Size == 4 ? "x86" : "x64";
+
+            myCurrentCfg.Text = $"Current Architecture: NetFX {cpuarch}";
         }        
     }
 }

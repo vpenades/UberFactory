@@ -200,7 +200,7 @@ namespace Epsylon.UberFactory
                     return this._Plugins
                         .SettingsClassIds
                         .Select(clsid => _Source.UseSettings(clsid))
-                        .Select(item => SettingsView.Create(this, item, _ProjectState[item.Pipeline.RootIdentifier]))
+                        .Select(item => SettingsView.Create(this, item))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -217,7 +217,7 @@ namespace Epsylon.UberFactory
                     return _Source
                         .Items
                         .OfType<ProjectDOM.Task>()
-                        .Select(item => Task.Create(this, item, _ProjectState[item.Pipeline.RootIdentifier]))
+                        .Select(item => Task.Create(this, item))
                         .ExceptNulls()
                         .ToArray();
                 }
@@ -254,6 +254,13 @@ namespace Epsylon.UberFactory
                 if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;                
 
                 return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath, isSimulation);
+            }
+
+            public Evaluation.PipelineClientState GetTaskState(Guid id)
+            {
+                if (id == Guid.Empty) return null;
+
+                return _ProjectState[id];
             }
 
             private void _UpdatePipelineState()
@@ -339,9 +346,9 @@ namespace Epsylon.UberFactory
             {
                 if (_ActiveConfiguration == null || _Configurations.IsEmpty) { _EditConfigurations(); return; }
 
-                _Source.AddTask().Title = "New Task " + Tasks.Count(); RaiseChanged(nameof(Tasks), nameof(IsDirty));
+                _Source.AddTask().Title = "New Task " + Tasks.Count();
 
-                RaiseChanged(nameof(CanBuild));
+                RaiseChanged(nameof(Tasks), nameof(IsDirty), nameof(CanBuild));
             }            
 
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }

@@ -71,6 +71,44 @@ namespace Epsylon.UberFactory
             return true;
         }
 
+        public static bool CheckPluginCompatibility(this PathString pluginAbsPath)
+        {
+            try
+            {
+                if (!pluginAbsPath.IsValidAbsoluteFilePath) return false;
+                if (!pluginAbsPath.FileExists) return false;
+
+                var fvi = Client.AssemblyServices.LoadVersionInfo(pluginAbsPath);
+                if (fvi == null) return false;
+                var aname = Client.AssemblyServices.GetAssemblyName(pluginAbsPath);
+                if (aname == null) return false;
+
+                if (aname.IsFramework()) return false;
+                if (!aname.ProcessorArchitecture.IsRuntimeCompatible()) return false;
+
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public static Assembly LoadCompatiblePlugin(this PathString pluginAbsPath)
+        {
+            if (!pluginAbsPath.CheckPluginCompatibility()) return null;
+
+            try
+            {
+                // this was originally using Assembly.Load();
+                var a = Client.AssemblyServices.LoadAssemblyFromFilePath(pluginAbsPath);
+
+                if (a.IsFramework()) return null;
+
+                a.DefinedTypes.ToArray(); // if not compatible, this throws ReflectionTypeLoadException
+
+                return a;
+            }
+            catch (ReflectionTypeLoadException) { return null; }
+        }
+
         #endregion
 
         #region basic reflection

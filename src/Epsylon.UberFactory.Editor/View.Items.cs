@@ -13,20 +13,19 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static SettingsView Create(Project d, ProjectDOM.Settings c, Evaluation.PipelineClientState s)
+            public static SettingsView Create(Project d, ProjectDOM.Settings c)
             {
                 if (d == null) throw new ArgumentNullException(nameof(d));
                 if (c == null) throw new ArgumentNullException(nameof(c));
-                if (s == null) throw new ArgumentNullException(nameof(s));
+                
 
-                return new SettingsView(d, c, s);
+                return new SettingsView(d, c);
             }
 
-            private SettingsView(Project d, ProjectDOM.Settings c, Evaluation.PipelineClientState s)
+            private SettingsView(Project d, ProjectDOM.Settings c)
             {
                 _Parent = d;
-                _Source = c;
-                _State = s;
+                _Source = c;                
             }
 
             #endregion
@@ -34,8 +33,7 @@ namespace Epsylon.UberFactory
             #region data
 
             private readonly Project _Parent;
-            private readonly ProjectDOM.Settings _Source;
-            private readonly Evaluation.PipelineClientState _State;
+            private readonly ProjectDOM.Settings _Source;            
 
             private Pipeline _PipelineView;
 
@@ -62,7 +60,7 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            public Evaluation.PipelineClientState PersistentState => _State;
+            public Evaluation.PipelineClientState PersistentState => this._Parent.GetTaskState(_Source.Pipeline.RootIdentifier);
 
             #endregion
 
@@ -84,20 +82,19 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static Task Create(Project d, ProjectDOM.Task c, Evaluation.PipelineClientState s)
+            public static Task Create(Project d, ProjectDOM.Task c)
             {
                 if (d == null) throw new ArgumentNullException(nameof(d));
                 if (c == null) throw new ArgumentNullException(nameof(c));
-                if (s == null) throw new ArgumentNullException(nameof(s));
+                
 
-                return new Task(d, c, s);
+                return new Task(d, c);
             }
 
-            private Task(Project d, ProjectDOM.Task c, Evaluation.PipelineClientState s)
+            private Task(Project d, ProjectDOM.Task c)
             {
                 _Parent = d;
-                _Source = c;
-                _State = s;
+                _Source = c;                
             }
 
             #endregion
@@ -105,8 +102,7 @@ namespace Epsylon.UberFactory
             #region data
 
             private readonly Project _Parent;
-            private readonly ProjectDOM.Task _Source;
-            private readonly Evaluation.PipelineClientState _State;
+            private readonly ProjectDOM.Task _Source;            
 
             private Pipeline _PipelineView;
 
@@ -143,7 +139,7 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            public Evaluation.PipelineClientState PersistentState => _State;
+            public Evaluation.PipelineClientState PersistentState => this._Parent.GetTaskState(_Source.Pipeline.RootIdentifier);
 
             public IEnumerable<string> ProcessedInputFiles => null;
 

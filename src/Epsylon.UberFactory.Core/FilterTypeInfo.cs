@@ -131,20 +131,29 @@ namespace Epsylon.UberFactory
 
             protected static IEnumerable<Type> GetDefinedTypes<T>(IEnumerable<Assembly> assemblies)
             {
-                if (assemblies == null) yield break;
+                return assemblies == null ? Enumerable.Empty<Type>() : assemblies.SelectMany(item => GetDefinedTypes<T>(item));
+            }
+
+            private static IEnumerable<Type> GetDefinedTypes<T>(Assembly assembly)
+            {
+                if (assembly == null) yield break;                
+
+                TypeInfo[] types = null;
+
+                try { types = assembly.DefinedTypes.ToArray(); }
+                catch(System.Reflection.ReflectionTypeLoadException) { }
+
+                if (types == null) yield break;
 
                 var ti = typeof(T).GetTypeInfo();
 
-                foreach (var a in assemblies)
+                foreach (var t in types)
                 {
-                    foreach (var t in a.DefinedTypes)
-                    {
-                        if (t.GetTypeInfo().IsAbstract) continue;
-                        if (!t.GetTypeInfo().IsClass) continue;
-                        if (t.IsNestedPrivate) continue;
+                    if (t.GetTypeInfo().IsAbstract) continue;
+                    if (!t.GetTypeInfo().IsClass) continue;
+                    if (t.IsNestedPrivate) continue;
 
-                        if (ti.IsAssignableFrom(t.GetTypeInfo())) yield return t;
-                    }
+                    if (ti.IsAssignableFrom(t.GetTypeInfo())) yield return t;
                 }
             }
 

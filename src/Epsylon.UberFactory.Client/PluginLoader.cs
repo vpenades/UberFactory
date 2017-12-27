@@ -67,17 +67,8 @@ namespace Epsylon.UberFactory.Client
 
         public void UsePlugin(PathString pluginAbsPath)
         {
-            // this was originally using Assembly.Load();
-            try
-            {
-                if (!pluginAbsPath.IsValidAbsoluteFilePath) return;
-                if (!pluginAbsPath.FileExists) return;
-
-                var a = AssemblyServices.LoadAssemblyFromFilePath(pluginAbsPath);
-
-                _Plugins.Add(a);
-            } 
-            catch { }
+            var a = pluginAbsPath.LoadCompatiblePlugin();
+            if (a != null) _Plugins.Add(a);            
         }
 
         public Assembly[] GetPlugins() { return _Plugins.ToArray(); }
@@ -125,29 +116,25 @@ namespace Epsylon.UberFactory.Client
 
         public void UsePlugin(PathString pluginAbsPath)
         {
+            // TODO: if an assembly exists in the path, read the AssemblyName and check if we already have it in our plugins dir.                
+
+            if (!pluginAbsPath.CheckPluginCompatibility()) return;
+
+            // store assembly directory path, so we can recursively resolve dependencies when the assembly is loaded.
+            lock (_Lock)
+            {
+                _ProbeDirectories.Add(pluginAbsPath.DirectoryPath);
+            }
+
             try
             {
-                if (!pluginAbsPath.IsValidAbsoluteFilePath) return;
-                if (!pluginAbsPath.FileExists) return;
-
-                var fvi = AssemblyServices.LoadVersionInfo(pluginAbsPath);
-                if (fvi == null) return;
-                var aname = AssemblyServices.GetAssemblyName(pluginAbsPath);
-                if (aname == null) return;
-
-                if (aname.IsFramework()) return;
-                if (!aname.ProcessorArchitecture.IsRuntimeCompatible()) return;
-
-                // TODO: if an assembly exists in the path, read the AssemblyName and check if we already have it in our plugins dir.                
-
-                lock (_Lock)
-                {
-                    _ProbeDirectories.Add(pluginAbsPath.DirectoryPath);
-                }
-
                 var a = AssemblyServices.LoadAssemblyFromFilePath(pluginAbsPath);
 
-                if (a != null) _Plugins.Add(a);
+                if (a == null) return;
+
+                a.DefinedTypes.ToArray(); // if not compatible, this throws ReflectionTypeLoadException
+
+                _Plugins.Add(a);
             }
             catch {  }
         }       
@@ -226,9 +213,8 @@ namespace Epsylon.UberFactory.Client
 
                 foreach (var afn in _AssemblyFileNames)
                 {
-                    var fullPath = System.IO.Path.Combine(_TempDir, afn);
-                    var p = AssemblyServices.LoadAssemblyFromFilePath(fullPath);
-                    _Plugins.Add(p);
+                    var a = new PathString(afn).LoadCompatiblePlugin();
+                    if (a != null) _Plugins.Add(a);
                 }
             }
 

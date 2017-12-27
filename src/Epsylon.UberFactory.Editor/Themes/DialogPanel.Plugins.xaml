@@ -11,7 +11,11 @@
         <sys:String x:Key="pluginsLoadWarning" xml:space="preserve">Plugins loaded into the framework cannot be unloaded.&#x0a;Restart the application to clear the loaded plugins.</sys:String>
     </UserControl.Resources>
 
-    <GroupBox Style="{StaticResource PlainTextGroupBoxStyle}" Header="{StaticResource pluginsLoadWarning}">        
+    <StackPanel>
+
+        <TextBlock Text="{StaticResource pluginsLoadWarning}" HorizontalAlignment="Center" Margin="5" />
+
+        <TextBlock HorizontalAlignment="Center" Margin="5" Name="myCurrentCfg" />
 
         <DataGrid ItemsSource="{Binding Assemblies}" AutoGenerateColumns="False" Name="myAssemblies" SelectionMode="Single" SelectionUnit="FullRow" >            
 
@@ -35,7 +39,8 @@
                 <DataGridTextColumn IsReadOnly="true" Header="Description" Binding="{Binding Description}" />
                 
             </DataGrid.Columns>
+            
         </DataGrid>
 
-    </GroupBox>
+    </StackPanel>
 </UserControl>
