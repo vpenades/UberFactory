@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Epsylon.UberFactory
 {
-    static class _InternalExtensions
+    static class _PrivateExtensions
     {
         #region strings
 
@@ -322,6 +322,8 @@ namespace Epsylon.UberFactory
             return (T)typeof(T).GetTypeInfo().ConvertBindableValue(value);
         }
 
+        
+
         #endregion
 
         #region value conversion
@@ -443,5 +445,36 @@ namespace Epsylon.UberFactory
         }
 
         #endregion        
-    }    
+    }
+
+    public static class _PublicExtensions
+    {
+        public static PathString GetAbsoluteSourcePath(this SDK.ContentObject instance, string relativeToSource)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+
+            if (string.IsNullOrWhiteSpace(relativeToSource)) relativeToSource = string.Empty;
+
+            if (instance.BuildContext != null) return new PathString(instance.BuildContext.GetSourceAbsolutePath(relativeToSource));
+
+            // build context is only available during evaluation,
+            // if it's missing, we fall back to the pipeline context
+            var pipeline = instance.Owner as Evaluation.PipelineInstance;
+            var buildctx = pipeline.BuildSettings;
+            return new PathString(buildctx.SourceDirectory).MakeAbsolutePath(relativeToSource);
+        }
+
+        public static PathString GetRelativeSourcePath(this SDK.ContentObject instance, string absoluteSourcePath)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+
+            if (instance.BuildContext != null) return new PathString(instance.BuildContext.GetRelativeToSource(absoluteSourcePath));
+
+            // build context is only available during evaluation,
+            // if it's missing, we fall back to the pipeline context
+            var pipeline = instance.Owner as Evaluation.PipelineInstance;
+            var buildctx = pipeline.BuildSettings;
+            return new PathString(buildctx.SourceDirectory).MakeRelativePath(absoluteSourcePath);
+        }
+    }
 }

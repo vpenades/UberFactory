@@ -327,19 +327,12 @@ namespace Epsylon.UberFactory.Bindings
 
         public static PathString GetAbsoluteSourcePath(InputStringBinding context)
         {
-            var value = context.Value;
-
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                value = context.DataContext.BuildContext.GetSourceAbsolutePath(value);
-            }            
-
-            return new PathString(value);
+            return context.DataContext.GetAbsoluteSourcePath(context.Value);
         }
 
         public static void SetAbsoluteSourcePath(InputStringBinding context, PathString absPath)
         {
-            context.Value = context.DataContext.BuildContext.GetRelativeToSource(absPath);
+            context.Value = context.DataContext.GetRelativeSourcePath(absPath);
         }
 
         #endregion

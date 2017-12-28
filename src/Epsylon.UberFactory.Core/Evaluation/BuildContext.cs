@@ -122,6 +122,11 @@ namespace Epsylon.UberFactory.Evaluation
             return null;
         }
 
+        public PathString GetSourceAbsolutePath(string relativeToSource)
+        {
+            return _SourceDirectoryAbsPath.MakeAbsolutePath(relativeToSource);
+        }
+
         #endregion
     }    
 

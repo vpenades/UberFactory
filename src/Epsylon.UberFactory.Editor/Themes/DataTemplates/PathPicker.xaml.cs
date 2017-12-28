@@ -20,14 +20,14 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
     {
         public PathPicker()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         private void _OnClick_PickFile(object sender, RoutedEventArgs e)
         {
             if (this.DataContext is Bindings.InputStringBinding vbinding)
             {
-                var startDir = new PathString(vbinding.DataContext.BuildContext.GetSourceAbsolutePath("dummy.txt")).DirectoryPath;
+                var startDir = vbinding.DataContext.GetAbsoluteSourcePath("dummy.txt").DirectoryPath;
 
                 var path = PathString.Empty;
 

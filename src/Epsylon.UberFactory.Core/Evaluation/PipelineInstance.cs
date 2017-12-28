@@ -55,6 +55,8 @@ namespace Epsylon.UberFactory.Evaluation
 
         #region properties
 
+        public BuildContext BuildSettings => _BuildSettings;
+
         public string InferredTitle => _InferTitleFromRootNode();
 
         public bool CanEvaluate => FailedState == null;
@@ -138,7 +140,8 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeDom == null) return;
 
             // Create node instance
-            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);            
+            var nodeInst = _InstanceFactory(nodeDom.ClassIdentifier);
+            nodeInst.SetOwner(this);
 
             _NodeInstances[nodeId] = nodeInst ?? throw new NullReferenceException("Couldn't create Node instance for ClassID: " + nodeDom.ClassIdentifier);
 

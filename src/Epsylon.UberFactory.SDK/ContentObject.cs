@@ -10,18 +10,20 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle            
 
-            internal void BeginProcessing(IFileManager bc, Func<Type, ContentObject> scr)
-            {
-                if (_BuildContext != null) throw new InvalidOperationException("already initialized");
+            internal void SetOwner(Object owner) { _Owner = owner; }
 
-                _BuildContext = bc ?? throw new ArgumentNullException(nameof(bc));
+            internal void BeginProcessing(IFileManager fc, Func<Type, ContentObject> scr)
+            {
+                if (_FileIOContext != null) throw new InvalidOperationException("already initialized");
+
+                _FileIOContext = fc ?? throw new ArgumentNullException(nameof(fc));
                 _SharedContentResolver = scr ?? throw new ArgumentNullException(nameof(scr));
             }
 
             internal void EndProcessing()
             {
                 _SharedContentResolver = null;
-                _BuildContext = null;
+                _FileIOContext = null;
             }
 
             #endregion
@@ -30,34 +32,37 @@ namespace Epsylon.UberFactory
 
             // TODO: add a "EnqueueForDispose" or "AtExit" to store disposable objects that need to be disposed at the end of the processing pipeline
 
-            private IFileManager _BuildContext;
+            private Object _Owner;
+            private IFileManager _FileIOContext;
             private Func<Type, ContentObject> _SharedContentResolver;
 
             #endregion
 
-            #region API           
+            #region API
 
-            public IFileManager BuildContext => _BuildContext;
+            public Object Owner => _Owner;
+
+            public IFileManager BuildContext => _FileIOContext;
 
             public ImportContext GetImportContext(String relativePath)
             {
                 var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
 
-                return _BuildContext.GetImportContext(absolutePath);
+                return _FileIOContext.GetImportContext(absolutePath);
             }
 
             public IEnumerable<ImportContext> GetImportContextBatch(String relativePath, String fileMask, bool allDirectories)
             {
                 var absolutePath = this.BuildContext.GetSourceAbsolutePath(relativePath);
 
-                return _BuildContext.GetImportContextBatch(absolutePath, fileMask, allDirectories);
+                return _FileIOContext.GetImportContextBatch(absolutePath, fileMask, allDirectories);
             }
 
             public ExportContext GetExportContext(String relativePath)
             {
                 var absolutePath = this.BuildContext.GetTargetAbsolutePath(relativePath);
 
-                return _BuildContext.GetExportContext(absolutePath);
+                return _FileIOContext.GetExportContext(absolutePath);
             }
 
             public SDK.ContentObject GetSharedSettings(Type t) { return _SharedContentResolver?.Invoke(t); }
