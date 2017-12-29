@@ -38,9 +38,9 @@ namespace Epsylon.UberPlugin
         protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
     }
 
-    [SDK.ContentNode("ImageWriter")]
+    [SDK.ContentNode("ImageWriterAdvanced")]
     [SDK.Title("Save ImageSharp File (Advanced)")]
-    public sealed class ImageWriter : SDK.FileWriter
+    public sealed class ImageWriterAdvanced : SDK.FileWriter
     {
         [SDK.InputNode("Image")]
         public IMAGE32 Image { get; set; }
@@ -64,7 +64,7 @@ namespace Epsylon.UberPlugin
 
         internal static IMAGEENCODER CreateEncoder(SixLabors.ImageSharp.Formats.IImageEncoder encoder, string ext)
         {
-            Action<SDK.ExportContext, IMAGE32> act = (ctx,img) => ctx.WriteStream(s => img.Save(s, encoder));
+            void act(SDK.ExportContext ctx, IMAGE32 img) => ctx.WriteStream(s => img.Save(s, encoder));
 
             return encoder == null ? default(IMAGEENCODER) : new IMAGEENCODER(ext,act);
         }
@@ -89,35 +89,64 @@ namespace Epsylon.UberPlugin
         [SDK.InputNode("Image")]
         public IMAGE32 Image { get; set; }
 
-        [SDK.InputNode("Format")]
+        [SDK.InputValue("Format")]
         [SDK.Title("Format")]
+        [SDK.Default(ImageWriterBasicFormat.PNG_Color_Alpha)]
         public ImageWriterBasicFormat Format { get; set; }
 
         protected override string GetFileExtension()
         {
-            /*
-            if (Format == ImageWriterBasicFormat.GIF) return "gif";
-            if (Format == ImageWriterBasicFormat.PNG_24) return "png";
-            if (Format == ImageWriterBasicFormat.PNG_32) return "png";
-            if (Format == ImageWriterBasicFormat.JPG) return "jpg";
-            */
+            if (Format == ImageWriterBasicFormat.PNG_Grayscale) return "png";
+            if (Format == ImageWriterBasicFormat.PNG_Color) return "png";
+            if (Format == ImageWriterBasicFormat.PNG_Grayscale_Alpha) return "png";
+            if (Format == ImageWriterBasicFormat.PNG_Color_Alpha) return "png";
+            if (Format == ImageWriterBasicFormat.PNG_Palette) return "png";
+
+            if (Format == ImageWriterBasicFormat.GIF) return "gif";            
+            if (Format == ImageWriterBasicFormat.JPG) return "jpg";            
 
             throw new NotSupportedException();
         }
 
         protected override void WriteFile(SDK.ExportContext stream)
         {
-            if (Image == null) return;
+            if (Image == null) return;           
+
+            Action<UberFactory.SDK.ExportContext, IMAGE32> encoder = null;
+
+            if (Format == ImageWriterBasicFormat.JPG)
+            {
+                encoder = this.GetSharedSettings<JpegGlobalSettings>().GetEncoder();
+            }
+
+            if (Format == ImageWriterBasicFormat.PNG_Color)
+            {
+                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.Rgb);
+            }
+
+            if (Format == ImageWriterBasicFormat.PNG_Color_Alpha)
+            {
+                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.RgbWithAlpha);
+            }
+
+            if (Format == ImageWriterBasicFormat.PNG_Grayscale)
+            {
+                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.Grayscale);
+            }
+
+            if (Format == ImageWriterBasicFormat.PNG_Grayscale_Alpha)
+            {
+                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.GrayscaleWithAlpha);
+            }
+
+            if (Format == ImageWriterBasicFormat.PNG_Palette)
+            {
+                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.Palette);
+            }
 
             var g = this.GetSharedSettings<GlobalSettings>();
 
-            IMAGEENCODER encoder = default(IMAGEENCODER);
-
-
-            // if (Format == ImageWriterBasicFormat.PNG_24) encoder = ImageWriter.CreateEncoder(new SixLabors.ImageSharp.Formats.Png.PngEncoder() { }, "png");
-
-
-            g.WriteImage(stream, Image, encoder.Value);
+            g.WriteImage(stream, Image, encoder);
 
             Image.Dispose();
         }        

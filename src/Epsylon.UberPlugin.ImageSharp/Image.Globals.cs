@@ -13,7 +13,7 @@ namespace Epsylon.UberPlugin
     using UberFactory;
     
     using IMGTRANSFORM = Action<IImageProcessingContext<Rgba32>>;
-    using IMAGEENCODER = Action<UberFactory.SDK.ExportContext, IMAGE32>;
+    using IMAGEENCODER = Action<UberFactory.SDK.ExportContext, IMAGE32>;    
 
     [SDK.ContentNode("GlobalSettings")]
     [SDK.Title("ImageSharp Settings")]
@@ -84,5 +84,41 @@ namespace Epsylon.UberPlugin
         [SDK.Minimum(0), SDK.Default(80), SDK.Maximum( 100)]
         [SDK.ViewStyle("Slider")]
         public int Quality { get; set; }
+
+        public IMAGEENCODER GetEncoder()
+        {
+            var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
+            {
+                Quality = Quality
+            };
+
+            void act(SDK.ExportContext ctx, IMAGE32 img) => ctx.WriteStream(s => img.Save(s, encoder));
+
+            return act;
+        }
+    }
+
+    [SDK.ContentNode("PngGlobalSettings")]
+    [SDK.Title("ImageSharp PNG Settings")]
+    public class PngGlobalSettings : SDK.ContentObject
+    {
+        [SDK.InputValue("CompressionLevel")]
+        [SDK.Minimum(1), SDK.Default(6), SDK.Maximum(9)]
+        [SDK.Title("Compression Level")]
+        [SDK.ViewStyle("Slider")]
+        public int CompressionLevel { get; set; }
+
+        public IMAGEENCODER GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType colorType)
+        {
+            var encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder
+            {
+                CompressionLevel = this.CompressionLevel,
+                PngColorType = colorType,
+            };
+
+            void act(SDK.ExportContext ctx, IMAGE32 img) => ctx.WriteStream(s => img.Save(s, encoder));
+
+            return act;
+        }
     }
 }

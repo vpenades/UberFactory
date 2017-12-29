@@ -46,7 +46,7 @@ namespace Epsylon.UberPlugin
                 PngColorType = ColorChannels
             };
 
-            return ImageWriter.CreateEncoder(encoder, "PNG");
+            return ImageWriterAdvanced.CreateEncoder(encoder, "PNG");
         }
     }
 
@@ -69,7 +69,7 @@ namespace Epsylon.UberPlugin
                 Quality = Quality
             };
 
-            return ImageWriter.CreateEncoder(encoder,"JPG");
+            return ImageWriterAdvanced.CreateEncoder(encoder,"JPG");
         }
     }
 
@@ -89,7 +89,7 @@ namespace Epsylon.UberPlugin
                 BitsPerPixel = this.BitsPerPixel
             };
 
-            return ImageWriter.CreateEncoder(encoder,"BMP");
+            return ImageWriterAdvanced.CreateEncoder(encoder,"BMP");
         }
     }
 
@@ -113,7 +113,7 @@ namespace Epsylon.UberPlugin
                 Threshold = (Byte)TransparencyThreshold
             };
 
-            return ImageWriter.CreateEncoder(encoder, "GIF");
+            return ImageWriterAdvanced.CreateEncoder(encoder, "GIF");
         }
     }
 
