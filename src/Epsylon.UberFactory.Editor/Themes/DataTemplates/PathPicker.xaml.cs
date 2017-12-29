@@ -39,5 +39,15 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
                 Bindings.InputStringBinding.SetAbsoluteSourcePath(vbinding, path);
             }
         }
+
+        private void _OnClick_InspectFile(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is Bindings.InputStringBinding vbinding)
+            {
+                var absPath = Bindings.InputStringBinding.GetAbsoluteSourcePath(vbinding);
+
+                absPath.TryOpenContainingFolder();
+            }
+        }
     }
 }

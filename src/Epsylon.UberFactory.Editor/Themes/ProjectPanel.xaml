@@ -28,6 +28,7 @@
             <MenuItem Header="Project">
                 <MenuItem Icon="{StaticResource _AddIcon}" Header="Add Task..." Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />                
                 <Separator />
+                <MenuItem Icon="{StaticResource _TestIcon}" Header="Test All..." Command="{Binding TestAllCmd}" IsEnabled="{Binding CanBuild}"/>
                 <MenuItem Icon="{StaticResource _BuildIcon}" Header="Build All..." Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}"/>
             </MenuItem>            
 
@@ -36,29 +37,51 @@
             </MenuItem>
         </Menu>        
 
-        <StatusBar DockPanel.Dock="Top">            
+        <StatusBar DockPanel.Dock="Top">
 
-            <Button Content="{StaticResource _SaveIcon}" Command="{Binding SaveCmd}" ToolTip="Save" />
+            <Button Content="{StaticResource _NewIcon}" Command="{Binding Application.NewDocumentCmd}" ToolTip="New Project" />
+
+            <Button Content="{StaticResource _OpenIcon}" Command="{Binding Application.OpenDocumentCmd}" ToolTip="Open Project" />
+
+            <Button Content="{StaticResource _SaveIcon}" Command="{Binding SaveCmd}" ToolTip="Save Project" />
 
             <Button Content="{StaticResource _PluginsIcon}" Command="{Binding EditPluginsCmd}" ToolTip="Show Plugins Manager" />
 
             <DockPanel>
                 <Button Content="{StaticResource _ConfigurationsIcon}" Command="{Binding EditConfigurationsCmd}" DockPanel.Dock="Right" ToolTip="Show Configuration Manager" />
-                <ComboBox ItemsSource="{Binding Configurations.All}" SelectedValue="{Binding ActiveConfiguration}" />
+                <ComboBox ItemsSource="{Binding Configurations.All}" SelectedValue="{Binding ActiveConfiguration}" ToolTip="Current Configuration" />
             </DockPanel>
 
             <DockPanel>
-                <Button Content="{StaticResource _TestIcon}" Command="{Binding TestAllCmd}" IsEnabled="{Binding CanBuild}" ToolTip="Test" />
-                <Button Content="{StaticResource _BuildIcon}" Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}" >
-                    <Button.ToolTip>
-                        <TextBlock>
-                            <Run Text="Build to:" />
-                            <Run Text="{Binding TargetDirectory, Mode=OneWay}" />
-                        </TextBlock>
+                <Button Content="{StaticResource _OutboxTray}" Command="{Binding ShowSourceDirectoryCmd}">
+                    <Button.ToolTip>                            
+                        <TextBlock Text="{Binding SourceDirectory,StringFormat={}Open Source Directory: {0}}" />
                     </Button.ToolTip>
                 </Button>
 
-                
+                <Button Content="{StaticResource _TestIcon}" Command="{Binding TestAllCmd}" IsEnabled="{Binding CanBuild}">
+                    <Button.ToolTip>
+                        <StackPanel>
+                            <TextBlock Text="{Binding ActiveConfiguration,StringFormat={}Test {0}}" />
+                            <TextBlock Text="{Binding SourceDirectory,StringFormat={}Source Directory: {0}}" />                            
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
+                <Button Content="{StaticResource _BuildIcon}" Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}">
+                    <Button.ToolTip>
+                        <StackPanel>
+                            <TextBlock Text="{Binding ActiveConfiguration,StringFormat={}Build {0}}" />
+                            <TextBlock Text="{Binding SourceDirectory,StringFormat={}Source Directory: {0}}" />
+                            <TextBlock Text="{Binding TargetDirectory,StringFormat={}Target Directory: {0}}" />
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
+
+                <Button Content="{StaticResource _InboxTray}" Command="{Binding ShowTargetDirectoryCmd}" >
+                    <Button.ToolTip>
+                        <TextBlock Text="{Binding TargetDirectory,StringFormat={}Open Target Directory: {0}}" />
+                    </Button.ToolTip>
+                </Button>
             </DockPanel>
             
 

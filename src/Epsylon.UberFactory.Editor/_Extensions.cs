@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Epsylon.UberFactory
 {
-    internal static class _Extensions
+    internal static class _PrivateExtensions
     {
         #region string
 
@@ -37,6 +37,21 @@ namespace Epsylon.UberFactory
         public static String Wrap(this string text, string wrapper) { return wrapper + text + wrapper; }
 
         public static String Wrap(this string text, char wrapper) { return wrapper + text + wrapper; }        
+
+        public static void TryOpenContainingFolder(this PathString path)
+        {
+            try
+            {
+                if (path.IsValidFilePath && path.FileExists)
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{path.ToString()}\"");
+                    return;
+                }
+
+                if (path.IsValidDirectoryPath && path.DirectoryExists) System.Diagnostics.Process.Start(path);
+            }
+            catch { }
+        }
 
         #endregion        
 
@@ -250,10 +265,7 @@ namespace Epsylon.UberFactory
 
             return attributes.OfType<AssemblyMetadataAttribute>().FirstOrDefault(item => item.Key == key)?.Value;
         }
-
-
         
-
         public static bool IsLoaded(this System.Diagnostics.FileVersionInfo fvinfo)
         {
             return AppDomain
@@ -263,6 +275,5 @@ namespace Epsylon.UberFactory
         }
 
         #endregion        
-
     }
 }

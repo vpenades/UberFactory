@@ -115,6 +115,9 @@ namespace Epsylon.UberFactory
 
                 BuildAllCmd = new RelayCommand(Build);
                 TestAllCmd = new RelayCommand(Test);
+
+                ShowSourceDirectoryCmd = new RelayCommand(() => new PathString(this.SourceDirectory).TryOpenContainingFolder());
+                ShowTargetDirectoryCmd = new RelayCommand(() => new PathString(this.TargetDirectory).TryOpenContainingFolder());
             }
 
             #endregion
@@ -134,6 +137,10 @@ namespace Epsylon.UberFactory
             public ICommand BuildAllCmd { get; private set; }
 
             public ICommand TestAllCmd { get; private set; }
+
+            public ICommand ShowSourceDirectoryCmd { get; private set; }
+
+            public ICommand ShowTargetDirectoryCmd { get; private set; }
 
             #endregion
 

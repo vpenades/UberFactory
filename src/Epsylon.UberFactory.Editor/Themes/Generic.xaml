@@ -13,7 +13,7 @@
     <sys:String x:Key="_ResetIcon">❌</sys:String> <!-- ⭕ ⬜ 🔲 🔳 ⚪ ⚫ ❎⛝ -->
     <sys:String x:Key="_EmptyIcon">🔲</sys:String>    
     <sys:String x:Key="_InspectIcon">🔎</sys:String>
-    <sys:String x:Key="_FolderIcon">📂</sys:String>
+    <sys:String x:Key="_FolderIcon">📁</sys:String>
     <sys:String x:Key="_EditIcon">✎</sys:String>
     <sys:String x:Key="_NewIcon">✨</sys:String> <!-- ✳✴❇🆕-->
     <sys:String x:Key="_OpenIcon">📂</sys:String>
@@ -24,6 +24,11 @@
     <sys:String x:Key="_TestIcon">▷</sys:String>
     <sys:String x:Key="_BuildIcon">▶</sys:String>
     <sys:String x:Key="_AboutIcon">❓</sys:String>
+    <sys:String x:Key="_BooksIcon">📚</sys:String>
+    <sys:String x:Key="_PackageIcon">📦</sys:String>
+    <sys:String x:Key="_OutboxTray">📤</sys:String>
+    <sys:String x:Key="_InboxTray">📥</sys:String>
+    
 
 
 

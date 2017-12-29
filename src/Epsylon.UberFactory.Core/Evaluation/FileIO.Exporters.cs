@@ -9,8 +9,9 @@ namespace Epsylon.UberFactory.Evaluation
     {
         #region lifecycle        
 
-        protected _ExportContextBase(PathString path, IFileTracker tc)
+        protected _ExportContextBase(PathString targetPath, IFileTracker tc)
         {
+            _TargetPath = targetPath;
             _FileTracker = tc;
         }
 

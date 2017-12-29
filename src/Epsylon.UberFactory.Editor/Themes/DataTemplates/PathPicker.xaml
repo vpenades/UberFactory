@@ -7,10 +7,12 @@
              mc:Ignorable="d">
     
     <DockPanel>
-        <Button DockPanel.Dock="Right" Content="{StaticResource _FolderIcon}" Click="_OnClick_PickFile" />
+        <Button DockPanel.Dock="Right" Content="{StaticResource _InspectIcon}" Click="_OnClick_InspectFile" ToolTip="Open Containing Folder..." />
+        <Button DockPanel.Dock="Right" Content="{StaticResource _FolderIcon}" Click="_OnClick_PickFile" ToolTip="Browse File..." />
         <TextBox Text="{Binding Value,Mode=OneWay}" IsReadOnly="True"
                          Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
-                         ToolTip="{Binding AbsolutePathValue,Mode=OneWay}"
+                         BorderThickness="0,0,0,2" VerticalAlignment="Center"
+                         ToolTip="{Binding AbsolutePathValue,Mode=OneWay}"                         
                          />
     </DockPanel>
 </UserControl>
