@@ -339,11 +339,9 @@ namespace Epsylon.UberFactory
 
             _CheckAction = check;
             _InsertAction = insert;
-            _RemoveAction = remove;
-
-            //TODO: select target file http://stackoverflow.com/questions/334630/opening-a-folder-in-explorer-and-selecting-a-file
-            var dir = System.IO.Path.GetDirectoryName(_AssemblyInfo.FileName);
-            ShowContainingFolderCmd = new RelayCommand(() => System.Diagnostics.Process.Start(dir));
+            _RemoveAction = remove;            
+            
+            ShowContainingFolderCmd = new RelayCommand(() => _AssemblyInfo.Location().TryOpenContainingFolder() );
         }
 
         public ICommand ShowContainingFolderCmd { get; private set; }

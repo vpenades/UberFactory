@@ -59,7 +59,8 @@ namespace Epsylon.UberFactory
         public static string GetDisplayName(Object o)
         {
             if (o == null) return null;
-            if (o is Task) return ProjectDOM.GetDisplayName(((Task)o).Source);
+            if (o is Task task) return ProjectDOM.GetDisplayName(task.Source);
+            if (o is SettingsView settings) return ProjectDOM.GetDisplayName(settings.Source);
 
             throw new NotSupportedException();
         }
@@ -108,10 +109,11 @@ namespace Epsylon.UberFactory
 
                 SaveCmd = new RelayCommand(Save);
                 AddTaskCmd = new RelayCommand(_AddNewTask);                
+
                 EditPluginsCmd = new RelayCommand(_EditPlugin);
                 EditConfigurationsCmd = new RelayCommand(_EditConfigurations);               
 
-                DeleteActiveDocumentCmd = new RelayCommand<BindableBase>(_DeleteItem);
+                DeleteActiveDocumentCmd = new RelayCommand<BindableBase>(_DeleteTask);
 
                 BuildAllCmd = new RelayCommand(Build);
                 TestAllCmd = new RelayCommand(Test);
@@ -233,7 +235,16 @@ namespace Epsylon.UberFactory
             public BindableBase ActiveDocument
             {
                 get { return _ActiveItemView; }
-                set { if (value == _ActiveItemView) return; _ActiveItemView = value;RaiseChanged(nameof(ActiveDocument)); }
+                set { if (value == _ActiveItemView) return; _ActiveItemView = value;RaiseChanged(nameof(ActiveDocument),nameof(ActiveDocumentCanBeRemoved)); }
+            }
+
+            public bool ActiveDocumentCanBeRemoved
+            {
+                get
+                {
+                    if (ActiveDocument is Task task) return _Source.Items.Contains(task.Source);
+                    return false;
+                }
             }
 
             public IEnumerable<PathString> AbsoluteFilePaths => _Source.References.Select(item => _DocumentPath.DirectoryPath.MakeAbsolutePath(item));
@@ -249,6 +260,8 @@ namespace Epsylon.UberFactory
                     return true;
                 }
             }
+
+            
 
             #endregion
 
@@ -294,8 +307,10 @@ namespace Epsylon.UberFactory
 
                 _ProjectState.Clear();
 
-                RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks), nameof(SharedSettings), nameof(IsRootConfiguration),nameof(CanAddItems),nameof(CanBuild));
+                
                 ActiveDocument = null; // we must flush active document because it might be in the wrong configuration                
+
+                RaiseChanged(nameof(ActiveConfiguration), nameof(Tasks), nameof(SharedSettings), nameof(IsRootConfiguration), nameof(CanAddItems), nameof(CanBuild));
             }
 
             private void _EditPlugin()
@@ -333,20 +348,24 @@ namespace Epsylon.UberFactory
                 }
 
                 if (ActiveConfiguration == null) ActiveConfiguration = this.Configurations.RootConfiguration;
+
                 RaiseChanged(nameof(CanBuild),nameof(CanAddItems));
             }
 
-            private void _DeleteItem(BindableBase item)
+            private void _DeleteTask(BindableBase item)
             {
-                if (item == null) return;                
+                if (item is Task task)
+                {
+                    if (!_Dialogs.QueryDeletePermanentlyWarningDialog(GetDisplayName(task))) return;
 
-                if (!_Dialogs.QueryDeletePermanentlyWarningDialog( GetDisplayName(item) )) return;
+                    _Source.RemoveItem(task.Source);
 
-                if (item is Task) { _Source.RemoveItem(((Task)item).Source); RaiseChanged(nameof(Tasks), nameof(IsDirty)); }                
+                    RaiseChanged(nameof(Tasks), nameof(IsDirty));
 
-                if (ActiveDocument == item) ActiveDocument = null;
+                    if (ActiveDocument == item) ActiveDocument = null;
 
-                RaiseChanged(nameof(CanBuild));
+                    RaiseChanged(nameof(CanBuild));
+                }
             }
 
             private void _AddNewTask()
@@ -355,7 +374,9 @@ namespace Epsylon.UberFactory
 
                 _Source.AddTask().Title = "New Task " + Tasks.Count();
 
-                RaiseChanged(nameof(Tasks), nameof(IsDirty), nameof(CanBuild));
+                RaiseChanged(nameof(Tasks), nameof(IsDirty));
+
+                RaiseChanged(nameof(CanBuild));
             }            
 
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }

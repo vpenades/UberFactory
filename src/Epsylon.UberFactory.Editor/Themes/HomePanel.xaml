@@ -6,7 +6,7 @@
              xmlns:data="clr-namespace:Epsylon.UberFactory"
              xmlns:local="clr-namespace:Epsylon.UberFactory.Themes"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" Background="LightBlue">
+             d:DesignHeight="300" d:DesignWidth="300" Background="LightBlue">    
     
     <DockPanel>
 
@@ -52,14 +52,16 @@
                             <DataTemplate>
                                 <Button Style="{StaticResource ClearButtonStyle}" Command="{Binding ElementName=myRecentFiles,Path=DataContext.Application.OpenKnownDocumentCmd}" CommandParameter="{Binding}" >
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Left" Text="‍🏭" />
-                                        <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                                        <TextBlock DockPanel.Dock="Left" Text="‍🏭 " VerticalAlignment="Center" />
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Converter={StaticResource asFilePath},ConverterParameter={x:Static local:FilePathConverter+PathPart.Name} }" FontWeight="Bold" />
+                                            <TextBlock Text="{Binding Converter={StaticResource asFilePath},ConverterParameter={x:Static local:FilePathConverter+PathPart.Directory} }" />
+                                        </StackPanel>                                        
                                     </DockPanel>
                                 </Button>
 
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
-
 
                     </ItemsControl>
 

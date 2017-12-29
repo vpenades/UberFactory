@@ -274,6 +274,8 @@ namespace Epsylon.UberFactory
                     .Any(a => string.Equals(a.Location, fvinfo.FileName, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        public static PathString Location(this System.Diagnostics.FileVersionInfo fvinfo) { return new PathString(fvinfo.FileName); }
+
         #endregion        
     }
 }

@@ -24,16 +24,16 @@ namespace Epsylon.UberFactory
             MaxNumberOfFiles = 9;
         }
 
-        public static void UseRegistryPersister()           { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister()); }
-        public static void UseRegistryPersister(string key) { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister(key)); }
+        public static void UseRegistryPersister()           { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister()); RemoveMissing(_Persister); }
+        public static void UseRegistryPersister(string key) { _Persister = new _JumpListPersister(new RecentFilesManager._RegistryPersister(key)); RemoveMissing(_Persister); }
 
-        public static void UseXmlPersister()                { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister()); }
-        public static void UseXmlPersister(string filepath) { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(filepath)); }
-        public static void UseXmlPersister(Stream stream)   { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(stream)); }
+        public static void UseXmlPersister()                { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister()); RemoveMissing(_Persister); }
+        public static void UseXmlPersister(string filepath) { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(filepath)); RemoveMissing(_Persister); }
+        public static void UseXmlPersister(Stream stream)   { _Persister = new _JumpListPersister(new RecentFilesManager._XmlPersister(stream)); RemoveMissing(_Persister); }
 
         #endregion
 
-        #region types
+        #region persisters
 
         public interface IPersist
         {
@@ -102,7 +102,7 @@ namespace Epsylon.UberFactory
                 var k = Registry.CurrentUser.OpenSubKey(RegistryKey);
                 if (k == null) k = Registry.CurrentUser.CreateSubKey(RegistryKey);
 
-                var list = new List<string>(max);
+                var list = new List<string>();
 
                 for (int i = 0; i < max; i++)
                 {
@@ -281,7 +281,7 @@ namespace Epsylon.UberFactory
 
             private IEnumerable<string> Load(int max)
             {
-                var list = new List<string>(max);
+                var list = new List<string>();
 
                 using (var ms = new MemoryStream())
                 {
@@ -462,7 +462,21 @@ namespace Epsylon.UberFactory
 
         #endregion
 
-        #region API        
+        #region API
+
+        private static void RemoveMissing(IPersist persister)
+        {
+            if (persister == null) return;
+
+            var files = persister.RecentFiles(int.MaxValue).ToArray();
+
+            foreach(var f in files)
+            {
+                if (System.IO.File.Exists(f)) continue;
+
+                persister.RemoveFile(f, int.MaxValue);
+            }
+        }
 
         public static void RemoveFile(string filepath)
         {

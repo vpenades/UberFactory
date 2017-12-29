@@ -30,6 +30,9 @@
                 <Separator />
                 <MenuItem Icon="{StaticResource _TestIcon}" Header="Test All..." Command="{Binding TestAllCmd}" IsEnabled="{Binding CanBuild}"/>
                 <MenuItem Icon="{StaticResource _BuildIcon}" Header="Build All..." Command="{Binding BuildAllCmd}" IsEnabled="{Binding CanBuild}"/>
+                <Separator />
+                <MenuItem Icon="{StaticResource _OutboxTray}" Header="Open Source Folder..." Command="{Binding ShowSourceDirectoryCmd}" />
+                <MenuItem Icon="{StaticResource _InboxTray}" Header="Open Target Folder..." Command="{Binding ShowTargetDirectoryCmd}" />
             </MenuItem>            
 
             <MenuItem Header="Help">
@@ -37,7 +40,7 @@
             </MenuItem>
         </Menu>        
 
-        <StatusBar DockPanel.Dock="Top">
+        <StatusBar DockPanel.Dock="Top">            
 
             <Button Content="{StaticResource _NewIcon}" Command="{Binding Application.NewDocumentCmd}" ToolTip="New Project" />
 
@@ -50,7 +53,7 @@
             <DockPanel>
                 <Button Content="{StaticResource _ConfigurationsIcon}" Command="{Binding EditConfigurationsCmd}" DockPanel.Dock="Right" ToolTip="Show Configuration Manager" />
                 <ComboBox ItemsSource="{Binding Configurations.All}" SelectedValue="{Binding ActiveConfiguration}" ToolTip="Current Configuration" />
-            </DockPanel>
+            </DockPanel>            
 
             <DockPanel>
                 <Button Content="{StaticResource _OutboxTray}" Command="{Binding ShowSourceDirectoryCmd}">
@@ -108,6 +111,12 @@
                 <TabControl>
 
                     <TabItem Header="Tasks">
+                        <DockPanel>
+                            <StatusBar DockPanel.Dock="Bottom">
+                                <Button Content="{StaticResource _AddIcon}" ToolTip="Add Task" Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />
+                                <Button Content="{StaticResource _TrashIcon}" ToolTip="Remove Selected Task" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ActiveDocumentCanBeRemoved}" />
+                            </StatusBar>
+                            
                         <DataGrid x:Name="myTasks"
                                   ItemsSource="{Binding Tasks}"
                                   AutoGenerateColumns="False"
@@ -156,6 +165,9 @@
                             </DataGrid.Columns>
 
                         </DataGrid>
+
+                        </DockPanel>
+
                     </TabItem>
 
                     <TabItem Header="Settings">

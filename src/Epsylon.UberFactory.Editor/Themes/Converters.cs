@@ -122,4 +122,29 @@ namespace Epsylon.UberFactory.Themes
         }
     }
 
+    public sealed class FilePathConverter : IValueConverter
+    {
+        public enum PathPart { FullPath, Directory, FileName, Name, Extension }
+
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string path && parameter is PathPart arg)
+            {
+                if (arg == PathPart.FullPath) return System.IO.Path.GetFullPath(path);
+                if (arg == PathPart.Directory) return System.IO.Path.GetDirectoryName(path);
+                if (arg == PathPart.FileName) return System.IO.Path.GetFileName(path);
+                if (arg == PathPart.Name) return System.IO.Path.GetFileNameWithoutExtension(path);
+                if (arg == PathPart.Extension) return System.IO.Path.GetExtension(path);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

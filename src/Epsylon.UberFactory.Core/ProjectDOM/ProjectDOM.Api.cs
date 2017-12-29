@@ -12,10 +12,11 @@ namespace Epsylon.UberFactory
         public static string GetDisplayName(Object o)
         {
             if (o == null) return null;
-            if (o is Configuration) return ((Configuration)o).ConfigurationFullName;
-            if (o is Node) return ((Node)o).ClassIdentifier;
-            if (o is Task) return ((Task)o).Title;            
-            if (o is PluginReference) return ((PluginReference)o).AssemblyPath;
+            if (o is Configuration cfg) return cfg.ConfigurationFullName;
+            if (o is Node node) return node.ClassIdentifier;
+            if (o is Task task) return task.Title;
+            if (o is Settings settings) return settings.ClassName;
+            if (o is PluginReference plugref) return plugref.AssemblyPath;
 
             throw new NotSupportedException();
         }

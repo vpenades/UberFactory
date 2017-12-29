@@ -5,6 +5,7 @@
 
 
     <BooleanToVisibilityConverter x:Key="asVisible" />
+    <local:FilePathConverter x:Key="asFilePath" />
 
     <!-- http://xahlee.info/comp/unicode_crosses.html -->
     
@@ -28,6 +29,7 @@
     <sys:String x:Key="_PackageIcon">📦</sys:String>
     <sys:String x:Key="_OutboxTray">📤</sys:String>
     <sys:String x:Key="_InboxTray">📥</sys:String>
+    <sys:String x:Key="_TrashIcon">🗑</sys:String>
     
 
 
