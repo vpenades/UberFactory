@@ -16,6 +16,15 @@ namespace Epsylon.UberPlugin
     using IMAGEENCODER = KeyValuePair<string, Action<UberFactory.SDK.ExportContext, IMAGE32>>;
     using IMAGE32DC = IImageProcessingContext<Rgba32>;
 
+    public abstract class ImageFilter : SDK.ContentFilter<IMAGE32>
+    {
+        protected override object EvaluatePreview(SDK.PreviewContext context)
+        {
+            return Evaluate().CreatePreview(context);
+        }
+    }
+    
+
     [SDK.ContentNode("ImageReader")]
     [SDK.Title("File")]
     [SDK.TitleFormat( "{0} File")]

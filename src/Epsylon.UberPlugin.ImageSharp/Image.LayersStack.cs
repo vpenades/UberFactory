@@ -76,7 +76,7 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("LayersStack")]
     [SDK.Title("Layers")]
     [SDK.TitleFormat("{0} Layers")]
-    public sealed class LayersStack : SDK.ContentFilter<IMAGE32>
+    public sealed class LayersStack : ImageFilter
     {        
         [SDK.InputValue("Width")]
         [SDK.Title("Width"), SDK.Group("Image Size")]

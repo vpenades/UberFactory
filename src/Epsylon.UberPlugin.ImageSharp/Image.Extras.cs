@@ -17,7 +17,7 @@ namespace Epsylon.UberPlugin
 
     [SDK.ContentNode("CreateNoise")]
     [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
-    public sealed class ImageSharpCreateNoise : SDK.ContentFilter<IMAGE32>
+    public sealed class ImageSharpCreateNoise : ImageFilter
     {
         [SDK.InputValue("Width")]        
         [SDK.Title("W"), SDK.Group("Size")]
@@ -52,14 +52,11 @@ namespace Epsylon.UberPlugin
 
             return _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);            
         }
-
-        protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
-
     }
 
     [SDK.ContentNode("CreateText")]
     [SDK.Title("Text"),SDK.TitleFormat( "{0} Text")]
-    public sealed class ImageSharpCreateText : SDK.ContentFilter<IMAGE32>
+    public sealed class ImageSharpCreateText : ImageFilter
     {
         [SDK.InputNode("Text")]
         public String Text { get; set; }
@@ -91,9 +88,7 @@ namespace Epsylon.UberPlugin
             if (txt == null) txt = String.Empty;
 
             return FontFamily.RenderText(txt, Size, Padding, new PIXEL32(Color), options);
-        }
-
-        protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
+        }        
     }
 
     [SDK.ContentNode("SixLaborsSystemFont")]

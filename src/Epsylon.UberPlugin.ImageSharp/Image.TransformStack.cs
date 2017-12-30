@@ -16,13 +16,15 @@ namespace Epsylon.UberPlugin
     using IMAGE32DC = IImageProcessingContext<Rgba32>;
     using IMGTRANSFORM = Action<IImageProcessingContext<Rgba32>>;
 
+
     using SIZE = SixLabors.Primitives.Size;
     using POINT = SixLabors.Primitives.Point;
+    using RECT = SixLabors.Primitives.Rectangle;
 
 
     [SDK.ContentNode("TransformStack")]
     [SDK.Title("Transforms"), SDK.TitleFormat("{0} Transforms")]
-    public sealed class TransformStack : SDK.ContentFilter<IMAGE32>
+    public sealed class TransformStack : ImageFilter
     {
         [SDK.InputNode("Source")]
         [SDK.Title("Source Image")]
@@ -48,9 +50,7 @@ namespace Epsylon.UberPlugin
             {
                 xform?.Invoke(dc);
             }
-        }
-
-        protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
+        }        
     }
 
 
@@ -60,7 +60,9 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Enabled")]
         [SDK.Title("Enabled")]
         [SDK.Default(true)]
-        public Boolean Enabled { get; set; }        
+        public Boolean Enabled { get; set; }
+
+        protected override object EvaluatePreview(SDK.PreviewContext previewContext) { return null; }
 
         protected override IMGTRANSFORM Evaluate()
         {
@@ -85,18 +87,18 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
-            return dc => dc.Glow(this.Radius);            
+            return dc => dc.Glow(this.Radius);
         }
-    }
+    }    
 
     
-
-    public enum BlurMode { Box,Gaussian }
 
     [SDK.ContentNode("BlurTransform")]
     [SDK.Title("Blur"), SDK.TitleFormat("{0} Blurred")]
     public sealed class ImageBlurTransform : BaseImageTransform
     {
+        public enum BlurMode { Box, Gaussian }
+
         [SDK.InputValue("Mode")]
         [SDK.Title("Mode")]
         [SDK.Default(BlurMode.Gaussian)]
@@ -110,7 +112,7 @@ namespace Epsylon.UberPlugin
         protected override IMGTRANSFORM TransformImage()
         {
             if (Mode == BlurMode.Gaussian) return dc => dc.GaussianBlur(this.Radius);
-            if (Mode == BlurMode.Box) return dc => dc.BoxBlur((int)Radius);
+            if (Mode == BlurMode.Box) return dc => dc.BoxBlur((int)Radius);            
 
             throw new NotSupportedException(Mode.ToString());
         }        
@@ -153,7 +155,6 @@ namespace Epsylon.UberPlugin
             if (Effect == OldPhotoEffect.Kodachrome) return dc => dc.Kodachrome();
             if (Effect == OldPhotoEffect.Polaroid) return dc => dc.Polaroid();
             if (Effect == OldPhotoEffect.Sepia) return dc => dc.Sepia();
-
             throw new NotSupportedException(Effect.ToString());
         }
     }
@@ -185,30 +186,17 @@ namespace Epsylon.UberPlugin
         }
     }
 
-
-
-
-    
-
-    [SDK.ContentNode("ResizeTransform")]
-    [SDK.Title("Resize"), SDK.TitleFormat("{0} Resized")]
-    public sealed class ImageResizeTransform : BaseImageTransform
+    [SDK.ContentNode("CropTransform")]
+    [SDK.Title("Crop"), SDK.TitleFormat("{0} Crop")]
+    public sealed class ImageCropTransform : BaseImageTransform
     {
-        [SDK.InputValue("ResizeMode")]        
-        [SDK.Title("Mode"), SDK.Group("Resize")]
-        public SixLabors.ImageSharp.Processing.ResizeMode Mode { get; set; }
+        [SDK.InputValue("OriginX")]
+        [SDK.Title("X"), SDK.Group("Origin")]
+        public int OriginX { get; set; }
 
-        [SDK.InputValue("AnchorPosition")]
-        [SDK.Title("Anchor"), SDK.Group("Resize")]
-        public SixLabors.ImageSharp.Processing.AnchorPosition Position { get; set; }
-
-        [SDK.InputValue("CenterX")]
-        [SDK.Title("X"), SDK.Group("Center")]
-        public float CenterX { get; set; }
-
-        [SDK.InputValue("Center")]
-        [SDK.Title("Y"), SDK.Group("Center")]
-        public float CenterY { get; set; }
+        [SDK.InputValue("OriginY")]
+        [SDK.Title("Y"), SDK.Group("Origin")]
+        public int OriginY { get; set; }
 
         [SDK.InputValue("Width")]
         [SDK.Title("W"), SDK.Group("Size")]
@@ -222,24 +210,39 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
-            // support
-            // img.EntropyCrop            
+            var rect = new RECT(OriginX, OriginY, Width, Height);
+            return dc => dc.Crop(rect);
+        }
+    }
 
-            var options = new SixLabors.ImageSharp.Processing.ResizeOptions()
-            {
-                Mode = this.Mode,
-                Position = this.Position,
-                CenterCoordinates = new float[] { CenterX, CenterY },
-                Size = new SIZE(Width, Height)
-            };
+    
 
-            return  dc => dc.Resize(options);
+    [SDK.ContentNode("ResizeTransform")]
+    [SDK.Title("Resize"), SDK.TitleFormat("{0} Resized")]
+    public sealed class ImageResizeTransform : BaseImageTransform
+    {
+        [SDK.InputValue("Width")]
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Width { get; set; }
+
+        [SDK.InputValue("Height")]
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Height { get; set; }
+
+        [SDK.InputValue("Resampler")]
+        [SDK.Title("Mode"), SDK.Group("Size")]
+        [SDK.Default(Resampler.Bicubic)]
+        public Resampler Resampler { get; set; }
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => dc.Resize(Width, Height, Resampler.GetInstance());
         }
                
     }
-
-
-    
+           
 
     [SDK.ContentNode("SpecialEffectsTransform")]
     [SDK.Title("Photoshop Effects"), SDK.TitleFormat("{0} Effects")]
@@ -340,12 +343,5 @@ namespace Epsylon.UberPlugin
         }
 
     }
-
-
-
-
-
-
-
-
+    
 }

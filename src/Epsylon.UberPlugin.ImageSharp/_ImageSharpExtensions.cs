@@ -14,10 +14,48 @@ namespace Epsylon.UberPlugin
     using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
     using SKIAIMAGE = SkiaSharp.SKBitmap;
-    
+
+    public enum Resampler
+    {
+        NearestNeighbor,
+        Box, Triangle, Bicubic,
+        Spline,
+        CatmullRom,
+        Hermite,
+        Robidoux, RobidouxSharp,
+        Welch,
+        Lanczos2, Lanczos3, Lanczos5, Lanczos8,
+        MitchellNetravali,
+    }
 
     static class _ImageSharpExtensions
     {
+        public static SixLabors.ImageSharp.Processing.IResampler GetInstance(this Resampler mode)
+        {
+            if (mode == Resampler.NearestNeighbor) return new SixLabors.ImageSharp.Processing.NearestNeighborResampler();
+
+            if (mode == Resampler.Box) return new SixLabors.ImageSharp.Processing.BoxResampler();
+            if (mode == Resampler.Triangle) return new SixLabors.ImageSharp.Processing.TriangleResampler();
+            if (mode == Resampler.Bicubic) return new SixLabors.ImageSharp.Processing.BicubicResampler();
+
+            if (mode == Resampler.Spline) return new SixLabors.ImageSharp.Processing.SplineResampler();
+            if (mode == Resampler.CatmullRom) return new SixLabors.ImageSharp.Processing.CatmullRomResampler();
+            if (mode == Resampler.Hermite) return new SixLabors.ImageSharp.Processing.HermiteResampler();
+
+            if (mode == Resampler.Robidoux) return new SixLabors.ImageSharp.Processing.RobidouxResampler();
+            if (mode == Resampler.RobidouxSharp) return new SixLabors.ImageSharp.Processing.RobidouxSharpResampler();
+            if (mode == Resampler.Welch) return new SixLabors.ImageSharp.Processing.WelchResampler();
+
+            if (mode == Resampler.Lanczos2) return new SixLabors.ImageSharp.Processing.Lanczos2Resampler();
+            if (mode == Resampler.Lanczos3) return new SixLabors.ImageSharp.Processing.Lanczos3Resampler();            
+            if (mode == Resampler.Lanczos5) return new SixLabors.ImageSharp.Processing.Lanczos5Resampler();
+            if (mode == Resampler.Lanczos8) return new SixLabors.ImageSharp.Processing.Lanczos8Resampler();
+
+            if (mode == Resampler.MitchellNetravali) return new SixLabors.ImageSharp.Processing.MitchellNetravaliResampler();
+
+            throw new NotImplementedException();
+        }
+
         public static String GetPickFileFilter(this IEnumerable<SixLabors.ImageSharp.Formats.IImageFormat> formats)
         {
             var extensions = SixLabors.ImageSharp.Configuration.Default.ImageFormats
