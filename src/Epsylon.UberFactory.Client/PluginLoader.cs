@@ -38,7 +38,7 @@ namespace Epsylon.UberFactory.Client
 
     public static class PluginLoader
     {
-        public static Evaluation.IPluginLoader Instance { get { return _PluginsFactoryWithResolver.Default; } }        
+        public static Evaluation.IPluginLoader Instance => _PluginsFactoryWithResolver.Default;
     }    
 
 
@@ -136,7 +136,15 @@ namespace Epsylon.UberFactory.Client
 
                 _Plugins.Add(a);
             }
-            catch {  }
+            catch(Exception ex)
+            {
+                // Net.Standard projects by default don't copy assemblies to the BIN folder.
+                // To Copy assemblies locally, add this property to the project; <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+                // https://github.com/dotnet/sdk/issues/933
+
+                // https://github.com/dotnet/sdk/issues/598
+                // https://github.com/dotnet/sdk/issues/747
+            }
         }       
 
         private Assembly _AssemblyResolve(AssemblyName aname)
