@@ -204,7 +204,8 @@ namespace Epsylon.UberFactory.Evaluation
             if (nodeProps == null) return null;
 
             // Assign values and node dependencies. Dependecies are evaluated to its values.
-            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(logger, xid, previewMode));
+            // NOTE: even in preview mode, dependent nodes are evaluated normally
+            nodeInst.EvaluateBindings(nodeProps, xid => _EvaluateNode(logger, xid, false));
 
             CheckCancellation();
 
