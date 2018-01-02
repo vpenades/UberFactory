@@ -21,26 +21,26 @@ namespace Epsylon.UberFactory.Client
             var prjPath = new PathString(args.Where(item => !item.StartsWith("-")).First());
             prjPath = prjPath.AsAbsolute();
 
-            var outDir = new PathString(_GetCommandArgument(args, "-OUT:", "bin")).AsAbsolute();
-            var tmpDir = new PathString(_GetCommandArgument(args, "-TMP:", "obj")).AsAbsolute();
             var cfg = _GetCommandArgument(args, "-CFG:", "Root");
+
+            var outDir = new PathString(_GetCommandArgument(args, "-OUT:", $"bin\\{cfg}")).AsAbsolute();
+            var tmpDir = new PathString(_GetCommandArgument(args, "-TMP:", $"obj\\{cfg}")).AsAbsolute();            
 
             // in simulate mode, we should replace the ContextWriters with dummy ones
             var targetTask = args.Any(item => item.StartsWith("-SIMULATE")) ? "SIMULATE" : "BUILD";
 
-            return new CommandLineContext(targetTask, prjPath.DirectoryPath, prjPath.FileName, outDir, tmpDir, cfg);
+            return new CommandLineContext(targetTask, prjPath, outDir, tmpDir, cfg);
         }
 
-        private CommandLineContext(string buildTarget, PathString prjDir, string prjMsk, PathString outDir, PathString tmpDir, string cfg)
+        private CommandLineContext(string buildTarget, PathString inPrj, PathString outDir, PathString tmpDir, string cfg)
         {
-            System.Diagnostics.Debug.Assert(prjDir.IsAbsolute);
+            System.Diagnostics.Debug.Assert(inPrj.IsAbsolute);
             System.Diagnostics.Debug.Assert(outDir.IsAbsolute);
             System.Diagnostics.Debug.Assert(tmpDir.IsAbsolute);
 
             _TargetTask = buildTarget;
 
-            _SrcDir = prjDir;
-            _SrcMask = prjMsk;
+            _SrcPrj = inPrj;            
 
             _OutDir = outDir;
             _TmpDir = tmpDir;
@@ -67,8 +67,7 @@ namespace Epsylon.UberFactory.Client
 
         private readonly string _TargetTask; // BUILD | SIMULATE
 
-        private readonly PathString _SrcDir;
-        private readonly string _SrcMask;   // filter, it can be: "content.UberFactory" "*.UberFactory" "content*.UberFactory" , etc
+        private readonly PathString _SrcPrj;        
         
         private readonly PathString _OutDir;
         private readonly PathString _TmpDir;        
@@ -112,43 +111,36 @@ namespace Epsylon.UberFactory.Client
             {
                 var monitor = Evaluation.MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
                 
-                context.Build(_LoadPluginsFunc, monitor, context._TmpDir);
-
-                context.CommitBuildResults(context._TmpDir, context._OutDir);
+                context.Build(_LoadPluginsFunc, monitor, context._TmpDir);                
             }
         }
 
         public void Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor, PathString buildTarget)
         {
-            _CancelRequested = false;
+            _CancelRequested = false;            
+            
+            var state = new Evaluation.PipelineClientState.Manager();
 
-            var bbbccc = new List<Evaluation.BuildContext>();
+            var prjFilePath = _SrcPrj;
 
-            foreach (var filePath in System.IO.Directory.GetFiles(_SrcDir, _SrcMask))
-            {
-                var state = new Evaluation.PipelineClientState.Manager();
+            prjFilePath = prjFilePath.AsAbsolute();
+            var dstDirPath = buildTarget.AsAbsolute();
 
-                var prjFilePath = new PathString(filePath);
+            // load project
+            var document = ProjectDOM.LoadProjectFrom(prjFilePath);
 
-                prjFilePath = prjFilePath.AsAbsolute();
-                var dstDirPath = buildTarget.AsAbsolute();
+            // load plugins
+            var prjDir = prjFilePath.DirectoryPath;
+            var plugins = evalPlugins(document, prjDir);
 
-                // load project
-                var document = ProjectDOM.LoadProjectFrom(prjFilePath);
+            // create build context
 
-                // load plugins
-                var prjDir = prjFilePath.DirectoryPath;
-                var plugins = evalPlugins(document, prjDir);
+            var buildSettings = Evaluation.BuildContext.Create(_Configuration, prjDir, dstDirPath, _TargetTask == "SIMULATE");                
 
-                // create build context
+            // do build
+            ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor, state);            
 
-                var buildSettings = Evaluation.BuildContext.Create(_Configuration, prjDir, dstDirPath, _TargetTask == "SIMULATE");                
-
-                // do build
-                ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor, state);
-
-                bbbccc.Add(buildSettings);
-            }            
+            CommitBuildResults(_TmpDir, _OutDir);
         }
 
         private void CommitBuildResults(PathString src, PathString dst)
@@ -157,7 +149,7 @@ namespace Epsylon.UberFactory.Client
 
             foreach(var f in System.IO.Directory.EnumerateFiles(src))
             {
-                var fsrc = new PathString(System.IO.Path.GetFileName(f));
+                var fsrc = new PathString(f);
 
                 var fdst = dst.WithFileName(fsrc.FileName);
 
@@ -165,7 +157,7 @@ namespace Epsylon.UberFactory.Client
 
                 foreach(var d in System.IO.Directory.EnumerateDirectories(src))
                 {
-                    var dsrc = new PathString(System.IO.Path.GetFileName(d));
+                    var dsrc = new PathString(d);
                     var ddst = dst.WithFileName(dsrc.FileName);
 
                     CommitBuildResults(dsrc, ddst);
@@ -199,7 +191,7 @@ namespace Epsylon.UberFactory.Client
             var sb = new StringBuilder();
 
             sb.AppendLine($"Task: {_TargetTask}");
-            sb.AppendLine($"Source Files: {System.IO.Path.Combine(_SrcDir,_SrcMask)}");
+            sb.AppendLine($"Source Files: {_SrcPrj}");
             sb.AppendLine($"Configuration: {_Configuration}");
             sb.AppendLine($"Temp Directory: {_TmpDir}");
             sb.AppendLine($"Output Directory: {_OutDir}");
