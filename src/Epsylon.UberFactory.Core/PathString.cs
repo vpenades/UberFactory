@@ -221,9 +221,25 @@ namespace Epsylon.UberFactory
             return new PathString(rpath);
         }
 
-        public PathString ChangeExtension(string ext)
+        [Obsolete("use WithExtension")]
+        public PathString ChangeExtension(string ext) { return this.WithExtension(ext); }
+        
+        public PathString WithExtension(string ext)
         {
+            if (!IsValidFilePath) throw new InvalidOperationException();
+            if (string.IsNullOrWhiteSpace(ext)) throw new ArgumentNullException(nameof(ext));
+
             var path = System.IO.Path.ChangeExtension(_Path, ext);
+
+            return new PathString(path);
+        }
+
+        public PathString WithFileName(string fileName)
+        {
+            if (!IsValidDirectoryPath) throw new InvalidOperationException();
+            if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentNullException(nameof(fileName));
+
+            var path = System.IO.Path.ChangeExtension(_Path, fileName);
 
             return new PathString(path);
         }

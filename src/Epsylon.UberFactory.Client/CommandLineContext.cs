@@ -21,8 +21,8 @@ namespace Epsylon.UberFactory.Client
             var prjPath = new PathString(args.Where(item => !item.StartsWith("-")).First());
             prjPath = prjPath.AsAbsolute();
 
-            var outDir = new PathString(_GetCommandArgument(args, "-OUT:", "Bin")).AsAbsolute();
-            var tmpDir = new PathString(_GetCommandArgument(args, "-TMP:", "Tmp")).AsAbsolute();
+            var outDir = new PathString(_GetCommandArgument(args, "-OUT:", "bin")).AsAbsolute();
+            var tmpDir = new PathString(_GetCommandArgument(args, "-TMP:", "obj")).AsAbsolute();
             var cfg = _GetCommandArgument(args, "-CFG:", "Root");
 
             // in simulate mode, we should replace the ContextWriters with dummy ones
@@ -112,11 +112,13 @@ namespace Epsylon.UberFactory.Client
             {
                 var monitor = Evaluation.MonitorContext.Create(context._Logger, System.Threading.CancellationToken.None, context);
                 
-                context.Build(_LoadPluginsFunc, monitor);
+                context.Build(_LoadPluginsFunc, monitor, context._TmpDir);
+
+                context.CommitBuildResults(context._TmpDir, context._OutDir);
             }
         }
 
-        public void Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor)
+        public void Build(Func<ProjectDOM.Project, PathString, Factory.Collection> evalPlugins, SDK.IMonitorContext monitor, PathString buildTarget)
         {
             _CancelRequested = false;
 
@@ -129,7 +131,7 @@ namespace Epsylon.UberFactory.Client
                 var prjFilePath = new PathString(filePath);
 
                 prjFilePath = prjFilePath.AsAbsolute();
-                var dstDirPath = _OutDir.AsAbsolute();
+                var dstDirPath = buildTarget.AsAbsolute();
 
                 // load project
                 var document = ProjectDOM.LoadProjectFrom(prjFilePath);
@@ -146,8 +148,30 @@ namespace Epsylon.UberFactory.Client
                 ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor, state);
 
                 bbbccc.Add(buildSettings);
-            }
+            }            
+        }
 
+        private void CommitBuildResults(PathString src, PathString dst)
+        {
+            System.IO.Directory.CreateDirectory(dst);
+
+            foreach(var f in System.IO.Directory.EnumerateFiles(src))
+            {
+                var fsrc = new PathString(System.IO.Path.GetFileName(f));
+
+                var fdst = dst.WithFileName(fsrc.FileName);
+
+                System.IO.File.Copy(fsrc, fdst, true);
+
+                foreach(var d in System.IO.Directory.EnumerateDirectories(src))
+                {
+                    var dsrc = new PathString(System.IO.Path.GetFileName(d));
+                    var ddst = dst.WithFileName(dsrc.FileName);
+
+                    CommitBuildResults(dsrc, ddst);
+                }
+                
+            }
             
         }
 
@@ -177,6 +201,7 @@ namespace Epsylon.UberFactory.Client
             sb.AppendLine($"Task: {_TargetTask}");
             sb.AppendLine($"Source Files: {System.IO.Path.Combine(_SrcDir,_SrcMask)}");
             sb.AppendLine($"Configuration: {_Configuration}");
+            sb.AppendLine($"Temp Directory: {_TmpDir}");
             sb.AppendLine($"Output Directory: {_OutDir}");
             sb.AppendLine($"Intermediate Directory: {_TmpDir}");            
 

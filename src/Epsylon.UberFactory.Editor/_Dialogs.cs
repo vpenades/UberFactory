@@ -68,6 +68,8 @@ namespace Epsylon.UberFactory
 
         public static PathString ShowOpenFileDialog(string fileFilter, PathString startDir)
         {
+            // TODO: if fileFilter does not match format "something|*.txt|something else|*.that"; default to "All Files|*.*"
+
             var dlg = new Microsoft.Win32.OpenFileDialog()
             {
                 RestoreDirectory = true,

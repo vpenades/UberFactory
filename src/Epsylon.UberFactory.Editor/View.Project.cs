@@ -439,6 +439,7 @@ namespace Epsylon.UberFactory
             {
                 var paths = _Source
                     .References
+                    .Where(item => !item.IsEmpty)                    
                     .Select(rp => System.IO.Path.Combine(SourceDirectory, rp))
                     .Distinct(StringComparer.InvariantCultureIgnoreCase)
                     .Select(item => new PathString(item))
