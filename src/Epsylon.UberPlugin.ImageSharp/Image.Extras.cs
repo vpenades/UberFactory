@@ -51,7 +51,7 @@ namespace Epsylon.UberPlugin
         public UInt32 Color1 { get; set; }
 
         [SDK.InputValue("Color2")]
-        [SDK.Title("Color A"), SDK.Group("Tint")]
+        [SDK.Title("Color B"), SDK.Group("Tint")]
         [SDK.Default((UInt32)0xffffffff)]
         [SDK.ViewStyle("ColorPicker")]
         public UInt32 Color2 { get; set; }
