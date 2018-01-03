@@ -14,7 +14,7 @@ namespace Epsylon.UberPlugin
 {
     using UberFactory;    
 
-    public enum NoiseTypes { Perlin, ImprovedPerlin }
+    public enum NoiseTypes { Perlin, ImprovedPerlin, PerlinTiled }
 
     [SDK.ContentNode("CreateNoise")]
     [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
@@ -54,6 +54,7 @@ namespace Epsylon.UberPlugin
 
             if (NoiseType == NoiseTypes.Perlin) noiseGen = new PerlinNoise3(256, RandomSeed);
             if (NoiseType == NoiseTypes.ImprovedPerlin) noiseGen = new ImprovedPerlinNoise(RandomSeed);
+            if (NoiseType == NoiseTypes.PerlinTiled) noiseGen = new Perlin_Tiled(256);
 
             var image = _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);
 
@@ -132,11 +133,15 @@ namespace Epsylon.UberPlugin
         [SDK.MetaDataEvaluate("Values",nameof(AvailableFontFamilies))]
         public String FontFamily { get; set; }
 
-        public String[] AvailableFontFamilies => new SixLabors.Fonts.FontCollection().Families.Select(item => item.Name).ToArray();
+        public String[] AvailableFontFamilies => SixLabors.Fonts.SystemFonts.Families.Select(item => item.Name).ToArray();
 
         protected override SixLabors.Fonts.FontFamily Evaluate()
         {
-            return new SixLabors.Fonts.FontCollection().Find(FontFamily);
+            return SixLabors.Fonts.SystemFonts.TryFind(FontFamily, out SixLabors.Fonts.FontFamily font)
+                ?
+                font
+                :
+                SixLabors.Fonts.SystemFonts.Find("Arial");
         }
 
         protected override object EvaluatePreview(SDK.PreviewContext context)

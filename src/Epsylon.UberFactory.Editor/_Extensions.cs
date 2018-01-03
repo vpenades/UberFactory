@@ -271,6 +271,7 @@ namespace Epsylon.UberFactory
             return AppDomain
                     .CurrentDomain
                     .GetAssemblies()
+                    .Where(a => !a.IsDynamic) // this is required to prevent crashes if there's a dynamically generated assebly loaded                    
                     .Any(a => string.Equals(a.Location, fvinfo.FileName, StringComparison.InvariantCultureIgnoreCase));
         }
 
