@@ -10,11 +10,11 @@
         <DockPanel ContextMenu="{StaticResource __clearValueContextMenu}">
             <Button Click="_OnClick_ShowColorPaletteDialog"
                         
-                        BorderBrush="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                        BorderBrush="{Binding HasValue,Converter={StaticResource __AsColorBrush}}"
                         
                         Content="    "
                         
-                        Background="{Binding Value,Converter={StaticResource __booleanAsColor}}"                        
+                        Background="{Binding Value,Converter={StaticResource __AsColorBrush}}"                        
                         />
         </DockPanel>
     </GroupBox>

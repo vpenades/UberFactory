@@ -9,10 +9,10 @@ using System.Windows.Data;
 namespace Epsylon.UberFactory.Themes
 {
 
-    sealed class BooleanToBrushConverter : IValueConverter
+    sealed class ConvertibleToBrushConverter : IValueConverter
     {
-        public System.Windows.Media.SolidColorBrush OddBrush { get; set; }
-        public System.Windows.Media.SolidColorBrush EvenBrush { get; set; }
+        public System.Windows.Media.SolidColorBrush FalseBrush { get; set; }
+        public System.Windows.Media.SolidColorBrush TrueBrush { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -20,22 +20,24 @@ namespace Epsylon.UberFactory.Themes
             {
                 var v = value is Boolean ? (Boolean)value : false;
 
-                return v ? EvenBrush : OddBrush;
+                return v ? TrueBrush : FalseBrush;
             }
 
-            if (value is UInt32 clr)
+            if (value is Int32 clrs) { value = (UInt32)clrs; }
+
+            if (value is UInt32 clru)
             {
-                var a = (int)(clr / (256 * 256 * 256)) & 255;
-                var r = (int)(clr / (256 * 256)) & 255;
-                var g = (int)(clr / (256)) & 255;
-                var b = (int)(clr) & 255;
+                var a = (int)(clru / (256 * 256 * 256)) & 255;
+                var b = (int)(clru / (256 * 256)) & 255;
+                var g = (int)(clru / (256)) & 255;
+                var r = (int)(clru) & 255;
 
                 var c = System.Windows.Media.Color.FromArgb((Byte)a, (Byte)r, (Byte)g, (Byte)b);
 
                 return new System.Windows.Media.SolidColorBrush(c);
-            }
+            }           
 
-            return EvenBrush;            
+            return TrueBrush;            
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

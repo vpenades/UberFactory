@@ -26,7 +26,7 @@
     
     
     
-    <themes:BooleanToBrushConverter x:Key="__booleanAsColor" OddBrush="Gray" EvenBrush="DarkSlateBlue" />
+    <themes:ConvertibleToBrushConverter x:Key="__AsColorBrush" FalseBrush="Gray" TrueBrush="DarkSlateBlue" />
     <local:PropertyBindingsSelector x:Key="_BindingsViewSelector" />
 
     <SolidColorBrush x:Key="_NodeBackgroundColor">BlanchedAlmond</SolidColorBrush>
@@ -74,7 +74,7 @@
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
             <TextBox Text="{Binding Value}" MinWidth="32"
                      TextWrapping="{Binding IsMultiLine,Converter={StaticResource __asTextWrapping}}" AcceptsReturn="{Binding IsMultiLine}" MaxLines="{Binding MaxTextLines}" MinLines="1" VerticalScrollBarVisibility="Auto"
-                     Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                     Foreground="{Binding HasValue,Converter={StaticResource __AsColorBrush}}"
                      ContextMenu="{StaticResource __clearValueContextMenu}"
                      BorderThickness="0,0,0,2" VerticalAlignment="Center"/>            
         </GroupBox>
@@ -83,7 +83,7 @@
     <DataTemplate x:Key="BindingView_CheckBox">
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
             <CheckBox IsChecked="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}"
-                      Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                      Foreground="{Binding HasValue,Converter={StaticResource __AsColorBrush}}"
                       VerticalAlignment="Center"/>            
         </GroupBox>
     </DataTemplate>    
@@ -93,7 +93,7 @@
             <ComboBox ItemsSource="{Binding AvailableValues}"
                       SelectedValue="{Binding Value}"                      
                       ContextMenu="{StaticResource __clearValueContextMenu}"
-                      Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}"
+                      Foreground="{Binding HasValue,Converter={StaticResource __AsColorBrush}}"
                       VerticalAlignment="Center"/>            
         </GroupBox>
     </DataTemplate>
@@ -116,7 +116,7 @@
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
             <DockPanel
                 ContextMenu="{StaticResource __clearValueContextMenu}"
-                TextElement.Foreground="{Binding HasValue,Converter={StaticResource __booleanAsColor}}">               
+                TextElement.Foreground="{Binding HasValue,Converter={StaticResource __AsColorBrush}}">               
 
                 <Grid DockPanel.Dock="Right" VerticalAlignment="Center">
                     <TextBlock Text="{Binding Minimum}" Visibility="Hidden"/>
