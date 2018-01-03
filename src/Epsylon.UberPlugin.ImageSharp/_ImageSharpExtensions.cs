@@ -269,5 +269,17 @@ namespace Epsylon.UberPlugin
 
             return img;
         }
+
+
+        public static void MutatePixels(this IMAGE32 image, Func<COLOR,COLOR> pixelfunc)
+        {
+            for(int y=0; y < image.Height; ++y)
+            {
+                for(int x=0; x < image.Width; ++x)
+                {
+                    image[x, y] = pixelfunc(image[x, y]);
+                }
+            }
+        }
     }
 }

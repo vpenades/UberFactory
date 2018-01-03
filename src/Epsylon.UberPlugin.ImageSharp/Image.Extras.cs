@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
 
 using PIXEL32 = SixLabors.ImageSharp.Rgba32;
 using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
@@ -39,9 +40,21 @@ namespace Epsylon.UberPlugin
         public int RandomSeed { get; set; }
 
         [SDK.InputValue("Scale")]
-        [SDK.Title("Scale")]
+        [SDK.Title("Scale"), SDK.Group("Noise")]
         [SDK.Minimum(2),SDK.Default(16)]
         public float Scale { get; set; }
+
+        [SDK.InputValue("Color1")]
+        [SDK.Title("Color A"), SDK.Group("Tint")]
+        [SDK.Default((UInt32)0xff000000)]
+        [SDK.ViewStyle("ColorPicker")]
+        public UInt32 Color1 { get; set; }
+
+        [SDK.InputValue("Color2")]
+        [SDK.Title("Color A"), SDK.Group("Tint")]
+        [SDK.Default((UInt32)0xffffffff)]
+        [SDK.ViewStyle("ColorPicker")]
+        public UInt32 Color2 { get; set; }
 
         protected override IMAGE32 Evaluate()
         {
@@ -50,7 +63,24 @@ namespace Epsylon.UberPlugin
             if (NoiseType == NoiseTypes.Perlin) noiseGen = new PerlinNoise3(256, RandomSeed);
             if (NoiseType == NoiseTypes.ImprovedPerlin) noiseGen = new ImprovedPerlinNoise(RandomSeed);
 
-            return _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);            
+            var image = _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);
+
+            var c1 = new Rgba32(Color1).ToVector4();
+            var c2 = new Rgba32(Color2).ToVector4();
+
+            image.MutatePixels
+                (
+                    pixel =>
+                    {
+                        var z = ((float)pixel.R) / 255.0f;
+
+                        var c = System.Numerics.Vector4.Lerp(c1, c2, z);
+
+                        return new Rgba32(c);
+                    }
+                );
+
+            return image;
         }
     }
 
