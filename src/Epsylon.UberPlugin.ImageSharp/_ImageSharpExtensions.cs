@@ -76,6 +76,8 @@ namespace Epsylon.UberPlugin
 
             files.WriteStream(s => image.SaveAsPng(s));
 
+            image.Dispose();
+
             return files;
         }
 
