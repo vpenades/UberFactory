@@ -46,7 +46,7 @@ namespace Epsylon.UberPlugin.ImageSharp
 
 
     [SDK.ContentNode("PaletteFromTwoColors")]
-    [SDK.Title("2 colors Palette")]
+    [SDK.Title("Palette with 2 colors")]
     [SDK.TitleFormat("{0} Palette")]
     public sealed class PaletteFromTwoColors : SDK.ContentFilter<COLOR[]>
     {
@@ -67,4 +67,40 @@ namespace Epsylon.UberPlugin.ImageSharp
             return new COLOR[] { new COLOR(Color1), new COLOR(Color2) };
         }
     }
+
+
+    [SDK.ContentNode("ColorValue")]
+    [SDK.Title("Color")]
+    [SDK.TitleFormat("{0} Color")]
+    public sealed class ColorValue : SDK.ContentFilter<COLOR>
+    {
+        [SDK.InputValue("Color")]
+        [SDK.Title("Color")]
+        [SDK.Default((UInt32)0xffffffff)]
+        [SDK.ViewStyle("ColorPicker")]
+        public UInt32 Color { get; set; }
+        
+        protected override COLOR Evaluate()
+        {
+            return new COLOR(this.Color);
+        }
+    }
+
+    [SDK.ContentNode("PaletteFromColors")]
+    [SDK.Title("Palette")]
+    [SDK.TitleFormat("{0} Palette")]
+    public sealed class PaletteFromColors : SDK.ContentFilter<COLOR[]>
+    {
+        [SDK.InputNode("Colors",true)]
+        [SDK.Title("Colors")]        
+        public COLOR[] Colors { get; set; }        
+
+        protected override COLOR[] Evaluate()
+        {
+            return Colors;
+        }
+    }
+
+
+
 }

@@ -57,7 +57,7 @@ namespace Epsylon.UberPlugin
 
             var image = _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);
 
-            var gradient = this.Gradient == null ? new PIXEL32[] { PIXEL32.Black, PIXEL32.White } : this.Gradient;
+            var gradient = Gradient == null ? new PIXEL32[] { PIXEL32.Black, PIXEL32.White } : this.Gradient;
 
             var vgradient = gradient.Select(item => item.ToVector4()).ToArray();
 

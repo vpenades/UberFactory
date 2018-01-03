@@ -112,12 +112,27 @@ namespace Epsylon.UberPlugin
         protected override IMGTRANSFORM TransformImage()
         {
             if (Mode == BlurMode.Gaussian) return dc => dc.GaussianBlur(this.Radius);
-            if (Mode == BlurMode.Box) return dc => dc.BoxBlur((int)Radius);            
+            if (Mode == BlurMode.Box) return dc => dc.BoxBlur((int)Radius);
 
             throw new NotSupportedException(Mode.ToString());
         }        
     }
-    
+
+    [SDK.ContentNode("DetectEdgeTransform")]
+    [SDK.Title("Detect Edges"), SDK.TitleFormat("{0} Edges")]
+    public sealed class DetectEdgeTransform : BaseImageTransform
+    {
+        [SDK.InputValue("Filter")]
+        [SDK.Title("Filter")]
+        [SDK.Default(SixLabors.ImageSharp.Processing.EdgeDetection.Lapacian5X5)]
+        public SixLabors.ImageSharp.Processing.EdgeDetection Filter { get; set; }        
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => dc.DetectEdges(this.Filter);
+        }
+    }
+
     [SDK.ContentNode("OilPaintTransform")]
     [SDK.Title("Oil Paint"), SDK.TitleFormat("{0} as Old Paint")]
     public sealed class ImageOilPaintTransform : BaseImageTransform
@@ -154,7 +169,7 @@ namespace Epsylon.UberPlugin
             if (Effect == OldPhotoEffect.Lomograph) return dc => dc.Lomograph();
             if (Effect == OldPhotoEffect.Kodachrome) return dc => dc.Kodachrome();
             if (Effect == OldPhotoEffect.Polaroid) return dc => dc.Polaroid();
-            if (Effect == OldPhotoEffect.Sepia) return dc => dc.Sepia();
+            if (Effect == OldPhotoEffect.Sepia) return dc => dc.Sepia();            
             throw new NotSupportedException(Effect.ToString());
         }
     }
@@ -242,7 +257,9 @@ namespace Epsylon.UberPlugin
         }
                
     }
-           
+
+    
+
 
     [SDK.ContentNode("SpecialEffectsTransform")]
     [SDK.Title("Photoshop Effects"), SDK.TitleFormat("{0} Effects")]
