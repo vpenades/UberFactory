@@ -78,6 +78,12 @@ namespace Epsylon.UberFactory.Client
 
         #endregion
 
+        #region properties
+
+        public bool IsSimulation => _TargetTask == "SIMULATE";
+
+        #endregion
+
         #region command line helpers
 
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -140,7 +146,7 @@ namespace Epsylon.UberFactory.Client
             // do build
             ProjectDOM.BuildProject(document, buildSettings, plugins.CreateInstance, monitor, state);            
 
-            CommitBuildResults(_TmpDir, _OutDir);
+            if (!IsSimulation) CommitBuildResults(_TmpDir, _OutDir);
         }
 
         private void CommitBuildResults(PathString src, PathString dst)
