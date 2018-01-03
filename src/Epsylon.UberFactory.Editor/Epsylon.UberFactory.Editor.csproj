@@ -325,9 +325,6 @@
     <PackageReference Include="WindowsAPICodePack-ShellExtensions">
       <Version>1.1.1</Version>
     </PackageReference>
-    <PackageReference Include="WriteableBitmapEx">
-      <Version>1.5.1</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)..\Shared\StaticVersionInfo.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
