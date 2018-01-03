@@ -30,6 +30,18 @@ namespace Epsylon.UberPlugin
 
     static class _ImageSharpExtensions
     {
+        
+
+        public static COLOR WithAlpha(this COLOR color, int alpha)
+        {
+            alpha = Math.Min(alpha, 255);
+            alpha = Math.Max(alpha, 0);
+
+            color.A = (Byte)alpha;
+
+            return color;
+        }
+
         public static SixLabors.ImageSharp.Processing.IResampler GetInstance(this Resampler mode)
         {
             if (mode == Resampler.NearestNeighbor) return new SixLabors.ImageSharp.Processing.NearestNeighborResampler();

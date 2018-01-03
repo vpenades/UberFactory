@@ -23,18 +23,17 @@ namespace Epsylon.UberPlugin.ImageSharp
 
         protected override COLOR[] ReadFile(SDK.ImportContext stream)
         {
-            var g = this.GetSharedSettings<GlobalSettings>();
-
-            var image = g.ReadImage(stream);
-
-            var palette = new COLOR[image.Width];
-
-            for(int x=0; x < image.Width; ++x)
+            using (var image = stream.ReadStream(s => Image.Load(s)) )
             {
-                palette[x] = image[x, image.Height / 2];
-            }
+                var palette = new COLOR[image.Width];
 
-            return palette;
+                for (int x = 0; x < image.Width; ++x)
+                {
+                    palette[x] = image[x, image.Height / 2];
+                }
+
+                return palette;
+            }
         }
 
         protected override object EvaluatePreview(SDK.PreviewContext context)

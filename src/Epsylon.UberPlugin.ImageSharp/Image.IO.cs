@@ -206,16 +206,16 @@ namespace Epsylon.UberPlugin
             }
         }
 
-        protected override void WriteFile(SDK.ExportContext stream, IMAGE32 value)
+        protected override void WriteFile(SDK.ExportContext stream, IMAGE32 image)
         {
             var encoder = this.Encoder;
             if (encoder.Value == null) throw new ArgumentNullException();
 
             // write image
-            encoder.Value?.Invoke(stream, value);
+            encoder.Value?.Invoke(stream, image);
 
             // dispose image
-            value.Dispose();
+            image.Dispose();
         }        
     }
 }

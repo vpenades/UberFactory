@@ -62,6 +62,9 @@ namespace Epsylon.UberPlugin
         [SDK.Default(true)]
         public Boolean Enabled { get; set; }
 
+        // TODO: add boolean to enable TILEABLE mode:
+        // before applying the effect, we create a multitile, then apply the effect, then crop back to the original.
+
         protected override object EvaluatePreview(SDK.PreviewContext previewContext) { return null; }
 
         protected override IMGTRANSFORM Evaluate()
