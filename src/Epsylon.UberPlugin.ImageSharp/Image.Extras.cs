@@ -42,19 +42,11 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Scale")]
         [SDK.Title("Scale"), SDK.Group("Noise")]
         [SDK.Minimum(2),SDK.Default(16)]
-        public float Scale { get; set; }
+        public float Scale { get; set; }        
 
-        [SDK.InputValue("Color1")]
-        [SDK.Title("Color A"), SDK.Group("Tint")]
-        [SDK.Default((UInt32)0xff000000)]
-        [SDK.ViewStyle("ColorPicker")]
-        public UInt32 Color1 { get; set; }
-
-        [SDK.InputValue("Color2")]
-        [SDK.Title("Color B"), SDK.Group("Tint")]
-        [SDK.Default((UInt32)0xffffffff)]
-        [SDK.ViewStyle("ColorPicker")]
-        public UInt32 Color2 { get; set; }
+        [SDK.InputNode("Gradient")]
+        [SDK.Title("Gradient"), SDK.Group("Tint")]        
+        public PIXEL32[] Gradient { get; set; }
 
         protected override IMAGE32 Evaluate()
         {
@@ -65,16 +57,25 @@ namespace Epsylon.UberPlugin
 
             var image = _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);
 
-            var c1 = new Rgba32(Color1).ToVector4();
-            var c2 = new Rgba32(Color2).ToVector4();
+            var gradient = this.Gradient == null ? new PIXEL32[] { PIXEL32.Black, PIXEL32.White } : this.Gradient;
 
+            var vgradient = gradient.Select(item => item.ToVector4()).ToArray();
+
+            // map channel to gradient
             image.MutatePixels
                 (
                     pixel =>
                     {
                         var z = ((float)pixel.R) / 255.0f;
 
-                        var c = System.Numerics.Vector4.Lerp(c1, c2, z);
+                        z *= (vgradient.Length-1);
+
+                        var lowerIdx = (int)(z); if (lowerIdx >= vgradient.Length) lowerIdx = vgradient.Length - 1;
+                        var upperIdx = (lowerIdx + 1);if (upperIdx >= vgradient.Length) upperIdx = vgradient.Length - 1;
+                        
+                        z -= (int)z;
+
+                        var c = System.Numerics.Vector4.Lerp(vgradient[lowerIdx], vgradient[upperIdx], z);
 
                         return new Rgba32(c);
                     }
