@@ -25,9 +25,7 @@ namespace Epsylon.UberPlugin
     }
     
 
-    [SDK.ContentNode("ImageReader")]
-    [SDK.Title("File")]
-    [SDK.TitleFormat( "{0} File")]
+    [SDK.ContentNode("ImageReader")]    
     public sealed class ImageReader : SDK.FileReader<IMAGE32>
     {
         public override string GetFileFilter()
@@ -47,9 +45,9 @@ namespace Epsylon.UberPlugin
         protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
     }
 
-    [SDK.ContentNode("ImageWriterAdvanced")]
-    [SDK.Title("Save ImageSharp File (Advanced)")]
-    public sealed class ImageWriterAdvanced : SDK.FileWriter
+    [SDK.ContentNode("ImageWriter")]
+    [SDK.Title("Save ImageSharp to File")]
+    public sealed class ImageWriter : SDK.FileWriter
     {
         [SDK.InputNode("Image")]
         public IMAGE32 Image { get; set; }
@@ -80,86 +78,7 @@ namespace Epsylon.UberPlugin
     }
 
 
-    public enum ImageWriterBasicFormat
-    {
-        PNG_Grayscale,
-        PNG_Color,
-        PNG_Grayscale_Alpha,
-        PNG_Color_Alpha,
-        PNG_Palette,
-        JPG,
-        GIF,
-    }
-
-    [SDK.ContentNode("ImageWriterBasic")]
-    [SDK.Title("Save ImageSharp File (Basic)")]
-    public sealed class ImageWriterBasic : SDK.FileWriter
-    {
-        [SDK.InputNode("Image")]
-        public IMAGE32 Image { get; set; }
-
-        [SDK.InputValue("Format")]
-        [SDK.Title("Format")]
-        [SDK.Default(ImageWriterBasicFormat.PNG_Color_Alpha)]
-        public ImageWriterBasicFormat Format { get; set; }
-
-        protected override string GetFileExtension()
-        {
-            if (Format == ImageWriterBasicFormat.PNG_Grayscale) return "png";
-            if (Format == ImageWriterBasicFormat.PNG_Color) return "png";
-            if (Format == ImageWriterBasicFormat.PNG_Grayscale_Alpha) return "png";
-            if (Format == ImageWriterBasicFormat.PNG_Color_Alpha) return "png";
-            if (Format == ImageWriterBasicFormat.PNG_Palette) return "png";
-
-            if (Format == ImageWriterBasicFormat.GIF) return "gif";            
-            if (Format == ImageWriterBasicFormat.JPG) return "jpg";            
-
-            throw new NotSupportedException();
-        }
-
-        protected override void WriteFile(SDK.ExportContext stream)
-        {
-            if (Image == null) return;           
-
-            Action<UberFactory.SDK.ExportContext, IMAGE32> encoder = null;
-
-            if (Format == ImageWriterBasicFormat.JPG)
-            {
-                encoder = this.GetSharedSettings<JpegGlobalSettings>().GetEncoder();
-            }
-
-            if (Format == ImageWriterBasicFormat.PNG_Color)
-            {
-                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.Rgb);
-            }
-
-            if (Format == ImageWriterBasicFormat.PNG_Color_Alpha)
-            {
-                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.RgbWithAlpha);
-            }
-
-            if (Format == ImageWriterBasicFormat.PNG_Grayscale)
-            {
-                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.Grayscale);
-            }
-
-            if (Format == ImageWriterBasicFormat.PNG_Grayscale_Alpha)
-            {
-                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.GrayscaleWithAlpha);
-            }
-
-            if (Format == ImageWriterBasicFormat.PNG_Palette)
-            {
-                encoder = this.GetSharedSettings<PngGlobalSettings>().GetEncoder(SixLabors.ImageSharp.Formats.Png.PngColorType.Palette);
-            }
-
-            var g = this.GetSharedSettings<GlobalSettings>();
-
-            g.WriteImage(stream, Image, encoder);
-
-            Image.Dispose();
-        }        
-    }
+    
 
     [SDK.ContentNode("BatchProcessor")]
     [SDK.Title("Process ImageSharp Batch")]

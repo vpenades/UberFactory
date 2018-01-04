@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace Epsylon.UberFactory
 {
     public static partial class SDK
-    {        
+    {
+        [Title("From File"), TitleFormat("{0} File")]        
         public abstract class FileReader<TValue> : ContentFilter<TValue> 
         {
             public virtual string GetFileFilter() { return "All Files|*.*"; }
@@ -33,7 +34,8 @@ namespace Epsylon.UberFactory
                 return base.EvaluatePreview(previewContext);
             }            
         }
-        
+
+        // [Title("Save {TYPE} to File")]
         public abstract class FileWriter : ContentFilter
         {
             [SDK.InputValue("FileName")]

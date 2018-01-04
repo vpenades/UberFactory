@@ -24,36 +24,38 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat( "PNG {0}")]
     public sealed class PngEncoder : SDK.ContentFilter<IMAGEENCODER>
     {
-        [SDK.InputValue("CompressionLevel")]
-        [SDK.Title("Compression Level")]
-        [SDK.Minimum(1)]
-        [SDK.Default(6)]
-        [SDK.Maximum( 9)]
-        [SDK.ViewStyle("Slider")]
-        public int CompressionLevel { get; set; }
-
         [SDK.InputValue("ColorChannels")]
         [SDK.Title("Color Channels")]
         [SDK.Default(PNGFORMAT.PngColorType.RgbWithAlpha)]
         public PNGFORMAT.PngColorType ColorChannels { get; set; }
 
+        [SDK.InputValue("Quantizer")]
+        [SDK.Title("Palette Quantizer")]
+        [SDK.Default(Quantization.Palette)]
+        public Quantization Quantizer { get; set; }
+
         protected override IMAGEENCODER Evaluate()
         {
+            var settings = this.GetSharedSettings<PngGlobalSettings>();
+
+            bool isPalette = ColorChannels == PNGFORMAT.PngColorType.Palette;
+
             var encoder = new PNGFORMAT.PngEncoder
             {
-                Quantizer = null,
-                CompressionLevel = CompressionLevel,
+                PaletteSize = isPalette ? 255 : 0,
+                Quantizer = isPalette ? Quantizer.GetInstance() : null,
+                CompressionLevel = settings.CompressionLevel,
                 PngColorType = ColorChannels
             };
 
-            return ImageWriterAdvanced.CreateEncoder(encoder, "PNG");
+            return ImageWriter.CreateEncoder(encoder, "PNG");
         }
     }
 
-    [SDK.ContentNode("JpegEncoder")]
-    [SDK.Title("JPG Encoder")]
+    [SDK.ContentNode("JpegEncoderAdvanced")]
+    [SDK.Title("JPG Encoder (Advanced)")]
     [SDK.TitleFormat( "JPG {0}")]
-    public sealed class JpegEncoder : SDK.ContentFilter<IMAGEENCODER>
+    public sealed class JpegEncoderAdvanced : SDK.ContentFilter<IMAGEENCODER>
     {
         [SDK.InputValue("Quality")]
         [SDK.Minimum(0)]
@@ -69,7 +71,25 @@ namespace Epsylon.UberPlugin
                 Quality = Quality
             };
 
-            return ImageWriterAdvanced.CreateEncoder(encoder,"JPG");
+            return ImageWriter.CreateEncoder(encoder,"JPG");
+        }
+    }
+
+    [SDK.ContentNode("JpegEncoderBasic")]
+    [SDK.Title("JPG Encoder")]
+    [SDK.TitleFormat("JPG {0}")]
+    public sealed class JpegEncoderBasic : SDK.ContentFilter<IMAGEENCODER>
+    {
+        protected override IMAGEENCODER Evaluate()
+        {
+            var settings = this.GetSharedSettings<JpegGlobalSettings>();
+
+            var encoder = new JPGFORMAT.JpegEncoder
+            {
+                Quality = settings.Quality
+            };
+
+            return ImageWriter.CreateEncoder(encoder, "JPG");
         }
     }
 
@@ -89,7 +109,7 @@ namespace Epsylon.UberPlugin
                 BitsPerPixel = this.BitsPerPixel
             };
 
-            return ImageWriterAdvanced.CreateEncoder(encoder,"BMP");
+            return ImageWriter.CreateEncoder(encoder,"BMP");
         }
     }
 
@@ -113,7 +133,7 @@ namespace Epsylon.UberPlugin
                 Threshold = (Byte)TransparencyThreshold
             };
 
-            return ImageWriterAdvanced.CreateEncoder(encoder, "GIF");
+            return ImageWriter.CreateEncoder(encoder, "GIF");
         }
     }
 

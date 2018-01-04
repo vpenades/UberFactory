@@ -30,7 +30,14 @@ namespace Epsylon.UberPlugin
 
     static class _ImageSharpExtensions
     {
-        
+        public static SixLabors.ImageSharp.Quantizers.IQuantizer GetInstance(this SixLabors.ImageSharp.Quantization mode)
+        {
+            if (mode == Quantization.Octree) return new SixLabors.ImageSharp.Quantizers.OctreeQuantizer<Rgba32>();
+            if (mode == Quantization.Palette) return new SixLabors.ImageSharp.Quantizers.PaletteQuantizer<Rgba32>();
+            if (mode == Quantization.Wu) return new SixLabors.ImageSharp.Quantizers.WuQuantizer<Rgba32>();
+
+            throw new NotImplementedException();
+        }
 
         public static COLOR WithAlpha(this COLOR color, int alpha)
         {
