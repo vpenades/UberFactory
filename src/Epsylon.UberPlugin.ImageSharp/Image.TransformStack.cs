@@ -54,6 +54,108 @@ namespace Epsylon.UberPlugin
     }
 
 
+    [SDK.ContentNode("LayeredTransformStack")]
+    [SDK.Title("Layered Transforms"), SDK.TitleFormat("{0} Layered Transforms")]
+    public sealed class LayeredTransformStack : ImageFilter
+    {
+        [SDK.InputNode("Source")]
+        [SDK.Title("Source Image")]
+        public IMAGE32 Source { get; set; }
+
+        [SDK.InputNode("Layers", true)]
+        [SDK.Title("Layers")]
+        [SDK.ItemsPanel("VerticalList")]
+        public TransformLayer.Description[] Layers { get; set; }
+
+        protected override IMAGE32 Evaluate()
+        {
+            if (Source == null) return null;
+
+            var target = new IMAGE32(Source.Width, Source.Height);
+
+            foreach(var layer in Layers.Where(l => l != null))
+            {
+                using (var clone = layer.ProcessStack(Source))
+                {
+                    target.Mutate(dc => dc.DrawImage(clone, layer.Mode, layer.Opacity, SIZE.Empty, POINT.Empty));
+                }
+            }
+
+            Source.Dispose();
+
+            return target;
+        }
+
+        
+    }
+
+
+
+    [SDK.ContentNode("TransformLayer")]
+    [SDK.Title("Layer"), SDK.TitleFormat("{0} Layer")]
+    public sealed class TransformLayer : SDK.ContentFilter<TransformLayer.Description>
+    {
+        [SDK.InputValue("Enabled")]
+        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Default(true)]
+        public Boolean Enabled { get; set; }
+
+        [SDK.InputValue("Opacity")]
+        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Minimum(0), SDK.Default(100), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        public int Opacity { get; set; }
+
+        [SDK.InputValue("BlendMode")]
+        [SDK.Title("Mode"), SDK.Group("Opacity")]
+        [SDK.Default(PixelBlenderMode.Normal)]
+        public PixelBlenderMode BlendMode { get; set; }
+
+        [SDK.InputNode("Transforms", true)]
+        [SDK.Title("Transforms")]
+        [SDK.ItemsPanel("VerticalList")]
+        public IMGTRANSFORM[] Transforms { get; set; }
+
+        protected override Description Evaluate()
+        {
+            if (Transforms == null || Enabled == false) return null;
+
+            return new Description(this.Transforms,this.BlendMode,this.Opacity);
+        }        
+
+        public sealed class Description
+        {
+            public Description(IMGTRANSFORM[] transforms, PixelBlenderMode mode, int opacity)
+            {
+                this._Transforms = transforms;
+                this.Mode = mode;
+                this.Opacity = opacity;
+            }
+
+            private readonly IMGTRANSFORM[] _Transforms;
+
+            public PixelBlenderMode Mode { get; private set; }
+
+            public int Opacity { get; private set; }            
+
+            public IMAGE32 ProcessStack(IMAGE32 src)
+            {
+                return src.Clone
+                (
+                    dc =>
+                    {
+                        foreach (var xform in _Transforms)
+                        {
+                            xform?.Invoke(dc);
+                        }
+                    }
+                );                
+            }
+        }
+    }
+
+    
+
 
     public abstract class BaseImageTransform : SDK.ContentFilter<IMGTRANSFORM>
     {
@@ -156,7 +258,7 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    public enum OldPhotoEffect { Kodachrome, Polaroid, Lomograph,Sepia }
+    public enum OldPhotoEffect { BlackWhite, Kodachrome, Polaroid, Lomograph,Sepia }
 
     [SDK.ContentNode("OldPhotoTransform")]
     [SDK.Title("Old Photo"), SDK.TitleFormat("{0} as Old Photo")]
@@ -169,10 +271,12 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
+            if (Effect == OldPhotoEffect.BlackWhite) return dc => dc.BlackWhite();
             if (Effect == OldPhotoEffect.Lomograph) return dc => dc.Lomograph();
             if (Effect == OldPhotoEffect.Kodachrome) return dc => dc.Kodachrome();
             if (Effect == OldPhotoEffect.Polaroid) return dc => dc.Polaroid();
             if (Effect == OldPhotoEffect.Sepia) return dc => dc.Sepia();            
+
             throw new NotSupportedException(Effect.ToString());
         }
     }
@@ -188,6 +292,60 @@ namespace Epsylon.UberPlugin
             return dc => dc.Invert();            
         }
     }
+
+    
+
+    [SDK.ContentNode("LevelsTransform")]
+    [SDK.Title("Levels"), SDK.TitleFormat("{0} Levels")]
+    public sealed class LevelsTransform : BaseImageTransform
+    {
+        /*
+        [SDK.InputValue("Black")]
+        [SDK.Title("Black"), SDK.Group("Levels")]
+        [SDK.Minimum(0), SDK.Default(0), SDK.Maximum(255)]
+        [SDK.ViewStyle("Slider")]
+        public int Black { get; set; }
+
+        [SDK.InputValue("White")]
+        [SDK.Title("White"), SDK.Group("Levels")]
+        [SDK.Minimum(0), SDK.Default(255), SDK.Maximum(255)]
+        [SDK.ViewStyle("Slider")]
+        public int White { get; set; }
+        */
+
+        [SDK.InputValue("Brightness")]
+        [SDK.Title("Brightness"),SDK.Group("Adjust")]
+        [SDK.Minimum(-100), SDK.Default(0), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        public int Brightness { get; set; }
+
+        [SDK.InputValue("Saturation")]
+        [SDK.Title("Saturation"), SDK.Group("Adjust")]
+        [SDK.Minimum(-100), SDK.Default(0), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        public int Saturation { get; set; }
+
+        [SDK.InputValue("Contrast")]
+        [SDK.Title("Contrast"), SDK.Group("Adjust")]
+        [SDK.Minimum(-100), SDK.Default(0), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        public int Contrast { get; set; }        
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc =>
+            {
+                if (this.Brightness != 0) dc.Brightness(this.Brightness);
+                if (this.Saturation != 0) dc.Saturation(this.Saturation);
+                if (this.Contrast != 0) dc.Contrast(this.Contrast);            
+            };
+        }
+    }
+
+
+
+
+
 
     [SDK.ContentNode("HueTransform")]
     [SDK.Title("Hue"), SDK.TitleFormat("{0} Hued")]
