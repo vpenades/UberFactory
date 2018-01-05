@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+using Epsylon.ImageSharp.Procedural;
+
 namespace Epsylon.UberPlugin
 {
     using UberFactory;
@@ -181,9 +183,9 @@ namespace Epsylon.UberPlugin
 
 
 
-    [SDK.ContentNode("GlowTransform")]
-    [SDK.Title("Glow"), SDK.TitleFormat("{0} with Glow")]
-    public sealed class ImageGlowTransform : BaseImageTransform
+    [SDK.ContentNode("OuterGlowTransform")]
+    [SDK.Title("Outer Glow"), SDK.TitleFormat("{0} with Outer Glow")]
+    public sealed class ImageOuterGlowTransform : BaseImageTransform
     {
         [SDK.InputValue("Radius")]
         [SDK.Title("Radius")]
@@ -192,7 +194,7 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
-            return dc => dc.Glow(this.Radius);
+            return dc => dc.OuterGlow(Radius);
         }
     }    
 
@@ -206,8 +208,8 @@ namespace Epsylon.UberPlugin
 
         [SDK.InputValue("Mode")]
         [SDK.Title("Mode")]
-        [SDK.Default(BlurMode.Gaussian)]
-        public BlurMode Mode { get; set; }
+        [SDK.Default(Epsylon.ImageSharp.Procedural.BlurMode.Gaussian)]
+        public Epsylon.ImageSharp.Procedural.BlurMode Mode { get; set; }
 
         [SDK.InputValue("Radius")]
         [SDK.Title("Radius")]
@@ -216,10 +218,7 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
-            if (Mode == BlurMode.Gaussian) return dc => dc.GaussianBlur(this.Radius);
-            if (Mode == BlurMode.Box) return dc => dc.BoxBlur((int)Radius);
-
-            throw new NotSupportedException(Mode.ToString());
+            return dc => dc.Blur(Mode, Radius);
         }        
     }
 
