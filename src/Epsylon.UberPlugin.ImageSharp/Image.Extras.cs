@@ -14,13 +14,11 @@ using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
 namespace Epsylon.UberPlugin
 {
-    using UberFactory;    
+    using UberFactory;        
 
-    public enum NoiseTypes { Perlin }
-
-    [SDK.ContentNode("CreateNoise")]
+    [SDK.ContentNode("CreatePerlinNoise")]
     [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
-    public sealed class ImageSharpCreateNoise : ImageFilter
+    public sealed class ImageSharpCreatePerlinNoise : ImageFilter
     {
         [SDK.InputValue("Width")]        
         [SDK.Title("W"), SDK.Group("Size")]
@@ -30,11 +28,7 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Height")]        
         [SDK.Title("H"), SDK.Group("Size")]
         [SDK.Default(256)]
-        public int Height { get; set; }
-
-        [SDK.InputValue("NoiseType")]        
-        [SDK.Title("Type"),SDK.Group("Noise")]
-        public NoiseTypes NoiseType { get; set; }
+        public int Height { get; set; }        
 
         [SDK.InputValue("RandomSeed")]        
         [SDK.Title("Seed"), SDK.Group("Noise")]
@@ -44,7 +38,18 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Scale")]
         [SDK.Title("Scale"), SDK.Group("Noise")]
         [SDK.Minimum(2),SDK.Default(16)]
-        public float Scale { get; set; }        
+        public float Scale { get; set; }
+
+        [SDK.InputValue("Octaves")]
+        [SDK.Title("Octaves"), SDK.Group("Noise")]
+        [SDK.Minimum(1), SDK.Default(8)]
+        public int Octaves { get; set; }
+
+        [SDK.InputValue("Persistence")]
+        [SDK.Title("Persistence"), SDK.Group("Noise")]
+        [SDK.Minimum(0), SDK.Default(50),SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        public int Persistence { get; set; }
 
         [SDK.InputNode("Gradient")]
         [SDK.Title("Gradient"), SDK.Group("Tint")]        
@@ -52,35 +57,12 @@ namespace Epsylon.UberPlugin
 
         protected override IMAGE32 Evaluate()
         {
-            var image = new IMAGE32(this.Width, this.Height);
+            var p = (float)Persistence;
 
-            if (NoiseType == NoiseTypes.Perlin) image.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, 8, 0.1f, this.RandomSeed));            
-
-            var gradient = Gradient == null ? new PIXEL32[] { PIXEL32.Black, PIXEL32.White } : this.Gradient;
-
-            var vgradient = gradient.Select(item => item.ToVector4()).ToArray();
-
-            // map channel to gradient
-            image.MutatePixels
-                (
-                    pixel =>
-                    {
-                        var z = ((float)pixel.R) / 255.0f;
-
-                        z *= (vgradient.Length-1);
-
-                        var lowerIdx = (int)(z); if (lowerIdx >= vgradient.Length) lowerIdx = vgradient.Length - 1;
-                        var upperIdx = (lowerIdx + 1);if (upperIdx >= vgradient.Length) upperIdx = vgradient.Length - 1;
-                        
-                        z -= (int)z;
-
-                        var c = System.Numerics.Vector4.Lerp(vgradient[lowerIdx], vgradient[upperIdx], z);
-
-                        return new Rgba32(c);
-                    }
-                );
-
-            return image;
+            using (var noise = NoiseFactory.CreatePerlinNoise(this.Width, this.Height, this.Scale, 0, this.Octaves, p /100.0f, this.RandomSeed))
+            {
+                return noise.CloneWithLookupTable(Gradient);
+            }
         }
     }
 
