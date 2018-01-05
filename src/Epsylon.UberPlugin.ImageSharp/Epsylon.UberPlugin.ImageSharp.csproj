@@ -12,6 +12,7 @@
   </ItemGroup>  
 
   <ItemGroup>
+    <ProjectReference Include="..\Epsylon.ImageSharp.Procedural\Epsylon.ImageSharp.Procedural.csproj" />
     <ProjectReference Include="..\Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj" />
   </ItemGroup>
 

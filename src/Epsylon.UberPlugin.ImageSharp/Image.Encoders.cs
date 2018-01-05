@@ -19,10 +19,17 @@ namespace Epsylon.UberPlugin
 
     using IMAGEENCODER = KeyValuePair<string, Action<UberFactory.SDK.ExportContext, IMAGE32>>;
 
+    public abstract class EncoderBase : SDK.ContentFilter<IMAGEENCODER>
+    {
+        [SDK.InputValue("IgnoreMetadata")]
+        [SDK.Title("Ignore Metadata")]        
+        public Boolean IgnoreMetadata { get; set; }
+    }
+
     [SDK.ContentNode("PngEncoder")]
     [SDK.Title("PNG Encoder")]
     [SDK.TitleFormat( "PNG {0}")]
-    public sealed class PngEncoder : SDK.ContentFilter<IMAGEENCODER>
+    public sealed class PngEncoder : EncoderBase
     {
         [SDK.InputValue("ColorChannels")]
         [SDK.Title("Color Channels")]
@@ -42,6 +49,7 @@ namespace Epsylon.UberPlugin
 
             var encoder = new PNGFORMAT.PngEncoder
             {
+                IgnoreMetadata = this.IgnoreMetadata,
                 PaletteSize = isPalette ? 255 : 0,
                 Quantizer = isPalette ? Quantizer.GetInstance() : null,
                 CompressionLevel = settings.CompressionLevel,
@@ -55,7 +63,7 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("JpegEncoderAdvanced")]
     [SDK.Title("JPG Encoder (Advanced)")]
     [SDK.TitleFormat( "JPG {0}")]
-    public sealed class JpegEncoderAdvanced : SDK.ContentFilter<IMAGEENCODER>
+    public sealed class JpegEncoderAdvanced : EncoderBase
     {
         [SDK.InputValue("Quality")]
         [SDK.Minimum(0)]
@@ -78,7 +86,7 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("JpegEncoderBasic")]
     [SDK.Title("JPG Encoder")]
     [SDK.TitleFormat("JPG {0}")]
-    public sealed class JpegEncoderBasic : SDK.ContentFilter<IMAGEENCODER>
+    public sealed class JpegEncoderBasic : EncoderBase
     {
         protected override IMAGEENCODER Evaluate()
         {
@@ -86,6 +94,7 @@ namespace Epsylon.UberPlugin
 
             var encoder = new JPGFORMAT.JpegEncoder
             {
+                IgnoreMetadata = this.IgnoreMetadata,
                 Quality = settings.Quality
             };
 
@@ -96,7 +105,7 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("BmpEncoder")]
     [SDK.Title("BMP Encoder")]
     [SDK.TitleFormat( "BMP {0}")]
-    public sealed class BmpEncoder : SDK.ContentFilter<IMAGEENCODER>
+    public sealed class BmpEncoder : EncoderBase
     {
         [SDK.InputValue("BitsPerPixel")]
         [SDK.Title("Bits Per Pixel")]
@@ -105,7 +114,7 @@ namespace Epsylon.UberPlugin
         protected override IMAGEENCODER Evaluate()
         {
             var encoder = new BMPFORMAT.BmpEncoder
-            {
+            {                
                 BitsPerPixel = this.BitsPerPixel
             };
 
@@ -117,7 +126,7 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("GifEncoder")]
     [SDK.Title("GIF Encoder")]
     [SDK.TitleFormat( "GIF {0}")]
-    public sealed class GifEncoder : SDK.ContentFilter<IMAGEENCODER>
+    public sealed class GifEncoder : EncoderBase
     {
         [SDK.InputValue("TransparencyThreshold")]
         [SDK.Title("Transparency Threshold")]
@@ -130,6 +139,7 @@ namespace Epsylon.UberPlugin
         {
             var encoder = new GIFFORMAT.GifEncoder
             {
+                IgnoreMetadata = this.IgnoreMetadata,
                 Threshold = (Byte)TransparencyThreshold
             };
 

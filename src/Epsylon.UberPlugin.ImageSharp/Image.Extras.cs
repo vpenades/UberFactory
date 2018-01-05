@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 
+using Epsylon.ImageSharp.Procedural;
+
 using PIXEL32 = SixLabors.ImageSharp.Rgba32;
 using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
@@ -14,7 +16,7 @@ namespace Epsylon.UberPlugin
 {
     using UberFactory;    
 
-    public enum NoiseTypes { Perlin, ImprovedPerlin, PerlinTiled }
+    public enum NoiseTypes { Perlin }
 
     [SDK.ContentNode("CreateNoise")]
     [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
@@ -50,13 +52,9 @@ namespace Epsylon.UberPlugin
 
         protected override IMAGE32 Evaluate()
         {
-            INoiseGenerator noiseGen = null;
+            var image = new IMAGE32(this.Width, this.Height);
 
-            if (NoiseType == NoiseTypes.Perlin) noiseGen = new PerlinNoise3(256, RandomSeed);
-            if (NoiseType == NoiseTypes.ImprovedPerlin) noiseGen = new ImprovedPerlinNoise(RandomSeed);
-            if (NoiseType == NoiseTypes.PerlinTiled) noiseGen = new Perlin_Tiled(256);
-
-            var image = _ImageSharpExtensions.RenderNoise(Width, Height, noiseGen, Scale);
+            if (NoiseType == NoiseTypes.Perlin) image.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, 8, 0.1f, this.RandomSeed));            
 
             var gradient = Gradient == null ? new PIXEL32[] { PIXEL32.Black, PIXEL32.White } : this.Gradient;
 

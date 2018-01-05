@@ -9,6 +9,8 @@ using SixLabors.ImageSharp;
 
 namespace Epsylon.UberPlugin
 {
+    
+
     using COLOR = SixLabors.ImageSharp.Rgba32;
     using IMAGE = SixLabors.ImageSharp.Image;
     using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
@@ -146,39 +148,7 @@ namespace Epsylon.UberPlugin
 
         
 
-        public static IMAGE32 RenderNoise(int width, int height, INoiseGenerator noiseGen, float scale)
-        {
-            var img = new IMAGE32(width, height);
-            
-            for (int y = 0; y < img.Height; ++y)
-            {
-                for (int x = 0; x < img.Width; ++x)
-                {
-                    float xx = x;
-                    float yy = y;
-
-                    xx /= scale;
-                    yy /= scale;
-
-                    var k = noiseGen.GetSample(xx, yy);
-
-                    k = k * 0.5f + 0.5f;
-
-                    if (k < 0) k = 0;
-                    if (k > 1) k = 1;
-
-                    var c = default(COLOR);
-
-                    c.A = 255;
-                    c.R = c.G = c.B = (Byte)(k * 255.0f);
-
-                    img[x,y] = c;
-                }
-            }
-            
-
-            return img;
-        }
+        
 
 
         
