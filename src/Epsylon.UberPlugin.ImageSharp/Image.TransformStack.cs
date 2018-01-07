@@ -18,7 +18,6 @@ namespace Epsylon.UberPlugin
     using IMAGE32DC = IImageProcessingContext<Rgba32>;
     using IMGTRANSFORM = Action<IImageProcessingContext<Rgba32>>;
 
-
     using SIZE = SixLabors.Primitives.Size;
     using POINT = SixLabors.Primitives.Point;
     using RECT = SixLabors.Primitives.Rectangle;
@@ -181,6 +180,20 @@ namespace Epsylon.UberPlugin
         protected abstract IMGTRANSFORM TransformImage();
     }
 
+    [SDK.ContentNode("OpacityTransform")]
+    [SDK.Title("Opacity"), SDK.TitleFormat("{0} Opacity")]
+    public sealed class AlphaTransform : BaseImageTransform
+    {
+        [SDK.InputValue("Alpha")]
+        [SDK.Title("Alpha")]
+        [SDK.Minimum(0), SDK.Default(1), SDK.Maximum(1)]
+        public float Alpha { get; set; }
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => dc.Alpha(Alpha);
+        }
+    }
 
 
     [SDK.ContentNode("OuterGlowTransform")]
@@ -189,7 +202,7 @@ namespace Epsylon.UberPlugin
     {
         [SDK.InputValue("Radius")]
         [SDK.Title("Radius")]
-        [SDK.Default(1)]
+        [SDK.Minimum(0), SDK.Default(1)]
         public float Radius { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -361,6 +374,8 @@ namespace Epsylon.UberPlugin
         }
     }
 
+    
+
     [SDK.ContentNode("CropTransform")]
     [SDK.Title("Crop"), SDK.TitleFormat("{0} Crop")]
     public sealed class ImageCropTransform : BaseImageTransform
@@ -520,5 +535,14 @@ namespace Epsylon.UberPlugin
         }
 
     }
+
+
+
+
+
+
+
+
     
+
 }

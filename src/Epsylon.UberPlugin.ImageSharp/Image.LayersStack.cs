@@ -20,6 +20,13 @@ namespace Epsylon.UberPlugin
     using SIZE = SixLabors.Primitives.Size;
     using POINT = SixLabors.Primitives.Point;
 
+    // ideally, the structure passed between layers would be:
+    // OffsetX,Y , Image
+
+    // this is important because if at some point we want to overlay a sprite in the negative quadrant,
+    // the resulting image would be expanded, and the offset would be set accordingly, so any subsequent operation
+    // would match the proper coordinates.
+
     public sealed class LayerInfo : IDisposable
     {
         #region lifecycle
@@ -158,7 +165,10 @@ namespace Epsylon.UberPlugin
             return new LayerInfo(Opacity == 0 ? false : Enabled, Image , OffsetX,OffsetY, Opacity, BlendMode);
         }
 
-        protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate()._Color.CreatePreview(context); }
+        protected override object EvaluatePreview(SDK.PreviewContext context)
+        {
+            return Evaluate()._Color.CreatePreview(context);
+        }
     }
 
 }

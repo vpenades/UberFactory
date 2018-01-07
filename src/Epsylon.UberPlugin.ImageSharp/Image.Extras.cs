@@ -14,7 +14,36 @@ using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
 namespace Epsylon.UberPlugin
 {
-    using UberFactory;        
+    using UberFactory;
+
+    [SDK.ContentNode("CreateSolidColor")]
+    [SDK.Title("Solid Color"), SDK.TitleFormat("{0} Solid Color")]
+    public sealed class ImageSharpCreateSolidColor : ImageFilter
+    {
+        [SDK.InputValue("Width")]
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Minimum(1),SDK.Default(256)]
+        public int Width { get; set; }
+
+        [SDK.InputValue("Height")]
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Height { get; set; }
+
+        [SDK.InputValue("Color")]
+        [SDK.Default((UInt32)0xff000000)]
+        [SDK.ViewStyle("ColorPicker")]
+        public UInt32 Color { get; set; }
+
+        protected override IMAGE32 Evaluate()
+        {
+            var img = new IMAGE32(this.Width, this.Height);
+
+            img.Mutate(dc => dc.BackgroundColor(new PIXEL32(Color)));
+
+            return img;
+        }
+    }
 
     [SDK.ContentNode("CreatePerlinNoise")]
     [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
@@ -22,12 +51,12 @@ namespace Epsylon.UberPlugin
     {
         [SDK.InputValue("Width")]        
         [SDK.Title("W"), SDK.Group("Size")]
-        [SDK.Default(256)]
+        [SDK.Minimum(1), SDK.Default(256)]
         public int Width { get; set; }
 
         [SDK.InputValue("Height")]        
         [SDK.Title("H"), SDK.Group("Size")]
-        [SDK.Default(256)]
+        [SDK.Minimum(1), SDK.Default(256)]
         public int Height { get; set; }        
 
         [SDK.InputValue("RandomSeed")]        

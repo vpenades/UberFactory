@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.Primitives;
 
 namespace Epsylon.ImageSharp.Procedural
 {
@@ -62,6 +64,43 @@ namespace Epsylon.ImageSharp.Procedural
             color.B = (Byte)blue;
 
             return color;
+        }
+
+        public static Rectangle FitWithinImage<TPixel>(this Rectangle rect, Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
+        {
+            if (rect.X < 0) { rect.Width += rect.X; rect.X = 0; }
+            if (rect.Y < 0) { rect.Height += rect.Y; rect.Y = 0; }
+
+            if (rect.Right > image.Width) { rect.Width -= rect.Right - image.Width; }
+            if (rect.Bottom > image.Height) { rect.Height -= rect.Bottom - image.Height; }
+
+            return rect;
+        }
+
+        public static TPixel GetAverageColor<TPixel>(this Image<TPixel> source, Rectangle sourceRectangle) where TPixel : struct, IPixel<TPixel>
+        {
+            sourceRectangle.FitWithinImage(source);
+
+            var ccc = System.Numerics.Vector4.Zero;
+            float w = 0;
+
+            for (int y=0; y < sourceRectangle.Height; ++y)
+            {
+                for (int x = 0; x < sourceRectangle.Height; ++x)
+                {
+                    var c = source[x + sourceRectangle.X, y + sourceRectangle.Y].ToVector4();
+
+                    ccc += c;
+                    w += c.W;                    
+                }
+            }
+
+            ccc /= w;
+
+            var p = default(TPixel);
+            p.PackFromVector4(ccc);
+
+            return p;
         }
     }
 }
