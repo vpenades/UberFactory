@@ -165,8 +165,52 @@ namespace Epsylon.UberPlugin
     }
 
 
+    [SDK.ContentNode("ImageMetadataToText")]
+    [SDK.Title("Image Metadata"), SDK.TitleFormat("{0} Metadata")]
+    public sealed class ImageSharpMetadataToText : SDK.ContentFilter<String>
+    {
+        [SDK.InputNode("Image")]
+        public IMAGE32 Image { get; set; }
 
-    
+        protected override string Evaluate()
+        {
+            if (Image == null) return null;
+            if (Image.MetaData == null) return null;
+
+            var sb = new StringBuilder();
+
+            var exif = Image.MetaData.ExifProfile;
+            var icc = Image.MetaData.IccProfile;
+            var ipps = Image.MetaData.Properties;
+
+            if (exif != null)
+            {
+                foreach (var exifval in exif.Values)
+                {
+                    sb.AppendLine(exifval.ToString());
+                }
+            }
+
+            if (icc != null)
+            {
+                foreach (var iccval in icc.Entries)
+                {
+                    sb.AppendLine(iccval.ToString());
+                }
+            }
+
+            if (ipps != null)
+            {
+                foreach (var iprop in ipps)
+                {
+                    sb.AppendLine(iprop.ToString());
+                }
+            }            
+
+            return sb.ToString();
+        }
+    }
+
 
 
 }
