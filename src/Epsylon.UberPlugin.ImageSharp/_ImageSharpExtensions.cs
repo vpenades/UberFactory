@@ -9,8 +9,8 @@ using SixLabors.ImageSharp;
 
 namespace Epsylon.UberPlugin
 {
-    
 
+    using POINT = SixLabors.Primitives.Point;
     using COLOR = SixLabors.ImageSharp.Rgba32;
     using IMAGE = SixLabors.ImageSharp.Image;
     using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
@@ -32,6 +32,47 @@ namespace Epsylon.UberPlugin
 
     static class _ImageSharpExtensions
     {
+        public static int AsInteger(this SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifValue value)
+        {
+            if (value == null) return 0;
+            if (value.DataType == SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.Byte) return (byte)value.Value;
+            if (value.DataType == SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.SignedShort) return (short)value.Value;
+            if (value.DataType == SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.SignedLong) return (int)((long)value.Value);
+
+            return 0;
+        }
+
+
+        public static POINT GetExifPositionOffset(this IMAGE32 image)
+        {
+            // value should be rational64u            
+
+            var r = (ushort)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.ResolutionUnit).Value;
+
+            // r == 1 pixels
+            // r == 2 inch
+            // r == 3 cm
+
+            var x = (SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.XPosition).Value;
+            var y = (SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.YPosition).Value;
+
+            return new POINT((int)x.ToDouble(), (int)y.ToDouble());
+        }
+
+        public static void SetExifPositionOffset(this IMAGE32 image, POINT offset)
+        {
+            // value should be rational64u
+
+            var x = SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational.FromDouble(offset.X);
+            var y = SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational.FromDouble(offset.Y);
+
+            image.MetaData.ExifProfile.SetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.XPosition, x);
+            image.MetaData.ExifProfile.SetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.YPosition, y);
+        }
+
+        
+
+
         public static SixLabors.ImageSharp.Quantizers.IQuantizer GetInstance(this SixLabors.ImageSharp.Quantization mode)
         {
             if (mode == Quantization.Octree) return new SixLabors.ImageSharp.Quantizers.OctreeQuantizer<Rgba32>();

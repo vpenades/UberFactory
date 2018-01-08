@@ -11,6 +11,8 @@ namespace Epsylon.UberPlugin
 {
     using UberFactory;
 
+    using Epsylon.ImageSharp.Procedural;
+
     using XYZ = System.Numerics.Vector3;
     using XYZW = System.Numerics.Vector4;
 
@@ -27,6 +29,30 @@ namespace Epsylon.UberPlugin
     // the resulting image would be expanded, and the offset would be set accordingly, so any subsequent operation
     // would match the proper coordinates.
 
+    public sealed class LayerImage
+    {        
+        private IMAGE32 _Image;
+
+        public IMAGE32 Image => _Image;
+
+        public void Blend(IMAGE32 src, SixLabors.ImageSharp.PixelFormats.PixelBlenderMode mode, float opacity)
+        {
+            if (src == null) return;
+
+            if (_Image == null)
+            {
+                _Image = src;                
+
+                if (opacity < 1) _Image.Mutate(dc => dc.Alpha(opacity));
+                return;
+            }
+
+            // https://github.com/JimBobSquarePants/ImageSharp/issues/16
+
+            _Image.Mutate(dc => dc.DrawImage(src, mode, opacity, SIZE.Empty, src.GetInternalPixelOffset() ) );
+        }
+    }
+
     public sealed class LayerInfo : IDisposable
     {
         #region lifecycle
@@ -34,17 +60,17 @@ namespace Epsylon.UberPlugin
         public LayerInfo(bool enabled, IMAGE32 img,int offsetX,int offsetY, int opacity, SixLabors.ImageSharp.PixelFormats.PixelBlenderMode mode)
         {
             _Enabled = enabled;
-            _Color = img;
-            _OffsetX = offsetX;
-            _OffsetY = offsetY;
+            _Image = img;
+
+            _Image.SetInternalPixelOffset(offsetX, offsetY);
+            
             _Opacity = opacity;
             _Mode = mode;
         }
 
         public void Dispose()
         {
-            if (_Color != null) { _Color.Dispose(); _Color = null; }
-            if (_Alpha != null) { _Alpha.Dispose(); _Alpha = null; }
+            if (_Image != null) { _Image.Dispose(); _Image = null; }            
         }
 
         #endregion
@@ -56,28 +82,26 @@ namespace Epsylon.UberPlugin
         private int _OffsetX;
         private int _OffsetY;
 
-        internal IMAGE32 _Color;
-        private IMAGE32 _Alpha;
+        internal IMAGE32 _Image;        
 
         private int _Opacity;
         private SixLabors.ImageSharp.PixelFormats.PixelBlenderMode _Mode;
 
         #endregion
 
-        #region API
+        #region properties
 
-        // https://github.com/JimBobSquarePants/ImageSharp/issues/16
+        public bool Enabled => _Enabled;
 
-        public void FlattenTo(IMAGE32 target)
-        {
-            if (!_Enabled) return;
+        public POINT Offset => new POINT(_OffsetX, _OffsetY);
 
-            if (target == null || _Color == null || _Opacity == 0) return;
+        public IMAGE32 Image => _Image;
 
-            target.Mutate(dc => dc.DrawImage(_Color, _Mode, _Opacity, SIZE.Empty, new POINT(_OffsetX, _OffsetY)) );
-        }
+        public SixLabors.ImageSharp.PixelFormats.PixelBlenderMode Mode => _Mode;
 
-        #endregion
+        public float Opacity => ((float)_Opacity / 100.0f);
+
+        #endregion        
     }
 
     [SDK.ContentNode("LayersStack")]
@@ -107,20 +131,25 @@ namespace Epsylon.UberPlugin
 
         protected override IMAGE32 Evaluate()
         {
-            var img = new IMAGE32(Width, Height);
-            img.MetaData.HorizontalResolution = DotsPerInch;
-            img.MetaData.VerticalResolution = DotsPerInch;
+            var limg = new LayerImage();            
 
             foreach (var layer in Layers)
             {
                 if (layer == null) continue;
 
-                layer.FlattenTo(img);
+                limg.Blend(layer.Image, layer.Mode,layer.Opacity);
 
                 layer.Dispose();
             }
 
-            return img;
+            if (limg.Image == null) return null;
+
+            limg.Image.MetaData.HorizontalResolution = DotsPerInch;
+            limg.Image.MetaData.VerticalResolution = DotsPerInch;
+
+            
+
+            return limg.Image;
         }
 
         protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
@@ -167,7 +196,7 @@ namespace Epsylon.UberPlugin
 
         protected override object EvaluatePreview(SDK.PreviewContext context)
         {
-            return Evaluate()._Color.CreatePreview(context);
+            return Evaluate()._Image.CreatePreview(context);
         }
     }
 
