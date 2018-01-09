@@ -123,7 +123,7 @@ namespace Epsylon.UberPlugin
         {
             if (FontFamily == null) return null;
 
-            var options = SixLabors.ImageSharp.Drawing.TextGraphicsOptions.Default;
+            var options = TextGraphicsOptions.Default;
 
             var txt = Text;
             if (txt == null) txt = String.Empty;
@@ -187,7 +187,7 @@ namespace Epsylon.UberPlugin
             {
                 foreach (var exifval in exif.Values)
                 {
-                    sb.AppendLine(exifval.ToString());
+                    sb.AppendLine($"{exifval.Tag} = {exifval.Value}");
                 }
             }
 
@@ -195,7 +195,7 @@ namespace Epsylon.UberPlugin
             {
                 foreach (var iccval in icc.Entries)
                 {
-                    sb.AppendLine(iccval.ToString());
+                    sb.AppendLine($"{iccval.Signature} {iccval.TagSignature}");
                 }
             }
 
@@ -203,7 +203,7 @@ namespace Epsylon.UberPlugin
             {
                 foreach (var iprop in ipps)
                 {
-                    sb.AppendLine(iprop.ToString());
+                    sb.AppendLine($"{iprop.Name} = {iprop.Value}");
                 }
             }            
 

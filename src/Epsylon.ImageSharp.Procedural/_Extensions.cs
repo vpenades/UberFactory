@@ -11,48 +11,25 @@ namespace Epsylon.ImageSharp.Procedural
 {
     public static class _PublicExtensions
     {
-        public static T GetValue<T>(this IList<SixLabors.ImageSharp.MetaData.ImageProperty> properties, string key, T defval) where T : IConvertible
+        private sealed class _ActionProcessor<TPixel> : IImageProcessor<TPixel> where TPixel : struct, IPixel<TPixel>
         {
-            var p = properties.FirstOrDefault(item => item.Name == key);
+            public static _ActionProcessor<TPixel> Create(Action<Image<TPixel>> action) { return new _ActionProcessor<TPixel>(action); }
 
-            return p == null ? defval : (T)System.Convert.ChangeType(p.Value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
-        }
+            private _ActionProcessor(Action<Image<TPixel>> action) { _Action = action; }
 
-        public static void SetValue<T>(this IList<SixLabors.ImageSharp.MetaData.ImageProperty> properties, string key, T val) where T : IConvertible
-        {
-            var idx = -1;
+            private readonly Action<Image<TPixel>> _Action;
 
-            for (int i = 0; i < properties.Count; ++i)
+            public void Apply(Image<TPixel> source, Rectangle sourceRectangle)
             {
-                if (properties[i].Name == key)
-                {
-                    idx = i; break;
-                }
+                _Action?.Invoke(source);
             }
-
-            var p = new SixLabors.ImageSharp.MetaData.ImageProperty(key, val.ToString(System.Globalization.CultureInfo.InvariantCulture));
-
-            if (idx < 0) properties.Add(p);
-            else properties[idx] = p;
         }
 
-        public static Point GetInternalPixelOffset<TPixel>(this Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> ApplyProcessor<TPixel>(this IImageProcessingContext<TPixel> source, Action<Image<TPixel>> action) where TPixel : struct, IPixel<TPixel>
         {
-            var x = image.MetaData.Properties.GetValue<int>("InternalPixelOffsetX", 0);
-            var y = image.MetaData.Properties.GetValue<int>("InternalPixelOffsetY", 0);
+            var processor = _ActionProcessor<TPixel>.Create(action);
 
-            return new Point(x, y);
-        }
-
-        public static void SetInternalPixelOffset<TPixel>(this Image<TPixel> image, int x, int y) where TPixel : struct, IPixel<TPixel>
-        {
-            image.SetInternalPixelOffset(new Point(x, y));
-        }
-
-        public static void SetInternalPixelOffset<TPixel>(this Image<TPixel> image, Point offset) where TPixel : struct, IPixel<TPixel>
-        {
-            image.MetaData.Properties.SetValue<int>("InternalPixelOffsetX", offset.X);
-            image.MetaData.Properties.SetValue<int>("InternalPixelOffsetY", offset.Y);
+            return source.ApplyProcessor(processor);
         }
     }
 

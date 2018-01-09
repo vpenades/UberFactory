@@ -35,79 +35,28 @@ namespace Epsylon.UberPlugin
 
         public IMAGE32 Image => _Image;
 
-        public void Blend(IMAGE32 src, SixLabors.ImageSharp.PixelFormats.PixelBlenderMode mode, float opacity)
+        public void Blend(IMAGE32 layer)
         {
-            if (src == null) return;
+            if (layer == null) return;
 
-            if (_Image == null)
-            {
-                _Image = src;                
-
-                if (opacity < 1) _Image.Mutate(dc => dc.Alpha(opacity));
-                return;
-            }
+            if (_Image == null) _Image = new IMAGE32(layer.Width, layer.Height);
 
             // https://github.com/JimBobSquarePants/ImageSharp/issues/16
 
-            _Image.Mutate(dc => dc.DrawImage(src, mode, opacity, SIZE.Empty, src.GetInternalPixelOffset() ) );
+            var opacity = layer.MetaData.GetInternalOpacity();
+            var offset = layer.MetaData.GetInternalPixelOffset();
+            var bmode = layer.MetaData.GetInternalBlendMode();
+
+            _Image.Mutate(dc => dc.DrawImage(layer, bmode, opacity, SIZE.Empty, offset ) );
         }
     }
 
-    public sealed class LayerInfo : IDisposable
-    {
-        #region lifecycle
-
-        public LayerInfo(bool enabled, IMAGE32 img,int offsetX,int offsetY, int opacity, SixLabors.ImageSharp.PixelFormats.PixelBlenderMode mode)
-        {
-            _Enabled = enabled;
-            _Image = img;
-
-            _Image.SetInternalPixelOffset(offsetX, offsetY);
-            
-            _Opacity = opacity;
-            _Mode = mode;
-        }
-
-        public void Dispose()
-        {
-            if (_Image != null) { _Image.Dispose(); _Image = null; }            
-        }
-
-        #endregion
-
-        #region data
-
-        private bool _Enabled;
-
-        private int _OffsetX;
-        private int _OffsetY;
-
-        internal IMAGE32 _Image;        
-
-        private int _Opacity;
-        private SixLabors.ImageSharp.PixelFormats.PixelBlenderMode _Mode;
-
-        #endregion
-
-        #region properties
-
-        public bool Enabled => _Enabled;
-
-        public POINT Offset => new POINT(_OffsetX, _OffsetY);
-
-        public IMAGE32 Image => _Image;
-
-        public SixLabors.ImageSharp.PixelFormats.PixelBlenderMode Mode => _Mode;
-
-        public float Opacity => ((float)_Opacity / 100.0f);
-
-        #endregion        
-    }
+    
 
     [SDK.ContentNode("LayersStack")]
     [SDK.Title("Layers")]
     [SDK.TitleFormat("{0} Layers")]
-    public sealed class LayersStack : ImageFilter
+    public sealed class LayersStack : ImageFilter // GridLayout
     {        
         [SDK.InputValue("Width")]
         [SDK.Title("Width"), SDK.Group("Image Size")]
@@ -127,7 +76,7 @@ namespace Epsylon.UberPlugin
         [SDK.InputNode("Layers", true)]
         [SDK.Title("Layers")]
         [SDK.ItemsPanel("VerticalList")]
-        public LayerInfo[] Layers { get; set; }
+        public IMAGE32[] Layers { get; set; }
 
         protected override IMAGE32 Evaluate()
         {
@@ -137,7 +86,7 @@ namespace Epsylon.UberPlugin
             {
                 if (layer == null) continue;
 
-                limg.Blend(layer.Image, layer.Mode,layer.Opacity);
+                limg.Blend(layer);
 
                 layer.Dispose();
             }
@@ -145,9 +94,7 @@ namespace Epsylon.UberPlugin
             if (limg.Image == null) return null;
 
             limg.Image.MetaData.HorizontalResolution = DotsPerInch;
-            limg.Image.MetaData.VerticalResolution = DotsPerInch;
-
-            
+            limg.Image.MetaData.VerticalResolution = DotsPerInch;            
 
             return limg.Image;
         }
@@ -158,7 +105,7 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("Layer")]
     [SDK.Title("Layer")]
     [SDK.TitleFormat("Layer {0}")]
-    public sealed class Layer : SDK.ContentFilter<LayerInfo>
+    public sealed class Layer : SDK.ContentFilter<IMAGE32>
     {
         [SDK.InputValue("Enabled")]
         [SDK.Title(""), SDK.Group("Opacity")]
@@ -189,14 +136,20 @@ namespace Epsylon.UberPlugin
         [SDK.InputNode("Image")]        
         public IMAGE32 Image { get; set; }        
 
-        protected override LayerInfo Evaluate()
+        protected override IMAGE32 Evaluate()
         {
-            return new LayerInfo(Opacity == 0 ? false : Enabled, Image , OffsetX,OffsetY, Opacity, BlendMode);
+            if (Image == null || Opacity <= 0) return null;
+
+            Image.MetaData.SetInternalPixelOffset(OffsetX, OffsetY);
+            Image.MetaData.SetInternalOpacity((float)Opacity / 100.0f);
+            Image.MetaData.SetInternalBlendMode(BlendMode);
+
+            return Image;
         }
 
         protected override object EvaluatePreview(SDK.PreviewContext context)
         {
-            return Evaluate()._Image.CreatePreview(context);
+            return Evaluate().CreatePreview(context);
         }
     }
 

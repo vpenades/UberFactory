@@ -49,14 +49,15 @@ namespace Epsylon.ImageSharp.Procedural
             {
                 // 1- Copies the original to a TOP clone
                 // 2- blurs the original
-                // 3- Blits the TOP clone over the original
+                // 3- Blits the TOP clone over the original                                
+                
 
                 using (var top = source.Clone(dc => dc.Crop(sourceRectangle)))
                 {
                     source.Mutate
                         (
                         dc =>
-                        dc                        
+                        dc
 
                         // .BackgroundColor, no Alpha || bleed color to transparent area
                         .Blur(BlurMode.Gaussian, _Radius)
