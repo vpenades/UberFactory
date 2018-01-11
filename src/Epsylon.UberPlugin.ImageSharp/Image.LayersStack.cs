@@ -11,68 +11,16 @@ namespace Epsylon.UberPlugin
 {
     using UberFactory;
 
-    using Epsylon.ImageSharp.Procedural;
+    using Epsylon.ImageSharp.Procedural;    
 
-    using XYZ = System.Numerics.Vector3;
-    using XYZW = System.Numerics.Vector4;
-
-    using PIXEL32 = SixLabors.ImageSharp.Rgba32;
-    using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;       
-
-    using SIZE = SixLabors.Primitives.Size;
-    using POINT = SixLabors.Primitives.Point;
-
-    // ideally, the structure passed between layers would be:
-    // OffsetX,Y , Image
-
-    // this is important because if at some point we want to overlay a sprite in the negative quadrant,
-    // the resulting image would be expanded, and the offset would be set accordingly, so any subsequent operation
-    // would match the proper coordinates.
-
-    public sealed class LayerImage
-    {        
-        private IMAGE32 _Image;
-
-        public IMAGE32 Image => _Image;
-
-        public void Blend(IMAGE32 layer)
-        {
-            if (layer == null) return;
-
-            if (_Image == null) _Image = new IMAGE32(layer.Width, layer.Height);
-
-            // https://github.com/JimBobSquarePants/ImageSharp/issues/16
-
-            var opacity = layer.MetaData.GetInternalOpacity();
-            var offset = layer.MetaData.GetInternalPixelOffset();
-            var bmode = layer.MetaData.GetInternalBlendMode();
-
-            _Image.Mutate(dc => dc.DrawImage(layer, bmode, opacity, SIZE.Empty, offset ) );
-        }
-    }
-
-    
+    using PIXEL32 = Rgba32;
+    using IMAGE32 = Image<Rgba32>;           
 
     [SDK.ContentNode("LayersStack")]
     [SDK.Title("Layers")]
     [SDK.TitleFormat("{0} Layers")]
     public sealed class LayersStack : ImageFilter // GridLayout
-    {        
-        [SDK.InputValue("Width")]
-        [SDK.Title("Width"), SDK.Group("Image Size")]
-        [SDK.Minimum(1),SDK.Default(256)]        
-        public int Width { get; set; }
-
-        [SDK.InputValue("Height")]
-        [SDK.Title("Height"), SDK.Group("Image Size")]
-        [SDK.Minimum(1),SDK.Default(256)]        
-        public int Height { get; set; }
-
-        [SDK.InputValue("DotsPerInch")]
-        [SDK.Title("DPI"), SDK.Group("Image Size")]
-        [SDK.Minimum(0.001f), SDK.Default(96)]
-        public double DotsPerInch { get; set; }        
-
+    {
         [SDK.InputNode("Layers", true)]
         [SDK.Title("Layers")]
         [SDK.ItemsPanel("VerticalList")]
@@ -80,24 +28,10 @@ namespace Epsylon.UberPlugin
 
         protected override IMAGE32 Evaluate()
         {
-            var limg = new LayerImage();            
+            var layout = new CanvasLayout<PIXEL32>(Layers);
 
-            foreach (var layer in Layers)
-            {
-                if (layer == null) continue;
-
-                limg.Blend(layer);
-
-                layer.Dispose();
-            }
-
-            if (limg.Image == null) return null;
-
-            limg.Image.MetaData.HorizontalResolution = DotsPerInch;
-            limg.Image.MetaData.VerticalResolution = DotsPerInch;            
-
-            return limg.Image;
-        }
+            return layout.Flatten();
+        }        
 
         protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
     }
@@ -107,29 +41,35 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat("Layer {0}")]
     public sealed class Layer : SDK.ContentFilter<IMAGE32>
     {
+        // https://github.com/JimBobSquarePants/ImageSharp/issues/16
+        // https://github.com/SixLabors/ImageSharp/issues/429
+        // https://www.w3.org/TR/compositing-1/
+
+        private const string _GroupTitle = "Overlay Settings";
+
         [SDK.InputValue("Enabled")]
-        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Title("👁"), SDK.Group(_GroupTitle)]
         [SDK.Default(true)]
         public Boolean Enabled { get; set; }
 
         [SDK.InputValue("Opacity")]
-        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Title("◿"), SDK.Group(_GroupTitle)]
         [SDK.Minimum(0),SDK.Default(100),SDK.Maximum(100)]
         [SDK.ViewStyle("Slider")]
         public int Opacity { get; set; }
 
         [SDK.InputValue("BlendMode")]
-        [SDK.Title("Mode"), SDK.Group("Opacity")]
+        [SDK.Title("⚭"), SDK.Group(_GroupTitle)]
         [SDK.Default(SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal)]
         public SixLabors.ImageSharp.PixelFormats.PixelBlenderMode BlendMode { get; set; }
 
         [SDK.InputValue("OffsetX")]
-        [SDK.Title("X"), SDK.Group("Offset")]
+        [SDK.Title("X"), SDK.Group(_GroupTitle)]
         [SDK.Default(0)]
         public int OffsetX { get; set; }
 
         [SDK.InputValue("OffsetY")]
-        [SDK.Title("Y"), SDK.Group("Offset")]
+        [SDK.Title("Y"), SDK.Group(_GroupTitle)]
         [SDK.Default(0)]
         public int OffsetY { get; set; }
 

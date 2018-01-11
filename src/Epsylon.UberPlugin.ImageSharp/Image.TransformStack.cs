@@ -85,9 +85,7 @@ namespace Epsylon.UberPlugin
             Source.Dispose();
 
             return target;
-        }
-
-        
+        }        
     }
 
 
