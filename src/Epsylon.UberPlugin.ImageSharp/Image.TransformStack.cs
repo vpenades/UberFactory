@@ -403,7 +403,31 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    
+
+    [SDK.ContentNode("ImageFlipTransform")]
+    [SDK.Title("Flip"), SDK.TitleFormat("{0} Flipped")]
+    public sealed class ImageFlipTransform : BaseImageTransform
+    {
+        [SDK.InputValue("Horizontal")]
+        [SDK.Title("W"), SDK.Group("Direction")]        
+        public Boolean Horizontal { get; set; }
+
+        [SDK.InputValue("Vertical")]
+        [SDK.Title("H"), SDK.Group("Direction")]        
+        public bool Vertical { get; set; }        
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            var ft = SixLabors.ImageSharp.Processing.FlipType.None;
+
+            if (Horizontal) ft |= SixLabors.ImageSharp.Processing.FlipType.Horizontal;
+            if (Vertical) ft |= SixLabors.ImageSharp.Processing.FlipType.Vertical;
+
+            return dc => dc.Flip(ft);
+        }
+
+    }
+
 
     [SDK.ContentNode("ResizeTransform")]
     [SDK.Title("Resize"), SDK.TitleFormat("{0} Resized")]
@@ -437,7 +461,9 @@ namespace Epsylon.UberPlugin
     {
         protected override IMGTRANSFORM TransformImage()
         {
-            return dc => dc.ApplyPolarDistort();
+            return dc => dc
+                .ApplyPolarDistort()
+                .Flip(SixLabors.ImageSharp.Processing.FlipType.Vertical);
         }
 
     }

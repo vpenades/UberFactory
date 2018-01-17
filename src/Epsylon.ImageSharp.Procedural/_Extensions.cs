@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using SixLabors.ImageSharp;
@@ -11,6 +12,21 @@ namespace Epsylon.ImageSharp.Procedural
 {
     public static class _PublicExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int _CyclicWrap(this int idx, int count) { return idx >= 0 ? idx % count : count - ((-idx - 1) % count) - 1; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetWrappedX<TPixel>(this Image<TPixel> image, int x) where TPixel: struct, IPixel<TPixel>
+        {
+            return x._CyclicWrap(image.Width);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetWrappedY<TPixel>(this Image<TPixel> image, int y) where TPixel : struct, IPixel<TPixel>
+        {
+            return y._CyclicWrap(image.Height);
+        }
+
         private sealed class _ActionProcessor<TPixel> : IImageProcessor<TPixel> where TPixel : struct, IPixel<TPixel>
         {
             public static _ActionProcessor<TPixel> Create(Action<Image<TPixel>> action) { return new _ActionProcessor<TPixel>(action); }

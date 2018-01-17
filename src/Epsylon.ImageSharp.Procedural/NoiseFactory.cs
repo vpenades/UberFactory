@@ -11,42 +11,46 @@ namespace Epsylon.ImageSharp.Procedural
 {
     public static class NoiseFactory
     {
-        public static Image<HalfSingle> CreateRandomNoise(int width, int height, int blurRadius = 0, int randomSeed = 177)
+        public static IImageProcessingContext<HalfSingle> FillRandomNoise(this IImageProcessingContext<HalfSingle> source, int blurRadius = 0, int randomSeed = 177)
         {
-            var noise = new Image<HalfSingle>(width, height);
+            return source.Apply(image => image._FillRandomNoise(blurRadius,randomSeed));
+        }
 
+        public static IImageProcessingContext<HalfSingle> FillPerlinNoise(this IImageProcessingContext<HalfSingle> source, float scale = 16, int repeat = 0, int octaves = 8, double persistence = 0.1f, int randomSeed = 177)
+        {
+            return source.Apply(image => image._FillPerlinNoise(scale, repeat, octaves, persistence, randomSeed));
+        }
+
+        private static void _FillRandomNoise(this Image<HalfSingle> image, int blurRadius = 0, int randomSeed = 177)
+        {
             var generator = new Random(randomSeed);
 
-            for (int y = 0; y < height; ++y)
+            for (int y = 0; y < image.Height; ++y)
             {
-                for (int x = 0; x < width; ++x)
+                for (int x = 0; x < image.Width; ++x)
                 {
                     var p = (float)generator.NextDouble();
 
                     var pp = new HalfSingle(p);
 
-                    noise[x, y] = pp;
+                    image[x, y] = pp;
                 }
             }
 
             if (blurRadius > 0)
             {
-                noise.Mutate(dc => dc.BoxBlur(blurRadius));
-                noise._MutateAutoLevels();
-            }
-
-            return noise;
+                image.Mutate(dc => dc.BoxBlur(blurRadius));
+                image._MutateAutoLevels();
+            }            
         }
 
-        public static Image<HalfSingle> CreatePerlinNoise(int width, int height, float scale = 16, int repeat = 0, int octaves = 8, double persistence = 0.1f, int randomSeed = 177)
+        private static void _FillPerlinNoise(this Image<HalfSingle> image, float scale = 16, int repeat = 0, int octaves = 8, double persistence = 0.1f, int randomSeed = 177)
         {
-            var noise = new Image<HalfSingle>(width, height);
-
             var generator = new Perlin_Tileable(randomSeed, repeat);
 
-            for (int y = 0; y < height; ++y)
+            for (int y = 0; y < image.Height; ++y)
             {
-                for (int x = 0; x < width; ++x)
+                for (int x = 0; x < image.Width; ++x)
                 {
                     var xx = (float)x / scale;
                     var yy = (float)y / scale;
@@ -55,68 +59,19 @@ namespace Epsylon.ImageSharp.Procedural
 
                     var pp = new HalfSingle(p);
 
-                    noise[x,y] = pp;                    
+                    image[x,y] = pp;                    
                 }
             }
 
-            noise._MutateAutoLevels();
-
-            return noise;
+            image._MutateAutoLevels();            
         }        
-
-        public static IImageProcessingContext<TPixel> FillPerlinNoise<TPixel>(this IImageProcessingContext<TPixel> source, float scale=16, int repeat = 0, int octaves = 8, double persistence = 0.1f, int randomSeed = 177) where TPixel : struct, IPixel<TPixel>
-        {
-            var perlin = new _PerlinProcessor<TPixel>(scale, randomSeed, repeat,octaves,persistence);
-
-            return source.ApplyProcessor(perlin);         
-        }        
-
-        sealed class _PerlinProcessor<TPixel> : IImageProcessor<TPixel> where TPixel : struct, IPixel<TPixel>
-        {
-            public _PerlinProcessor(float scale, int randomSeed, int repeat, int octaves, double persistence)
-            {
-                _Scale = scale;
-                _PerlinGenerator = new Perlin_Tileable(randomSeed, repeat);
-                _Octaves = octaves;
-                _Persistence = persistence;
-            }
-
-            private readonly float _Scale;
-            private readonly int _Octaves;
-            private readonly double _Persistence;
-
-            private readonly Perlin_Tileable _PerlinGenerator;
-
-            public void Apply(Image<TPixel> source, Rectangle sourceRectangle)
-            {
-                using (var noise = CreatePerlinNoise(sourceRectangle.Width, sourceRectangle.Height, _Scale, 0, _Octaves, _Persistence))
-                {
-                    for (int y = 0; y < noise.Height; ++y)
-                    {
-                        var value = default(TPixel);
-
-                        for (int x = 0; x < noise.Width; ++x)
-                        {
-                            var p = noise[x,y].ToSingle();                           
-
-                            var v = new System.Numerics.Vector4(p, p, p, 1);
-
-                            value.PackFromVector4(v);
-
-                            source[x, y] = value;
-                        }
-                    }
-                }
-            }
-        }
-
-
-        static void _MutateAutoLevels(this Image<HalfSingle> source)
+        
+        private static void _MutateAutoLevels(this Image<HalfSingle> source)
         {
             source._MutateAutoLevels(new Rectangle(Point.Empty, new Size(source.Width, source.Height)));
         }
 
-        static void _MutateAutoLevels(this Image<HalfSingle> source, Rectangle sourceRectangle)
+        private static void _MutateAutoLevels(this Image<HalfSingle> source, Rectangle sourceRectangle)
         {
             // stage 1: gather range
 

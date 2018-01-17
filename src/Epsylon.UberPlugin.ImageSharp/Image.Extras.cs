@@ -14,6 +14,7 @@ using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
 namespace Epsylon.UberPlugin
 {
+    using SixLabors.ImageSharp.PixelFormats;
     using UberFactory;
 
     [SDK.ContentNode("CreateSolidColor")]
@@ -40,6 +41,50 @@ namespace Epsylon.UberPlugin
             var img = new IMAGE32(this.Width, this.Height);
 
             img.Mutate(dc => dc.BackgroundColor(new PIXEL32(Color)));
+
+            return img;
+        }
+    }
+
+    [SDK.ContentNode("CreateCheckers")]
+    [SDK.Title("Checkers"), SDK.TitleFormat("{0} Checkers")]
+    public sealed class ImageSharpCreateCheckers : ImageFilter
+    {
+        [SDK.InputValue("Width")]
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Width { get; set; }
+
+        [SDK.InputValue("Height")]
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Height { get; set; }
+
+        [SDK.InputValue("CellWidth")]
+        [SDK.Title("W"), SDK.Group("Cell Size")]
+        [SDK.Minimum(1), SDK.Default(16)]
+        public int CellWidth { get; set; }
+
+        [SDK.InputValue("CellHeight")]
+        [SDK.Title("H"), SDK.Group("Cell Size")]
+        [SDK.Minimum(1), SDK.Default(16)]
+        public int CellHeight { get; set; }
+
+        [SDK.InputValue("OddColor")]
+        [SDK.Default((UInt32)0xffffffff)]
+        [SDK.ViewStyle("ColorPicker")]
+        public UInt32 OddColor { get; set; }
+
+        [SDK.InputValue("EvenColor")]
+        [SDK.Default((UInt32)0xff000000)]
+        [SDK.ViewStyle("ColorPicker")]
+        public UInt32 EvenColor { get; set; }
+
+        protected override IMAGE32 Evaluate()
+        {
+            var img = new IMAGE32(this.Width, this.Height);
+
+            img.Mutate(dc => dc.FillCheckers(this.CellWidth,this.CellHeight, new PIXEL32(OddColor) , new PIXEL32(EvenColor)) );
 
             return img;
         }
@@ -88,8 +133,10 @@ namespace Epsylon.UberPlugin
         {
             var p = (float)Persistence;
 
-            using (var noise = NoiseFactory.CreatePerlinNoise(this.Width, this.Height, this.Scale, 0, this.Octaves, p /100.0f, this.RandomSeed))
+            using (var noise = new Image<HalfSingle>(Width,Height))
             {
+                noise.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, this.Octaves, p / 100.0f, this.RandomSeed));                
+                
                 return noise.CloneWithLookupTable(Gradient);
             }
         }
