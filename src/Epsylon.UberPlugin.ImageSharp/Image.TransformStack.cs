@@ -431,7 +431,18 @@ namespace Epsylon.UberPlugin
                
     }
 
-    
+    [SDK.ContentNode("PolarDistortTransform")]
+    [SDK.Title("Polar"), SDK.TitleFormat("{0} Polar")]
+    public sealed class PolarDistortTransform : BaseImageTransform
+    {
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => dc.ApplyPolarDistort();
+        }
+
+    }
+
+
 
 
     [SDK.ContentNode("SpecialEffectsTransform")]

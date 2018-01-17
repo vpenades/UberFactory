@@ -35,6 +35,13 @@ namespace Epsylon.ImageSharp.Procedural
 
     static class _PrivateExtensions
     {
+        public static int Clamp(this int v, int min, int max)
+        {
+            if (v < min) return min;
+            if (v > max) return max;
+            return v;
+        }
+
         public static float Clamp(this float v, float min, float max)
         {
             if (v < min) return min;
