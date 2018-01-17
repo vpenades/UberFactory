@@ -78,9 +78,10 @@ namespace Epsylon.ImageSharp.Procedural
         {
             using (var source = target.Clone())
             {
-                var sourceSampler = SamplerFactory.CreateSampler(source);
-                sourceSampler = new _PolarTransformSampler<TPixel>(sourceSampler); // polar transform needs normalized coordinates
-                var intSampler = new _NormalizeUVTransformSampler<TPixel>(sourceSampler, source);
+                var sampler = SamplerFactory
+                    .CreateSampler(source, SamplerAddressMode.Wrap, SamplerAddressMode.Clamp)
+                    .ToPolarTransform()
+                    .ToPointSampler(source.Width,source.Height);
 
                 var tl = Point.Empty;
                 var tr = Point.Empty;
@@ -97,7 +98,7 @@ namespace Epsylon.ImageSharp.Procedural
                         tl.X = bl.X = dx;
                         tr.X = br.X = dx + 1;                        
 
-                        target[dx, dy] = sourceSampler.GetSample(tl, tr, br, bl);
+                        target[dx, dy] = sampler.GetSample(tl, tr, br, bl);
                     }
                 }
             }
