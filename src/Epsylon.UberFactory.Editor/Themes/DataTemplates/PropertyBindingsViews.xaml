@@ -177,7 +177,7 @@
 
                         <WrapPanel>
                             <Button Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"/>
-                            <Button Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveBindingCmd}" ToolTip="{StaticResource L2N_SetNullReference}"/>
+                            <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding RemoveBindingCmd}" ToolTip="{StaticResource L2N_SetNullReference}"/>
                         </WrapPanel>
                     </GroupBox>
                     
@@ -212,7 +212,7 @@
             </GroupBox.Header>
 
             <WrapPanel HorizontalAlignment="Center"  VerticalAlignment="Center">
-                <Button Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+                <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
                 <Button Content="{StaticResource _EmptyIcon}" Command="{Binding RemoveElementCmd}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" ToolTip="{StaticResource L2N_SetNullReference}" />
                 <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseParameterCmd}" ToolTip="{StaticResource L2N_SetNewReference}" />
             </WrapPanel>            
@@ -240,6 +240,7 @@
                     </DockPanel.ContextMenu>
 
                     <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />
+                    <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" DockPanel.Dock="Right" />
                     <Button Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}" DockPanel.Dock="Right"/>
                     <TextBlock Text="    " />
                 </DockPanel>

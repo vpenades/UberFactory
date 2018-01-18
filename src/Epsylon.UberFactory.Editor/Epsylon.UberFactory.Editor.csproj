@@ -139,6 +139,7 @@
     <Compile Include="Themes\Dialog.TaskMonitor.xaml.cs">
       <DependentUpon>Dialog.TaskMonitor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Themes\SafeButton.cs" />
     <Compile Include="Themes\TaskMonitorWindow.ProgressDialog.xaml.cs">
       <DependentUpon>TaskMonitorWindow.ProgressDialog.xaml</DependentUpon>
     </Compile>

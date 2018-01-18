@@ -8,16 +8,23 @@
     <local:FilePathConverter x:Key="asFilePath" />
 
     <!-- http://xahlee.info/comp/unicode_crosses.html -->
-    
-    <sys:String x:Key="_AddIcon">➕</sys:String>
-    <sys:String x:Key="_RemoveIcon">❌</sys:String>
-    <sys:String x:Key="_ResetIcon">❌</sys:String> <!-- ⭕ ⬜ 🔲 🔳 ⚪ ⚫ ❎⛝ -->
-    <sys:String x:Key="_EmptyIcon">🔲</sys:String>    
-    <sys:String x:Key="_InspectIcon">🔎</sys:String>
-    <sys:String x:Key="_FolderIcon">📁</sys:String>
-    <sys:String x:Key="_EditIcon">✎</sys:String>
+
     <sys:String x:Key="_NewIcon">✨</sys:String> <!-- ✳✴❇🆕-->
+    <sys:String x:Key="_AddIcon">➕</sys:String>
+    
+    <sys:String x:Key="_RemoveIcon">❌</sys:String>
+    <sys:String x:Key="_TrashIcon">🗑</sys:String>
+    
+    <sys:String x:Key="_ResetIcon">❌</sys:String> <!-- ⭕ ⬜ 🔲 🔳 ⚪ ⚫ ❎⛝ -->
+    <sys:String x:Key="_EmptyIcon">🔲</sys:String>
+    
+    <sys:String x:Key="_InspectIcon">🔎</sys:String>
+    
+    <sys:String x:Key="_FolderIcon">📁</sys:String>
     <sys:String x:Key="_OpenIcon">📂</sys:String>
+    
+    <sys:String x:Key="_EditIcon">✎</sys:String>    
+    
     <sys:String x:Key="_SaveIcon">💾</sys:String>
     <sys:String x:Key="_ExitIcon">❎</sys:String>
     <sys:String x:Key="_ConfigurationsIcon">🗃</sys:String>
@@ -29,7 +36,7 @@
     <sys:String x:Key="_PackageIcon">📦</sys:String>
     <sys:String x:Key="_OutboxTray">📤</sys:String>
     <sys:String x:Key="_InboxTray">📥</sys:String>
-    <sys:String x:Key="_TrashIcon">🗑</sys:String>
+    
 
     <!--▲△ ▼▽-->
     <sys:String x:Key="_ExpanderExpand">▼</sys:String>

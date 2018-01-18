@@ -20,7 +20,7 @@
                               Header="{Binding Pipeline.Content.DisplayName}"
                               Visibility="{Binding Pipeline.IsInstanced,Converter={StaticResource asVisible}}" >
 
-                    <Button Content="{StaticResource _RemoveIcon}" HorizontalAlignment="Center" Command="{Binding Pipeline.ClearCmd}" />
+                    <themes:SafeButton Content="{StaticResource _RemoveIcon}" HorizontalAlignment="Center" Command="{Binding Pipeline.ClearCmd}" />
                 </GroupBox>
 
             </WrapPanel>
