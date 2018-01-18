@@ -3,7 +3,7 @@
   <DocumentInfo>
     <Properties>
       <Generator>UberFactoryEditor 0.0.0.0</Generator>
-      <Date>18/01/2018 10:37:01</Date>
+      <Date>18/01/2018 12:38:11</Date>
     </Properties>
   </DocumentInfo>
   <PluginReference>
@@ -28,6 +28,9 @@
         <Properties>
           <ClassName>UberFactory_ImageSharp_GlobalSettings</ClassName>
         </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
       </Node>
     </Pipeline>
   </Settings>
@@ -41,6 +44,9 @@
         <Properties>
           <ClassName>UberFactory_ImageSharp_JpegGlobalSettings</ClassName>
         </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
       </Node>
     </Pipeline>
   </Settings>
@@ -54,6 +60,9 @@
         <Properties>
           <ClassName>UberFactory_ImageSharp_PngGlobalSettings</ClassName>
         </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
       </Node>
     </Pipeline>
   </Settings>
@@ -67,12 +76,15 @@
         <Properties>
           <ClassName>UberFactory_CoreTypes_TextFormattingSettings</ClassName>
         </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
       </Node>
     </Pipeline>
   </Settings>
   <Task>
     <Properties>
-      <Title>New Task 1</Title>
+      <Title>Some Noise</Title>
     </Properties>
     <Pipeline>
       <Properties>
@@ -114,8 +126,9 @@
           <Properties>
             <Source>a894df5a-0d0d-4c7e-9994-6787e73ba45b</Source>
             <Transforms>
-              <Item>0e60a21f-551a-4a2b-aec7-edd070749728</Item>
-              <Item>d99cfcb3-ca37-4a94-adfd-0891a99aedcc</Item>
+              <Item>74622082-39e6-4346-8bee-646c5c78cbba</Item>
+              <Item>4f321413-59b8-42ac-a80c-240df2d9a8c4</Item>
+              <Item>c34b8c5e-eb86-436b-a7c6-736d71c4e35b</Item>
             </Transforms>
           </Properties>
         </Configuration>
@@ -126,11 +139,12 @@
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Gradient>6c26f41f-753a-4ab4-b9f2-113f12782370</Gradient>
             <Width>512</Width>
-            <Height>256</Height>
-            <Persistence>13</Persistence>
-            <Scale>64</Scale>
+            <Height>512</Height>
+            <Persistence>6</Persistence>
+            <Scale>32</Scale>
+            <Gradient>7e0c3881-6f08-4075-be39-02aeb295023d</Gradient>
+            <Octaves>8</Octaves>
           </Properties>
         </Configuration>
       </Node>
@@ -148,7 +162,7 @@
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Color1>4287433216</Color1>
+            <Color1>4282780418</Color1>
             <Color2>4278885376</Color2>
           </Properties>
         </Configuration>
@@ -159,6 +173,237 @@
         </Properties>
         <Configuration Name="Root">
           <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="74622082-39e6-4346-8bee-646c5c78cbba">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_DetectEdgeTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Filter>Lapacian5X5</Filter>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="7e0c3881-6f08-4075-be39-02aeb295023d">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PaletteFromColors</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Colors>
+              <Item>c7ced265-2058-49b9-aaae-a6f39ca0fd46</Item>
+              <Item>7a9dfc0e-7eec-4f9b-aacf-682f951462c8</Item>
+              <Item>ad38c94d-1929-4666-bd41-8bdcaa43c07b</Item>
+              <Item>2642d3df-3801-47ad-9d06-8854c9e6e6fa</Item>
+            </Colors>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="c7ced265-2058-49b9-aaae-a6f39ca0fd46">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Color>4278195568</Color>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="7a9dfc0e-7eec-4f9b-aacf-682f951462c8">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="ad38c94d-1929-4666-bd41-8bdcaa43c07b">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Color>4278487809</Color>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="2642d3df-3801-47ad-9d06-8854c9e6e6fa">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Color>4279763323</Color>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="4f321413-59b8-42ac-a80c-240df2d9a8c4">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_InvertTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="c34b8c5e-eb86-436b-a7c6-736d71c4e35b">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_BlurTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+  <Task>
+    <Properties>
+      <Title>Polar Coordinates</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>b1ad9908-bec5-433b-ae79-cbc6090849ac</RootNodeId>
+      </Properties>
+      <Node Id="b1ad9908-bec5-433b-ae79-cbc6090849ac">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ImageWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Encoder>d3b515cb-cf8a-483a-9be8-33b7df68c6bf</Encoder>
+            <FileName>Polars</FileName>
+            <Image>f4e17cdf-e30e-4ab7-9777-71b823588401</Image>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="d3b515cb-cf8a-483a-9be8-33b7df68c6bf">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PngEncoder</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="f4e17cdf-e30e-4ab7-9777-71b823588401">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_TransformStack</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Source>476185d3-c63c-4e52-86ff-7270b0d8009c</Source>
+            <Transforms>
+              <Item>71122eb2-2420-4065-8ba7-ca1040ef3bd0</Item>
+              <Item>7ed6a288-55e4-4558-ac3d-0d92698d2383</Item>
+            </Transforms>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="476185d3-c63c-4e52-86ff-7270b0d8009c">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_CreateCheckers</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Width>512</Width>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="71122eb2-2420-4065-8ba7-ca1040ef3bd0">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PolarDistortTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="7ed6a288-55e4-4558-ac3d-0d92698d2383">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ResizeTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+  <Task>
+    <Properties>
+      <Title>Text Rendering</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>99823988-2ed5-4a60-961c-a8dac4f01c9f</RootNodeId>
+      </Properties>
+      <Node Id="99823988-2ed5-4a60-961c-a8dac4f01c9f">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ImageWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Image>88c6b853-a2dd-4ed5-a563-cd141aee3d9a</Image>
+            <Encoder>447d9734-631f-4380-853b-a8db1b85a330</Encoder>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="88c6b853-a2dd-4ed5-a563-cd141aee3d9a">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_TransformStack</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Source>23f45bcc-d04a-4529-901f-d6b4880f392b</Source>
+            <Transforms>ea92199b-d09b-4fc4-aaa3-52b2ceff68eb</Transforms>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="447d9734-631f-4380-853b-a8db1b85a330">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PngEncoder</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="23f45bcc-d04a-4529-901f-d6b4880f392b">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_CreateText</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Text>53dafd68-953e-4e78-95e8-2ed8b776422e</Text>
+            <Size>48</Size>
+            <FontFamily>8c194bed-e0b7-44a5-8c66-9354c0aa79b1</FontFamily>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="53dafd68-953e-4e78-95e8-2ed8b776422e">
+        <Properties>
+          <ClassName>UberFactory_CoreTypes_AssignText</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value>Hello World!</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="8c194bed-e0b7-44a5-8c66-9354c0aa79b1">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_SixLaborsSystemFont</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <FontFamily>Calibri</FontFamily>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="ea92199b-d09b-4fc4-aaa3-52b2ceff68eb">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_OuterGlowTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Radius>4</Radius>
+          </Properties>
         </Configuration>
       </Node>
     </Pipeline>
