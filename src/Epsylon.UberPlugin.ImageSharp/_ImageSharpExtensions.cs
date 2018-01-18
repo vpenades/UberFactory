@@ -134,7 +134,10 @@ namespace Epsylon.UberPlugin
         {
             if (image == null) return null;
 
-            var files = context.CreateMemoryFile("preview.png");
+            var date = DateTime.Now.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            var time = DateTime.Now.ToString("hhmmss", System.Globalization.CultureInfo.InvariantCulture);
+
+            var files = context.CreateMemoryFile($"preview-{date}-{time}.png");
 
             files.WriteStream(s => image.SaveAsPng(s));
 
