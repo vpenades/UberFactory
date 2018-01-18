@@ -18,6 +18,9 @@ namespace Epsylon.UberFactory.Themes
     /// </remarks>
     public class SafeButton : Button
     {
+        // this is used to store the default foreground brush when we replace it with red.
+        private Brush _ForegroundBackup;
+
         public static readonly DependencyProperty CommandIsReadyProperty = DependencyProperty.Register
             (
             nameof(CommandIsReady),
@@ -30,19 +33,22 @@ namespace Epsylon.UberFactory.Themes
         {
             get { return (bool)GetValue(CommandIsReadyProperty); }
             set { SetValue(CommandIsReadyProperty, value); }
-        }
-
-        private Brush _ForegroundBackup;
+        }        
 
         private static void _Update(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SafeButton ctrl && e.Property == CommandIsReadyProperty)
+            if (d is SafeButton ctrl) ctrl._Update(e);
+        }
+
+        private void _Update(DependencyPropertyChangedEventArgs e)
+        {
+            if (e.Property == CommandIsReadyProperty)
             {
                 var oldval = (bool)e.OldValue;
                 var newval = (bool)e.NewValue;
 
-                if (oldval == false && newval == true) { ctrl._ForegroundBackup = ctrl.Foreground; ctrl.Foreground = Brushes.Red; }
-                if (oldval == true && newval == false) { ctrl.Foreground = ctrl._ForegroundBackup; }                
+                if (oldval == false && newval == true) { _ForegroundBackup = Foreground; Foreground = Brushes.Red; }
+                if (oldval == true && newval == false) { Foreground = _ForegroundBackup; }
             }
         }
 
