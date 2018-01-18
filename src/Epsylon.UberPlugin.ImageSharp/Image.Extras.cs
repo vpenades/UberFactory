@@ -17,6 +17,7 @@ namespace Epsylon.UberPlugin
     using SixLabors.ImageSharp.PixelFormats;
     using UberFactory;
 
+    [SDK.Icon("🏴")]
     [SDK.ContentNode("CreateSolidColor")]
     [SDK.Title("Solid Color"), SDK.TitleFormat("{0} Solid Color")]
     public sealed class ImageSharpCreateSolidColor : ImageFilter
@@ -44,8 +45,9 @@ namespace Epsylon.UberPlugin
 
             return img;
         }
-    }
-
+    }    
+    
+    [SDK.Icon("🏁")]
     [SDK.ContentNode("CreateCheckers")]
     [SDK.Title("Checkers"), SDK.TitleFormat("{0} Checkers")]
     public sealed class ImageSharpCreateCheckers : ImageFilter
@@ -90,6 +92,7 @@ namespace Epsylon.UberPlugin
         }
     }
 
+    [SDK.Icon("🏳️‍🌈")]    
     [SDK.ContentNode("CreatePerlinNoise")]
     [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
     public sealed class ImageSharpCreatePerlinNoise : ImageFilter
@@ -142,6 +145,7 @@ namespace Epsylon.UberPlugin
         }
     }
 
+    [SDK.Icon("AZ")]
     [SDK.ContentNode("CreateText")]
     [SDK.Title("Text"),SDK.TitleFormat( "{0} Text")]
     public sealed class ImageSharpCreateText : ImageFilter

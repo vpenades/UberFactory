@@ -7,7 +7,17 @@
              mc:Ignorable="d" MinWidth="200" MinHeight="400">
 
     <GroupBox Style="{StaticResource PlainTextGroupBoxStyle}" Header="Select Node">
+        
+        <!--
         <ListBox ItemsSource="{Binding Collection}" DisplayMemberPath="DisplayName" SelectedValue="{Binding Selected}" />
+        -->
+        
+        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Collection}" IsReadOnly="True" SelectionMode="Single" SelectedValue="{Binding Selected}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="" Binding="{Binding IconContent}" />
+                <DataGridTextColumn Header="Filter" Binding="{Binding DisplayName}" />
+            </DataGrid.Columns>            
+        </DataGrid>
     </GroupBox>
     
 </UserControl>

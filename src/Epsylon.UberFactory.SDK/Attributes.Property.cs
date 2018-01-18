@@ -9,8 +9,6 @@ namespace Epsylon.UberFactory
 {
     partial class SDK
     {
-        
-
         #region input properties
 
         [AttributeUsageAttribute(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]

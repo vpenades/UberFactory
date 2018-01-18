@@ -45,8 +45,9 @@ namespace Epsylon.UberPlugin
         protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
     }
 
+    [SDK.Icon("💾")]
     [SDK.ContentNode("ImageWriter")]
-    [SDK.Title("Save ImageSharp to File")]
+    [SDK.Title("Write ImageSharp to File")]
     public sealed class ImageWriter : SDK.FileWriter
     {
         [SDK.InputNode("Image")]

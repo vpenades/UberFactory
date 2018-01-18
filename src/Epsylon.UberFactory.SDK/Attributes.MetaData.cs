@@ -37,8 +37,12 @@ namespace Epsylon.UberFactory
 
             public Type SharedType { get; private set; }
             public string PropertyName { get; private set; }
-        }        
+        }
 
+        public class IconAttribute : MetaDataAttribute
+        {
+            public IconAttribute(string icon) : base("Icon", icon) { }
+        }
 
         public class TitleAttribute : MetaDataAttribute
         {

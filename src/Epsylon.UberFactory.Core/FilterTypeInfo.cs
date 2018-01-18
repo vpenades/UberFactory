@@ -104,7 +104,7 @@ namespace Epsylon.UberFactory
 
             #endregion
 
-            #region properties
+            #region properties            
 
             public abstract string SerializationKey { get; }
 
@@ -217,6 +217,20 @@ namespace Epsylon.UberFactory
             #endregion
 
             #region properties
+
+            public Object IconContent
+            {
+                get
+                {
+                    var content = GetMetaDataValue<String>("Icon", null);
+                    if (string.IsNullOrWhiteSpace(content)) return null;
+
+                    // TODO: if mime type or whatever, decode as PNG
+
+                    return content;
+                }
+
+            }
 
             public override string  SerializationKey    => _GetSerializationKey();
 

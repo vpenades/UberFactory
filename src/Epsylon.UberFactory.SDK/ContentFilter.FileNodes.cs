@@ -8,7 +8,8 @@ namespace Epsylon.UberFactory
 {
     public static partial class SDK
     {
-        [Title("From File"), TitleFormat("{0} File")]        
+        [Icon("📂")]
+        [Title("From File"), TitleFormat("{0} File")]
         public abstract class FileReader<TValue> : ContentFilter<TValue> 
         {
             public virtual string GetFileFilter() { return "All Files|*.*"; }
@@ -96,6 +97,8 @@ namespace Epsylon.UberFactory
             protected abstract void WriteFile(ExportContext stream,TValueOut value);
         }
 
+        [Icon("📂")]
+        [Title("From Files"), TitleFormat("{0} Files")]
         public abstract class BatchReader<TValue> : ContentFilter<IReadOnlyDictionary<string,TValue>>
         {
             // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.

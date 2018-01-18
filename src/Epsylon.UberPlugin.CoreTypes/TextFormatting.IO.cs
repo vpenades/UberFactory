@@ -7,6 +7,7 @@ namespace Epsylon.UberPlugin.CoreTypes
 
     using TEXTFUNC = Func<String, String>;
 
+    [SDK.Icon("✍")]
     [SDK.ContentNode(nameof(AssignText))]
     [SDK.Title("Text")]
     public sealed class AssignText : SDK.ContentFilter<String>
@@ -40,6 +41,7 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
+    [SDK.Icon("💾")]
     [SDK.ContentNode(nameof(TextWriter))]
     [SDK.Title("Write Text to File")]
     public sealed class TextWriter : SDK.FileWriter

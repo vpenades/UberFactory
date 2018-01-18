@@ -22,7 +22,7 @@ namespace Epsylon.UberPlugin
     using POINT = SixLabors.Primitives.Point;
     using RECT = SixLabors.Primitives.Rectangle;
 
-
+    [SDK.Icon("🖼")]
     [SDK.ContentNode("TransformStack")]
     [SDK.Title("Transforms"), SDK.TitleFormat("{0} Transforms")]
     public sealed class TransformStack : ImageFilter
@@ -54,7 +54,7 @@ namespace Epsylon.UberPlugin
         }        
     }
 
-
+    [SDK.Icon("🖼")]
     [SDK.ContentNode("LayeredTransformStack")]
     [SDK.Title("Layered Transforms"), SDK.TitleFormat("{0} Layered Transforms")]
     public sealed class LayeredTransformStack : ImageFilter
