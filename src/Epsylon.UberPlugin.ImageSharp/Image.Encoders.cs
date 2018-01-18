@@ -27,7 +27,7 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("PngEncoder")]
-    [SDK.Title("PNG Encoder")]
+    [SDK.Title("PNG")]
     [SDK.TitleFormat( "PNG {0}")]
     public sealed class PngEncoder : EncoderBase
     {
@@ -61,7 +61,7 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("JpegEncoderAdvanced")]
-    [SDK.Title("JPG Encoder (Advanced)")]
+    [SDK.Title("JPG (Advanced)")]
     [SDK.TitleFormat( "JPG {0}")]
     public sealed class JpegEncoderAdvanced : EncoderBase
     {
@@ -84,7 +84,7 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("JpegEncoderBasic")]
-    [SDK.Title("JPG Encoder")]
+    [SDK.Title("JPG")]
     [SDK.TitleFormat("JPG {0}")]
     public sealed class JpegEncoderBasic : EncoderBase
     {
@@ -103,7 +103,7 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.ContentNode("BmpEncoder")]
-    [SDK.Title("BMP Encoder")]
+    [SDK.Title("BMP")]
     [SDK.TitleFormat( "BMP {0}")]
     public sealed class BmpEncoder : EncoderBase
     {
@@ -124,7 +124,7 @@ namespace Epsylon.UberPlugin
 
 
     [SDK.ContentNode("GifEncoder")]
-    [SDK.Title("GIF Encoder")]
+    [SDK.Title("GIF")]
     [SDK.TitleFormat( "GIF {0}")]
     public sealed class GifEncoder : EncoderBase
     {

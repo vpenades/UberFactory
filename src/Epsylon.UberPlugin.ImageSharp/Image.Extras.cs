@@ -183,6 +183,7 @@ namespace Epsylon.UberPlugin
         }        
     }
 
+    [SDK.Icon("AZ")]
     [SDK.ContentNode("SixLaborsSystemFont")]
     [SDK.Title("System Font")]
     public sealed class SixLaborsSystemFont : SDK.ContentFilter<SixLabors.Fonts.FontFamily>
@@ -215,7 +216,7 @@ namespace Epsylon.UberPlugin
         }
     }
 
-
+    [SDK.Icon("ℹ")]
     [SDK.ContentNode("ImageMetadataToText")]
     [SDK.Title("Image Metadata"), SDK.TitleFormat("{0} Metadata")]
     public sealed class ImageSharpMetadataToText : SDK.ContentFilter<String>

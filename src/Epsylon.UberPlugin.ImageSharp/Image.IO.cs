@@ -77,10 +77,9 @@ namespace Epsylon.UberPlugin
             return encoder == null ? default(IMAGEENCODER) : new IMAGEENCODER(ext,act);
         }
     }
-
-
     
 
+    [SDK.Icon("💾")]
     [SDK.ContentNode("BatchProcessor")]
     [SDK.Title("Process ImageSharp Batch")]
     public sealed class BatchProcessor : SDK.BatchProcessor<IMAGE32,IMAGE32>
