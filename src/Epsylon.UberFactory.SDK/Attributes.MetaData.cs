@@ -82,6 +82,8 @@ namespace Epsylon.UberFactory
         [AttributeUsage(AttributeTargets.Property)]
         public class GroupAttribute : MetaDataAttribute
         {
+            public GroupAttribute(int groupId) : base("Group", $"#{groupId}") { }
+
             public GroupAttribute(string groupName) : base("Group", groupName) { }
         }
 

@@ -95,7 +95,7 @@ namespace Epsylon.UberPlugin
     public sealed class TransformLayer : SDK.ContentFilter<TransformLayer.Description>
     {
         [SDK.InputValue("Enabled")]
-        [SDK.Title(""), SDK.Group("Opacity")]
+        [SDK.Title("👁"), SDK.Group("Opacity")]
         [SDK.Default(true)]
         public Boolean Enabled { get; set; }
 
@@ -159,8 +159,9 @@ namespace Epsylon.UberPlugin
     public abstract class BaseImageTransform : SDK.ContentFilter<IMGTRANSFORM>
     {
         [SDK.InputValue("Enabled")]
-        [SDK.Title("Enabled")]
+        [SDK.Title("👁")]
         [SDK.Default(true)]
+        [SDK.Group(0)]
         public Boolean Enabled { get; set; }
 
         // TODO: add boolean to enable TILEABLE mode:
@@ -185,6 +186,7 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Alpha")]
         [SDK.Title("Alpha")]
         [SDK.Minimum(0), SDK.Default(1), SDK.Maximum(1)]
+        [SDK.Group(0)]
         public float Alpha { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -198,6 +200,7 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Outer Glow"), SDK.TitleFormat("{0} with Outer Glow")]
     public sealed class ImageOuterGlowTransform : BaseImageTransform
     {
+        [SDK.Group(0)]
         [SDK.InputValue("Radius")]
         [SDK.Title("Radius")]
         [SDK.Minimum(0), SDK.Default(1)]
@@ -217,11 +220,13 @@ namespace Epsylon.UberPlugin
     {
         public enum BlurMode { Box, Gaussian }
 
+        [SDK.Group(0)]
         [SDK.InputValue("Mode")]
         [SDK.Title("Mode")]
         [SDK.Default(Epsylon.ImageSharp.Procedural.BlurMode.Gaussian)]
         public Epsylon.ImageSharp.Procedural.BlurMode Mode { get; set; }
 
+        [SDK.Group(0)]
         [SDK.InputValue("Radius")]
         [SDK.Title("Radius")]
         [SDK.Minimum(0), SDK.Default(5)]
@@ -237,6 +242,7 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Detect Edges"), SDK.TitleFormat("{0} Edges")]
     public sealed class DetectEdgeTransform : BaseImageTransform
     {
+        [SDK.Group(0)]
         [SDK.InputValue("Filter")]
         [SDK.Title("Filter")]
         [SDK.Default(SixLabors.ImageSharp.Processing.EdgeDetection.Lapacian5X5)]
@@ -252,11 +258,13 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Oil Paint"), SDK.TitleFormat("{0} as Old Paint")]
     public sealed class ImageOilPaintTransform : BaseImageTransform
     {
+        [SDK.Group(0)]
         [SDK.InputValue("Levels")]
         [SDK.Title("Levels")]
         [SDK.Minimum(1), SDK.Default(10)]
         public int Levels { get; set; }
 
+        [SDK.Group(0)]
         [SDK.InputValue("BrushSize")]
         [SDK.Title("Brush Size")]
         [SDK.Minimum(1), SDK.Default(15)]
@@ -274,9 +282,10 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Old Photo"), SDK.TitleFormat("{0} as Old Photo")]
     public sealed class ImageOldPhotoTransform : BaseImageTransform
     {
+        [SDK.Group(0)]
         [SDK.InputValue("Effect")]
         [SDK.Title("Camera Effect")]
-        [SDK.Default(OldPhotoEffect.Kodachrome)]
+        [SDK.Default(OldPhotoEffect.Kodachrome)]        
         public OldPhotoEffect Effect { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -364,6 +373,7 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Degrees")]
         [SDK.Title("Degrees")]
         [SDK.Default(0)]
+        [SDK.Group(0)]
         public float Degrees { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
@@ -433,18 +443,19 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Resize"), SDK.TitleFormat("{0} Resized")]
     public sealed class ImageResizeTransform : BaseImageTransform
     {
+        
         [SDK.InputValue("Width")]
         [SDK.Title("W"), SDK.Group("Size")]
         [SDK.Minimum(1), SDK.Default(256)]
         public int Width { get; set; }
-
+        
         [SDK.InputValue("Height")]
         [SDK.Title("H"), SDK.Group("Size")]
         [SDK.Minimum(1), SDK.Default(256)]
         public int Height { get; set; }
-
+        
         [SDK.InputValue("Resampler")]
-        [SDK.Title("Mode"), SDK.Group("Size")]
+        [SDK.Title("Mode"), SDK.Group(0)]
         [SDK.Default(Resampler.Bicubic)]
         public Resampler Resampler { get; set; }
 

@@ -8,8 +8,6 @@ namespace Epsylon.UberPlugin
 
     static class TextFormatting
     {
-        public const string INVISIBLE_GROUP = "$"; // this must be a character that enables grouping but resolves to empty
-
         public const string ENABLED_ICON = "▶"; // 🔲🔳✅❎⬜☑✔✖❌⭕ ⚪⚫
         public const string DISABLED_ICON = "◼";
 

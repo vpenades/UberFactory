@@ -15,7 +15,12 @@ namespace Epsylon.UberFactory.Themes.DataTemplates
             var element = container as FrameworkElement;
             if (element == null) return null;
 
-            if (item is ProjectVIEW.GroupedBindingsView) return element.FindResource("BindingView_Group") as DataTemplate;
+            if (item is ProjectVIEW.GroupedBindingsView grouped)
+            {
+                if (grouped.DisplayName.StartsWith("#")) return element.FindResource("BindingView_Group_Simplified") as DataTemplate;
+
+                return element.FindResource("BindingView_Group") as DataTemplate;
+            }
 
             // dependency types
             if (item is ProjectVIEW.SingleDependencyView xitem)

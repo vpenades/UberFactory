@@ -12,11 +12,13 @@ namespace Epsylon.UberPlugin.CoreTypes
     [SDK.Title("Text")]
     public sealed class AssignText : SDK.ContentFilter<String>
     {
+        [SDK.Group(0)]
         [SDK.InputValue(nameof(Escape))]        
         [SDK.Title(TextFormatting.ESCAPETEXT_ICON)]
         [SDK.Default(true)]
         public bool Escape { get; set; }
 
+        [SDK.Group(0)]
         [SDK.InputValue(nameof(Value))]        
         [SDK.Title("Value")]
         [SDK.MetaData("MultiLine", true)]

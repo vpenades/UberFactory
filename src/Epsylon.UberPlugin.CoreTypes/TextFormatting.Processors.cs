@@ -27,9 +27,9 @@ namespace Epsylon.UberPlugin.CoreTypes
     }
 
     public abstract class TextFunction : SDK.ContentFilter<TEXTFUNC>
-    {
+    {        
         [SDK.InputValue(nameof(Boolean))]
-        [SDK.Group(TextFormatting.INVISIBLE_GROUP), SDK.Title(TextFormatting.ENABLED_ICON)]
+        [SDK.Group(0), SDK.Title(TextFormatting.ENABLED_ICON)]
         [SDK.Default(true)]
         public Boolean Enabled { get; set; }
 
@@ -48,7 +48,7 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class AppendTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(Escape))]
-        [SDK.Group(TextFormatting.INVISIBLE_GROUP), SDK.Title(TextFormatting.ESCAPETEXT_ICON)]
+        [SDK.Group(0), SDK.Title(TextFormatting.ESCAPETEXT_ICON)]
         [SDK.Default(true)]
         public bool Escape { get; set; }
 
@@ -71,10 +71,11 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class PrependTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(Escape))]
-        [SDK.Group(TextFormatting.INVISIBLE_GROUP), SDK.Title(TextFormatting.ESCAPETEXT_ICON)]        
+        [SDK.Group(0), SDK.Title(TextFormatting.ESCAPETEXT_ICON)]        
         [SDK.Default(true)]
         public bool Escape { get; set; }
 
+        [SDK.Group(0)]
         [SDK.InputValue(nameof(Text))]
         [SDK.Title("Text")]
         public String Text { get; set; }
@@ -122,12 +123,12 @@ namespace Epsylon.UberPlugin.CoreTypes
     public sealed class TrimTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(TrimStart))]
-        [SDK.Group(TextFormatting.INVISIBLE_GROUP), SDK.Title("Start")]
+        [SDK.Group(0), SDK.Title("Start")]
         [SDK.Default(true)]
         public Boolean TrimStart { get; set; }
 
         [SDK.InputValue(nameof(TrimEnd))]
-        [SDK.Group(TextFormatting.INVISIBLE_GROUP), SDK.Title("End")]
+        [SDK.Group(0), SDK.Title("End")]
         [SDK.Default(true)]
         public Boolean TrimEnd { get; set; }
 

@@ -69,6 +69,16 @@
         </GroupBox>
     </DataTemplate>
 
+    <DataTemplate x:Key="BindingView_Group_Simplified" >        
+        <ItemsControl ItemsSource="{Binding Bindings}" ItemTemplateSelector="{StaticResource _BindingsViewSelector}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>        
+    </DataTemplate>
+
 
     <DataTemplate x:Key="BindingView_TextBox">
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">

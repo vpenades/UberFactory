@@ -73,11 +73,13 @@ namespace Epsylon.UberPlugin
         public int CellHeight { get; set; }
 
         [SDK.InputValue("OddColor")]
+        [SDK.Title("Odd"), SDK.Group(99)]
         [SDK.Default((UInt32)0xffffffff)]
         [SDK.ViewStyle("ColorPicker")]
         public UInt32 OddColor { get; set; }
 
         [SDK.InputValue("EvenColor")]
+        [SDK.Title("Even"), SDK.Group(99)]
         [SDK.Default((UInt32)0xff000000)]
         [SDK.ViewStyle("ColorPicker")]
         public UInt32 EvenColor { get; set; }
@@ -157,14 +159,17 @@ namespace Epsylon.UberPlugin
         [SDK.Default(typeof(SixLaborsSystemFont))]
         public SixLabors.Fonts.FontFamily FontFamily { get; set; }
 
+        [SDK.Group(2)]
         [SDK.InputValue("Size")]
         [SDK.Minimum(1),SDK.Default(12),SDK.Maximum(1000)]
         public float Size { get; set; }
 
+        [SDK.Group(2)]
         [SDK.InputValue("Padding")]
         [SDK.Minimum(0),SDK.Default(1),SDK.Maximum( 1000)]
         public float Padding { get; set; }
 
+        [SDK.Group(2)]
         [SDK.InputValue("Color")]        
         [SDK.Default((UInt32)0xff000000)]
         [SDK.ViewStyle("ColorPicker")]

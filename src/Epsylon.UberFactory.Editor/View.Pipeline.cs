@@ -334,7 +334,7 @@ namespace Epsylon.UberFactory
 
             #region properties
 
-            public string DisplayName               => _DisplayName == "$" ? string.Empty : _DisplayName;
+            public string DisplayName               => _DisplayName;
 
             public IReadOnlyList<BINDING> Bindings  => _BindingsViews.ToArray();
 

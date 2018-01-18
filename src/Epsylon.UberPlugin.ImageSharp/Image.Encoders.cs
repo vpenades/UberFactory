@@ -21,6 +21,7 @@ namespace Epsylon.UberPlugin
 
     public abstract class EncoderBase : SDK.ContentFilter<IMAGEENCODER>
     {
+        [SDK.Group(0)]
         [SDK.InputValue("IgnoreMetadata")]
         [SDK.Title("Ignore Metadata")]        
         public Boolean IgnoreMetadata { get; set; }
@@ -31,13 +32,15 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat( "PNG {0}")]
     public sealed class PngEncoder : EncoderBase
     {
+        [SDK.Group(0)]
         [SDK.InputValue("ColorChannels")]
-        [SDK.Title("Color Channels")]
+        [SDK.Title("Channels")]
         [SDK.Default(PNGFORMAT.PngColorType.RgbWithAlpha)]
         public PNGFORMAT.PngColorType ColorChannels { get; set; }
 
+        [SDK.Group(0)]
         [SDK.InputValue("Quantizer")]
-        [SDK.Title("Palette Quantizer")]
+        [SDK.Title("Quantizer")]
         [SDK.Default(Quantization.Palette)]
         public Quantization Quantizer { get; set; }
 
@@ -65,6 +68,7 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat( "JPG {0}")]
     public sealed class JpegEncoderAdvanced : EncoderBase
     {
+        [SDK.Group(0)]
         [SDK.InputValue("Quality")]
         [SDK.Minimum(0)]
         [SDK.Default(80)]
@@ -107,6 +111,7 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat( "BMP {0}")]
     public sealed class BmpEncoder : EncoderBase
     {
+        [SDK.Group(0)]
         [SDK.InputValue("BitsPerPixel")]
         [SDK.Title("Bits Per Pixel")]
         public BMPFORMAT.BmpBitsPerPixel BitsPerPixel { get; set; }
@@ -128,6 +133,7 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat( "GIF {0}")]
     public sealed class GifEncoder : EncoderBase
     {
+        [SDK.Group(0)]
         [SDK.InputValue("TransparencyThreshold")]
         [SDK.Title("Transparency Threshold")]
         [SDK.Minimum(0)]
@@ -135,12 +141,19 @@ namespace Epsylon.UberPlugin
         [SDK.Maximum( 255)]
         public int TransparencyThreshold { get; set; }
 
+        [SDK.Group(0)]
+        [SDK.InputValue("Quantizer")]
+        [SDK.Title("Quantizer")]
+        [SDK.Default(Quantization.Palette)]
+        public Quantization Quantizer { get; set; }
+
         protected override IMAGEENCODER Evaluate()
         {
             var encoder = new GIFFORMAT.GifEncoder
             {
                 IgnoreMetadata = this.IgnoreMetadata,
-                Threshold = (Byte)TransparencyThreshold
+                Threshold = (Byte)TransparencyThreshold,
+                Quantizer = this.Quantizer.GetInstance()
             };
 
             return ImageWriter.CreateEncoder(encoder, "GIF");
