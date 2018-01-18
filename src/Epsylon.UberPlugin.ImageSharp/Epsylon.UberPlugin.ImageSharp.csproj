@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFrameworks>net47;netcoreapp2.0</TargetFrameworks>    
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>    
     <ApplicationIcon>imagesharp-128.ico</ApplicationIcon>
+
+    <!-- this is required to ensure the package assemblies are copied to the BIN folder -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>  
 
   <ItemGroup>    
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />
-    <PackageReference Include="SkiaSharp.Svg" Version="1.59.1" />    
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />    
   </ItemGroup>  
 
   <ItemGroup>

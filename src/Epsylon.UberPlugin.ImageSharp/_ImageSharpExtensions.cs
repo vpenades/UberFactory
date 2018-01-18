@@ -15,7 +15,7 @@ namespace Epsylon.UberPlugin
     using IMAGE = SixLabors.ImageSharp.Image;
     using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
-    using SKIAIMAGE = SkiaSharp.SKBitmap;
+    
 
     public enum Resampler
     {
@@ -186,62 +186,7 @@ namespace Epsylon.UberPlugin
 
             return srcBytes;
         }
-
-        
-
-        
-
-
-        
-        public static SKIAIMAGE Render(this SkiaSharp.Extended.Svg.SKSvg svg)
-        {
-            // https://github.com/vvvv/SVG/issues/291
-
-            // http://stackoverflow.com/questions/42183229/can-i-render-svg-to-png-using-skiasharp
-
-            var bitmap = new SKIAIMAGE((int)svg.CanvasSize.Width, (int)svg.CanvasSize.Height);
-
-            using (var canvas = new SkiaSharp.SKCanvas(bitmap))
-            {
-                canvas.Clear();
-                canvas.DrawPicture(svg.Picture);
-                canvas.Flush();
-                canvas.Save();                
-            }
-
-            return bitmap;
-        }
-
-
-        public static IMAGE32 ToImageSharp(this SKIAIMAGE src)
-        {
-            var dst = new IMAGE32(src.Width, src.Height);
-            dst.MetaData.HorizontalResolution = 96;
-            dst.MetaData.VerticalResolution = 96;
-
-            src.LockPixels();
-
-            
-            for(int y=0; y < dst.Height; ++y)
-            {
-                for (int x=0; x < dst.Width; ++x)
-                {
-                    var c = src.GetPixel(x, y);
-
-                    dst[x,y] = new COLOR(c.Red, c.Green, c.Blue, c.Alpha);
-                }
-            }
-            
-
-            src.UnlockPixels();
-
-            return dst;
-            
-        }
-
-        
-
-
+                
         public static void Flatten(this IMAGE32 target, IMAGE32 source, int sx, int sy,  Func<COLOR, COLOR, Single, COLOR> func, int opacity)
         {
             if (opacity < 0 || opacity > 100) throw new ArgumentOutOfRangeException(nameof(opacity));

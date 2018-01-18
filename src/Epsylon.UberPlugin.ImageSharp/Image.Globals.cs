@@ -28,20 +28,7 @@ namespace Epsylon.UberPlugin
         public IMGTRANSFORM[] PostProcessing { get; set; }
 
         public IMAGE32 ReadImage(SDK.ImportContext stream)
-        {            
-            if (stream.FileName.EndsWith(".svg"))
-            {
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(96);
-                stream.ReadStream(s => svg.Load(s));
-
-                using (var bmp = svg.Render())
-                {
-                    return bmp.ToImageSharp();
-                }
-            }
-
-            // HL.IconPro.Lib.Core.IconFormat.Default.Configure();
-
+        {
             var image = stream.ReadStream(s => Image.Load(s));
 
             if (image == null) return null;
