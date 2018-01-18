@@ -1,0 +1,166 @@
+<Project Version="1.0" xmlns="http://www.uberfactory.com">
+  <Properties />
+  <DocumentInfo>
+    <Properties>
+      <Generator>UberFactoryEditor 0.0.0.0</Generator>
+      <Date>18/01/2018 10:37:01</Date>
+    </Properties>
+  </DocumentInfo>
+  <PluginReference>
+    <Properties>
+      <AssemblyPath>..\Epsylon.UberPlugin.ImageSharp\bin\Debug\netstandard2.0\Epsylon.UberPlugin.ImageSharp.dll</AssemblyPath>
+      <Version>1.0.0</Version>
+    </Properties>
+  </PluginReference>
+  <PluginReference>
+    <Properties>
+      <AssemblyPath>..\Epsylon.UberPlugin.CoreTypes\bin\Debug\netstandard2.0\Epsylon.UberPlugin.CoreTypes.dll</AssemblyPath>
+      <Version>1.0.0-Alpha103</Version>
+    </Properties>
+  </PluginReference>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>58e0bd7e-0625-4f55-a31d-809273106ce7</RootNodeId>
+      </Properties>
+      <Node Id="58e0bd7e-0625-4f55-a31d-809273106ce7">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_GlobalSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>e3a6b95e-565b-463b-9443-e079352f20aa</RootNodeId>
+      </Properties>
+      <Node Id="e3a6b95e-565b-463b-9443-e079352f20aa">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_JpegGlobalSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>f045e335-36bc-49a9-a829-a097dfe7d6e7</RootNodeId>
+      </Properties>
+      <Node Id="f045e335-36bc-49a9-a829-a097dfe7d6e7">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PngGlobalSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>19e74f87-78a0-48c6-b8d5-b0dd1d400917</RootNodeId>
+      </Properties>
+      <Node Id="19e74f87-78a0-48c6-b8d5-b0dd1d400917">
+        <Properties>
+          <ClassName>UberFactory_CoreTypes_TextFormattingSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Task>
+    <Properties>
+      <Title>New Task 1</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>27c4418c-f3b9-434b-8fe8-0fd4a197db62</RootNodeId>
+      </Properties>
+      <Node Id="27c4418c-f3b9-434b-8fe8-0fd4a197db62">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ImageWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Encoder>b297cdac-98c0-40f3-b982-e5f55d7ff733</Encoder>
+            <Image>46bd2860-7c86-4e68-9894-aa2ae5415c63</Image>
+            <FileName>NoiseResult1</FileName>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="668239e6-2636-4df8-a43f-77022ac82f12">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_CreatePerlinNoise</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="b297cdac-98c0-40f3-b982-e5f55d7ff733">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PngEncoder</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="46bd2860-7c86-4e68-9894-aa2ae5415c63">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_TransformStack</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Source>a894df5a-0d0d-4c7e-9994-6787e73ba45b</Source>
+            <Transforms>
+              <Item>0e60a21f-551a-4a2b-aec7-edd070749728</Item>
+              <Item>d99cfcb3-ca37-4a94-adfd-0891a99aedcc</Item>
+            </Transforms>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="a894df5a-0d0d-4c7e-9994-6787e73ba45b">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_CreatePerlinNoise</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Gradient>6c26f41f-753a-4ab4-b9f2-113f12782370</Gradient>
+            <Width>512</Width>
+            <Height>256</Height>
+            <Persistence>13</Persistence>
+            <Scale>64</Scale>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="0e60a21f-551a-4a2b-aec7-edd070749728">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PolarDistortTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+      <Node Id="6c26f41f-753a-4ab4-b9f2-113f12782370">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PaletteFromTwoColors</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Color1>4287433216</Color1>
+            <Color2>4278885376</Color2>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="d99cfcb3-ca37-4a94-adfd-0891a99aedcc">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ResizeTransform</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+</Project>
