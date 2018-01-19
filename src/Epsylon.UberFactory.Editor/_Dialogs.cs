@@ -98,7 +98,11 @@ namespace Epsylon.UberFactory
 
             if (dlgResult != Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok) return PathString.Empty;
 
-            return new PathString(dlg.FileName);
+            var path = dlg.FileName;
+
+            path = System.IO.Path.Combine(path, "."); // we use a trailing "." to ensure that a filename change does not remove the last part of the path
+
+            return new PathString(path);
         }
 
 

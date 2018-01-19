@@ -22,7 +22,7 @@ namespace Epsylon.UberPlugin
     using POINT = SixLabors.Primitives.Point;
     using RECT = SixLabors.Primitives.Rectangle;
 
-    [SDK.Icon("🖼")]
+    [SDK.Icon(Constants.ICON_IMAGE)]
     [SDK.ContentNode("TransformStack")]
     [SDK.Title("Transforms"), SDK.TitleFormat("{0} Transforms")]
     public sealed class TransformStack : ImageFilter
@@ -54,7 +54,7 @@ namespace Epsylon.UberPlugin
         }        
     }
 
-    [SDK.Icon("🖼")]
+    [SDK.Icon(Constants.ICON_IMAGE)]
     [SDK.ContentNode("LayeredTransformStack")]
     [SDK.Title("Layered Transforms"), SDK.TitleFormat("{0} Layered Transforms")]
     public sealed class LayeredTransformStack : ImageFilter
@@ -95,7 +95,7 @@ namespace Epsylon.UberPlugin
     public sealed class TransformLayer : SDK.ContentFilter<TransformLayer.Description>
     {
         [SDK.InputValue("Enabled")]
-        [SDK.Title("👁"), SDK.Group("Opacity")]
+        [SDK.Title(Constants.ICON_VISIBILITY), SDK.Group("Opacity")]
         [SDK.Default(true)]
         public Boolean Enabled { get; set; }
 
@@ -159,7 +159,7 @@ namespace Epsylon.UberPlugin
     public abstract class BaseImageTransform : SDK.ContentFilter<IMGTRANSFORM>
     {
         [SDK.InputValue("Enabled")]
-        [SDK.Title("👁")]
+        [SDK.Title(Constants.ICON_VISIBILITY)]
         [SDK.Default(true)]
         [SDK.Group(0)]
         public Boolean Enabled { get; set; }

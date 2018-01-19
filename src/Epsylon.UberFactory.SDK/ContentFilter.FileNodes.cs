@@ -9,7 +9,7 @@ namespace Epsylon.UberFactory
     public static partial class SDK
     {
         [Icon("📂")]
-        [Title("From File"), TitleFormat("{0} File")]
+        [Title("File"), TitleFormat("{0} File")]
         public abstract class FileReader<TValue> : ContentFilter<TValue> 
         {
             public virtual string GetFileFilter() { return "All Files|*.*"; }
@@ -35,8 +35,7 @@ namespace Epsylon.UberFactory
                 return base.EvaluatePreview(previewContext);
             }            
         }
-
-        // [Title("Save {TYPE} to File")]
+        
         public abstract class FileWriter : ContentFilter
         {
             [SDK.InputValue("FileName")]
@@ -156,7 +155,8 @@ namespace Epsylon.UberFactory
 
         public abstract class BatchMerge<TValueIn, TValueOut> : ContentFilter<TValueOut>
         {
-            // unfortunately, we can't simply create a "BatchReader" that returns a collections, because we must ensure files are read one at a time.
+            // unfortunately, we can't simply create a "BatchReader" that returns an uncommited IEnumerable collection,
+            // because we must ensure files are read one at a time.
 
             [SDK.InputValue("DirectoryName")]
             [SDK.Group("Source Directory")]

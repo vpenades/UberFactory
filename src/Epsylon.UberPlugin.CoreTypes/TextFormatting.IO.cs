@@ -7,9 +7,8 @@ namespace Epsylon.UberPlugin.CoreTypes
 
     using TEXTFUNC = Func<String, String>;
 
-    [SDK.Icon("✍")]
-    [SDK.ContentNode(nameof(AssignText))]
-    [SDK.Title("Text")]
+    [SDK.Icon(Constants.ICON_USERINPUT), SDK.Title("Text")]
+    [SDK.ContentNode(nameof(AssignText))]    
     public sealed class AssignText : SDK.ContentFilter<String>
     {
         [SDK.Group(0)]
@@ -30,9 +29,7 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-
-    [SDK.ContentNode(nameof(TextReader))]
-    [SDK.Title("From File")]
+    [SDK.ContentNode(nameof(TextReader))]    
     public sealed class TextReader : SDK.FileReader<String>
     {
         public override string GetFileFilter() { return "Text Files|*.txt"; }
@@ -43,9 +40,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-    [SDK.Icon("💾")]
-    [SDK.ContentNode(nameof(TextWriter))]
-    [SDK.Title("Write Text to File")]
+    [SDK.Icon(Constants.ICON_TEXT), SDK.Title("Write Text to File")]
+    [SDK.ContentNode(nameof(TextWriter))]    
     public sealed class TextWriter : SDK.FileWriter
     {
         [SDK.InputNode(nameof(Value))]
@@ -62,9 +58,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-
-    [SDK.ContentNode(nameof(TextBatchProcessor))]
-    [SDK.Title("Process batch of Text Files")]
+    [SDK.Icon(Constants.ICON_TEXT), SDK.Title("Process batch of Text Files")]
+    [SDK.ContentNode(nameof(TextBatchProcessor))]    
     public sealed class TextBatchProcessor : SDK.BatchProcessor<String, String>
     {
         [SDK.InputNode("Transforms", true)]
@@ -91,10 +86,13 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-    [SDK.ContentNode(nameof(TextBatchMerger))]
-    [SDK.Title("Merge batch of Text Files")]
+    [SDK.Icon(Constants.ICON_FILEBATCH), SDK.Title("Merge batch of Text Files")]
+    [SDK.ContentNode(nameof(TextBatchMerger))]    
     public sealed class TextBatchMerger : SDK.BatchMerge<String, String>
     {
+        [SDK.InputValue("Separator")]        
+        public String Separator { get; set; }
+
         protected override IEnumerable<string> GetFileInExtensions() { yield return "txt"; }
 
         protected override string ReadFile(SDK.ImportContext stream)
@@ -104,7 +102,9 @@ namespace Epsylon.UberPlugin.CoreTypes
 
         protected override string Merge(string product, string value)
         {
-            return product + value;
+            if (String.IsNullOrEmpty(Separator)) return product + value;
+
+            return product + Separator + value;
         }        
     }
 

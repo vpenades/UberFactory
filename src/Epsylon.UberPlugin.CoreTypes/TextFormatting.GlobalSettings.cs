@@ -7,10 +7,10 @@ namespace Epsylon.UberPlugin.CoreTypes
     using System.Linq;
     using UberFactory;
 
-    using TEXTFUNC = Func<String, String>;    
-    
-    [SDK.ContentNode("TextFormattingSettings")]
+    using TEXTFUNC = Func<String, String>;
+
     [SDK.Title("Text Formatting Settings")]
+    [SDK.ContentNode("TextFormattingSettings")]    
     public class TextFormattingSettings : SDK.ContentObject
     {
         private static string[] _GetAvailableCultureIdentifiers()
@@ -65,8 +65,6 @@ namespace Epsylon.UberPlugin.CoreTypes
 
             stream.WriteAllText(value);
         }
-
-
     }
 
 }

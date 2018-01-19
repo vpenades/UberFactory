@@ -6,25 +6,26 @@ using System.Threading.Tasks;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.PixelFormats;
 
 using Epsylon.ImageSharp.Procedural;
 
-using PIXEL32 = SixLabors.ImageSharp.Rgba32;
-using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
-
 namespace Epsylon.UberPlugin
 {
-    using SixLabors.ImageSharp.PixelFormats;
     using UberFactory;
 
-    [SDK.Icon("🏴")]
-    [SDK.ContentNode("CreateSolidColor")]
-    [SDK.Title("Solid Color"), SDK.TitleFormat("{0} Solid Color")]
+    using PIXEL32 = Rgba32;
+    using IMAGE32 = Image<Rgba32>;
+    using IMAGEENCODER = KeyValuePair<string, Action<UberFactory.SDK.ExportContext, Image<Rgba32>>>;
+    
+
+    [SDK.Icon("🏴"), SDK.Title("Solid Color"), SDK.TitleFormat("{0} Solid Color")]
+    [SDK.ContentNode("CreateSolidColor")]    
     public sealed class ImageSharpCreateSolidColor : ImageFilter
     {
         [SDK.InputValue("Width")]
         [SDK.Title("W"), SDK.Group("Size")]
-        [SDK.Minimum(1),SDK.Default(256)]
+        [SDK.Minimum(1), SDK.Default(256)]
         public int Width { get; set; }
 
         [SDK.InputValue("Height")]
@@ -45,11 +46,10 @@ namespace Epsylon.UberPlugin
 
             return img;
         }
-    }    
-    
-    [SDK.Icon("🏁")]
-    [SDK.ContentNode("CreateCheckers")]
-    [SDK.Title("Checkers"), SDK.TitleFormat("{0} Checkers")]
+    }
+
+    [SDK.Icon("🏁"), SDK.Title("Checkers"), SDK.TitleFormat("{0} Checkers")]
+    [SDK.ContentNode("CreateCheckers")]    
     public sealed class ImageSharpCreateCheckers : ImageFilter
     {
         [SDK.InputValue("Width")]
@@ -88,35 +88,34 @@ namespace Epsylon.UberPlugin
         {
             var img = new IMAGE32(this.Width, this.Height);
 
-            img.Mutate(dc => dc.FillCheckers(this.CellWidth,this.CellHeight, new PIXEL32(OddColor) , new PIXEL32(EvenColor)) );
+            img.Mutate(dc => dc.FillCheckers(this.CellWidth, this.CellHeight, new PIXEL32(OddColor), new PIXEL32(EvenColor)));
 
             return img;
         }
     }
 
-    [SDK.Icon("🏳️‍🌈")]    
-    [SDK.ContentNode("CreatePerlinNoise")]
-    [SDK.Title("Noise"),SDK.TitleFormat( "{0} Noise")]
+    [SDK.Icon("🏳️‍🌈"), SDK.Title("Noise"), SDK.TitleFormat("{0} Noise")]
+    [SDK.ContentNode("CreatePerlinNoise")]    
     public sealed class ImageSharpCreatePerlinNoise : ImageFilter
     {
-        [SDK.InputValue("Width")]        
+        [SDK.InputValue("Width")]
         [SDK.Title("W"), SDK.Group("Size")]
         [SDK.Minimum(1), SDK.Default(256)]
         public int Width { get; set; }
 
-        [SDK.InputValue("Height")]        
+        [SDK.InputValue("Height")]
         [SDK.Title("H"), SDK.Group("Size")]
         [SDK.Minimum(1), SDK.Default(256)]
-        public int Height { get; set; }        
+        public int Height { get; set; }
 
-        [SDK.InputValue("RandomSeed")]        
+        [SDK.InputValue("RandomSeed")]
         [SDK.Title("Seed"), SDK.Group("Noise")]
-        [SDK.Minimum(0),SDK.Default(177),SDK.Maximum( 255)]
+        [SDK.Minimum(0), SDK.Default(177), SDK.Maximum(255)]
         public int RandomSeed { get; set; }
 
         [SDK.InputValue("Scale")]
         [SDK.Title("Scale"), SDK.Group("Noise")]
-        [SDK.Minimum(2),SDK.Default(16)]
+        [SDK.Minimum(2), SDK.Default(16)]
         public float Scale { get; set; }
 
         [SDK.InputValue("Octaves")]
@@ -126,30 +125,29 @@ namespace Epsylon.UberPlugin
 
         [SDK.InputValue("Persistence")]
         [SDK.Title("Persistence"), SDK.Group("Noise")]
-        [SDK.Minimum(0), SDK.Default(50),SDK.Maximum(100)]
+        [SDK.Minimum(0), SDK.Default(50), SDK.Maximum(100)]
         [SDK.ViewStyle("Slider")]
         public int Persistence { get; set; }
 
         [SDK.InputNode("Gradient")]
-        [SDK.Title("Gradient"), SDK.Group("Tint")]        
+        [SDK.Title("Gradient"), SDK.Group("Tint")]
         public PIXEL32[] Gradient { get; set; }
 
         protected override IMAGE32 Evaluate()
         {
             var p = (float)Persistence;
 
-            using (var noise = new Image<HalfSingle>(Width,Height))
+            using (var noise = new Image<HalfSingle>(Width, Height))
             {
-                noise.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, this.Octaves, p / 100.0f, this.RandomSeed));                
-                
+                noise.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, this.Octaves, p / 100.0f, this.RandomSeed));
+
                 return noise.CloneWithLookupTable(Gradient);
             }
         }
     }
 
-    [SDK.Icon("AZ")]
+    [SDK.Icon(Constants.ICON_TEXT), SDK.Title("Text"), SDK.TitleFormat("{0} Text")]
     [SDK.ContentNode("CreateText")]
-    [SDK.Title("Text"),SDK.TitleFormat( "{0} Text")]
     public sealed class ImageSharpCreateText : ImageFilter
     {
         [SDK.InputNode("Text")]
@@ -161,16 +159,16 @@ namespace Epsylon.UberPlugin
 
         [SDK.Group(2)]
         [SDK.InputValue("Size")]
-        [SDK.Minimum(1),SDK.Default(12),SDK.Maximum(1000)]
+        [SDK.Minimum(1), SDK.Default(12), SDK.Maximum(1000)]
         public float Size { get; set; }
 
         [SDK.Group(2)]
         [SDK.InputValue("Padding")]
-        [SDK.Minimum(0),SDK.Default(1),SDK.Maximum( 1000)]
+        [SDK.Minimum(0), SDK.Default(1), SDK.Maximum(1000)]
         public float Padding { get; set; }
 
         [SDK.Group(2)]
-        [SDK.InputValue("Color")]        
+        [SDK.InputValue("Color")]
         [SDK.Default((UInt32)0xff000000)]
         [SDK.ViewStyle("ColorPicker")]
         public UInt32 Color { get; set; }
@@ -185,18 +183,17 @@ namespace Epsylon.UberPlugin
             if (txt == null) txt = String.Empty;
 
             return FontFamily.RenderText(txt, Size, Padding, new PIXEL32(Color), options);
-        }        
+        }
     }
 
-    [SDK.Icon("AZ")]
-    [SDK.ContentNode("SixLaborsSystemFont")]
-    [SDK.Title("System Font")]
+    [SDK.Icon(Constants.ICON_TEXT), SDK.Title("System Font")]
+    [SDK.ContentNode("SixLaborsSystemFont")]    
     public sealed class SixLaborsSystemFont : SDK.ContentFilter<SixLabors.Fonts.FontFamily>
     {
         [SDK.InputValue("FontFamily")]
         [SDK.ViewStyle("ComboBox")]
         [SDK.Default("Arial")]
-        [SDK.MetaDataEvaluate("Values",nameof(AvailableFontFamilies))]
+        [SDK.MetaDataEvaluate("Values", nameof(AvailableFontFamilies))]
         public String FontFamily { get; set; }
 
         public String[] AvailableFontFamilies => SixLabors.Fonts.SystemFonts.Families.Select(item => item.Name).ToArray();
@@ -221,9 +218,8 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    [SDK.Icon("ℹ")]
-    [SDK.ContentNode("ImageMetadataToText")]
-    [SDK.Title("Image Metadata"), SDK.TitleFormat("{0} Metadata")]
+    [SDK.Icon(Constants.ICON_IMAGE), SDK.Title("Metadata from Image"), SDK.TitleFormat("{0} Metadata")]
+    [SDK.ContentNode("ImageSharpMetadataToText")]    
     public sealed class ImageSharpMetadataToText : SDK.ContentFilter<String>
     {
         [SDK.InputNode("Image")]
@@ -262,12 +258,47 @@ namespace Epsylon.UberPlugin
                 {
                     sb.AppendLine($"{iprop.Name} = {iprop.Value}");
                 }
-            }            
+            }
 
             return sb.ToString();
         }
     }
 
+    [SDK.Icon(Constants.ICON_IMAGE), SDK.Title("Mime64 from Image"), SDK.TitleFormat("{0} Mime64 Image")]
+    [SDK.ContentNode("ImageSharpToMime64")]
+    public sealed class ImageSharpToMime64 : SDK.ContentFilter<String>
+    {
+        [SDK.InputNode("Image")]
+        public IMAGE32 Image { get; set; }
+        
+        [SDK.InputValue("UriHeader")]
+        [SDK.Title("Uri Header")]
+        public Boolean UriHeader { get; set; }
+        
+        [SDK.InputNode("Encoder")]
+        [SDK.Title("Encoder")]
+        public EncoderAgent Encoder { get; set; }        
 
+        protected override string Evaluate()
+        {
+            if (Image == null || Encoder == null) return null;            
 
+            var bytes = Encoder.ToBytes(Image);
+
+            Image.Dispose(); // end of life for this image
+
+            var sb = new StringBuilder();
+
+            if (UriHeader)
+            {
+                if (Encoder.Extension == "PNG") sb.Append("data:image/png;base64,");
+                if (Encoder.Extension == "JPG") sb.Append("data:image/jpeg;base64,");
+                if (Encoder.Extension == "GIF") sb.Append("data:image/gif;base64,");
+            }
+
+            sb.Append(Convert.ToBase64String(bytes));
+
+            return sb.ToString();
+        }
+    }
 }

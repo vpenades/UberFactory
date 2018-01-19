@@ -15,11 +15,44 @@ namespace Epsylon.UberPlugin
     using PNGFORMAT = SixLabors.ImageSharp.Formats.Png;
     using JPGFORMAT = SixLabors.ImageSharp.Formats.Jpeg;
     using BMPFORMAT = SixLabors.ImageSharp.Formats.Bmp;
-    using GIFFORMAT = SixLabors.ImageSharp.Formats.Gif;    
+    using GIFFORMAT = SixLabors.ImageSharp.Formats.Gif;
 
-    using IMAGEENCODER = KeyValuePair<string, Action<UberFactory.SDK.ExportContext, IMAGE32>>;
+    public class EncoderAgent
+    {
+        public EncoderAgent(String ext, SixLabors.ImageSharp.Formats.IImageEncoder encoder)
+        {
+            Extension = ext;
+            Encoder = encoder;
+        }
 
-    public abstract class EncoderBase : SDK.ContentFilter<IMAGEENCODER>
+        public String Extension { get; private set; }
+
+        public SixLabors.ImageSharp.Formats.IImageEncoder Encoder { get; private set; }
+
+        public void WriteImage(IMAGE32 image, System.IO.Stream stream)
+        {
+            image.Save(stream, Encoder);
+        }
+
+        public void WriteImage(IMAGE32 image, SDK.ExportContext ctx)
+        {
+            ctx.WriteStream(s => WriteImage(image, s));
+        }        
+
+        public Byte[] ToBytes(IMAGE32 image)
+        {
+            using (var s = new System.IO.MemoryStream())
+            {
+                image.Save(s, Encoder);
+                s.Flush();
+                return s.ToArray();
+            }
+        }
+    }
+
+    
+
+    public abstract class EncoderBase : SDK.ContentFilter<EncoderAgent>
     {
         [SDK.Group(0)]
         [SDK.InputValue("IgnoreMetadata")]
@@ -44,7 +77,7 @@ namespace Epsylon.UberPlugin
         [SDK.Default(Quantization.Palette)]
         public Quantization Quantizer { get; set; }
 
-        protected override IMAGEENCODER Evaluate()
+        protected override EncoderAgent Evaluate()
         {
             var settings = this.GetSharedSettings<PngGlobalSettings>();
 
@@ -59,7 +92,7 @@ namespace Epsylon.UberPlugin
                 PngColorType = ColorChannels
             };
 
-            return ImageWriter.CreateEncoder(encoder, "PNG");
+            return new EncoderAgent("PNG",encoder);
         }
     }
 
@@ -76,14 +109,14 @@ namespace Epsylon.UberPlugin
         [SDK.ViewStyle("Slider")]
         public int Quality { get; set; }
 
-        protected override IMAGEENCODER Evaluate()
+        protected override EncoderAgent Evaluate()
         {
             var encoder = new JPGFORMAT.JpegEncoder
             {
                 Quality = Quality
             };
 
-            return ImageWriter.CreateEncoder(encoder,"JPG");
+            return new EncoderAgent("JPG", encoder);
         }
     }
 
@@ -92,7 +125,7 @@ namespace Epsylon.UberPlugin
     [SDK.TitleFormat("JPG {0}")]
     public sealed class JpegEncoderBasic : EncoderBase
     {
-        protected override IMAGEENCODER Evaluate()
+        protected override EncoderAgent Evaluate()
         {
             var settings = this.GetSharedSettings<JpegGlobalSettings>();
 
@@ -102,7 +135,7 @@ namespace Epsylon.UberPlugin
                 Quality = settings.Quality
             };
 
-            return ImageWriter.CreateEncoder(encoder, "JPG");
+            return new EncoderAgent("JPG", encoder);
         }
     }
 
@@ -116,14 +149,14 @@ namespace Epsylon.UberPlugin
         [SDK.Title("Bits Per Pixel")]
         public BMPFORMAT.BmpBitsPerPixel BitsPerPixel { get; set; }
 
-        protected override IMAGEENCODER Evaluate()
+        protected override EncoderAgent Evaluate()
         {
             var encoder = new BMPFORMAT.BmpEncoder
             {                
                 BitsPerPixel = this.BitsPerPixel
             };
 
-            return ImageWriter.CreateEncoder(encoder,"BMP");
+            return new EncoderAgent("BMP", encoder);
         }
     }
 
@@ -147,7 +180,7 @@ namespace Epsylon.UberPlugin
         [SDK.Default(Quantization.Palette)]
         public Quantization Quantizer { get; set; }
 
-        protected override IMAGEENCODER Evaluate()
+        protected override EncoderAgent Evaluate()
         {
             var encoder = new GIFFORMAT.GifEncoder
             {
@@ -156,7 +189,7 @@ namespace Epsylon.UberPlugin
                 Quantizer = this.Quantizer.GetInstance()
             };
 
-            return ImageWriter.CreateEncoder(encoder, "GIF");
+            return new EncoderAgent("GIF", encoder);
         }
     }
 

@@ -16,7 +16,7 @@ namespace Epsylon.UberPlugin
     using PIXEL32 = Rgba32;
     using IMAGE32 = Image<Rgba32>;
 
-    [SDK.Icon("🖼")]
+    [SDK.Icon(Constants.ICON_IMAGE)]
     [SDK.ContentNode("LayersStack")]
     [SDK.Title("Layers")]
     [SDK.TitleFormat("{0} Layers")]
@@ -37,7 +37,7 @@ namespace Epsylon.UberPlugin
         protected override object EvaluatePreview(SDK.PreviewContext context) { return Evaluate().CreatePreview(context); }
     }
     
-    [SDK.Icon("🖼")]
+    [SDK.Icon(Constants.ICON_IMAGE)]
     [SDK.ContentNode("Layer")]
     [SDK.Title("Layer Transform")]
     [SDK.TitleFormat("Layer {0}")]

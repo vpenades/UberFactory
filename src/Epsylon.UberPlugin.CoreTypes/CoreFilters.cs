@@ -6,18 +6,18 @@ namespace Epsylon.UberPlugin
 {
     using UberFactory;
 
-    [SDK.ContentNode("FileCopy")]
-    [SDK.Title("Copy File")]
+    [SDK.Icon(Constants.ICON_LOADFROMFILE), SDK.Title("Copy File")]
+    [SDK.ContentNode("FileCopy")]    
     public class FileCopy : SDK.ContentFilter
     {
-        [SDK.InputValue("SourceFileName")]
         [SDK.Title("Source File")]
+        [SDK.InputValue("SourceFileName")]        
         [SDK.ViewStyle("FilePicker")]
-        [SDK.MetaData("Filter", "*.*")]
+        [SDK.MetaData("Filter", Constants.OPENFILEDIALOGFILTER_ALLFILES)]
         public String SourceFileName { get; set; }
 
-        [SDK.InputValue("TargetFileName")]
         [SDK.Title("Target File")]
+        [SDK.InputValue("TargetFileName")]        
         public String TargetFileName { get; set; }
 
         protected override object EvaluateObject()

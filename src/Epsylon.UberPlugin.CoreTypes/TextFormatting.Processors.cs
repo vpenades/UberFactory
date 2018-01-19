@@ -8,9 +8,8 @@ namespace Epsylon.UberPlugin.CoreTypes
 
     using TEXTFUNC = Func<String, String>;
 
-    [SDK.ContentNode("FormatText")]
-    [SDK.Title("Formatted Text")]
-    [SDK.TitleFormat( "{0} Formatted")]
+    [SDK.Icon(Constants.ICON_USERINPUT), SDK.Title("Formatted Text"), SDK.TitleFormat("{0} Formatted")]
+    [SDK.ContentNode("FormatText")]    
     public sealed class FormatText : SDK.ContentFilter<String>
     {
         [SDK.InputNode(nameof(Value))]
@@ -43,8 +42,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         protected abstract String Process(String value);
     }
 
-    [SDK.ContentNode("AppendTextFunction")]
-    [SDK.Title("Append")]
+    [SDK.Icon("abcd(✍)"), SDK.Title("Append")]
+    [SDK.ContentNode("AppendTextFunction")]    
     public sealed class AppendTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(Escape))]
@@ -52,8 +51,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         [SDK.Default(true)]
         public bool Escape { get; set; }
 
-        [SDK.InputValue(nameof(Text))]
-        [SDK.Title("Text")]
+        [SDK.Group(0), SDK.Title("Text")]
+        [SDK.InputValue(nameof(Text))]        
         public String Text { get; set; }
 
         protected override String Process(String value)
@@ -66,8 +65,9 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-    [SDK.ContentNode("PrependTextFunction")]
-    [SDK.Title("Prepend")]
+    
+    [SDK.Icon("(✍)abcd"), SDK.Title("Prepend")]
+    [SDK.ContentNode("PrependTextFunction")]    
     public sealed class PrependTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(Escape))]
@@ -75,9 +75,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         [SDK.Default(true)]
         public bool Escape { get; set; }
 
-        [SDK.Group(0)]
-        [SDK.InputValue(nameof(Text))]
-        [SDK.Title("Text")]
+        [SDK.Group(0), SDK.Title("Text")]
+        [SDK.InputValue(nameof(Text))]        
         public String Text { get; set; }
 
         protected override String Process(String value)
@@ -90,8 +89,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-    [SDK.ContentNode("ReplaceTextFunction")]
-    [SDK.Title("Replace")]
+    [SDK.Icon("ab(🗘)cd"),SDK.Title("Replace")]
+    [SDK.ContentNode("ReplaceTextFunction")]    
     public sealed class ReplaceTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(OldEscape))]
@@ -118,8 +117,8 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-    [SDK.ContentNode("TrimTextFunction")]
-    [SDK.Title("Trim")]
+    [SDK.Icon("⇥abcd⇤"),SDK.Title("Trim")]
+    [SDK.ContentNode("TrimTextFunction")]    
     public sealed class TrimTextFunction : TextFunction
     {
         [SDK.InputValue(nameof(TrimStart))]
@@ -143,11 +142,15 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-
-    [SDK.ContentNode(nameof(InsertTextAtFunction))]
-    [SDK.Title("Insert At")]
+    [SDK.Icon("ab(✍)cd"),SDK.Title("Insert At")]
+    [SDK.ContentNode(nameof(InsertTextAtFunction))]    
     public sealed class InsertTextAtFunction : TextFunction
     {
+        [SDK.Group(0)]
+        [SDK.InputValue(nameof(Offset))]
+        [SDK.Title("From Start")]
+        public int Offset { get; set; }
+
         [SDK.InputValue(nameof(NewEscape))]
         [SDK.Group("Text to Insert"), SDK.Title(TextFormatting.ESCAPETEXT_ICON)]
         [SDK.Default(true)]
@@ -155,11 +158,7 @@ namespace Epsylon.UberPlugin.CoreTypes
 
         [SDK.InputValue(nameof(NewString))]
         [SDK.Group("Text to Insert"), SDK.Title("Text")]
-        public String NewString { get; set; }
-
-        [SDK.InputValue(nameof(Offset))]
-        [SDK.Title("From Start")]
-        public int Offset { get; set; }
+        public String NewString { get; set; }        
 
         protected override String Process(String value)
         {
@@ -173,11 +172,11 @@ namespace Epsylon.UberPlugin.CoreTypes
         }
     }
 
-
-    [SDK.ContentNode(nameof(ChangeTextCaseFunction))]
-    [SDK.Title("Case")]
+    [SDK.Icon("a⇨A"),SDK.Title("Case")]
+    [SDK.ContentNode(nameof(ChangeTextCaseFunction))]    
     public sealed class ChangeTextCaseFunction : TextFunction
     {
+        [SDK.Group(0)]
         [SDK.InputValue(nameof(CaseType))]
         [SDK.Title("Case")]
         [SDK.ViewStyle("ComboBox")]
