@@ -14,7 +14,7 @@
         
         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Collection}" IsReadOnly="True" SelectionMode="Single" SelectedValue="{Binding Selected}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="" Binding="{Binding IconContent}" />
+                <DataGridTextColumn Header="" Binding="{Binding IconContent}" FontSize="24" />
                 <DataGridTextColumn Header="Filter" Binding="{Binding DisplayName}" />
             </DataGrid.Columns>            
         </DataGrid>
