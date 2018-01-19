@@ -27,11 +27,13 @@ namespace Epsylon.UberFactory.Bindings
 
         #region data
 
-        protected IPropertyProvider _Properties;        
+        protected IPropertyProvider _Properties;
 
         #endregion
 
         #region API
+
+        public Boolean HasOwnValue => _Properties.GetValue(this.SerializationKey, null) != _Properties.GetDefaultValue(this.SerializationKey, null);
 
         public void ClearEvaluatedResult()
         {

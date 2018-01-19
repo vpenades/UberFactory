@@ -16,7 +16,7 @@
     <sys:String x:Key="_TrashIcon">🗑</sys:String>
     
     <sys:String x:Key="_ResetIcon">❌</sys:String> <!-- ⭕ ⬜ 🔲 🔳 ⚪ ⚫ ❎⛝ -->
-    <sys:String x:Key="_EmptyIcon">🔲</sys:String>
+    <sys:String x:Key="_EmptyIcon">❎</sys:String>
     
     <sys:String x:Key="_InspectIcon">🔎</sys:String>
     

@@ -60,9 +60,9 @@ namespace Epsylon.UberPlugin
         public Boolean IgnoreMetadata { get; set; }
     }
 
-    [SDK.ContentNode("PngEncoder")]
-    [SDK.Title("PNG")]
-    [SDK.TitleFormat( "PNG {0}")]
+    [SDK.Icon("◂PNG▸"),SDK.Title("PNG"), SDK.TitleFormat("PNG {0}")]
+    [SDK.ContentNode("PngEncoder")]   
+    
     public sealed class PngEncoder : EncoderBase
     {
         [SDK.Group(0)]
@@ -96,9 +96,8 @@ namespace Epsylon.UberPlugin
         }
     }
 
+    [SDK.Icon("◂JPEG▸"), SDK.Title("JPEG (Advanced)"),SDK.TitleFormat("JPEG {0}")]
     [SDK.ContentNode("JpegEncoderAdvanced")]
-    [SDK.Title("JPG (Advanced)")]
-    [SDK.TitleFormat( "JPG {0}")]
     public sealed class JpegEncoderAdvanced : EncoderBase
     {
         [SDK.Group(0)]
@@ -120,9 +119,8 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    [SDK.ContentNode("JpegEncoderBasic")]
-    [SDK.Title("JPG")]
-    [SDK.TitleFormat("JPG {0}")]
+    [SDK.Icon("◂JPEG▸"), SDK.Title("JPEG"), SDK.TitleFormat("JPEG {0}")]
+    [SDK.ContentNode("JpegEncoderBasic")]    
     public sealed class JpegEncoderBasic : EncoderBase
     {
         protected override EncoderAgent Evaluate()
@@ -139,9 +137,8 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    [SDK.ContentNode("BmpEncoder")]
-    [SDK.Title("BMP")]
-    [SDK.TitleFormat( "BMP {0}")]
+    [SDK.Icon("◂BMP▸"), SDK.Title("BMP"), SDK.TitleFormat("BMP {0}")]
+    [SDK.ContentNode("BmpEncoder")]    
     public sealed class BmpEncoder : EncoderBase
     {
         [SDK.Group(0)]
@@ -160,10 +157,8 @@ namespace Epsylon.UberPlugin
         }
     }
 
-
-    [SDK.ContentNode("GifEncoder")]
-    [SDK.Title("GIF")]
-    [SDK.TitleFormat( "GIF {0}")]
+    [SDK.Icon("◂GIF▸"), SDK.Title("GIF"), SDK.TitleFormat("GIF {0}")]
+    [SDK.ContentNode("GifEncoder")]    
     public sealed class GifEncoder : EncoderBase
     {
         [SDK.Group(0)]
@@ -191,7 +186,5 @@ namespace Epsylon.UberPlugin
 
             return new EncoderAgent("GIF", encoder);
         }
-    }
-
-    
+    }    
 }

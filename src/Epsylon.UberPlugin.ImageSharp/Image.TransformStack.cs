@@ -153,9 +153,9 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    
 
 
+    [SDK.Icon("Fx")]
     public abstract class BaseImageTransform : SDK.ContentFilter<IMGTRANSFORM>
     {
         [SDK.InputValue("Enabled")]
@@ -481,7 +481,7 @@ namespace Epsylon.UberPlugin
 
 
 
-
+    
     [SDK.ContentNode("SpecialEffectsTransform")]
     [SDK.Title("Photoshop Effects"), SDK.TitleFormat("{0} Effects")]
     public sealed class SpecialEffectsTransform : BaseImageTransform
@@ -581,10 +581,5 @@ namespace Epsylon.UberPlugin
         }
     }
 
-
     
-
-
-
-
 }

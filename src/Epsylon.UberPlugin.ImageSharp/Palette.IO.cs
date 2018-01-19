@@ -43,7 +43,7 @@ namespace Epsylon.UberPlugin.ImageSharp
         }
     }
 
-    [SDK.Icon("🎨")]
+    [SDK.Icon(Constants.ICON_COLOR)]
     [SDK.ContentNode("PaletteFromTwoColors")]
     [SDK.Title("Palette with 2 colors")]
     [SDK.TitleFormat("{0} Palette")]
@@ -67,7 +67,7 @@ namespace Epsylon.UberPlugin.ImageSharp
         }
     }
 
-    [SDK.Icon("🎨")]
+    [SDK.Icon(Constants.ICON_COLOR)]
     [SDK.ContentNode("ColorValue")]
     [SDK.Title("Color")]
     [SDK.TitleFormat("{0} Color")]
@@ -85,7 +85,7 @@ namespace Epsylon.UberPlugin.ImageSharp
         }
     }
 
-    [SDK.Icon("🎨")]
+    [SDK.Icon(Constants.ICON_COLOR)]
     [SDK.ContentNode("PaletteFromColors")]
     [SDK.Title("Palette")]
     [SDK.TitleFormat("{0} Palette")]

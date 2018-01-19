@@ -208,7 +208,7 @@ namespace Epsylon.UberFactory
 
             Boolean CanEditHierarchy { get; }
 
-            Boolean IsChildConfiguration { get; }
+            Boolean IsChildConfiguration { get; }            
 
             void SetAsCurrentResultView(Guid id); // EvaluatePreview();
 
@@ -430,6 +430,9 @@ namespace Epsylon.UberFactory
             public bool IsEditable      => _Parent.Parent.CanEditHierarchy;
 
             public bool IsChildConfiguration => _Parent.Parent.IsChildConfiguration;
+
+            // true if a specific value exists for the current configuration
+            public bool IsOwnValue => _Binding.HasOwnValue;
 
             public bool IsCollectionElement => _Index >= 0;
 

@@ -23,6 +23,8 @@
     <sys:String x:Key="L2N_SetNewReference">Set New Value</sys:String>
     <sys:String x:Key="L2N_SetNullReference">Set Empty Value</sys:String>
     <sys:String x:Key="L2N_SetDefaultReference">Remove Value</sys:String>
+    <sys:String x:Key="L2N_PreviewResult">Preview Result</sys:String>
+    
     
     
     
@@ -208,7 +210,7 @@
 
                     <DockPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Icon="{StaticResource _AddIcon}" Header="{StaticResource L2N_SetNewReference}" Command="{Binding ChooseParameterCmd}" />
+                            <MenuItem Icon="{StaticResource _AddIcon}"    Header="{StaticResource L2N_SetNewReference}"     Command="{Binding ChooseParameterCmd}" />
                             <MenuItem Icon="{StaticResource _RemoveIcon}" Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetParameterDefaultValueCmd}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
                         </ContextMenu>
                     </DockPanel.ContextMenu>
@@ -222,9 +224,9 @@
             </GroupBox.Header>
 
             <WrapPanel HorizontalAlignment="Center"  VerticalAlignment="Center">
-                <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
-                <Button Content="{StaticResource _EmptyIcon}" Command="{Binding RemoveElementCmd}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" ToolTip="{StaticResource L2N_SetNullReference}" />
-                <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseParameterCmd}" ToolTip="{StaticResource L2N_SetNewReference}" />
+                <themes:SafeButton Content="{StaticResource _EmptyIcon}"  Command="{Binding RemoveElementCmd}"            ToolTip="{StaticResource L2N_SetNullReference}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" />
+                <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />                
+                <Button            Content="{StaticResource _AddIcon}"    Command="{Binding ChooseParameterCmd}"          ToolTip="{StaticResource L2N_SetNewReference}" />
             </WrapPanel>            
 
         </GroupBox>        
@@ -242,16 +244,16 @@
                         <ContextMenu>
                             <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result" Command="{Binding ViewResultCmd}" />
                             <Separator />
-                            <MenuItem Icon="{StaticResource _AddIcon}" Header="{StaticResource L2N_SetNewReference}" Command="{Binding ChooseParameterCmd}" />
-                            <MenuItem Icon="{StaticResource _EmptyIcon}" Header="{StaticResource L2N_SetNullReference}" Command="{Binding RemoveParameterCmd}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
-                            <Separator />                            
-                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetParameterDefaultValueCmd}" />
+                            <MenuItem Icon="{StaticResource _AddIcon}"    Header="{StaticResource L2N_SetNewReference}"     Command="{Binding ChooseParameterCmd}" />
+                            <MenuItem Icon="{StaticResource _EmptyIcon}"  Header="{StaticResource L2N_SetNullReference}"    Command="{Binding RemoveParameterCmd}"          Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+                            <MenuItem Icon="{StaticResource _RemoveIcon}" Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetParameterDefaultValueCmd}" Visibility="{Binding IsOwnValue,Converter={StaticResource asVisible}}"/>
                         </ContextMenu>
                     </DockPanel.ContextMenu>
 
                     <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />
-                    <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" DockPanel.Dock="Right" />
-                    <Button Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}" DockPanel.Dock="Right"/>
+                    <themes:SafeButton Content="{StaticResource _EmptyIcon}"   Command="{Binding RemoveParameterCmd}"          DockPanel.Dock="Right" ToolTip="{StaticResource L2N_SetNullReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+                    <themes:SafeButton Content="{StaticResource _RemoveIcon}"  Command="{Binding SetParameterDefaultValueCmd}" DockPanel.Dock="Right" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsOwnValue,Converter={StaticResource asVisible}}"/>
+                    <Button            Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"               DockPanel.Dock="Right" ToolTip="{StaticResource L2N_PreviewResult}"/>
                     <TextBlock Text="    " />
                 </DockPanel>
             </Expander.Header>

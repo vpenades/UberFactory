@@ -55,19 +55,17 @@ namespace Epsylon.UberFactory.Bindings
 
         #region properties        
 
-        public string               SerializationKey    => _MemberInfo.GetInputDescAttribute().SerializationKey;
-
+        public String               SerializationKey    => _MemberInfo.GetInputDescAttribute().SerializationKey;
         public Type                 DataType            => _MemberInfo.GetAssignType();
-
         public SDK.ContentObject    DataContext         => _TargetInstance;
 
         #endregion
 
         #region properties - editing
 
-        public string               DisplayName         => GetMetaDataValue<String>("Title",_MemberInfo.Name);
-        public String               ToolTip             => GetMetaDataValue<String>("ToolTip",null);
-        public String               GroupName           => GetMetaDataValue<String>("Group", null);
+        public String DisplayName => GetMetaDataValue<String>("Title",_MemberInfo.Name);
+        public String ToolTip     => GetMetaDataValue<String>("ToolTip",null);
+        public String GroupName   => GetMetaDataValue<String>("Group", null);
 
         #endregion
 
