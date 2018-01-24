@@ -183,15 +183,15 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Opacity"), SDK.TitleFormat("{0} Opacity")]
     public sealed class AlphaTransform : BaseImageTransform
     {
-        [SDK.InputValue("Alpha")]
-        [SDK.Title("Alpha")]
+        [SDK.InputValue("Amount")]
+        [SDK.Title("Amount")]
         [SDK.Minimum(0), SDK.Default(1), SDK.Maximum(1)]
         [SDK.Group(0)]
-        public float Alpha { get; set; }
+        public float Amount { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
         {
-            return dc => dc.Alpha(Alpha);
+            return dc => dc.Opacity(Amount);
         }
     }
 
@@ -238,9 +238,9 @@ namespace Epsylon.UberPlugin
         }        
     }
 
-    [SDK.ContentNode("DetectEdgeTransform")]
+    [SDK.ContentNode("DetectEdgesTransform")]
     [SDK.Title("Detect Edges"), SDK.TitleFormat("{0} Edges")]
-    public sealed class DetectEdgeTransform : BaseImageTransform
+    public sealed class DetectEdgesTransform : BaseImageTransform
     {
         [SDK.Group(0)]
         [SDK.InputValue("Filter")]
@@ -355,7 +355,7 @@ namespace Epsylon.UberPlugin
             return dc =>
             {
                 if (this.Brightness != 0) dc.Brightness(this.Brightness);
-                if (this.Saturation != 0) dc.Saturation(this.Saturation);
+                if (this.Saturation != 0) dc.Saturate(this.Saturation);
                 if (this.Contrast != 0) dc.Contrast(this.Contrast);            
             };
         }

@@ -223,7 +223,7 @@ namespace Epsylon.UberPlugin
     public sealed class ImageSharpMetadataToText : SDK.ContentFilter<String>
     {
         [SDK.InputNode("Image")]
-        public IMAGE32 Image { get; set; }
+        public IImageInfo Image { get; set; }
 
         protected override string Evaluate()
         {

@@ -6,12 +6,7 @@
 
     <!-- this is required to ensure the package assemblies are copied to the BIN folder -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-  </PropertyGroup>  
-
-  <ItemGroup>    
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />    
-  </ItemGroup>  
+  </PropertyGroup>    
 
   <ItemGroup>
     <ProjectReference Include="..\Epsylon.ImageSharp.Procedural\Epsylon.ImageSharp.Procedural.csproj" />
