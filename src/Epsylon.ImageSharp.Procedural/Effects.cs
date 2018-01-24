@@ -187,12 +187,7 @@ namespace Epsylon.ImageSharp.Procedural
             return count;
         }
 
-        private static readonly Point[] _DilateKernel = new Point[]
-        {
-            new Point(-1,-1),new Point(0,-1),new Point(1,-1),
-            new Point( 0,-1),                new Point(1, 0),
-            new Point( 1,-1),new Point(0, 1),new Point(1, 1),
-        };
+        
 
         /// <summary>
         /// Gets a sampling of the 9 neighbour pixels
@@ -206,19 +201,34 @@ namespace Epsylon.ImageSharp.Procedural
         /// </returns>
         static Vector4 _GetDilatedTexel(this ITexture texture, int x, int y, float alphaThreshold = 0)
         {
-            var c = texture[x, y]; if (c.W > alphaThreshold) return Vector4.Zero;
+            if (texture[x, y].W > alphaThreshold) return Vector4.Zero;
 
-            c = Vector4.Zero;
+            var t1 = texture[x + 1, y];
+            var t2 = texture[x - 1, y];
+            var t3 = texture[x, y + 1];
+            var t4 = texture[x, y - 1];
 
-            for (int i = 0; i < _DilateKernel.Length; ++i)
-            {
-                var p = _DilateKernel[i];
-                p.X += x;
-                p.Y += y;
-                
-                var k = texture[p.X, p.Y];
-                if (k.W > alphaThreshold) c += k.WithW(1);                
-            }
+            if (t1.W <= alphaThreshold &&
+                t2.W <= alphaThreshold &&
+                t3.W <= alphaThreshold &&
+                t4.W <= alphaThreshold
+                ) return Vector4.Zero;            
+
+            var t5 = texture[x - 1, y - 1];
+            var t6 = texture[x + 1, y - 1];
+            var t7 = texture[x - 1, y + 1];
+            var t8 = texture[x + 1, y + 1];
+
+            var c = Vector4.Zero;
+
+            if (t1.W > alphaThreshold) c += t1.WithW(1);
+            if (t2.W > alphaThreshold) c += t2.WithW(1);
+            if (t3.W > alphaThreshold) c += t3.WithW(1);
+            if (t4.W > alphaThreshold) c += t4.WithW(1);
+            if (t5.W > alphaThreshold) c += t5.WithW(1);
+            if (t6.W > alphaThreshold) c += t6.WithW(1);
+            if (t7.W > alphaThreshold) c += t7.WithW(1);
+            if (t8.W > alphaThreshold) c += t8.WithW(1);
 
             if (c.W > 0) { c /= c.W; c = c.Saturate(); }
 
