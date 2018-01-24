@@ -19,6 +19,30 @@ namespace Epsylon.ImageSharp.Procedural
         private static readonly V2 V2HALF = V2.One / 2;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Func<int,int> GetFunction(this SamplerAddressMode mode, int size)
+        {
+            switch (mode)
+            {
+                case SamplerAddressMode.Clamp: return idx => idx.Clamp(0, size - 1);
+                case SamplerAddressMode.Wrap: return idx => idx.Wrap(size);
+
+                default: throw new NotImplementedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetFinalIndex(this SamplerAddressMode mode, int index, int size)
+        {
+            switch (mode)
+            {
+                case SamplerAddressMode.Clamp: return index.Clamp(0, size - 1);
+                case SamplerAddressMode.Wrap: return index.Wrap(size);
+
+                default: throw new NotImplementedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int _GetFinalIndex(int index, int size, SamplerAddressMode mode)
         {
             switch (mode)
@@ -115,10 +139,50 @@ namespace Epsylon.ImageSharp.Procedural
 
             return source.ApplyProcessor(processor);
         }
+
+        public static ITexture ToTexture<TPixel>(this Image<TPixel> source) where TPixel : struct, IPixel<TPixel>
+        {
+            return new _ImageTexture<TPixel>(source);
+        }
+
+        public static ITexture ToTexture<TPixel>(this Image<TPixel> source, Image<Alpha8> mask) where TPixel : struct, IPixel<TPixel>
+        {
+            return new _ImageMaskedTexture<TPixel>(source, mask);
+        }
+
+        public static bool Contains<TPixel>(this Image<TPixel> image, int x, int y) where TPixel : struct, IPixel<TPixel>
+        {
+            if (image == null) return false;
+            if (x < 0 || y < 0) return false;
+            if (x >= image.Width || y >= image.Height) return false;
+            return true;
+        }
+
+        public static bool Contains<TPixel>(this Image<TPixel> image, Point p) where TPixel : struct, IPixel<TPixel>
+        {
+            return image.Contains(p.X, p.Y);
+        }
+
+        public static bool Contains(this ITexture image, int x, int y)
+        {
+            if (image == null) return false;
+            if (x < 0 || y < 0) return false;
+            if (x >= image.Width || y >= image.Height) return false;
+            return true;
+        }
+
+        public static bool Contains(this ITexture image, Point p)
+        {
+            return image.Contains(p.X, p.Y);
+        }
+
+
+
     }
 
     static class _PrivateExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Clamp(this int v, int min, int max)
         {
             if (v < min) return min;
@@ -126,6 +190,7 @@ namespace Epsylon.ImageSharp.Procedural
             return v;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Clamp(this float v, float min, float max)
         {
             if (v < min) return min;
@@ -133,6 +198,7 @@ namespace Epsylon.ImageSharp.Procedural
             return v;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Clamp(this double v, double min, double max)
         {
             if (v < min) return min;
@@ -140,6 +206,33 @@ namespace Epsylon.ImageSharp.Procedural
             return v;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 Saturate(this V4 v)
+        {
+            return v.Clamp(V4.Zero, V4.One);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 Clamp(this V4 v, V4 min, V4 max)
+        {
+            v = V4.Min(max, v);
+            v = V4.Max(min, v);
+            return v;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 WithX(this V4 v, float x) { v.X = x; return v; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 WithY(this V4 v, float y) { v.Y = y; return v; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 WithZ(this V4 v, float z) { v.Z = z; return v; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 WithW(this V4 v, float w) { v.W = w; return v; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithAlpha(this Rgba32 color, int alpha)
         {
             alpha = Math.Min(alpha, 255);
@@ -150,6 +243,7 @@ namespace Epsylon.ImageSharp.Procedural
             return color;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithRed(this Rgba32 color, int red)
         {
             red = Math.Min(red, 255);
@@ -160,6 +254,7 @@ namespace Epsylon.ImageSharp.Procedural
             return color;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithGreen(this Rgba32 color, int green)
         {
             green = Math.Min(green, 255);
@@ -170,6 +265,7 @@ namespace Epsylon.ImageSharp.Procedural
             return color;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithBlue(this Rgba32 color, int blue)
         {
             blue = Math.Min(blue, 255);
@@ -180,7 +276,9 @@ namespace Epsylon.ImageSharp.Procedural
             return color;
         }
 
-       
+        
+
+
 
         public static Rectangle FitWithinImage<TPixel>(this Rectangle rect, Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
         {

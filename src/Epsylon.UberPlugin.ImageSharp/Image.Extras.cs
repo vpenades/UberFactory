@@ -301,4 +301,35 @@ namespace Epsylon.UberPlugin
             return sb.ToString();
         }
     }
+
+
+    [SDK.Icon(Constants.ICON_IMAGE), SDK.Title("Alpha Mask from Image"), SDK.TitleFormat("{0} Alpha Mask")]
+    [SDK.ContentNode("ImageSharpToAlphaMask")] public sealed class ImageSharpToAlphaMask : SDK.ContentFilter<Image<Alpha8>>
+    {
+        [SDK.InputNode("Image")]
+        public IMAGE32 Image { get; set; }        
+
+        protected override Image<Alpha8> Evaluate()
+        {
+            if (Image == null) return null;
+
+            var mask = new Image<Alpha8>(Image.Width, Image.Height);
+
+            Func<System.Numerics.Vector4, float> alphaFunc = v => ((v.X + v.Y + v.Z) / 3.0f);
+
+            for(int y=0; y < mask.Height; ++y)
+            {
+                for (int x = 0; x < mask.Width; ++x)
+                {
+                    var c = Image[x, y].ToVector4();
+
+                    mask[x, y] = new Alpha8(alphaFunc(c));
+                }
+            }
+
+            Image.Dispose();
+
+            return mask;
+        }
+    }
 }

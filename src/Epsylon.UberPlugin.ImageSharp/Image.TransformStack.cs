@@ -181,17 +181,34 @@ namespace Epsylon.UberPlugin
 
     [SDK.ContentNode("OpacityTransform")]
     [SDK.Title("Opacity"), SDK.TitleFormat("{0} Opacity")]
-    public sealed class AlphaTransform : BaseImageTransform
+    public sealed class OpacityTransform : BaseImageTransform
     {
-        [SDK.InputValue("Amount")]
-        [SDK.Title("Amount")]
+        [SDK.Group(0), SDK.Title("Amount")]        
         [SDK.Minimum(0), SDK.Default(1), SDK.Maximum(1)]
-        [SDK.Group(0)]
-        public float Amount { get; set; }
+        [SDK.ViewStyle("Slider")]
+        [SDK.InputValue("Amount")] public float Amount { get; set; }        
 
         protected override IMGTRANSFORM TransformImage()
         {
             return dc => dc.Opacity(Amount);
+        }
+    }
+
+    [SDK.ContentNode("AlphaMaskTransform")]
+    [SDK.Title("Alpha Mask"), SDK.TitleFormat("{0} Alpha Mask")]
+    public sealed class AlphaMaskTransform : BaseImageTransform
+    {
+        [SDK.Group(0), SDK.Title("Mask")]
+        [SDK.InputNode("Mask")] public Image<Alpha8> Mask { get; set; }
+
+        
+        [SDK.Group(0), SDK.Title("Mode")]
+        [SDK.Default(PixelBlenderMode.Normal)]
+        [SDK.InputValue("BlendMode")] public PixelBlenderMode BlendMode { get; set; }
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => { dc.SetAlphaMask(Mask, BlendMode); };
         }
     }
 
@@ -200,19 +217,16 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Outer Glow"), SDK.TitleFormat("{0} with Outer Glow")]
     public sealed class ImageOuterGlowTransform : BaseImageTransform
     {
-        [SDK.Group(0)]
-        [SDK.InputValue("Radius")]
+        [SDK.Group(0)]        
         [SDK.Title("Radius")]
         [SDK.Minimum(0), SDK.Default(1)]
-        public float Radius { get; set; }
+        [SDK.InputValue("Radius")] public float Radius { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
         {
             return dc => dc.OuterGlow(Radius);
         }
     }    
-
-    
 
     [SDK.ContentNode("BlurTransform")]
     [SDK.Title("Blur"), SDK.TitleFormat("{0} Blurred")]
@@ -313,6 +327,21 @@ namespace Epsylon.UberPlugin
     }
 
     
+    [SDK.Title("Edge Padding"), SDK.TitleFormat("{0} Edge Padding")]
+    [SDK.ContentNode("EdgePaddingTransform")] public sealed class EdgePaddingTransform : BaseImageTransform
+    {
+        [SDK.Group(0), SDK.Title("Threshold")]
+        [SDK.Minimum(0), SDK.Default(0), SDK.Maximum(1)]
+        [SDK.ViewStyle("Slider")]
+        [SDK.InputValue("Threshold")] public float Threshold { get; set; }        
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => dc.EdgePadding(Threshold);
+        }
+    }
+
+
 
     [SDK.ContentNode("LevelsTransform")]
     [SDK.Title("Levels"), SDK.TitleFormat("{0} Levels")]

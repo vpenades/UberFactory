@@ -103,24 +103,14 @@ namespace Epsylon.ImageSharp.Procedural
 
         private static readonly V2 _HALF = V2.One / 2;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int _GetFinalIndex(int index, int size, SamplerAddressMode mode)
-        {
-            switch(mode)
-            {
-                case SamplerAddressMode.Clamp: return index.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return index.Wrap(size);                
-
-                default:throw new NotImplementedException();
-            }
-        }
+        
 
         protected TPixel this[int x, int y]
         {
             get
             {
-                x = _GetFinalIndex(x, _Source.Width, _AddressU);
-                y = _GetFinalIndex(y, _Source.Height, _AddressV);
+                x = _AddressU.GetFinalIndex(x, _Source.Width);
+                y = _AddressV.GetFinalIndex(y, _Source.Height);
 
                 return _Source[x, y];
             }
