@@ -10,46 +10,76 @@ using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
 
 namespace Epsylon.UberPlugin
 {
-    using UberFactory;    
+    using UberFactory;
+
+    using Epsylon.ImageSharp.Procedural;
 
     using PNGFORMAT = SixLabors.ImageSharp.Formats.Png;
     using JPGFORMAT = SixLabors.ImageSharp.Formats.Jpeg;
     using BMPFORMAT = SixLabors.ImageSharp.Formats.Bmp;
     using GIFFORMAT = SixLabors.ImageSharp.Formats.Gif;
 
+    public enum AlphaEncoding
+    {
+        Default,
+        Premultiply,
+        EdgePadding
+    }
+
     public class EncoderAgent
     {
-        public EncoderAgent(String ext, SixLabors.ImageSharp.Formats.IImageEncoder encoder)
+        public EncoderAgent(String ext, SixLabors.ImageSharp.Formats.IImageEncoder encoder, AlphaEncoding alpha = AlphaEncoding.Default)
         {
             Extension = ext;
             Encoder = encoder;
         }
 
+        private AlphaEncoding _AlphaEncoding;
+
         public String Extension { get; private set; }
 
-        public SixLabors.ImageSharp.Formats.IImageEncoder Encoder { get; private set; }
+        public SixLabors.ImageSharp.Formats.IImageEncoder Encoder { get; private set; }        
 
-        public void WriteImage(IMAGE32 image, System.IO.Stream stream)
+        private IMAGE32 _PreProcess(IMAGE32 original)
         {
-            image.Save(stream, Encoder);
+            if (_AlphaEncoding == AlphaEncoding.Default) return null;
+
+            var processed = original.Clone();
+
+            if (_AlphaEncoding == AlphaEncoding.EdgePadding) processed.Mutate(dc => dc.EdgePaddingAlpha(0));
+            if (_AlphaEncoding == AlphaEncoding.Premultiply) processed.Mutate(dc => dc.PremultiplyAlpha());
+
+            return processed;
         }
 
         public void WriteImage(IMAGE32 image, SDK.ExportContext ctx)
         {
             ctx.WriteStream(s => WriteImage(image, s));
+        }
+
+        public void WriteImage(IMAGE32 image, System.IO.Stream stream)
+        {
+            using (var processed = _PreProcess(image))
+            {
+                (processed ?? image).Save(stream, Encoder);
+            }                
         }        
 
         public Byte[] ToBytes(IMAGE32 image)
         {
             using (var s = new System.IO.MemoryStream())
             {
-                image.Save(s, Encoder);
+                using (var processed = _PreProcess(image))
+                {
+                    (processed ?? image).Save(s, Encoder);
+                }
+
                 s.Flush();
                 return s.ToArray();
             }
         }
     }
-
+    
     
 
     public abstract class EncoderBase : SDK.ContentFilter<EncoderAgent>
@@ -61,21 +91,19 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.Icon("◂PNG▸"),SDK.Title("PNG"), SDK.TitleFormat("PNG {0}")]
-    [SDK.ContentNode("PngEncoder")]   
-    
-    public sealed class PngEncoder : EncoderBase
+    [SDK.ContentNode("PngEncoder")] public sealed class PngEncoder : EncoderBase
     {
-        [SDK.Group(0)]
-        [SDK.InputValue("ColorChannels")]
-        [SDK.Title("Channels")]
+        [SDK.Group(0), SDK.Title("Channels")]                
         [SDK.Default(PNGFORMAT.PngColorType.RgbWithAlpha)]
-        public PNGFORMAT.PngColorType ColorChannels { get; set; }
+        [SDK.InputValue("ColorChannels")] public PNGFORMAT.PngColorType ColorChannels { get; set; }
 
-        [SDK.Group(0)]
-        [SDK.InputValue("Quantizer")]
-        [SDK.Title("Quantizer")]
+        [SDK.Group(0), SDK.Title("Alpha Channel")]        
+        [SDK.Default(AlphaEncoding.Default)]
+        [SDK.InputValue("AlphaProcessing")] public AlphaEncoding AlphaProcessing { get; private set; }
+
+        [SDK.Group(0), SDK.Title("Quantizer")]        
         [SDK.Default(Quantization.Palette)]
-        public Quantization Quantizer { get; set; }
+        [SDK.InputValue("Quantizer")] public Quantization Quantizer { get; set; }
 
         protected override EncoderAgent Evaluate()
         {
@@ -92,21 +120,17 @@ namespace Epsylon.UberPlugin
                 PngColorType = ColorChannels
             };
 
-            return new EncoderAgent("PNG",encoder);
+            return new EncoderAgent("PNG",encoder, AlphaProcessing);
         }
     }
 
     [SDK.Icon("◂JPEG▸"), SDK.Title("JPEG (Advanced)"),SDK.TitleFormat("JPEG {0}")]
-    [SDK.ContentNode("JpegEncoderAdvanced")]
-    public sealed class JpegEncoderAdvanced : EncoderBase
+    [SDK.ContentNode("JpegEncoderAdvanced")] public sealed class JpegEncoderAdvanced : EncoderBase
     {
-        [SDK.Group(0)]
-        [SDK.InputValue("Quality")]
-        [SDK.Minimum(0)]
-        [SDK.Default(80)]
-        [SDK.Maximum( 100)]
+        [SDK.Group(0)]        
+        [SDK.Minimum(0),SDK.Default(80),SDK.Maximum( 100)]
         [SDK.ViewStyle("Slider")]
-        public int Quality { get; set; }
+        [SDK.InputValue("Quality")] public int Quality { get; set; }
 
         protected override EncoderAgent Evaluate()
         {
@@ -120,8 +144,7 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.Icon("◂JPEG▸"), SDK.Title("JPEG"), SDK.TitleFormat("JPEG {0}")]
-    [SDK.ContentNode("JpegEncoderBasic")]    
-    public sealed class JpegEncoderBasic : EncoderBase
+    [SDK.ContentNode("JpegEncoderBasic")] public sealed class JpegEncoderBasic : EncoderBase
     {
         protected override EncoderAgent Evaluate()
         {
@@ -138,13 +161,10 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.Icon("◂BMP▸"), SDK.Title("BMP"), SDK.TitleFormat("BMP {0}")]
-    [SDK.ContentNode("BmpEncoder")]    
-    public sealed class BmpEncoder : EncoderBase
+    [SDK.ContentNode("BmpEncoder")] public sealed class BmpEncoder : EncoderBase
     {
-        [SDK.Group(0)]
-        [SDK.InputValue("BitsPerPixel")]
-        [SDK.Title("Bits Per Pixel")]
-        public BMPFORMAT.BmpBitsPerPixel BitsPerPixel { get; set; }
+        [SDK.Group(0), SDK.Title("Bits Per Pixel")]
+        [SDK.InputValue("BitsPerPixel")] public BMPFORMAT.BmpBitsPerPixel BitsPerPixel { get; set; }
 
         protected override EncoderAgent Evaluate()
         {
@@ -158,22 +178,15 @@ namespace Epsylon.UberPlugin
     }
 
     [SDK.Icon("◂GIF▸"), SDK.Title("GIF"), SDK.TitleFormat("GIF {0}")]
-    [SDK.ContentNode("GifEncoder")]    
-    public sealed class GifEncoder : EncoderBase
+    [SDK.ContentNode("GifEncoder")] public sealed class GifEncoder : EncoderBase
     {
-        [SDK.Group(0)]
-        [SDK.InputValue("TransparencyThreshold")]
-        [SDK.Title("Transparency Threshold")]
-        [SDK.Minimum(0)]
-        [SDK.Default(0)]
-        [SDK.Maximum( 255)]
-        public int TransparencyThreshold { get; set; }
+        [SDK.Group(0), SDK.Title("Transparency Threshold")]                
+        [SDK.Minimum(0),SDK.Default(0),SDK.Maximum( 255)]
+        [SDK.InputValue("TransparencyThreshold")] public int TransparencyThreshold { get; set; }
 
-        [SDK.Group(0)]
-        [SDK.InputValue("Quantizer")]
-        [SDK.Title("Quantizer")]
+        [SDK.Group(0), SDK.Title("Quantizer")]        
         [SDK.Default(Quantization.Palette)]
-        public Quantization Quantizer { get; set; }
+        [SDK.InputValue("Quantizer")] public Quantization Quantizer { get; set; }
 
         protected override EncoderAgent Evaluate()
         {

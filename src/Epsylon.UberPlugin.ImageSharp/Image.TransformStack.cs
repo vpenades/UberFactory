@@ -326,23 +326,6 @@ namespace Epsylon.UberPlugin
         }
     }
 
-    
-    [SDK.Title("Edge Padding"), SDK.TitleFormat("{0} Edge Padding")]
-    [SDK.ContentNode("EdgePaddingTransform")] public sealed class EdgePaddingTransform : BaseImageTransform
-    {
-        [SDK.Group(0), SDK.Title("Threshold")]
-        [SDK.Minimum(0), SDK.Default(0), SDK.Maximum(1)]
-        [SDK.ViewStyle("Slider")]
-        [SDK.InputValue("Threshold")] public float Threshold { get; set; }        
-
-        protected override IMGTRANSFORM TransformImage()
-        {
-            return dc => dc.EdgePadding(Threshold);
-        }
-    }
-
-
-
     [SDK.ContentNode("LevelsTransform")]
     [SDK.Title("Levels"), SDK.TitleFormat("{0} Levels")]
     public sealed class LevelsTransform : BaseImageTransform

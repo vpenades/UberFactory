@@ -36,7 +36,12 @@ namespace Epsylon.ImageSharp.Procedural
             return source.Apply(img => _ApplyOuterGlow(img, radius));            
         }
 
-        public static IImageProcessingContext<TPixel> EdgePadding<TPixel>(this IImageProcessingContext<TPixel> source, float minAlpha) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> PremultiplyAlpha<TPixel>(this IImageProcessingContext<TPixel> source) where TPixel : struct, IPixel<TPixel>
+        {
+            return source.Apply(img => _ApplyAlphaPremultiply(img.ToTexture()));
+        }
+
+        public static IImageProcessingContext<TPixel> EdgePaddingAlpha<TPixel>(this IImageProcessingContext<TPixel> source, float minAlpha) where TPixel : struct, IPixel<TPixel>
         {
             return source.Apply(img => _ApplyEdgePadding(img, minAlpha, int.MaxValue));
         }
@@ -89,6 +94,17 @@ namespace Epsylon.ImageSharp.Procedural
 
         }
 
+
+        private static void _ApplyAlphaPremultiply(this ITexture source)
+        {
+            for(int y=0; y < source.Height; ++y)
+            {
+                for(int x=0; x < source.Width; ++x)
+                {
+                    source[x, y] = source[x, y].Premultiply();
+                }
+            }
+        }
 
 
         private static void _ApplyOuterGlow<TPixel>(Image<TPixel> source, float radius) where TPixel : struct, IPixel<TPixel>

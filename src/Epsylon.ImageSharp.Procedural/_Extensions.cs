@@ -183,6 +183,15 @@ namespace Epsylon.ImageSharp.Procedural
     static class _PrivateExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 Premultiply(this V4 source)
+        {
+            float w = source.W;
+            V4 premultiplied = source * w;
+            premultiplied.W = w;
+            return premultiplied;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Clamp(this int v, int min, int max)
         {
             if (v < min) return min;
