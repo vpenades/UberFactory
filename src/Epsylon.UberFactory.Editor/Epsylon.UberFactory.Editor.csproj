@@ -84,9 +84,10 @@
     <Compile Include="..\Shared\AssemblyInfo.Shared.cs">
       <Link>Properties\AssemblyInfo.Shared.cs</Link>
     </Compile>
+    <Compile Include="AppUtils\ShellFileIcon.cs" />
     <Compile Include="PreviewManager.cs" />
     <Compile Include="Properties\DebugInfo.cs" />
-    <Compile Include="RecentFilesMenuItem.cs" />
+    <Compile Include="AppUtils\RecentFilesMenuItem.cs" />
     <Compile Include="Themes\DataTemplates\BindingView.Color.xaml.cs">
       <DependentUpon>BindingView.Color.xaml</DependentUpon>
     </Compile>
@@ -201,6 +202,22 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Themes\DataTemplates\ProjectViews.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.Controls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.InstanceManagers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -11,20 +11,8 @@
         <themes:TypeDisplayNameConverter x:Key="_AsDisplayName" />
     </UserControl.Resources>
 
-    <GroupBox Style="{StaticResource VerticalGroupBoxStyle}">
-
-        <GroupBox.Header>
-            <WrapPanel HorizontalAlignment="Center">                
-
-                <GroupBox Style="{StaticResource HorizontalGroupBoxStyle}"
-                              Header="{Binding Pipeline.Content.DisplayName}"
-                              Visibility="{Binding Pipeline.IsInstanced,Converter={StaticResource asVisible}}" >
-
-                    <themes:SafeButton Content="{StaticResource _RemoveIcon}" HorizontalAlignment="Center" Command="{Binding Pipeline.ClearCmd}" />
-                </GroupBox>
-
-            </WrapPanel>
-        </GroupBox.Header>
+    <GroupBox Header="{Binding Pipeline}" HeaderTemplate="{StaticResource Header_InstancedChild}"
+        Style="{StaticResource VerticalGroupBoxStyle}">        
 
         <local:PipelineView DataContext="{Binding Pipeline}" />
 

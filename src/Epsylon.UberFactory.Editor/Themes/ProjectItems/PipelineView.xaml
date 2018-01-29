@@ -14,9 +14,10 @@
                     <local:NodeView />
                 </DataTemplate>
             </ContentControl.ContentTemplate>
-        </ContentControl>        
+        </ContentControl>
 
-        <Button Content="{StaticResource _AddIcon}" Command="{Binding SetRootNodeCmd}" Visibility="{Binding IsEmpty,    Converter={StaticResource asVisible}}"/>        
+        <Button Content="{StaticResource _AddIcon}" Command="{Binding ChooseParameterCmd}"
+                Visibility="{Binding IsEmpty,    Converter={StaticResource asVisible}}"/>        
 
     </Grid>
     

@@ -11,7 +11,49 @@ namespace Epsylon.UberFactory
     using BINDING = System.ComponentModel.INotifyPropertyChanged;
 
     public static partial class ProjectVIEW
-    {        
+    {
+        /// <summary>
+        /// Implemented by <see cref="Pipeline"/> and <see cref="SingleDependencyView"/> to use common and consistent child instance management
+        /// </summary>        
+        public interface IChildEditCommands
+        {
+            /// <summary>
+            /// Instance Status; TRUE if NULL
+            /// </summary>
+            Boolean IsEmpty { get; }
+
+            /// <summary>
+            /// Instance Status; TRUE if instanced
+            /// </summary>
+            Boolean IsInstanced { get; }
+
+            /// <summary>
+            /// Configuration status; TRUE if there's a value set for the current configuration
+            /// </summary>
+            Boolean IsOwnValue { get; }
+
+            /// <summary>
+            /// Configuration status; TRUE if we're not in the root configuration
+            /// </summary>
+            Boolean IsChildConfiguration { get; }
+
+            /// <summary>
+            /// Name of the child, when it is instanced
+            /// </summary>
+            String DisplayName { get; }           
+
+            
+            /// <summary>
+            /// Command to remove the child
+            /// </summary>
+            ICommand RemoveParameterCmd { get; }
+
+            /// <summary>
+            /// command to set a child for the current configuration
+            /// </summary>
+            ICommand ChooseParameterCmd { get; }
+        }
+
         public interface IPipelineViewServices
         {
             Evaluation.BuildContext GetBuildSettings();
@@ -21,7 +63,7 @@ namespace Epsylon.UberFactory
             Type GetRootOutputType();
         }
 
-        public class Pipeline : BindableBase , INodeViewServices
+        public class Pipeline : BindableBase , INodeViewServices , IChildEditCommands
         {
             #region lifecycle
 
@@ -42,18 +84,17 @@ namespace Epsylon.UberFactory
                 _Parent = c;
                 _PipelineDom = p;
 
-                ClearCmd = new RelayCommand(ClearAll);
-
-                SetRootNodeCmd = new RelayCommand(_SetRootNode);
+                RemoveParameterCmd = new RelayCommand(RemoveParameter);
+                ChooseParameterCmd = new RelayCommand(_SetRootNode);
             }
 
             #endregion
 
             #region commands
 
-            public ICommand ClearCmd { get; private set; }
+            public ICommand RemoveParameterCmd { get; private set; }
 
-            public ICommand SetRootNodeCmd { get; private set; }            
+            public ICommand ChooseParameterCmd { get; private set; }            
 
             #endregion
 
@@ -77,15 +118,20 @@ namespace Epsylon.UberFactory
 
             public bool IsInstanced         => !IsEmpty;
 
+            public String DisplayName       => (Content as Node)?.DisplayName;
+
             public Object Content           => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
 
             public Exception FailedState    => _Exception;
 
-            public Boolean CanEditHierarchy => true;
+            public Boolean CanEditHierarchy => true;            
+
+            public IPipelineViewServices PipelineServices => _Parent;
 
             public Boolean IsChildConfiguration => _Parent.GetBuildSettings().Configuration.Length > 1;
 
-            public IPipelineViewServices PipelineServices => _Parent;
+            // true if a specific value exists for the current configuration
+            public bool IsOwnValue => _PipelineDom.RootIdentifier != Guid.Empty; // not right, we're not supporting multiconfiguration
 
             #endregion
 
@@ -116,7 +162,7 @@ namespace Epsylon.UberFactory
                 RaiseChanged();                
             }            
 
-            public void ClearAll()
+            public void RemoveParameter()
             {
                 _PipelineDom.ClearNodes();
                 UpdateGraph();
@@ -342,7 +388,7 @@ namespace Epsylon.UberFactory
         }
         
 
-        public class SingleDependencyView : BindableBase
+        public class SingleDependencyView : BindableBase , IChildEditCommands
         {
             // handles the binding of a single node dependency;
             // this view class has a dual mode function:
@@ -385,7 +431,7 @@ namespace Epsylon.UberFactory
 
             #region commands
 
-            public ICommand ChooseParameterCmd { get; private set; }            
+            public ICommand ChooseParameterCmd { get; private set; }
 
             public ICommand RemoveParameterCmd { get; private set; }
 

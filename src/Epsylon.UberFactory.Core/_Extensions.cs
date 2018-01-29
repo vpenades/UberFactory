@@ -449,6 +449,11 @@ namespace Epsylon.UberFactory
 
     public static class _PublicExtensions
     {
+        public static bool HasOwnValue(this IPropertyProvider properties, string key)
+        {
+            return properties.GetValue(key, null) != properties.GetDefaultValue(key, null);
+        }
+
         public static PathString GetAbsoluteSourcePath(this SDK.ContentObject instance, string relativeToSource)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));

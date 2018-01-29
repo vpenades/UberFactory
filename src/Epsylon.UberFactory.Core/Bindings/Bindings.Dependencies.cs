@@ -33,7 +33,7 @@ namespace Epsylon.UberFactory.Bindings
 
         #region API
 
-        public Boolean HasOwnValue => _Properties.GetValue(this.SerializationKey, null) != _Properties.GetDefaultValue(this.SerializationKey, null);
+        public Boolean HasOwnValue => _Properties.HasOwnValue(this.SerializationKey);
 
         public void ClearEvaluatedResult()
         {
