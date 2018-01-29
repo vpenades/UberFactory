@@ -360,6 +360,8 @@ namespace Epsylon.UberFactory.Bindings
 
         #region properties
 
+        public bool IsMultiLine => false; // this is here to avoid binding errors
+
         public override string ViewTemplate
         {
             get
@@ -449,7 +451,9 @@ namespace Epsylon.UberFactory.Bindings
 
         #endregion
 
-        #region properties        
+        #region properties      
+
+        public bool IsMultiLine => false; // this is here to avoid binding errors
 
         public override string ViewTemplate => VIEWTEMPLATE_COMBOBOX;
 
@@ -503,7 +507,9 @@ namespace Epsylon.UberFactory.Bindings
 
         #endregion
 
-        #region properties        
+        #region properties
+
+        public bool IsMultiLine => false; // this is here to avoid binding errors
 
         public override string ViewTemplate => VIEWTEMPLATE_TIMEBOX;        
 
@@ -544,6 +550,8 @@ namespace Epsylon.UberFactory.Bindings
         #endregion
 
         #region properties        
+
+        public bool IsMultiLine => false; // this is here to avoid binding errors
 
         public override string ViewTemplate => VIEWTEMPLATE_DATEBOX;
 

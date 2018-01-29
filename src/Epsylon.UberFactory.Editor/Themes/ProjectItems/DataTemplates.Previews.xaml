@@ -1,12 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     
-                    xmlns:sysdata="clr-namespace:System.Data;assembly=System.Data"
-                    
+                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"                    
+                    xmlns:sysdata="clr-namespace:System.Data;assembly=System.Data"                    
                     xmlns:imaging="clr-namespace:System.Windows.Media.Imaging;assembly=PresentationCore"
-                    
-                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.DataTemplates"                    
                     >
+
+    <local:BindingsTemplateSelector x:Key="_BindingsViewSelector" />
 
     <DataTemplate DataType="{x:Type sysdata:DataTable}">
         <DataGrid ItemsSource="{Binding}" IsReadOnly="True" />
@@ -15,7 +15,6 @@
     <DataTemplate DataType="{x:Type sysdata:DataSet}">
         <TabControl ItemsSource="{Binding Tables}" DisplayMemberPath="TableName" TabStripPlacement="Bottom" />
     </DataTemplate>
-
 
     <DataTemplate DataType="{x:Type imaging:BitmapSource}">
         

@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Epsylon.UberFactory.Themes.ProjectItems
 {
     /// <summary>
-    /// Interaction logic for SettingsView.xaml
+    /// Interaction logic for ChildEditBar.xaml
     /// </summary>
-    public partial class SettingsView : UserControl
+    public partial class ChildEditBar : UserControl
     {
-        public SettingsView()
+        public ChildEditBar()
         {
             InitializeComponent();
         }

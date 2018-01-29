@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Epsylon.UberFactory.Themes.ProjectItems
 {
     /// <summary>
-    /// Interaction logic for TaskView.xaml
+    /// Interaction logic for NodeInstanceView.xaml
     /// </summary>
-    public partial class TaskView : UserControl
+    public partial class NodeInstanceView : UserControl
     {
-        public TaskView()
+        public NodeInstanceView()
         {
             InitializeComponent();
         }

@@ -1,0 +1,48 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    
+                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"                    
+                    xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"             
+                    xmlns:code="clr-namespace:Epsylon.UberFactory"                    
+                    >
+    
+    <local:BindingsTemplateSelector x:Key="_BindingsViewSelector" />
+
+    <DataTemplate DataType="{x:Type code:ProjectVIEW+SettingsView}">
+        <GroupBox Style="{StaticResource VerticalGroupBoxStyle}" Header="{Binding DisplayTitle}">
+            <ScrollViewer>
+                <Grid DataContext="{Binding Pipeline}" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <GroupBox Header="{Binding DisplayName}" Style="{DynamicResource VerticalGroupBoxStyle}">
+                        <local:NodeInstanceView DataContext="{Binding Content}" />
+                    </GroupBox>
+                </Grid>
+            </ScrollViewer>
+        </GroupBox>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type code:ProjectVIEW+Task}">
+        <GroupBox Style="{StaticResource VerticalGroupBoxStyle}" Header="{Binding DisplayTitle}">
+            <ScrollViewer>
+                <Grid DataContext="{Binding Pipeline}" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                    <GroupBox Header="{Binding}" HeaderTemplate="{StaticResource Header_EmptyChild}"
+                              Style="{DynamicResource VerticalGroupBoxStyle}"
+                              Visibility="{Binding IsEmpty,Converter={StaticResource asVisible}}">
+                        <local:ChildEditBar />
+                    </GroupBox>
+
+                    <GroupBox Header="{Binding}" HeaderTemplate="{StaticResource Header_InstancedChild}"
+                              Style="{DynamicResource VerticalGroupBoxStyle}"
+                              Visibility="{Binding IsInstanced,Converter={StaticResource asVisible}}">                        
+                        <local:NodeInstanceView DataContext="{Binding Content}" />                       
+                        
+                    </GroupBox>
+                    
+                </Grid>
+            </ScrollViewer>
+        </GroupBox>
+    </DataTemplate>
+
+    
+
+</ResourceDictionary>

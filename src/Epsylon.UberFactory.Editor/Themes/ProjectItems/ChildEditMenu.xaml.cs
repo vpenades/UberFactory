@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace Epsylon.UberFactory.Themes.ProjectItems
 {    
-    public partial class PipelineView : UserControl
+    public partial class ChildEditMenu : ContextMenu
     {
-        public PipelineView()
+        public ChildEditMenu()
         {
             InitializeComponent();
         }

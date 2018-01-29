@@ -88,14 +88,23 @@
     <Compile Include="PreviewManager.cs" />
     <Compile Include="Properties\DebugInfo.cs" />
     <Compile Include="AppUtils\RecentFilesMenuItem.cs" />
-    <Compile Include="Themes\DataTemplates\BindingView.Color.xaml.cs">
+    <Compile Include="Themes\ProjectItems\BindingView.Color.xaml.cs">
       <DependentUpon>BindingView.Color.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\DataTemplates\PathPicker.xaml.cs">
+    <Compile Include="Themes\ProjectItems\ChildEditBar.xaml.cs">
+      <DependentUpon>ChildEditBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\ProjectItems\ChildEditMenu.xaml.cs">
+      <DependentUpon>ChildEditMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\ProjectItems\NodeInstanceView.xaml.cs">
+      <DependentUpon>NodeInstanceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\ProjectItems\PathPicker.xaml.cs">
       <DependentUpon>PathPicker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\DataTemplates\PropertyBindingsSelector.cs" />
-    <Compile Include="Themes\DataTemplates\TimeSpanControl.xaml.cs">
+    <Compile Include="Themes\ProjectItems\BindingsTemplateSelector.cs" />
+    <Compile Include="Themes\Controls\TimeSpanControl.xaml.cs">
       <DependentUpon>TimeSpanControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\DialogPanel.About.xaml.cs">
@@ -119,28 +128,13 @@
     <Compile Include="Themes\DialogPanel.PreviewResult.xaml.cs">
       <DependentUpon>DialogPanel.PreviewResult.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\ProjectItems\NodeView.xaml.cs">
-      <DependentUpon>NodeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Themes\ProjectItems\PipelineRootView.xaml.cs">
-      <DependentUpon>PipelineRootView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Themes\ProjectItems\PipelineView.xaml.cs">
-      <DependentUpon>PipelineView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Themes\ProjectItems\SettingsView.xaml.cs">
-      <DependentUpon>SettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Themes\ProjectItems\TaskView.xaml.cs">
-      <DependentUpon>TaskView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Themes\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\Dialog.TaskMonitor.xaml.cs">
       <DependentUpon>Dialog.TaskMonitor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\SafeButton.cs" />
+    <Compile Include="Themes\Controls\SafeButton.cs" />
     <Compile Include="Themes\TaskMonitorWindow.ProgressDialog.xaml.cs">
       <DependentUpon>TaskMonitorWindow.ProgressDialog.xaml</DependentUpon>
     </Compile>
@@ -153,15 +147,31 @@
     </Compile>
     <Compile Include="_Extensions.cs" />
     <Compile Include="View.Utils.cs" />
-    <Page Include="Themes\DataTemplates\BindingView.Color.xaml">
+    <Page Include="Themes\DataTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DataTemplates\PathPicker.xaml">
+    <Page Include="Themes\ProjectItems\BindingView.Color.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DataTemplates\TimeSpanControl.xaml">
+    <Page Include="Themes\ProjectItems\ChildEditBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ProjectItems\ChildEditMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ProjectItems\NodeInstanceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ProjectItems\PathPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Controls\TimeSpanControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,7 +187,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DataTemplates\DataPreviews.xaml">
+    <Page Include="Themes\ProjectItems\DataTemplates.Previews.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -185,7 +195,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DataTemplates\PropertyBindingsViews.xaml">
+    <Page Include="Themes\ProjectItems\DataTemplates.PropertyBindings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -201,23 +211,7 @@
       <DependentUpon>AppWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\DataTemplates\ProjectViews.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.Controls.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.Converters.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.InstanceManagers.xaml">
+    <Page Include="Themes\ProjectItems\DataTemplates.ProjectItems.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,26 +232,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\DialogPanel.PreviewResult.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\ProjectItems\NodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\ProjectItems\PipelineRootView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\ProjectItems\PipelineView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\ProjectItems\SettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\ProjectItems\TaskView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -344,6 +318,7 @@
       <Version>1.1.1</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildThisFileDirectory)..\Shared\StaticVersionInfo.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

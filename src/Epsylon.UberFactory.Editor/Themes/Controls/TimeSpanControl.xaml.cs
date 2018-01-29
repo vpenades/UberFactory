@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Epsylon.UberFactory.Themes.DataTemplates
+namespace Epsylon.UberFactory.Themes.Controls
 {    
     public partial class TimeSpanControl : UserControl, INotifyPropertyChanged
     {

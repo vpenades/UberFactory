@@ -48,6 +48,8 @@ namespace Epsylon.UberFactory
             /// </summary>
             ICommand RemoveParameterCmd { get; }
 
+            ICommand SetParameterDefaultValueCmd { get; }
+
             /// <summary>
             /// command to set a child for the current configuration
             /// </summary>
@@ -85,6 +87,7 @@ namespace Epsylon.UberFactory
                 _PipelineDom = p;
 
                 RemoveParameterCmd = new RelayCommand(RemoveParameter);
+                SetParameterDefaultValueCmd = new RelayCommand(RemoveParameter);
                 ChooseParameterCmd = new RelayCommand(_SetRootNode);
             }
 
@@ -93,6 +96,8 @@ namespace Epsylon.UberFactory
             #region commands
 
             public ICommand RemoveParameterCmd { get; private set; }
+
+            public ICommand SetParameterDefaultValueCmd { get; private set; }
 
             public ICommand ChooseParameterCmd { get; private set; }            
 

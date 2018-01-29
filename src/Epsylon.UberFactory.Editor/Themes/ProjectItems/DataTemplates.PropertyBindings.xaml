@@ -1,19 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     
-                    xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"                    
-                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.DataTemplates"                    
-                    xmlns:pitems="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems" >
-
-    <BooleanToVisibilityConverter x:Key="__isVisible" />
-    <themes:RelayCommandConverter x:Key="__asRelayCommand" />
-    <themes:BooleanToTextWrappingConverter x:Key="__asTextWrapping" />    
+                    xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"
+                    xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"
+                    xmlns:xcontrols="clr-namespace:Epsylon.UberFactory.Themes.Controls">
     
-    <themes:ConvertibleToBrushConverter x:Key="__AsColorBrush" FalseBrush="Gray" TrueBrush="DarkSlateBlue" />
-    <local:PropertyBindingsSelector x:Key="_BindingsViewSelector" />
+    <local:BindingsTemplateSelector x:Key="_BindingsViewSelector" />    
 
     <SolidColorBrush x:Key="_NodeBackgroundColor">BlanchedAlmond</SolidColorBrush>
-
 
     <!-- ============================= VALUE BINDINGS ============================= -->
 
@@ -94,7 +88,7 @@
 
     <DataTemplate x:Key="BindingView_TimeBox">
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
-            <local:TimeSpanControl Value="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />
+            <xcontrols:TimeSpanControl Value="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />
         </GroupBox>
     </DataTemplate>
 
@@ -144,15 +138,8 @@
 
         <GroupBox Header="{Binding}" HeaderTemplate="{StaticResource Header_EmptyChild}"
                   VerticalAlignment="Top" Background="#40ff0000"
-                  Style="{StaticResource VerticalGroupBoxStyle}"
-                  >
-            
-            <WrapPanel HorizontalAlignment="Center"  VerticalAlignment="Center">
-                <themes:SafeButton Content="{StaticResource _EmptyIcon}"  Command="{Binding RemoveElementCmd}"            ToolTip="{StaticResource L2N_SetNullReference}" Visibility="{Binding IsCollectionElement,Converter={StaticResource asVisible}}" />
-                <themes:SafeButton Content="{StaticResource _RemoveIcon}" Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
-                <Button            Content="{StaticResource _AddIcon}"    Command="{Binding ChooseParameterCmd}"          ToolTip="{StaticResource L2N_SetNewReference}" />
-            </WrapPanel>
-
+                  Style="{StaticResource VerticalGroupBoxStyle}">
+            <local:ChildEditBar HorizontalAlignment="Center"  VerticalAlignment="Center" />
         </GroupBox>        
 
     </DataTemplate>
@@ -161,9 +148,8 @@
 
         <Expander Header="{Binding}" HeaderTemplate="{StaticResource Header_InstancedChild}"
                   VerticalAlignment="Top"
-                  Style="{StaticResource _NodeExpanderStyle}"
-                  >
-            <pitems:NodeView DataContext="{Binding NodeInstance}" />
+                  Style="{StaticResource _NodeExpanderStyle}">            
+            <local:NodeInstanceView DataContext="{Binding NodeInstance}" />
         </Expander>        
 
     </DataTemplate>
