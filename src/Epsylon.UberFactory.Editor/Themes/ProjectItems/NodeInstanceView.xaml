@@ -6,9 +6,16 @@
              xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    
+    
 
     <UserControl.Resources>
-        <local:BindingsTemplateSelector x:Key="_BindingsViewSelector" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DataTemplates.Headers.xaml" />
+                <ResourceDictionary Source="DataTemplates.PropertyBindings.xaml" />                
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>        
     </UserControl.Resources>
     
     <StackPanel Margin="6">

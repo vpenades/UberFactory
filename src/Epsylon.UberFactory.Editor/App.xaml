@@ -13,7 +13,9 @@
                 
                 <ResourceDictionary Source="Themes/ProjectItems/DataTemplates.Previews.xaml" />
                 <ResourceDictionary Source="Themes/ProjectItems/DataTemplates.ProjectItems.xaml" />
+                <!--
                 <ResourceDictionary Source="Themes/ProjectItems/DataTemplates.PropertyBindings.xaml" />                
+                -->
                 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

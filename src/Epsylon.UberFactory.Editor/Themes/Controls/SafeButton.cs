@@ -11,10 +11,11 @@ namespace Epsylon.UberFactory.Themes.Controls
 {
 
     /// <summary>
-    /// A Special button that requires you to click twice to perform the click action.
+    /// A Special button with a "safety mechanism" that requires the user to click twice to perform the click action.
     /// </summary>
     /// <remarks>
-    /// This button can be useful in cases like Removing/deleting actions that cannot be undone.
+    /// This button can be useful in cases like Removing/deleting actions that cannot be undone, preventing the user
+    /// to perform the action by clicking once by mistake.
     /// </remarks>
     public class SafeButton : Button
     {
@@ -72,7 +73,5 @@ namespace Epsylon.UberFactory.Themes.Controls
 
             base.OnClick();
         }
-
-
     }
 }

@@ -5,6 +5,10 @@
                     xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"             
                     xmlns:code="clr-namespace:Epsylon.UberFactory"                    
                     >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="DataTemplates.Headers.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     
     <local:BindingsTemplateSelector x:Key="_BindingsViewSelector" />
 

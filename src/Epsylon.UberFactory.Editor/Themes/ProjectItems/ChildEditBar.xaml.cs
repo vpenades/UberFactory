@@ -14,10 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Epsylon.UberFactory.Themes.ProjectItems
-{
-    /// <summary>
-    /// Interaction logic for ChildEditBar.xaml
-    /// </summary>
+{    
     public partial class ChildEditBar : UserControl
     {
         public ChildEditBar()

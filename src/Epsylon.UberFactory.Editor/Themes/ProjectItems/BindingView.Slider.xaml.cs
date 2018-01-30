@@ -14,10 +14,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Epsylon.UberFactory.Themes.ProjectItems
-{    
-    public partial class ChildEditMenu : ContextMenu
+{
+    /// <summary>
+    /// Interaction logic for SliderView.xaml
+    /// </summary>
+    public partial class SliderView : UserControl
     {
-        public ChildEditMenu()
+        public SliderView()
         {
             InitializeComponent();
         }

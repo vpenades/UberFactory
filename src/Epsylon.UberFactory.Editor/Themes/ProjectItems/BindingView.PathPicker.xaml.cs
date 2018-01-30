@@ -16,9 +16,9 @@ using System.Windows.Shapes;
 namespace Epsylon.UberFactory.Themes.ProjectItems
 {
     
-    public partial class PathPicker : UserControl
+    public partial class PathPickerView : UserControl
     {
-        public PathPicker()
+        public PathPickerView()
         {
             InitializeComponent();            
         }

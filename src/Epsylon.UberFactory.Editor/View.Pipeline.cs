@@ -54,6 +54,8 @@ namespace Epsylon.UberFactory
             /// command to set a child for the current configuration
             /// </summary>
             ICommand ChooseParameterCmd { get; }
+
+            ICommand ViewResultCmd { get; }
         }
 
         public interface IPipelineViewServices
@@ -89,6 +91,7 @@ namespace Epsylon.UberFactory
                 RemoveParameterCmd = new RelayCommand(RemoveParameter);
                 SetParameterDefaultValueCmd = new RelayCommand(RemoveParameter);
                 ChooseParameterCmd = new RelayCommand(_SetRootNode);
+                ViewResultCmd = new RelayCommand(() => { if (Content is Node node) node.SetAsCurrentResultView(); } );
             }
 
             #endregion
@@ -99,7 +102,9 @@ namespace Epsylon.UberFactory
 
             public ICommand SetParameterDefaultValueCmd { get; private set; }
 
-            public ICommand ChooseParameterCmd { get; private set; }            
+            public ICommand ChooseParameterCmd { get; private set; }
+
+            public ICommand ViewResultCmd { get; private set; }
 
             #endregion
 
@@ -390,8 +395,7 @@ namespace Epsylon.UberFactory
             public IReadOnlyList<BINDING> Bindings  => _BindingsViews.ToArray();
 
             #endregion
-        }
-        
+        }        
 
         public class SingleDependencyView : BindableBase , IChildEditCommands
         {

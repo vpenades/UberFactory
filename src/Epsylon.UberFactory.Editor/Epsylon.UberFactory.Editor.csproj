@@ -94,14 +94,11 @@
     <Compile Include="Themes\ProjectItems\ChildEditBar.xaml.cs">
       <DependentUpon>ChildEditBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\ProjectItems\ChildEditMenu.xaml.cs">
-      <DependentUpon>ChildEditMenu.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Themes\ProjectItems\NodeInstanceView.xaml.cs">
       <DependentUpon>NodeInstanceView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\ProjectItems\PathPicker.xaml.cs">
-      <DependentUpon>PathPicker.xaml</DependentUpon>
+    <Compile Include="Themes\ProjectItems\BindingView.PathPicker.xaml.cs">
+      <DependentUpon>BindingView.PathPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\ProjectItems\BindingsTemplateSelector.cs" />
     <Compile Include="Themes\Controls\TimeSpanControl.xaml.cs">
@@ -127,6 +124,9 @@
     </Compile>
     <Compile Include="Themes\DialogPanel.PreviewResult.xaml.cs">
       <DependentUpon>DialogPanel.PreviewResult.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\ProjectItems\BindingView.Slider.xaml.cs">
+      <DependentUpon>BindingView.Slider.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
@@ -159,7 +159,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ProjectItems\ChildEditMenu.xaml">
+    <Page Include="Themes\ProjectItems\DataTemplates.Headers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -167,7 +167,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ProjectItems\PathPicker.xaml">
+    <Page Include="Themes\ProjectItems\BindingView.PathPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -232,6 +232,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\DialogPanel.PreviewResult.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ProjectItems\BindingView.Slider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

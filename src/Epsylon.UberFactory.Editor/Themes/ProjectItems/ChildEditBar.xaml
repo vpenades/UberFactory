@@ -1,16 +1,15 @@
 ﻿<UserControl x:Class="Epsylon.UberFactory.Themes.ProjectItems.ChildEditBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Epsylon.UberFactory.Themes.ProjectItems"
-             xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"
-             xmlns:xcontrols="clr-namespace:Epsylon.UberFactory.Themes.Controls"
-             >
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"             
+             xmlns:xcontrols="clr-namespace:Epsylon.UberFactory.Themes.Controls">
+
+    <!-- this class expects DataContext to be a IChildEditCommands compatible object -->
+    
     <StackPanel Orientation="Horizontal">
-        <Button            Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"               ToolTip="{StaticResource L2N_PreviewResult}"       Visibility="{Binding IsInstanced,Converter={StaticResource asVisible}}"/>
-        <Button            Content="{StaticResource _AddIcon}"     Command="{Binding ChooseParameterCmd}"          ToolTip="{StaticResource L2N_SetNewReference}"     Visibility="{Binding IsEmpty,Converter={StaticResource asVisible}}"/>
+        <Button               Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"               ToolTip="{StaticResource L2N_PreviewResult}"       Visibility="{Binding IsInstanced,Converter={StaticResource asVisible}}"/>
+        <Button               Content="{StaticResource _AddIcon}"     Command="{Binding ChooseParameterCmd}"          ToolTip="{StaticResource L2N_SetNewReference}"     Visibility="{Binding IsEmpty,Converter={StaticResource asVisible}}"/>
         <xcontrols:SafeButton Content="{StaticResource _RemoveIcon}"  Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsOwnValue,Converter={StaticResource asVisible}}"/>
         <xcontrols:SafeButton Content="{StaticResource _EmptyIcon}"   Command="{Binding RemoveParameterCmd}"          ToolTip="{StaticResource L2N_SetNullReference}"    Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
     </StackPanel>
+    
 </UserControl>

@@ -7,21 +7,7 @@
     
     <local:BindingsTemplateSelector x:Key="_BindingsViewSelector" />    
 
-    <SolidColorBrush x:Key="_NodeBackgroundColor">BlanchedAlmond</SolidColorBrush>
-
     <!-- ============================= VALUE BINDINGS ============================= -->
-
-    <ContextMenu x:Key="__clearValueContextMenu">
-        <MenuItem Icon="{StaticResource _RemoveIcon}" Command="{Binding ClearValueCmd,Converter={StaticResource __asRelayCommand}}">
-            <MenuItem.Header>
-                <TextBlock>
-                            <Run Text="Reset value to default:" />
-                            <Run Text="{Binding DisplayDefaultValue,Mode=OneWay}" />
-                </TextBlock>
-            </MenuItem.Header>
-        </MenuItem>
-    </ContextMenu>
-    
     
     
     <DataTemplate x:Key="BindingView_Invalid">
@@ -82,7 +68,7 @@
 
     <DataTemplate x:Key="BindingView_DateBox">
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
-            <DatePicker SelectedDate="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />            
+            <DatePicker SelectedDate="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />
         </GroupBox>
     </DataTemplate>
 
@@ -90,32 +76,14 @@
         <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
             <xcontrols:TimeSpanControl Value="{Binding Value}" ContextMenu="{StaticResource __clearValueContextMenu}" />
         </GroupBox>
-    </DataTemplate>
-
-    <!-- Todo BindingView_TimeBox ... or just use three Int Properties -->
+    </DataTemplate>    
 
     <DataTemplate x:Key="BindingView_Slider">
-        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}" ToolTip="{Binding ToolTip}">
-            <DockPanel
-                ContextMenu="{StaticResource __clearValueContextMenu}"
-                TextElement.Foreground="{Binding HasValue,Converter={StaticResource __AsColorBrush}}">               
-
-                <Grid DockPanel.Dock="Right" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Minimum}" Visibility="Hidden"/>
-                    <TextBlock Text="{Binding Maximum}" Visibility="Hidden"/>
-                    <TextBlock Text="{Binding Value}"/>
-                </Grid>
-                
-                <Slider Value="{Binding Value}" Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" MinWidth="110" />
-                
-            </DockPanel>
-        </GroupBox>
+        <local:SliderView />
     </DataTemplate>
 
     <DataTemplate x:Key="BindingView_PathPicker">
-        <GroupBox Header="{Binding DisplayName}" Style="{StaticResource HorizontalGroupBoxStyle}">
-            <local:PathPicker ContextMenu="{StaticResource __clearValueContextMenu}"/>            
-        </GroupBox>
+        <local:PathPickerView />
     </DataTemplate>
 
     <DataTemplate x:Key="BindingView_ColorPicker">

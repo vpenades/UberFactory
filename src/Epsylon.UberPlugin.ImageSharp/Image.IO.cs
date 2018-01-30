@@ -65,7 +65,12 @@ namespace Epsylon.UberPlugin
             Encoder.WriteImage(Image, stream);
 
             Image.Dispose();
-        }        
+        }
+
+        protected override object EvaluatePreview(SDK.PreviewContext previewContext)
+        {
+            return Image.CreatePreview(previewContext);
+        }
     }
     
 
