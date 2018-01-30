@@ -41,6 +41,16 @@ namespace Epsylon.ImageSharp.Procedural
             return source.Apply(img => _ApplyAlphaPremultiply(img.ToTexture()));
         }
 
+        public static IImageProcessingContext<TPixel> ApplyCommonEffect<TPixel>(this IImageProcessingContext<TPixel> source, CommonEffect<TPixel> effect) where TPixel : struct, IPixel<TPixel>
+        {
+            return source.Apply(img => _ApplyCommonEffect<TPixel>(img, effect));
+        }
+
+        public static IImageProcessingContext<TPixel> FillRGB<TPixel>(this IImageProcessingContext<TPixel> source, TPixel rgb) where TPixel : struct, IPixel<TPixel>
+        {
+            return source.Apply(img => _FillRGB(img.ToTexture(),rgb.ToVector4()));
+        }
+
         public static IImageProcessingContext<TPixel> EdgePaddingAlpha<TPixel>(this IImageProcessingContext<TPixel> source, float minAlpha) where TPixel : struct, IPixel<TPixel>
         {
             return source.Apply(img => _ApplyEdgePadding(img, minAlpha, int.MaxValue));
@@ -66,6 +76,25 @@ namespace Epsylon.ImageSharp.Procedural
                 );
         }
 
+
+
+        private static void _ApplyCommonEffect<TPixel>(Image<TPixel> img, CommonEffect<TPixel> effect) where TPixel : struct, IPixel<TPixel>
+        {
+            effect.Mutate(img);
+        }
+
+
+        private static void _FillRGB(this ITexture source, Vector4 rgba)
+        {
+            for (int y = 0; y < source.Height; ++y)
+            {
+                for (int x = 0; x < source.Width; ++x)
+                {
+                    rgba.W = source[x, y].W;
+                    source[x, y] = rgba;
+                }
+            }
+        }
 
         private static void _ApplyAlphaMask(this ITexture source, Image<Alpha8> mask, PixelBlenderMode mode)
         {
