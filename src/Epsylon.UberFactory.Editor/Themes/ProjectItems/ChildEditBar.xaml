@@ -6,10 +6,10 @@
     <!-- this class expects DataContext to be a IChildEditCommands compatible object -->
     
     <StackPanel Orientation="Horizontal">
-        <Button               Content="{StaticResource _InspectIcon}" Command="{Binding ViewResultCmd}"               ToolTip="{StaticResource L2N_PreviewResult}"       Visibility="{Binding IsInstanced,Converter={StaticResource asVisible}}"/>
-        <Button               Content="{StaticResource _AddIcon}"     Command="{Binding ChooseParameterCmd}"          ToolTip="{StaticResource L2N_SetNewReference}"     Visibility="{Binding IsEmpty,Converter={StaticResource asVisible}}"/>
-        <xcontrols:SafeButton Content="{StaticResource _RemoveIcon}"  Command="{Binding SetParameterDefaultValueCmd}" ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding IsOwnValue,Converter={StaticResource asVisible}}"/>
-        <xcontrols:SafeButton Content="{StaticResource _EmptyIcon}"   Command="{Binding RemoveParameterCmd}"          ToolTip="{StaticResource L2N_SetNullReference}"    Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
+        <Button               Content="{StaticResource _InspectIcon}" Command="{Binding ViewCurrentPreviewCmd}" ToolTip="{StaticResource L2N_PreviewResult}"       Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
+        <Button               Content="{StaticResource _AddIcon}"     Command="{Binding SetCurrentValueCmd}"    ToolTip="{StaticResource L2N_SetNewReference}"     Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
+        <xcontrols:SafeButton Content="{StaticResource _RemoveIcon}"   Command="{Binding ClearCurrentCmd}"       ToolTip="{StaticResource L2N_SetNullReference}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <xcontrols:SafeButton Content="{StaticResource _EmptyIcon}"  Command="{Binding SetCurrentEmptyCmd}"    ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>        
     </StackPanel>
     
 </UserControl>

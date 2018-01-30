@@ -9,6 +9,12 @@ namespace Epsylon.UberFactory
     public class ProjectDomTests
     {
         [TestMethod]
+        public void ConstantTests()
+        {
+            Assert.AreNotEqual(ProjectDOM.RESETTODEFAULT, Guid.Empty, "RESETTODEFAULT must be different than GUID.EMPTY");
+        }
+
+        [TestMethod]
         public void DocumentFileLoadCheck()
         {
             Assert.IsNotNull(ProjectDOM.ParseProject(string.Empty),"Empty files must be enterpreted as new documents.");

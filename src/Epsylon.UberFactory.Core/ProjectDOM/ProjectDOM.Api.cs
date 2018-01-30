@@ -7,6 +7,9 @@ namespace Epsylon.UberFactory
 {
     public static partial class ProjectDOM
     {
+        /// <summary>
+        /// Notice that this value is different that Guid.EMPTY to prevent 
+        /// </summary>
         public static readonly Guid RESETTODEFAULT = new Guid("{00000000-0000-0000-0000-000000000001}");
 
         public static string GetDisplayName(Object o)

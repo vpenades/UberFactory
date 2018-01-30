@@ -5,7 +5,7 @@
 
     <sys:String x:Key="L2N_SetNewReference">Set New Value</sys:String>
     <sys:String x:Key="L2N_SetNullReference">Set Empty Value</sys:String>
-    <sys:String x:Key="L2N_SetDefaultReference">Remove Value</sys:String>
+    <sys:String x:Key="L2N_SetDefaultReference">Set Default Value</sys:String>
     <sys:String x:Key="L2N_PreviewResult">Preview Result</sys:String>
 
     <ContextMenu x:Key="__clearValueContextMenu">
@@ -22,11 +22,11 @@
     <!-- these datatemplates should bind objects compatible with IChildEditCommands -->
 
     <ContextMenu x:Key="ChildEdit_ContextMenu">
-        <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result"                           Command="{Binding ViewResultCmd}"               Visibility="{Binding IsInstanced,Converter={StaticResource asVisible}}" />
+        <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result"                           Command="{Binding ViewCurrentPreviewCmd}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
         <Separator />
-        <MenuItem Icon="{StaticResource _AddIcon}"     Header="{StaticResource L2N_SetNewReference}"     Command="{Binding ChooseParameterCmd}" />
-        <MenuItem Icon="{StaticResource _EmptyIcon}"   Header="{StaticResource L2N_SetNullReference}"    Command="{Binding RemoveParameterCmd}"          Visibility="{Binding IsChildConfiguration,Converter={StaticResource asVisible}}" />
-        <MenuItem Icon="{StaticResource _RemoveIcon}"  Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetParameterDefaultValueCmd}" Visibility="{Binding IsOwnValue,Converter={StaticResource asVisible}}"/>
+        <MenuItem Icon="{StaticResource _AddIcon}"     Header="{StaticResource L2N_SetNewReference}"     Command="{Binding SetCurrentValueCmd}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
+        <MenuItem Icon="{StaticResource _RemoveIcon}"   Header="{StaticResource L2N_SetNullReference}"    Command="{Binding ClearCurrentCmd}"       Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <MenuItem Icon="{StaticResource _EmptyIcon}"  Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetCurrentEmptyCmd}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
     </ContextMenu>
 
     <DataTemplate x:Key="Header_EmptyChild">

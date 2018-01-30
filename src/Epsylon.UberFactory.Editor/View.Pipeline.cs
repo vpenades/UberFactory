@@ -18,44 +18,57 @@ namespace Epsylon.UberFactory
         public interface IChildEditCommands
         {
             /// <summary>
-            /// Instance Status; TRUE if NULL
-            /// </summary>
-            Boolean IsEmpty { get; }
-
-            /// <summary>
-            /// Instance Status; TRUE if instanced
-            /// </summary>
-            Boolean IsInstanced { get; }
-
-            /// <summary>
-            /// Configuration status; TRUE if there's a value set for the current configuration
-            /// </summary>
-            Boolean IsOwnValue { get; }
-
-            /// <summary>
-            /// Configuration status; TRUE if we're not in the root configuration
-            /// </summary>
-            Boolean IsChildConfiguration { get; }
-
-            /// <summary>
             /// Name of the child, when it is instanced
             /// </summary>
-            String DisplayName { get; }           
+            String DisplayName { get; }            
 
-            
             /// <summary>
             /// Command to remove the child
             /// </summary>
-            ICommand RemoveParameterCmd { get; }
-
-            ICommand SetParameterDefaultValueCmd { get; }
+            ICommand ClearCurrentCmd { get; }            
 
             /// <summary>
-            /// command to set a child for the current configuration
+            /// Command to set an empty child value  for the current configuration, overriding any parent value.
             /// </summary>
-            ICommand ChooseParameterCmd { get; }
+            ICommand SetCurrentEmptyCmd { get; }            
 
-            ICommand ViewResultCmd { get; }
+            /// <summary>
+            /// command to set a selected child for the current configuration, overriding any parent value.
+            /// </summary>
+            ICommand SetCurrentValueCmd { get; }            
+
+            ICommand ViewCurrentPreviewCmd { get; }
+        }
+
+        public interface INodeViewServices
+        {
+            #region read
+
+            ProjectDOM.Node GetNodeDOM(Guid id);
+
+            String GetNodeDisplayName(Guid id);
+
+            String GetNodeDisplayFormat(Guid id);
+
+            IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id);
+
+            #endregion
+
+            #region write
+
+            IPipelineViewServices PipelineServices { get; }
+
+            Boolean CanEditHierarchy { get; }
+
+            Boolean IsChildConfiguration { get; }
+
+            void SetAsCurrentResultView(Guid id); // EvaluatePreview();
+
+            Guid AddNode(Factory.ContentBaseInfo cbinfo);
+
+            void UpdateGraph();
+
+            #endregion
         }
 
         public interface IPipelineViewServices
@@ -66,6 +79,9 @@ namespace Epsylon.UberFactory
 
             Type GetRootOutputType();
         }
+
+
+
 
         public class Pipeline : BindableBase , INodeViewServices , IChildEditCommands
         {
@@ -88,30 +104,29 @@ namespace Epsylon.UberFactory
                 _Parent = c;
                 _PipelineDom = p;
 
-                RemoveParameterCmd = new RelayCommand(RemoveParameter);
-                SetParameterDefaultValueCmd = new RelayCommand(RemoveParameter);
-                ChooseParameterCmd = new RelayCommand(_SetRootNode);
-                ViewResultCmd = new RelayCommand(() => { if (Content is Node node) node.SetAsCurrentResultView(); } );
+                ClearCurrentCmd       = new RelayCommand(_ClearCurrentRootNode, arg => this.IsInstanced && !this.IsChildConfiguration);
+                SetCurrentEmptyCmd    = new RelayCommand(()=> {}, arg => false); // this command is disabled because it only makes sense for child configurations, and root's don'g have per-cfg values
+                SetCurrentValueCmd    = new RelayCommand(_SetCurrentRootNode, arg => this.IsEmpty && !this.IsChildConfiguration);
+                ViewCurrentPreviewCmd = new RelayCommand(() => { if (Content is Node node) node.SetAsCurrentResultView(); } , arg => IsInstanced );
             }
 
             #endregion
 
             #region commands
 
-            public ICommand RemoveParameterCmd { get; private set; }
+            public ICommand ClearCurrentCmd { get; private set; }
 
-            public ICommand SetParameterDefaultValueCmd { get; private set; }
+            public ICommand SetCurrentEmptyCmd { get; private set; }
 
-            public ICommand ChooseParameterCmd { get; private set; }
+            public ICommand SetCurrentValueCmd { get; private set; }
 
-            public ICommand ViewResultCmd { get; private set; }
+            public ICommand ViewCurrentPreviewCmd { get; private set; }
 
             #endregion
 
             #region data
 
             internal readonly IPipelineViewServices _Parent;
-
             internal readonly ProjectDOM.Pipeline _PipelineDom;
 
             internal Evaluation.PipelineInstance _PipelineInstance;            
@@ -122,15 +137,15 @@ namespace Epsylon.UberFactory
 
             #region properties            
 
-            public Node[] Nodes             => _PipelineDom?.Nodes.Select(f => Node.Create(this, f.Identifier)).ToArray();
+            public Node[] Nodes             => _PipelineDom.Nodes.Select(f => Node.Create(this, f.Identifier)).ToArray();
 
-            public bool IsEmpty             => _PipelineDom?.Nodes.Count == 0 && _Exception == null;            
+            public bool IsEmpty             => _PipelineDom.RootIdentifier == Guid.Empty || _PipelineDom.RootIdentifier == ProjectDOM.RESETTODEFAULT;
 
             public bool IsInstanced         => !IsEmpty;
 
-            public String DisplayName       => (Content as Node)?.DisplayName;
+            public String DisplayName       => Content?.DisplayName;
 
-            public Object Content           => _Exception != null ? (Object)_Exception : (Object)Node.Create(this, _PipelineDom.RootIdentifier);
+            public Node Content             => Node.Create(this, _PipelineDom.RootIdentifier);
 
             public Exception FailedState    => _Exception;
 
@@ -141,7 +156,7 @@ namespace Epsylon.UberFactory
             public Boolean IsChildConfiguration => _Parent.GetBuildSettings().Configuration.Length > 1;
 
             // true if a specific value exists for the current configuration
-            public bool IsOwnValue => _PipelineDom.RootIdentifier != Guid.Empty; // not right, we're not supporting multiconfiguration
+            public bool IsOwnValue => _PipelineDom.RootIdentifier != Guid.Empty;
 
             #endregion
 
@@ -172,14 +187,16 @@ namespace Epsylon.UberFactory
                 RaiseChanged();                
             }            
 
-            public void RemoveParameter()
+            private void _ClearCurrentRootNode()
             {
                 _PipelineDom.ClearNodes();
                 UpdateGraph();
             }
 
-            private void _SetRootNode()
+            private void _SetCurrentRootNode()
             {
+                // show Component Dialog 
+
                 var compatibleNodes = _Parent
                     .GetPluginManager()
                     .PluginTypes
@@ -189,10 +206,13 @@ namespace Epsylon.UberFactory
 
                 var r = _Dialogs.ShowNewNodeDialog(null, compatibleNodes);
                 if (r == null) return;
-                _SetRootExporter(r);
+
+                // apply selected value
+
+                _SetCurrentRootNode(r);
             }
 
-            private void _SetRootExporter(Factory.ContentFilterInfo t)
+            private void _SetCurrentRootNode(Factory.ContentFilterInfo t)
             {
                 _PipelineDom.ClearNodes();
                 _PipelineDom.RootIdentifier = _PipelineDom.AddNode(t);
@@ -217,21 +237,22 @@ namespace Epsylon.UberFactory
 
             public string GetNodeDisplayName(Guid id)
             {
-                return _PipelineInstance.GetNodeInstance(id)?
+                return _PipelineInstance?.GetNodeInstance(id)?
                     .GetContentInfo()?
                     .DisplayName;
             }
 
             public string GetNodeDisplayFormat(Guid id)
             {
-                return _PipelineInstance
+                return _PipelineInstance?
                     .GetNodeInstance(id)?
                     .GetContentInfo()?
                     .DisplayFormatName;
             }
 
-            public IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id)
+            public IEnumerable<MemberBinding> CreateNodeBindings(Guid id)
             {
+                if (_PipelineInstance == null) return Enumerable.Empty<MemberBinding>();
                 return _PipelineInstance.CreateValueBindings(id);
             }
 
@@ -241,48 +262,21 @@ namespace Epsylon.UberFactory
             }
 
             #endregion
-        }
-
-
-        public interface INodeViewServices
-        {
-            #region read
-
-            ProjectDOM.Node GetNodeDOM(Guid id);
-
-            String GetNodeDisplayName(Guid id);
-
-            String GetNodeDisplayFormat(Guid id);
-
-            IEnumerable<Bindings.MemberBinding> CreateNodeBindings(Guid id);
-
-            #endregion
-
-            #region write
-
-            IPipelineViewServices PipelineServices { get; }
-
-            Boolean CanEditHierarchy { get; }
-
-            Boolean IsChildConfiguration { get; }            
-
-            void SetAsCurrentResultView(Guid id); // EvaluatePreview();
-
-            Guid AddNode(Factory.ContentBaseInfo cbinfo);
-
-            void UpdateGraph();
-
-            #endregion
-        }
+        }        
 
         public class Node : BindableBase
         {
             #region lifecycle
 
+            public static bool IsEmptyGuid(Guid nodeId)
+            {
+                return nodeId == Guid.Empty || nodeId == ProjectDOM.RESETTODEFAULT;
+            }
+
             public static Node Create(INodeViewServices p, Guid nodeId)
             {
                 if (p == null) return null;                
-                if (nodeId == Guid.Empty) return null;
+                if (IsEmptyGuid(nodeId)) return null;
                 if (p.GetNodeDOM(nodeId) == null) return null;                
 
                 var node = new Node(p, nodeId);                
@@ -294,9 +288,10 @@ namespace Epsylon.UberFactory
                 for (int i = 0; i < propertyViews.Length; ++i)
                 {
                     var bv = propertyViews[i];
+
+                    if (bv is SingleDependencyBinding singleBinding) propertyViews[i] = SingleDependencyView._Create(node, singleBinding);
+                    if (bv is MultiDependencyBinding multiBinding)   propertyViews[i] = ArrayDependencyView._Create(node, multiBinding);
                     
-                    if (bv is MultiDependencyBinding) propertyViews[i] = ArrayDependencyView._Create(node, (MultiDependencyBinding)bv);
-                    if (bv is SingleDependencyBinding) propertyViews[i] = SingleDependencyView._Create(node, (SingleDependencyBinding)bv);                    
                 }
 
                 node._BindingsViews = propertyViews;
@@ -429,10 +424,10 @@ namespace Epsylon.UberFactory
                 _Binding = binding;
                 _Index = index;
 
-                ChooseParameterCmd = new RelayCommand(_SetNewDependencyNode);                
-                RemoveParameterCmd = new RelayCommand(_RemoveParameter);
-                SetParameterDefaultValueCmd = new RelayCommand(_SetParameterDefaultValue);
-                ViewResultCmd = new RelayCommand(() => { var view = NodeInstance; if (view != null) view.SetAsCurrentResultView(); });
+                SetCurrentValueCmd    = new RelayCommand(_SetNewDependencyNode, arg=> IsEmpty);
+                ClearCurrentCmd       = new RelayCommand(_RemoveParameter, arg => IsInstanced);
+                SetCurrentEmptyCmd    = new RelayCommand(_SetEmptyOverrideValue, arg=> IsChildConfiguration && IsOwnValue);
+                ViewCurrentPreviewCmd = new RelayCommand(() => { var view = NodeInstance; if (view != null) view.SetAsCurrentResultView(); }, arg => IsInstanced);
                 if (_Index >=0) RemoveElementCmd = new RelayCommand(_RemoveElement);
             }
 
@@ -440,13 +435,13 @@ namespace Epsylon.UberFactory
 
             #region commands
 
-            public ICommand ChooseParameterCmd { get; private set; }
+            public ICommand SetCurrentValueCmd { get; private set; }
 
-            public ICommand RemoveParameterCmd { get; private set; }
+            public ICommand ClearCurrentCmd { get; private set; }
 
-            public ICommand SetParameterDefaultValueCmd { get; private set; }
+            public ICommand SetCurrentEmptyCmd { get; private set; }
 
-            public ICommand ViewResultCmd { get; private set; }
+            public ICommand ViewCurrentPreviewCmd { get; private set; }
 
             public ICommand RemoveElementCmd { get; private set; }
 
@@ -456,7 +451,7 @@ namespace Epsylon.UberFactory
 
             private readonly Node _Parent;
 
-            private readonly Bindings.DependencyBinding _Binding;
+            private readonly DependencyBinding _Binding;
             private readonly int _Index;            
 
             #endregion
@@ -476,20 +471,20 @@ namespace Epsylon.UberFactory
                 
             }            
 
-            public Node NodeInstance    => Node.Create(_Parent.Parent, _GetDependencyId());
+            public Node NodeInstance         => Node.Create(_Parent.Parent, _GetDependencyId());
 
-            public bool IsEmpty         => NodeInstance == null;
+            public bool IsEmpty              => Node.IsEmptyGuid(_GetDependencyId());
 
-            public bool IsInstanced     => NodeInstance != null;
+            public bool IsInstanced          => !IsEmpty;
 
-            public bool IsEditable      => _Parent.Parent.CanEditHierarchy;
+            public bool IsEditable           => _Parent.Parent.CanEditHierarchy;
 
             public bool IsChildConfiguration => _Parent.Parent.IsChildConfiguration;
 
             // true if a specific value exists for the current configuration
-            public bool IsOwnValue => _Binding.HasOwnValue;
+            public bool IsOwnValue           => _Binding.HasOwnValue;            
 
-            public bool IsCollectionElement => _Index >= 0;
+            public bool IsCollectionElement  => _Index >= 0;
 
             public Type DataType
             {
@@ -518,7 +513,7 @@ namespace Epsylon.UberFactory
                 _SetDependencyId(Guid.Empty);
             }
 
-            private void _SetParameterDefaultValue()
+            private void _SetEmptyOverrideValue()
             {
                 if (!_EditableBarrier()) return;
 
@@ -538,25 +533,20 @@ namespace Epsylon.UberFactory
 
                 var r = _Dialogs.ShowNewNodeDialog(null, compatibleNodes);
                 if (r != null) _SetDependency(r);
-            }
-
-            
+            }            
 
             private Guid _GetDependencyId()
             {
-                if (_Binding is Bindings.SingleDependencyBinding) return ((Bindings.SingleDependencyBinding)_Binding).GetDependency();
-                if (_Binding is Bindings.MultiDependencyBinding) return ((Bindings.MultiDependencyBinding)_Binding).GetDependency(_Index);
+                if (_Binding is SingleDependencyBinding singleBinding) return singleBinding.GetDependency();
+                if (_Binding is MultiDependencyBinding multiBinding) return multiBinding.GetDependency(_Index);
                 throw new NotSupportedException();
             }
-
 
             private void _SetDependency(Factory.ContentBaseInfo value)
             {
                 if (!_EditableBarrier()) return;
 
-                if (value == null) { _SetDependencyId(Guid.Empty); }
-
-                
+                if (value == null) { _SetDependencyId(Guid.Empty); }                
 
                 if (value is Factory.ContentFilterInfo)
                 {
@@ -574,8 +564,8 @@ namespace Epsylon.UberFactory
             {
                 if (!_EditableBarrier()) return;                
 
-                if (_Binding is SingleDependencyBinding) ((SingleDependencyBinding)_Binding).SetDependency(nodeId);
-                if (_Binding is MultiDependencyBinding) ((MultiDependencyBinding)_Binding).SetDependency(_Index,nodeId);
+                if (_Binding is SingleDependencyBinding singleBinding) singleBinding.SetDependency(nodeId);
+                if (_Binding is MultiDependencyBinding multiBinding) multiBinding.SetDependency(_Index,nodeId);
 
                 _Parent.Parent.UpdateGraph();
             }
@@ -585,14 +575,13 @@ namespace Epsylon.UberFactory
                 if (_Index < 0) return;
                 if (!_EditableBarrier()) return;
 
-                var mb = (Bindings.MultiDependencyBinding)_Binding;
-                if (mb == null) return;
+                if (_Binding is MultiDependencyBinding multiBinding)
+                {
+                    // TODO: here it should call _SetDependencyId(empty) to remove the node, but without calling UpdateGraph
 
-                // TODO: here it should call _SetDependencyId(empty) to remove the node, but without calling UpdateGraph
-
-                mb.RemoveSlot(_Index);
-
-                _Parent.Parent.UpdateGraph();
+                    multiBinding.RemoveSlot(_Index);
+                    _Parent.Parent.UpdateGraph();
+                }
             }
 
             #endregion
@@ -602,14 +591,14 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            internal static ArrayDependencyView _Create(Node parent, Bindings.MultiDependencyBinding binding)
+            internal static ArrayDependencyView _Create(Node parent, MultiDependencyBinding binding)
             {
                 if (parent == null) return null;                
 
                 return new ArrayDependencyView(parent, binding);
             }
 
-            private ArrayDependencyView(Node parent, Bindings.MultiDependencyBinding binding)
+            private ArrayDependencyView(Node parent, MultiDependencyBinding binding)
             {
                 _Parent = parent;
                 _Binding = binding;                
@@ -623,7 +612,7 @@ namespace Epsylon.UberFactory
 
             private readonly Node _Parent;
 
-            private readonly Bindings.MultiDependencyBinding _Binding;            
+            private readonly MultiDependencyBinding _Binding;            
 
             #endregion
 
