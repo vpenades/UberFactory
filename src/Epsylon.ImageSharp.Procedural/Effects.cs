@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Helpers;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
 
@@ -56,6 +57,47 @@ namespace Epsylon.ImageSharp.Procedural
             return source.Apply(img => _ApplyEdgePadding(img, minAlpha, int.MaxValue));
         }
 
+        public static IImageProcessingContext<TPixel> BlitImage<TPixel>(this IImageProcessingContext<TPixel> source, Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
+        {
+            return source.DrawImage(image, PixelBlenderMode.Src, 1, image.Size(), Point.Empty);
+            // return source.DrawImage(image, 1, image.Size(), Point.Empty);
+        }
+
+        public static IImageProcessingContext<TPixel> Tint<TPixel>(this IImageProcessingContext<TPixel> source, IPixel color, float amount = 1) where TPixel : struct, IPixel<TPixel>
+        {
+            var rgb = color.ToVector4() * amount;
+
+            var filter = new Matrix4x4()
+            {
+                M11 = 1-amount,
+                M22 = 1-amount,
+                M33 = 1-amount,
+                M41 = rgb.X,
+                M42 = rgb.Y,
+                M43 = rgb.Z,
+                M44 = 1
+            };
+
+            return source.Filter(filter);
+        }
+
+        public static IImageProcessingContext<TPixel> PowerAlpha<TPixel>(this IImageProcessingContext<TPixel> source, float amount = 1) where TPixel : struct, IPixel<TPixel>
+        {
+            var filter = new Matrix4x4()
+            {
+                M11 = 1,
+                M22 = 1,
+                M33 = 1,                
+                M44 = amount
+            };
+
+            return source.Filter(filter);
+        }
+
+
+
+
+
         public static IImageProcessingContext<TPixel> SetAlphaMask<TPixel>(this IImageProcessingContext<TPixel> source, Image<Alpha8> mask, PixelBlenderMode mode) where TPixel : struct, IPixel<TPixel>
         {
             if (mask == null) return source;
@@ -74,9 +116,7 @@ namespace Epsylon.ImageSharp.Procedural
                     }
                 }
                 );
-        }
-
-
+        }        
 
         private static void _ApplyCommonEffect<TPixel>(Image<TPixel> img, CommonEffect<TPixel> effect) where TPixel : struct, IPixel<TPixel>
         {

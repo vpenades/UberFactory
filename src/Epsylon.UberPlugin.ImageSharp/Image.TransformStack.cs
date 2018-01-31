@@ -500,41 +500,117 @@ namespace Epsylon.UberPlugin
     {
         #region drop shadow
 
-        [SDK.InputValue("EnableDropShadow")]
         [SDK.Title(""), SDK.Group("Drop Shadow")]        
-        public bool EnableDropShadow { get; set; }
+        [SDK.InputValue("DropShadowEnabled")] public bool DropShadowEnabled { get; set; }
 
-        [SDK.InputValue("DropShadowColor")]
-        [SDK.Title("Title"), SDK.Group("Drop Shadow")]
+        [SDK.Title(""), SDK.Group("Drop Shadow")]        
         [SDK.Default((UInt32)0xff000000)]
         [SDK.ViewStyle("ColorPicker")]
-        public UInt32 DropShadowColor { get; set; }
-
-        [SDK.InputValue("DropShadowOpacity")]
+        [SDK.InputValue("DropShadowColor")] public UInt32 DropShadowColor { get; set; }
+        
         [SDK.Title("Opacity"), SDK.Group("Drop Shadow")]
         [SDK.Minimum(0), SDK.Default(75), SDK.Maximum(100)]
         [SDK.ViewStyle("Slider")]
-        public int DropShadowOpacity { get; set; }
+        [SDK.InputValue("DropShadowOpacity")] public int DropShadowOpacity { get; set; }        
+
+        [SDK.Title("Radius"), SDK.Group("Drop Shadow")]
+        [SDK.Minimum(0), SDK.Default(5)]
+        [SDK.InputValue("DropShadowRadius")] public int DropShadowRadius { get; set; }
+
+        [SDK.Title("Intensity"), SDK.Group("Drop Shadow")]
+        [SDK.Minimum(1), SDK.Default(1)]
+        [SDK.InputValue("DropShadowIntensity")] public int DropShadowIntensity { get; set; }
+
+        [SDK.Title("Angle"), SDK.Group("Drop Shadow")]
+        [SDK.Minimum(0), SDK.Default(0), SDK.Maximum(360)]
+        [SDK.InputValue("DropShadowAngle")] public int DropShadowAngle { get; set; }
+
+        [SDK.Title("Distance"), SDK.Group("Drop Shadow")]
+        [SDK.Minimum(0), SDK.Default(5)]
+        [SDK.InputValue("DropShadowDistance")] public int DropShadowDistance { get; set; }
 
         #endregion
 
-        #region outer shadow
+        #region inner shadow
 
-        [SDK.InputValue("EnableOuterGlow")]
-        [SDK.Title(""), SDK.Group("Outer Glow")]        
-        public bool EnableOuterGlow { get; set; }
+        [SDK.Title(""), SDK.Group("Inner Shadow")]
+        [SDK.InputValue("InnerShadowEnabled")] public bool InnerShadowEnabled { get; set; }
 
-        [SDK.InputValue("OuterGlowColor")]
-        [SDK.Title(""), SDK.Group("Outer Glow")]
-        [SDK.Default((UInt32)0xffff8000)]
+        [SDK.Title(""), SDK.Group("Inner Shadow")]
+        [SDK.Default((UInt32)0xff000000)]
         [SDK.ViewStyle("ColorPicker")]
-        public UInt32 OuterGlowColor { get; set; }
+        [SDK.InputValue("InnerShadowColor")] public UInt32 InnerShadowColor { get; set; }
 
-        [SDK.InputValue("OuterGlowOpacity")]
+        [SDK.Title("Opacity"), SDK.Group("Inner Shadow")]
+        [SDK.Minimum(0), SDK.Default(75), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        [SDK.InputValue("InnerShadowOpacity")] public int InnerShadowOpacity { get; set; }        
+
+        [SDK.Title("Radius"), SDK.Group("Inner Shadow")]
+        [SDK.Minimum(0), SDK.Default(5)]
+        [SDK.InputValue("InnerShadowRadius")] public int InnerShadowRadius { get; set; }
+
+        [SDK.Title("Intensity"), SDK.Group("Inner Shadow")]
+        [SDK.Minimum(1), SDK.Default(1)]
+        [SDK.InputValue("InnerShadowIntensity")] public int InnerShadowIntensity { get; set; }
+
+        [SDK.Title("Angle"), SDK.Group("Inner Shadow")]
+        [SDK.Minimum(0), SDK.Default(0), SDK.Maximum(360)]
+        [SDK.InputValue("InnerShadowAngle")] public int InnerShadowAngle { get; set; }
+
+        [SDK.Title("Distance"), SDK.Group("Inner Shadow")]
+        [SDK.Minimum(0), SDK.Default(5)]
+        [SDK.InputValue("InnerShadowDistance")] public int InnerShadowDistance { get; set; }
+
+        #endregion
+
+        #region outer glow
+
+        [SDK.Title(""), SDK.Group("Outer Glow")]
+        [SDK.InputValue("OuterGlowEnabled")] public bool OuterGlowEnabled { get; set; }
+        
+        [SDK.Title(""), SDK.Group("Outer Glow")]
+        [SDK.Default((UInt32)0xff0080ff)]
+        [SDK.ViewStyle("ColorPicker")]
+        [SDK.InputValue("OuterGlowColor")] public UInt32 OuterGlowColor { get; set; }
+        
         [SDK.Title("Opacity"), SDK.Group("Outer Glow")]        
         [SDK.Minimum(0), SDK.Default(75), SDK.Maximum(100)]
         [SDK.ViewStyle("Slider")]
-        public int OuterGlowOpacity { get; set; }
+        [SDK.InputValue("OuterGlowOpacity")] public int OuterGlowOpacity { get; set; }
+
+        [SDK.Title("Radius"), SDK.Group("Outer Glow")]
+        [SDK.Minimum(0), SDK.Default(5)]
+        [SDK.InputValue("OuterGlowRadius")] public int OuterGlowRadius { get; set; }
+
+        [SDK.Title("Intensity"), SDK.Group("Outer Glow")]
+        [SDK.Minimum(1), SDK.Default(1)]
+        [SDK.InputValue("OuterGlowIntensity")] public int OuterGlowIntensity { get; set; }
+
+        #endregion
+
+        #region inner glow
+
+        [SDK.Title(""), SDK.Group("Inner Glow")]
+        [SDK.InputValue("InnerGlowEnabled")] public bool InnerGlowEnabled { get; set; }
+
+        [SDK.Title(""), SDK.Group("Inner Glow")]
+        [SDK.Default((UInt32)0xff0080ff)]
+        [SDK.ViewStyle("ColorPicker")]
+        [SDK.InputValue("InnerGlowColor")] public UInt32 InnerGlowColor { get; set; }
+
+        [SDK.Title("Opacity"), SDK.Group("Inner Glow")]
+        [SDK.Minimum(0), SDK.Default(75), SDK.Maximum(100)]
+        [SDK.ViewStyle("Slider")]
+        [SDK.InputValue("InnerGlowOpacity")] public int InnerGlowOpacity { get; set; }
+
+        [SDK.Title("Radius"), SDK.Group("Inner Glow")]
+        [SDK.Minimum(0), SDK.Default(5)]
+        [SDK.InputValue("InnerGlowRadius")] public int InnerGlowRadius { get; set; }
+
+        [SDK.Title("Intensity"), SDK.Group("Inner Glow")]
+        [SDK.Minimum(1), SDK.Default(1)]
+        [SDK.InputValue("InnerGlowIntensity")] public int InnerGlowIntensity { get; set; }
 
         #endregion
 
@@ -545,51 +621,43 @@ namespace Epsylon.UberPlugin
 
         private void _ApplyEffects(IMAGE32DC dc)
         {
-            /*
-            var newImg = new IMAGE32(img.Width, img.Height);
+            var effectContext = new CommonEffect<Rgba32>();
 
-            if (EnableDropShadow)
-            {
-                
+            effectContext.DropShadow.Enabled   = DropShadowEnabled;
+            effectContext.DropShadow.Color     = DropShadowColor;
+            effectContext.DropShadow.Opacity   = DropShadowOpacity;
+            effectContext.DropShadow.BlendMode = PixelBlenderMode.Multiply;
+            effectContext.DropShadow.Angle     = DropShadowAngle;
+            effectContext.DropShadow.Distance  = DropShadowDistance;
+            effectContext.DropShadow.BlurRadius = DropShadowRadius;
+            effectContext.DropShadow.Intensity = DropShadowIntensity;
 
-                var shadow = new IMAGE32(img.Width, img.Height);
+            effectContext.InnerShadow.Enabled   = InnerShadowEnabled;
+            effectContext.InnerShadow.Color     = InnerShadowColor;
+            effectContext.InnerShadow.Opacity   = InnerShadowOpacity;
+            effectContext.InnerShadow.BlendMode = PixelBlenderMode.Multiply;
+            effectContext.InnerShadow.Angle     = InnerShadowAngle;
+            effectContext.InnerShadow.Distance  = InnerShadowDistance;
+            effectContext.InnerShadow.BlurRadius = InnerShadowRadius;
+            effectContext.InnerShadow.Intensity = InnerShadowIntensity;
+            effectContext.InnerShadow.InvertAlpha = true;
 
-                var ShadowColor = new PIXEL32(DropShadowColor);
+            effectContext.OuterGlow.Enabled = OuterGlowEnabled;
+            effectContext.OuterGlow.Color = OuterGlowColor;
+            effectContext.OuterGlow.Opacity = OuterGlowOpacity;
+            effectContext.OuterGlow.BlendMode = PixelBlenderMode.Add;            
+            effectContext.OuterGlow.BlurRadius = OuterGlowRadius;
+            effectContext.OuterGlow.Intensity = OuterGlowIntensity;
 
-                shadow.Flatten(img, 0, 0, (b, s, o) => { b = ShadowColor; b.A = s.A; return b; }, 100);
+            effectContext.InnerGlow.Enabled = InnerGlowEnabled;
+            effectContext.InnerGlow.Color = InnerGlowColor;
+            effectContext.InnerGlow.Opacity = InnerGlowOpacity;
+            effectContext.InnerGlow.BlendMode = PixelBlenderMode.Add;
+            effectContext.InnerGlow.BlurRadius = InnerGlowRadius;
+            effectContext.InnerGlow.Intensity = InnerGlowIntensity;
+            effectContext.InnerShadow.InvertAlpha = true;
 
-                shadow.GaussianBlur(6);
-
-                newImg.DrawImage(shadow, PixelBlenderMode.Normal, DropShadowOpacity, SIZE.Empty, POINT.Empty);
-            }
-
-            if (EnableOuterGlow)
-            {
-                var glow = new IMAGE32(img.Width, img.Height);
-
-                var glowColor = new PIXEL32(OuterGlowColor);
-
-                glow.Flatten(img, 0, 0, (b, s, o) => { b = glowColor; b.A = s.A; return b; }, 100);
-
-                glow.GaussianBlur(6);
-
-
-
-                newImg.DrawImage(glow, PixelBlenderMode.Screen, OuterGlowOpacity, SIZE.Empty, POINT.Empty);
-            }
-
-
-
-            newImg.DrawImage(img, PixelBlenderMode.Normal, 100, SIZE.Empty, POINT.Empty);
-
-            // inner shadow
-
-            // inner glow: create copy, invert alpha, gauss, clamp alpha, apply
-
-            img.Dispose();
-
-            return newImg;
-            */
+            dc.ApplyCommonEffect(effectContext);
         }
     }
 

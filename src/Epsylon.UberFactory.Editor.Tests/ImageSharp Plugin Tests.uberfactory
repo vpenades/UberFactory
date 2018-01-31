@@ -3,7 +3,7 @@
   <DocumentInfo>
     <Properties>
       <Generator>UberFactoryEditor 0.0.0.0</Generator>
-      <Date>18/01/2018 12:38:11</Date>
+      <Date>31/01/2018 12:22:18</Date>
     </Properties>
   </DocumentInfo>
   <PluginReference>
@@ -88,170 +88,72 @@
     </Properties>
     <Pipeline>
       <Properties>
-        <RootNodeId>27c4418c-f3b9-434b-8fe8-0fd4a197db62</RootNodeId>
+        <RootNodeId>a00e0beb-a4ad-4b06-a67c-6c5ad3a3a427</RootNodeId>
       </Properties>
-      <Node Id="27c4418c-f3b9-434b-8fe8-0fd4a197db62">
+      <Node Id="a00e0beb-a4ad-4b06-a67c-6c5ad3a3a427">
         <Properties>
           <ClassName>UberFactory_ImageSharp_ImageWriter</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Encoder>b297cdac-98c0-40f3-b982-e5f55d7ff733</Encoder>
-            <Image>46bd2860-7c86-4e68-9894-aa2ae5415c63</Image>
-            <FileName>NoiseResult1</FileName>
+            <Image>0551a220-f43c-4074-b447-572d70911b2d</Image>
           </Properties>
         </Configuration>
       </Node>
-      <Node Id="668239e6-2636-4df8-a43f-77022ac82f12">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_CreatePerlinNoise</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties />
-        </Configuration>
-      </Node>
-      <Node Id="b297cdac-98c0-40f3-b982-e5f55d7ff733">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_PngEncoder</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties />
-        </Configuration>
-      </Node>
-      <Node Id="46bd2860-7c86-4e68-9894-aa2ae5415c63">
+      <Node Id="0551a220-f43c-4074-b447-572d70911b2d">
         <Properties>
           <ClassName>UberFactory_ImageSharp_TransformStack</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Source>a894df5a-0d0d-4c7e-9994-6787e73ba45b</Source>
-            <Transforms>
-              <Item>74622082-39e6-4346-8bee-646c5c78cbba</Item>
-              <Item>4f321413-59b8-42ac-a80c-240df2d9a8c4</Item>
-              <Item>c34b8c5e-eb86-436b-a7c6-736d71c4e35b</Item>
-            </Transforms>
+            <Source>bea47419-3d16-4c6e-b967-ec0ca5d838a0</Source>
+            <Transforms>7f2d294f-9822-44a4-a875-7dffd11cf357</Transforms>
           </Properties>
         </Configuration>
       </Node>
-      <Node Id="a894df5a-0d0d-4c7e-9994-6787e73ba45b">
+      <Node Id="bea47419-3d16-4c6e-b967-ec0ca5d838a0">
         <Properties>
-          <ClassName>UberFactory_ImageSharp_CreatePerlinNoise</ClassName>
+          <ClassName>UberFactory_ImageSharp_CreateText</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Width>512</Width>
-            <Height>512</Height>
-            <Persistence>6</Persistence>
-            <Scale>32</Scale>
-            <Gradient>7e0c3881-6f08-4075-be39-02aeb295023d</Gradient>
-            <Octaves>8</Octaves>
+            <Text>172de090-3a50-42ce-8d96-1fbe4dc548b7</Text>
+            <FontFamily>b3220e5d-a7f0-4c38-aeb5-34f339e9aba4</FontFamily>
+            <Color>4288460285</Color>
+            <Size>32</Size>
           </Properties>
         </Configuration>
       </Node>
-      <Node Id="0e60a21f-551a-4a2b-aec7-edd070749728">
+      <Node Id="172de090-3a50-42ce-8d96-1fbe4dc548b7">
         <Properties>
-          <ClassName>UberFactory_ImageSharp_PolarDistortTransform</ClassName>
+          <ClassName>UberFactory_CoreTypes_AssignText</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Value>Hello</Value>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="b3220e5d-a7f0-4c38-aeb5-34f339e9aba4">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_SixLaborsSystemFont</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties />
         </Configuration>
       </Node>
-      <Node Id="6c26f41f-753a-4ab4-b9f2-113f12782370">
+      <Node Id="7f2d294f-9822-44a4-a875-7dffd11cf357">
         <Properties>
-          <ClassName>UberFactory_ImageSharp_PaletteFromTwoColors</ClassName>
+          <ClassName>UberFactory_ImageSharp_SpecialEffectsTransform</ClassName>
         </Properties>
         <Configuration Name="Root">
           <Properties>
-            <Color1>4282780418</Color1>
-            <Color2>4278885376</Color2>
+            <DropShadowEnabled>False</DropShadowEnabled>
+            <DropShadowAngle>180</DropShadowAngle>
+            <DropShadowOpacity>94</DropShadowOpacity>
+            <InnerShadowEnabled>False</InnerShadowEnabled>
+            <OuterGlowEnabled>True</OuterGlowEnabled>
           </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="d99cfcb3-ca37-4a94-adfd-0891a99aedcc">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_ResizeTransform</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties />
-        </Configuration>
-      </Node>
-      <Node Id="74622082-39e6-4346-8bee-646c5c78cbba">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_DetectEdgeTransform</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Filter>Lapacian5X5</Filter>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="7e0c3881-6f08-4075-be39-02aeb295023d">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_PaletteFromColors</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Colors>
-              <Item>c7ced265-2058-49b9-aaae-a6f39ca0fd46</Item>
-              <Item>7a9dfc0e-7eec-4f9b-aacf-682f951462c8</Item>
-              <Item>ad38c94d-1929-4666-bd41-8bdcaa43c07b</Item>
-              <Item>2642d3df-3801-47ad-9d06-8854c9e6e6fa</Item>
-            </Colors>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="c7ced265-2058-49b9-aaae-a6f39ca0fd46">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Color>4278195568</Color>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="7a9dfc0e-7eec-4f9b-aacf-682f951462c8">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties />
-        </Configuration>
-      </Node>
-      <Node Id="ad38c94d-1929-4666-bd41-8bdcaa43c07b">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Color>4278487809</Color>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="2642d3df-3801-47ad-9d06-8854c9e6e6fa">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_ColorValue</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties>
-            <Color>4279763323</Color>
-          </Properties>
-        </Configuration>
-      </Node>
-      <Node Id="4f321413-59b8-42ac-a80c-240df2d9a8c4">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_InvertTransform</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties />
-        </Configuration>
-      </Node>
-      <Node Id="c34b8c5e-eb86-436b-a7c6-736d71c4e35b">
-        <Properties>
-          <ClassName>UberFactory_ImageSharp_BlurTransform</ClassName>
-        </Properties>
-        <Configuration Name="Root">
-          <Properties />
         </Configuration>
       </Node>
     </Pipeline>
