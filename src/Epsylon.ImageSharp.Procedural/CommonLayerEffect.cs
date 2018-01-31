@@ -8,8 +8,10 @@ using SixLabors.Primitives;
 
 namespace Epsylon.ImageSharp.Procedural
 {
-    
-    
+    // https://github.com/KDE/krita/tree/f352cc1d4367542ad55d61636927e90c56e92b7d/libs/image/layerstyles
+    // http://registry.gimp.org/node/186
+
+
     public class CommonEffect<TPixel> where TPixel : struct, IPixel<TPixel>
     {
         #region data
