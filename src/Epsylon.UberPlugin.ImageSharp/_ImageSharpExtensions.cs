@@ -9,6 +9,7 @@ using SixLabors.ImageSharp;
 
 namespace Epsylon.UberPlugin
 {
+    using Epsylon.ImageSharp.Procedural;
 
     using POINT = SixLabors.Primitives.Point;
     using COLOR = SixLabors.ImageSharp.Rgba32;
@@ -133,6 +134,13 @@ namespace Epsylon.UberPlugin
         public static Object CreatePreview(this IMAGE32 image, UberFactory.SDK.PreviewContext context)
         {
             if (image == null) return null;
+
+            if (true)
+            {
+                var area = image.GetSubjectArea();
+
+                // TODO: draw rectangle                
+            }
 
             var date = DateTime.Now.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             var time = DateTime.Now.ToString("hhmmss", System.Globalization.CultureInfo.InvariantCulture);

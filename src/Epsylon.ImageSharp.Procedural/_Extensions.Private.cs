@@ -142,6 +142,8 @@ namespace Epsylon.ImageSharp.Procedural
         
         public static void DrawPixel<TPixel>(this Image<TPixel> image, int x, int y, TPixel color, GraphicsOptions gfx) where TPixel : struct, IPixel<TPixel>
         {
+            if (x < 0 || y < 0 || x >= image.Width || y >= image.Height) return;
+
             // this should be MUCH faster if we had access to PixelBlender<TPixel>
 
             image.Mutate(dc => dc.Fill(color, new Rectangle(x, y, 1, 1), gfx));
