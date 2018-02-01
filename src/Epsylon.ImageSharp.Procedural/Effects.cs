@@ -191,7 +191,7 @@ namespace Epsylon.ImageSharp.Procedural
                     dc
                     // .EdgePadding(0.1f, 1+ (int) radius)
                     .Blur(BlurMode.Gaussian, radius)
-                    .DrawImage(top, 1, new Size(top.Width,top.Height), Point.Empty)
+                    .DrawImage(top, 1, top.Size(), Point.Empty)
                     );
             }
 

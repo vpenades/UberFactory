@@ -151,7 +151,7 @@ namespace Epsylon.ImageSharp.Procedural
         {
             if (!this.Enabled) return;
 
-            var size = new Size(source.Width, source.Height);
+            var size = source.Size();
             var origin = GetOrigin(this.Angle, this.Distance);
 
             using (var layer = source.Clone())

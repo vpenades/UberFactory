@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Helpers;
 using SixLabors.ImageSharp.MetaData;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
@@ -12,11 +13,10 @@ namespace Epsylon.ImageSharp.Procedural
 {
     public static class _MetadataExtensions
     {
-        private const string _InternalPropertyPrefix = "{9578CA40-2C8B-40AB-AB22-5A7B5777D861}-";
-        private const string _PixelOffsetX = _InternalPropertyPrefix + "PixelOffsetX";
-        private const string _PixelOffsetY = _InternalPropertyPrefix + "PixelOffsetY";
-        private const string _Opacity = _InternalPropertyPrefix + "Opacity";
-        private const string _BlendMode = _InternalPropertyPrefix + "BlendMode";
+        // TODO: Trick: to store offsets or vector data that is not affected by the image resizes,
+        // we can store values in the range 0-1 , unfortunately, crop and padding can't be solved.
+
+        #region API
 
         public static int IndexOf(this IList<ImageProperty> properties, string key)
         {
@@ -36,7 +36,7 @@ namespace Epsylon.ImageSharp.Procedural
             var p = properties.FirstOrDefault(item => item.Name == key);
 
             return p == null ? defval : (T)System.Convert.ChangeType(p.Value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
-        }        
+        }
 
         public static void SetValue<T>(this IList<ImageProperty> properties, string key, T val, T defval) where T : IConvertible
         {
@@ -53,6 +53,16 @@ namespace Epsylon.ImageSharp.Procedural
             if (idx < 0) properties.Add(p);
             else properties[idx] = p;
         }
+
+        #endregion
+
+        #region internals
+
+        private const string _InternalPropertyPrefix = "{9578CA40-2C8B-40AB-AB22-5A7B5777D861}-";
+        private const string _PixelOffsetX = _InternalPropertyPrefix + "PixelOffsetX";
+        private const string _PixelOffsetY = _InternalPropertyPrefix + "PixelOffsetY";
+        private const string _Opacity = _InternalPropertyPrefix + "Opacity";
+        private const string _BlendMode = _InternalPropertyPrefix + "BlendMode";       
 
         public static Point GetInternalPixelOffset(this ImageMetaData metadata)
         {
@@ -100,6 +110,76 @@ namespace Epsylon.ImageSharp.Procedural
             metadata.Properties.SetValue<float>(_BlendMode, (int)value, defval);
         }
 
+        #endregion
+
+        #region Exif SubjectArea , SubjectLocation, SubjectDistance
+
+        // these tags essentially define a "main" point area within the image, making them ideal to define basic origin and solid.
+
+        // https://github.com/SixLabors/ImageSharp/blob/03bd0211a9e928e7c22e814f61809a673f938606/src/ImageSharp/Processing/Transforms/TransformHelpers.cs#L22
+
+        public static Rectangle GetSubjectArea(this IImage image)
+        {
+            var profile = image?.MetaData?.ExifProfile; if (profile == null) return Rectangle.Empty;
+
+            // https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/subjectarea.html
+            var tag = profile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectArea);
+
+            if (tag != null)
+            {
+                if (!tag.IsArray || tag.DataType != SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.Short) throw new ArgumentException();
+
+                var array = (short[])tag.Value;
+
+                // point
+                if (array.Length == 2) return new Rectangle(array[0], array[1], 1, 1);
+
+                // circle
+                if (array.Length == 3) return new Rectangle(array[0] - (array[2] / 2), array[1] - (array[2] / 2), array[2], array[2]);
+
+                // rectangle
+                if (array.Length == 4) return new Rectangle(array[0] - (array[2] / 2), array[1] - (array[2] / 3), array[2], array[3]);
+
+                throw new NotImplementedException();
+            }
+
+            // https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/subjectlocation.html
+            tag = profile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectLocation);
+
+            if (tag != null)
+            {
+                if (!tag.IsArray || tag.DataType != SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.Short) throw new ArgumentException();
+
+                var array = (short[])tag.Value;
+
+                // point
+                if (array.Length == 2) return new Rectangle(array[0], array[1], 1, 1);                
+
+                throw new NotImplementedException();
+            }
+
+            return new Rectangle(0, 0, image.Width, image.Height);
+        }
+
+        public static void SetSubjectArea(this IImage image, Rectangle bounds)
+        {
+            var profile = image?.MetaData?.ExifProfile; if (profile == null) return;
+
+            profile.RemoveValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectLocation); // overrided by Area
+            profile.RemoveValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectArea);
+
+            var cx = bounds.X + (bounds.Width / 2);
+            var cy = bounds.Y + (bounds.Height / 2);
+
+            var array = new short[] { (short)cx, (short)cy, (short)bounds.Width, (short)bounds.Height };
+
+            profile.SetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectArea, array);
+        }
+
+        #endregion
+
+        #region extras
+
         /// <summary>
         /// Resizes metadata values associated to the image, to match the bitmap resizing
         /// </summary>
@@ -111,6 +191,8 @@ namespace Epsylon.ImageSharp.Procedural
             return source.ApplyProcessor
             ( image =>
                 {
+                    
+
                     var offset = image.MetaData.GetInternalPixelOffset();
 
                     offset.X = offset.X * newWidth / image.Width;
@@ -120,5 +202,7 @@ namespace Epsylon.ImageSharp.Procedural
                 }
             );
         }
+
+        #endregion
     }
 }

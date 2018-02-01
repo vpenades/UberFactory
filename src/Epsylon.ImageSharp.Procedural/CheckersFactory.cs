@@ -10,7 +10,8 @@ using SixLabors.Primitives;
 namespace Epsylon.ImageSharp.Procedural
 {
     public static class CheckersFactory
-    {
+    {        
+
         public static IImageProcessingContext<TPixel> FillCheckers<TPixel>(this IImageProcessingContext<TPixel> source, int cellWidth, int cellHeight, TPixel oddColor, TPixel evenColor) where TPixel : struct, IPixel<TPixel>
         {
             return source.Apply(img => img._FillCheckers(cellWidth, cellHeight, oddColor, evenColor));
@@ -18,7 +19,9 @@ namespace Epsylon.ImageSharp.Procedural
 
         static void _FillCheckers<TPixel>(this Image<TPixel> image, int cellWidth, int cellHeight, TPixel oddColor, TPixel evenColor) where TPixel : struct, IPixel<TPixel>
         {
-            for(int y=0; y < image.Height; ++y)
+            // related to SixLabors.ImageSharp.Drawing.Brushes.PatternBrush ??
+
+            for (int y=0; y < image.Height; ++y)
             {
                 for(int x=0; x < image.Width; ++x)
                 {

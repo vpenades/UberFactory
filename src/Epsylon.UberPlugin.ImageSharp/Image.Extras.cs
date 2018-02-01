@@ -315,9 +315,9 @@ namespace Epsylon.UberPlugin
 
             var mask = new Image<Alpha8>(Image.Width, Image.Height);
 
-            Func<System.Numerics.Vector4, float> alphaFunc = v => ((v.X + v.Y + v.Z) / 3.0f);
+            float alphaFunc(System.Numerics.Vector4 v) => ((v.X + v.Y + v.Z) / 3.0f);
 
-            for(int y=0; y < mask.Height; ++y)
+            for (int y=0; y < mask.Height; ++y)
             {
                 for (int x = 0; x < mask.Width; ++x)
                 {
@@ -330,6 +330,61 @@ namespace Epsylon.UberPlugin
             Image.Dispose();
 
             return mask;
+        }
+    }
+
+
+
+    
+    [SDK.Icon("🏙"), SDK.Title("Processing Substrate"), SDK.TitleFormat("{0} Substrate")]
+    [SDK.ContentNode("ProcessingSubstrate")] public sealed class ImageSharpComplexificationSubstrate : ImageFilter
+    {
+        
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Default(256)]
+        [SDK.InputValue("Width")] public int Width { get; set; }
+        
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Default(256)]
+        [SDK.InputValue("Height")] public int Height { get; set; }
+        
+        [SDK.Title("Seed"), SDK.Group("Noise")]
+        [SDK.Minimum(0), SDK.Default(177), SDK.Maximum(255)]
+        [SDK.InputValue("RandomSeed")] public int RandomSeed { get; set; }
+        
+        [SDK.Title("Iterations"), SDK.Group("Noise")]
+        [SDK.Minimum(0), SDK.Default(500), SDK.Maximum(5000)]
+        [SDK.InputValue("Iterations")] public int Iterations { get; set; }
+        
+        [SDK.Title("Palette")]
+        [SDK.InputNode("Palette")] public PIXEL32[] Palette { get; set; }
+
+        protected override IMAGE32 Evaluate()
+        {
+            var size = new SixLabors.Primitives.Size(Width, Height);
+
+            var result = new IMAGE32(size.Width, size.Height);
+
+            using (var target = new IMAGE32(size.Width, size.Height))
+            {
+                var substrate = Substrate.Create(target, RandomSeed, Palette);
+
+                for (int i = 0; i < Iterations; ++i)
+                {
+                    substrate.DrawStep();
+                }
+
+                result.Mutate
+                    (
+                    dc =>
+                    {
+                        dc.Fill(Rgba32.White);
+                        dc.DrawImage(target, PixelBlenderMode.Normal, 1, size, SixLabors.Primitives.Point.Empty);
+                    }
+                    );
+
+                return result;
+            }
         }
     }
 }

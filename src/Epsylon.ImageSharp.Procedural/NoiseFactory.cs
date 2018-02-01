@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Helpers;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
 
@@ -68,7 +69,7 @@ namespace Epsylon.ImageSharp.Procedural
         
         private static void _MutateAutoLevels(this Image<HalfSingle> source)
         {
-            source._MutateAutoLevels(new Rectangle(Point.Empty, new Size(source.Width, source.Height)));
+            source._MutateAutoLevels(new Rectangle(Point.Empty, source.Size()));
         }
 
         private static void _MutateAutoLevels(this Image<HalfSingle> source, Rectangle sourceRectangle)

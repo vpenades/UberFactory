@@ -8,69 +8,9 @@ using SixLabors.ImageSharp;
 using SixLabors.Primitives;
 
 namespace Epsylon.ImageSharp.Procedural
-{
+{    
     using COLOR = Rgba32;
     using IMAGE = Image<Rgba32>;
-
-    /*
-    using UberFactory;    
-
-    [SDK.ContentNode("ProcessingSubstrate")]
-    [SDK.Title("Processing Substrate"), SDK.TitleFormat("{0} Substrate")]
-    public sealed class ImageSharpComplexificationSubstrate : ImageFilter
-    {
-        [SDK.InputValue("Width")]
-        [SDK.Title("W"), SDK.Group("Size")]
-        [SDK.Default(256)]
-        public int Width { get; set; }
-
-        [SDK.InputValue("Height")]
-        [SDK.Title("H"), SDK.Group("Size")]
-        [SDK.Default(256)]
-        public int Height { get; set; }
-
-        [SDK.InputValue("RandomSeed")]
-        [SDK.Title("Seed"), SDK.Group("Noise")]
-        [SDK.Minimum(0), SDK.Default(177), SDK.Maximum(255)]
-        public int RandomSeed { get; set; }
-
-        [SDK.InputValue("Iterations")]
-        [SDK.Title("Iterations"), SDK.Group("Noise")]
-        [SDK.Minimum(0), SDK.Default(500), SDK.Maximum(5000)]
-        public int Iterations { get; set; }
-
-        [SDK.InputNode("Palette")]
-        [SDK.Title("Palette")]
-        public IMAGE Palette { get; set; }
-
-        protected override IMAGE Evaluate()
-        {
-            var size = new SixLabors.Primitives.Size(Width, Height);
-
-            var result = new IMAGE(size.Width, size.Height);
-
-            using (var target = new IMAGE(size.Width, size.Height))
-            {
-                var substrate = new Substrate(target, RandomSeed, Palette);
-
-                for (int i = 0; i < Iterations; ++i)
-                {
-                    substrate.DrawStep();
-                }
-
-                result.Mutate
-                    (
-                    dc =>
-                    {
-                        dc.Fill(Rgba32.White);
-                        dc.DrawImage(target, SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal, 1, size, SixLabors.Primitives.Point.Empty);
-                    }
-                    );
-
-                return result;
-            }
-        }
-    }*/
 
     // https://www.processing.org/
     // http://processingjs.org/
@@ -91,7 +31,7 @@ namespace Epsylon.ImageSharp.Procedural
     // https://github.com/processing/processing/blob/master/core/api.txt
     // https://github.com/processing/processing/tree/6adf63427a2e46b7a48e6eaabdd6d2b6b15656ca/core/src/processing/javafx
 
-    class Processing
+    public class Processing
     {
         #region lifecycle
 
@@ -100,7 +40,10 @@ namespace Epsylon.ImageSharp.Procedural
             _Canvas = target;
             _Randomizer = new Random(seed);
 
-            // SixLabors.ImageSharp.PixelFormats.PixelOperations<Rgba32>.Instance.GetPixelBlender();
+            var mode = SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal;
+
+            // _Blender = SixLabors.ImageSharp.PixelFormats.PixelOperations<Rgba32>.Instance.GetPixelBlender(mode);
+            _GfxMode = new GraphicsOptions() { BlenderMode = mode };
         }
 
         #endregion
@@ -108,9 +51,11 @@ namespace Epsylon.ImageSharp.Procedural
         #region data
 
         private readonly Random _Randomizer;
-        private readonly IMAGE _Canvas;  
+        private readonly IMAGE _Canvas;
         
-        // private readonly PixelBlender<TPixel>
+        // most probably, having a direct "pixel blender" will be much faster than doing per pixel mutates.
+        // private readonly PixelBlender<TPixel> _Blender;
+        private readonly GraphicsOptions _GfxMode;
 
         #endregion
 
@@ -128,7 +73,7 @@ namespace Epsylon.ImageSharp.Procedural
             if (x < 0 || x >= _Canvas.Width) return;
             if (y < 0 || y >= _Canvas.Height) return;
 
-            _Canvas[(int)x, (int)y] = color;
+            _Canvas.DrawPixel((int)x, (int)y, color,_GfxMode);            
         }        
 
         public int Width => _Canvas.Width;
@@ -136,7 +81,7 @@ namespace Epsylon.ImageSharp.Procedural
     }
 
 
-    class Substrate : Processing
+    public class Substrate : Processing
     {
         // Substrate Watercolor
         // j.tarbell   June, 2004
@@ -148,7 +93,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region lifecycle
 
-        public Substrate(IMAGE target, int seed, IMAGE palette) : base(target,seed)
+        public static Substrate Create(IMAGE target, int seed, IMAGE palette)
         {
             var colors = new HashSet<COLOR>();
 
@@ -162,7 +107,17 @@ namespace Epsylon.ImageSharp.Procedural
                 }
             }
 
-            _Palette = colors.ToArray();
+            return Create(target, seed, colors.ToArray());
+        }
+
+        public static Substrate Create(IMAGE target, int seed, COLOR[] palette)
+        {
+            return new Substrate(target, seed, palette);
+        }
+
+        private Substrate(IMAGE target, int seed, COLOR[] palette) : base(target,seed)
+        {
+            _Palette = palette;
 
             _CrackGrid = new int[this.Width * this.Height];
 

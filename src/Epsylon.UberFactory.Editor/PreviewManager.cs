@@ -8,10 +8,16 @@ namespace Epsylon.UberFactory
 {
     static class PreviewManager
     {
+        #region data
+
         private static readonly string _TempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "UberFactory.Previews");
 
         private static readonly Object _Lock = new object();
         private static readonly Dictionary<string, int> _OpenDocuments = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+
+        #endregion
+
+        #region core
 
         private static void _CleanupPreviewFiles(TimeSpan lifespan)
         {
@@ -85,6 +91,10 @@ namespace Epsylon.UberFactory
             return path;
         }
 
+        #endregion
+
+        #region API
+
         public static void ShowPreview(Evaluation.IPreviewResult result)
         {
             if (result == null) return;            
@@ -116,6 +126,7 @@ namespace Epsylon.UberFactory
             catch(Exception ex) { }            
         }
 
+        #endregion
 
     }
 }

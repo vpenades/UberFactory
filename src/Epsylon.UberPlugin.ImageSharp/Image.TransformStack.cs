@@ -167,6 +167,10 @@ namespace Epsylon.UberPlugin
         // TODO: add boolean to enable TILEABLE mode:
         // before applying the effect, we create a multitile, then apply the effect, then crop back to the original.
 
+        // TODO: unfortunately, this doesn't return anything that can be used as a preview.
+        // Ideally, the preview for this object would be the preview of the parent TransformStack up to this node.
+        // so the preview would be to add a SDK.PreviewContext property called UseParentPreview.
+        // when the parent preview is called, it should somehow, know which child node requested the preview
         protected override object EvaluatePreview(SDK.PreviewContext previewContext) { return null; }
 
         protected override IMGTRANSFORM Evaluate()
