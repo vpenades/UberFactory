@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp.Helpers;
 
 namespace Epsylon.ImageSharp.Procedural
 {
@@ -151,10 +152,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static bool Contains<TPixel>(this Image<TPixel> image, int x, int y) where TPixel : struct, IPixel<TPixel>
         {
-            if (image == null) return false;
-            if (x < 0 || y < 0) return false;
-            if (x >= image.Width || y >= image.Height) return false;
-            return true;
+            return image.Bounds().Contains(x, y);
         }
 
         public static bool Contains<TPixel>(this Image<TPixel> image, Point p) where TPixel : struct, IPixel<TPixel>
@@ -162,18 +160,11 @@ namespace Epsylon.ImageSharp.Procedural
             return image.Contains(p.X, p.Y);
         }
 
-        public static bool Contains(this ITexture image, int x, int y)
-        {
-            if (image == null) return false;
-            if (x < 0 || y < 0) return false;
-            if (x >= image.Width || y >= image.Height) return false;
-            return true;
-        }
+        public static Rectangle Bounds(this ITexture tex) { return new Rectangle(0, 0, tex.Width, tex.Height); }
 
-        public static bool Contains(this ITexture image, Point p)
-        {
-            return image.Contains(p.X, p.Y);
-        }
+        public static bool Contains(this ITexture texture, int x, int y) { return texture.Bounds().Contains(x, y); }
+
+        public static bool Contains(this ITexture image, Point p) { return image.Contains(p.X, p.Y); }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static PointF TopLeft(this RectangleF rect) { return new PointF(rect.Left, rect.Top); }
