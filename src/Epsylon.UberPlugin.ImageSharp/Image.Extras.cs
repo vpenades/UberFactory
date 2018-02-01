@@ -370,7 +370,9 @@ namespace Epsylon.UberPlugin
                 var substrate = Substrate.Create(target, RandomSeed, Palette);
 
                 for (int i = 0; i < Iterations; ++i)
-                {
+                {                    
+                    this.SetProgressPercent(i * 100 / Iterations);
+
                     substrate.DrawStep();
                 }
 
