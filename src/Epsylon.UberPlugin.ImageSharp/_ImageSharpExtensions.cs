@@ -15,8 +15,7 @@ namespace Epsylon.UberPlugin
     using COLOR = SixLabors.ImageSharp.Rgba32;
     using IMAGE = SixLabors.ImageSharp.Image;
     using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
-
-    
+    using SixLabors.Primitives;
 
     public enum Resampler
     {
@@ -137,9 +136,26 @@ namespace Epsylon.UberPlugin
 
             if (true)
             {
-                var area = image.GetSubjectArea();
+                var sinfo = image.GetSubjectInfo();                
 
-                // TODO: draw rectangle                
+                if (sinfo != null)
+                {
+                    var l = new PointF[2];
+
+                    l[0] = sinfo.Center + new Size(3, 0);
+                    l[1] = sinfo.Center + new Size(3, 0);
+                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l) );
+
+                    l[0] = sinfo.Center + new Size(0, 3);
+                    l[1] = sinfo.Center - new Size(0, 3);
+                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l));
+
+                    if (sinfo.Size.HasValue)
+                    {
+                        image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, sinfo.BoundsFloat.GetPoints()));
+                    }
+
+                }                
             }
 
             var date = DateTime.Now.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);

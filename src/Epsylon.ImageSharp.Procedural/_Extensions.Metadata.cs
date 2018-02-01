@@ -112,68 +112,21 @@ namespace Epsylon.ImageSharp.Procedural
 
         #endregion
 
-        #region Exif SubjectArea , SubjectLocation, SubjectDistance
+        #region Exif
 
-        // these tags essentially define a "main" point area within the image, making them ideal to define basic origin and solid.
-
-        // https://github.com/SixLabors/ImageSharp/blob/03bd0211a9e928e7c22e814f61809a673f938606/src/ImageSharp/Processing/Transforms/TransformHelpers.cs#L22
-
-        public static Rectangle GetSubjectArea(this IImage image)
+        public static IImageProcessingContext<TPixel> SetSubjectInfo<TPixel>(this IImageProcessingContext<TPixel> source, SubjectInfo sinfo) where TPixel : struct, IPixel<TPixel>
         {
-            var profile = image?.MetaData?.ExifProfile; if (profile == null) return Rectangle.Empty;
-
-            // https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/subjectarea.html
-            var tag = profile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectArea);
-
-            if (tag != null)
-            {
-                if (!tag.IsArray || tag.DataType != SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.Short) throw new ArgumentException();
-
-                var array = (short[])tag.Value;
-
-                // point
-                if (array.Length == 2) return new Rectangle(array[0], array[1], 1, 1);
-
-                // circle
-                if (array.Length == 3) return new Rectangle(array[0] - (array[2] / 2), array[1] - (array[2] / 2), array[2], array[2]);
-
-                // rectangle
-                if (array.Length == 4) return new Rectangle(array[0] - (array[2] / 2), array[1] - (array[2] / 3), array[2], array[3]);
-
-                throw new NotImplementedException();
-            }
-
-            // https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/subjectlocation.html
-            tag = profile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectLocation);
-
-            if (tag != null)
-            {
-                if (!tag.IsArray || tag.DataType != SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifDataType.Short) throw new ArgumentException();
-
-                var array = (short[])tag.Value;
-
-                // point
-                if (array.Length == 2) return new Rectangle(array[0], array[1], 1, 1);                
-
-                throw new NotImplementedException();
-            }
-
-            return new Rectangle(0, 0, image.Width, image.Height);
+            return source.Apply(img => img.SetSubjectInfo(sinfo));
         }
 
-        public static void SetSubjectArea(this IImage image, Rectangle bounds)
+        public static SubjectInfo GetSubjectInfo(this IImage image)
         {
-            var profile = image?.MetaData?.ExifProfile; if (profile == null) return;
+            return SubjectInfo.FromProfile(image?.MetaData?.ExifProfile);            
+        }
 
-            profile.RemoveValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectLocation); // overrided by Area
-            profile.RemoveValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectArea);
-
-            var cx = bounds.X + (bounds.Width / 2);
-            var cy = bounds.Y + (bounds.Height / 2);
-
-            var array = new short[] { (short)cx, (short)cy, (short)bounds.Width, (short)bounds.Height };
-
-            profile.SetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.SubjectArea, array);
+        public static void SetSubjectInfo(this IImage image, SubjectInfo sinfo)
+        {
+            sinfo.WriteTo(image.UseExifProfile());
         }
 
         #endregion
@@ -191,8 +144,6 @@ namespace Epsylon.ImageSharp.Procedural
             return source.ApplyProcessor
             ( image =>
                 {
-                    
-
                     var offset = image.MetaData.GetInternalPixelOffset();
 
                     offset.X = offset.X * newWidth / image.Width;
@@ -205,4 +156,8 @@ namespace Epsylon.ImageSharp.Procedural
 
         #endregion
     }
+
+
+
+    
 }

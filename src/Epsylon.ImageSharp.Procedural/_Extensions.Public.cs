@@ -174,5 +174,32 @@ namespace Epsylon.ImageSharp.Procedural
         {
             return image.Contains(p.X, p.Y);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static PointF TopLeft(this RectangleF rect) { return new PointF(rect.Left, rect.Top); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static PointF TopRight(this RectangleF rect) { return new PointF(rect.Right, rect.Top); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static PointF BottomLeft(this RectangleF rect) { return new PointF(rect.Left, rect.Bottom); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static PointF BottomRight(this RectangleF rect) { return new PointF(rect.Right, rect.Bottom); }
+
+
+
+
+        public static PointF[] GetPoints(this RectangleF rect)
+        {
+            var ppp = new PointF[5];
+
+            ppp[0] = ppp[4] = rect.TopLeft();
+            ppp[1] = rect.TopRight();
+            ppp[2] = rect.BottomRight();
+            ppp[3] = rect.BottomLeft();
+
+            return ppp;
+        }
     }
 }

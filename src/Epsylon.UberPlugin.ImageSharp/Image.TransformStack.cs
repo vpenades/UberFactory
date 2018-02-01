@@ -482,9 +482,9 @@ namespace Epsylon.UberPlugin
                
     }
 
-    [SDK.ContentNode("PolarDistortTransform")]
+    
     [SDK.Title("Polar"), SDK.TitleFormat("{0} Polar")]
-    public sealed class PolarDistortTransform : BaseImageTransform
+    [SDK.ContentNode("PolarDistortTransform")] public sealed class PolarDistortTransform : BaseImageTransform
     {
         protected override IMGTRANSFORM TransformImage()
         {
@@ -496,8 +496,23 @@ namespace Epsylon.UberPlugin
     }
 
 
-
     
+    [SDK.Title("Set Subject Area"), SDK.TitleFormat("{0} Subject Area")]
+    [SDK.ContentNode("SetSubjectAreaTransform")] public sealed class SetSubjectAreaTransform : BaseImageTransform
+    {
+        [SDK.Title("Subject")]
+        [SDK.InputNode("SubjectArea")] public SubjectInfo SubjectArea { get; set; }
+
+        protected override IMGTRANSFORM TransformImage()
+        {
+            return dc => dc.SetSubjectInfo(this.SubjectArea);
+        }
+
+    }
+
+
+
+
     [SDK.ContentNode("SpecialEffectsTransform")]
     [SDK.Title("Photoshop Effects"), SDK.TitleFormat("{0} Effects")]
     public sealed class SpecialEffectsTransform : BaseImageTransform

@@ -16,6 +16,34 @@ namespace Epsylon.ImageSharp.Procedural
 
     static class _PrivateExtensions
     {
+        public static SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile UseExifProfile(this IImage image)
+        {
+            if (image == null) return null;
+            if (image.MetaData.ExifProfile == null) image.MetaData.ExifProfile = new SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile();
+
+            return image.MetaData.ExifProfile;
+        }
+
+        public static void ClearValue(this SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile profile, SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag tag)
+        {
+            if (profile.GetValue(tag) != null) profile.RemoveValue(tag);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V2 ToVector(this Point source) { return new V2(source.X, source.Y); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V2 ToVector(this PointF source) { return new V2(source.X, source.Y); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V2 ToVector(this Size source) { return new V2(source.Width, source.Height); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V2 ToVector(this SizeF source) { return new V2(source.Width, source.Height); }
+
+        
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static V4 Premultiply(this V4 source)
         {

@@ -238,22 +238,43 @@ namespace Epsylon.UberPlugin
 
             if (exif != null)
             {
+                sb.AppendLine();
+                sb.AppendLine("EXIF");
+                sb.AppendLine();                
+
                 foreach (var exifval in exif.Values)
                 {
-                    sb.AppendLine($"{exifval.Tag} = {exifval.Value}");
+                    try
+                    {
+                        var valTxt = exifval.ToString();
+                        sb.AppendLine($"{exifval.Tag} = {valTxt}");
+                    }
+                    catch(Exception ex)
+                    {
+                        sb.AppendLine($"{exifval.Tag} = {ex.Message}");
+                    }
+                    
                 }
             }
 
             if (icc != null)
             {
+                sb.AppendLine();
+                sb.AppendLine("ICC");
+                sb.AppendLine();
+
                 foreach (var iccval in icc.Entries)
                 {
-                    sb.AppendLine($"{iccval.Signature} {iccval.TagSignature}");
+                    sb.AppendLine($"{iccval.Signature} {iccval.ToString()}");
                 }
             }
 
             if (ipps != null)
             {
+                sb.AppendLine();
+                sb.AppendLine("IPPS");
+                sb.AppendLine();
+
                 foreach (var iprop in ipps)
                 {
                     sb.AppendLine($"{iprop.Name} = {iprop.Value}");
