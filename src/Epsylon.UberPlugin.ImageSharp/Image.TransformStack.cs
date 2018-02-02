@@ -433,14 +433,12 @@ namespace Epsylon.UberPlugin
     [SDK.ContentNode("ImageFlipTransform")]
     [SDK.Title("Flip"), SDK.TitleFormat("{0} Flipped")]
     public sealed class ImageFlipTransform : BaseImageTransform
-    {
-        [SDK.InputValue("Horizontal")]
-        [SDK.Title("W"), SDK.Group("Direction")]        
-        public Boolean Horizontal { get; set; }
-
-        [SDK.InputValue("Vertical")]
-        [SDK.Title("H"), SDK.Group("Direction")]        
-        public bool Vertical { get; set; }        
+    {        
+        [SDK.Title("🡘"), SDK.Group(0)]
+        [SDK.InputValue("Horizontal")] public Boolean Horizontal { get; set; }
+        
+        [SDK.Title("🡙"), SDK.Group(0)]
+        [SDK.InputValue("Vertical")] public bool Vertical { get; set; }        
 
         protected override IMGTRANSFORM TransformImage()
         {

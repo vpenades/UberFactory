@@ -37,7 +37,7 @@ namespace Epsylon.UberFactory
             /// </summary>
             ICommand SetCurrentValueCmd { get; }            
 
-            ICommand ViewCurrentPreviewCmd { get; }
+            ICommand ViewCurrentPreviewCmd { get; }            
         }
 
         public interface INodeViewServices
@@ -424,11 +424,21 @@ namespace Epsylon.UberFactory
                 _Binding = binding;
                 _Index = index;
 
-                SetCurrentValueCmd    = new RelayCommand(_SetNewDependencyNode, arg=> IsEmpty);
-                ClearCurrentCmd       = new RelayCommand(_RemoveParameter, arg => IsInstanced);
-                SetCurrentEmptyCmd    = new RelayCommand(_SetEmptyOverrideValue, arg=> IsChildConfiguration && IsOwnValue);
                 ViewCurrentPreviewCmd = new RelayCommand(() => { var view = NodeInstance; if (view != null) view.SetAsCurrentResultView(); }, arg => IsInstanced);
-                if (_Index >=0) RemoveElementCmd = new RelayCommand(_RemoveElement);
+
+                if (_Index < 0)
+                {
+                    SetCurrentValueCmd = new RelayCommand(_SetNewDependencyNode, arg => IsEmpty);
+                    ClearCurrentCmd = new RelayCommand(_RemoveParameter, arg => IsInstanced);
+                    SetCurrentEmptyCmd = new RelayCommand(_SetEmptyOverrideValue, arg => IsChildConfiguration && IsOwnValue);
+                    
+                }
+                else
+                {
+                    SetCurrentValueCmd = new RelayCommand(_SetNewDependencyNode, arg => IsEmpty);
+                    ClearCurrentCmd = new RelayCommand(_RemoveParameter, arg => true);
+                    SetCurrentEmptyCmd = new RelayCommand(_SetEmptyOverrideValue, arg => false);                    
+                }
             }
 
             #endregion
@@ -441,9 +451,7 @@ namespace Epsylon.UberFactory
 
             public ICommand SetCurrentEmptyCmd { get; private set; }
 
-            public ICommand ViewCurrentPreviewCmd { get; private set; }
-
-            public ICommand RemoveElementCmd { get; private set; }
+            public ICommand ViewCurrentPreviewCmd { get; private set; }            
 
             #endregion
 
@@ -490,8 +498,8 @@ namespace Epsylon.UberFactory
             {
                 get
                 {
-                    if (_Binding is Bindings.SingleDependencyBinding) return ((Bindings.SingleDependencyBinding)_Binding).DataType;
-                    if (_Binding is Bindings.MultiDependencyBinding) return ((Bindings.MultiDependencyBinding)_Binding).DataType.GetElementType();
+                    if (_Binding is SingleDependencyBinding singleBinding) return singleBinding.DataType;
+                    if (_Binding is MultiDependencyBinding multiBinding) return multiBinding.DataType.GetElementType();
                     throw new NotSupportedException();
                 }
             }            
@@ -510,7 +518,10 @@ namespace Epsylon.UberFactory
             {
                 if (!_EditableBarrier()) return;
 
-                _SetDependencyId(Guid.Empty);
+                if (_GetDependencyId() != Guid.Empty) { _SetDependencyId(Guid.Empty); return; }
+
+                if (_Index >= 0) _RemoveElementSlot();
+                
             }
 
             private void _SetEmptyOverrideValue()
@@ -570,11 +581,10 @@ namespace Epsylon.UberFactory
                 _Parent.Parent.UpdateGraph();
             }
             
-            private void _RemoveElement()
+            private void _RemoveElementSlot()
             {
-                if (_Index < 0) return;
                 if (!_EditableBarrier()) return;
-
+                if (_Index < 0) return;
                 if (_Binding is MultiDependencyBinding multiBinding)
                 {
                     // TODO: here it should call _SetDependencyId(empty) to remove the node, but without calling UpdateGraph

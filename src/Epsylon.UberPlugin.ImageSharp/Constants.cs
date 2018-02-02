@@ -15,7 +15,9 @@ namespace Epsylon.UberPlugin
         public const String ICON_USERINPUT = "✍";
         public const String ICON_COLOR = "🎨";
 
-        public const String ICON_VISIBILITY = "👁";        
+        public const String ICON_VISIBILITY = "👁";
+
+        public const String ICON_OPACITY = "◑";        
 
         public const String OPENFILEDIALOGFILTER_ALLFILES = "All Files|*.*";
 

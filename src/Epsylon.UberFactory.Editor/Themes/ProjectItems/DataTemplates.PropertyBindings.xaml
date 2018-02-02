@@ -131,7 +131,7 @@
                 <ItemsControl ItemsSource="{Binding Slots}" ItemTemplateSelector="{StaticResource _BindingsViewSelector}" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="{Binding ItemsControlPanelOrientation}" />
+                            <WrapPanel Orientation="{Binding ItemsControlPanelOrientation}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>                

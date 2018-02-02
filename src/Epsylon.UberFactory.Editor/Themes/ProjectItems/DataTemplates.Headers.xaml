@@ -7,6 +7,7 @@
     <sys:String x:Key="L2N_SetNullReference">Set Empty Value</sys:String>
     <sys:String x:Key="L2N_SetDefaultReference">Set Default Value</sys:String>
     <sys:String x:Key="L2N_PreviewResult">Preview Result</sys:String>
+    <sys:String x:Key="L2N_RemoveElement">Remove Element</sys:String>
 
     <ContextMenu x:Key="__clearValueContextMenu">
         <MenuItem Icon="{StaticResource _RemoveIcon}" Command="{Binding ClearValueCmd,Converter={StaticResource __asRelayCommand}}">
@@ -22,29 +23,30 @@
     <!-- these datatemplates should bind objects compatible with IChildEditCommands -->
 
     <ContextMenu x:Key="ChildEdit_ContextMenu">
-        <MenuItem Icon="{StaticResource _InspectIcon}" Header="Preview result"                           Command="{Binding ViewCurrentPreviewCmd}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <MenuItem Icon="{StaticResource _InspectIcon}" Header="{StaticResource L2N_PreviewResult}"       Command="{Binding ViewCurrentPreviewCmd}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
         <Separator />
         <MenuItem Icon="{StaticResource _AddIcon}"     Header="{StaticResource L2N_SetNewReference}"     Command="{Binding SetCurrentValueCmd}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
-        <MenuItem Icon="{StaticResource _RemoveIcon}"   Header="{StaticResource L2N_SetNullReference}"    Command="{Binding ClearCurrentCmd}"       Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
-        <MenuItem Icon="{StaticResource _EmptyIcon}"  Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetCurrentEmptyCmd}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
+        <MenuItem Icon="{StaticResource _RemoveIcon}"  Header="{StaticResource L2N_SetNullReference}"    Command="{Binding ClearCurrentCmd}"       Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <MenuItem Icon="{StaticResource _EmptyIcon}"   Header="{StaticResource L2N_SetDefaultReference}" Command="{Binding SetCurrentEmptyCmd}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>        
     </ContextMenu>
 
     <DataTemplate x:Key="Header_EmptyChild">
-        <DockPanel HorizontalAlignment="Stretch" ContextMenu="{StaticResource ChildEdit_ContextMenu}">
+        <DockPanel HorizontalAlignment="Stretch"
+                   ContextMenu="{StaticResource ChildEdit_ContextMenu}" Background="Transparent"> <!-- Transparent background allows showing the context menu by clicking everywhere -->
 
             <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" HorizontalAlignment="Left" />
-
-            <!-- this one is used to stretch the dockpanel along the whole header -->
-            <TextBlock Text="" HorizontalAlignment="Right" />
-
+        
         </DockPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="Header_InstancedChild">
-        <DockPanel HorizontalAlignment="Stretch" ContextMenu="{StaticResource ChildEdit_ContextMenu}">
+        <DockPanel HorizontalAlignment="Stretch"
+                   ContextMenu="{StaticResource ChildEdit_ContextMenu}" Background="Transparent"> <!-- Transparent background allows showing the context menu by clicking everywhere -->
+
             <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />
             <local:ChildEditBar DockPanel.Dock="Right" />
             <TextBlock Text="    " />
+            
         </DockPanel>
     </DataTemplate>
 
