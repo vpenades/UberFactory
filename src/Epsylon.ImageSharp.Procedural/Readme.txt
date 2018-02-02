@@ -1,6 +1,6 @@
 ﻿Suggestions for ImageSharp:
 
-- Bounds() and Size() extension methods could use IImage
+- Bounds() and Size() extension methods could use IImage as this *
 - Drawing methods that have an array as the last parameter, could use params PointF[] for ease of use.
 - some exception with SignedRational writing Konica_Minolta_DiMAGE_Z3.jpg metadata
 - ExifProfile.RemoveValue should not throw if the value doesn't exist
