@@ -52,9 +52,7 @@ namespace Epsylon.UberFactory
             pg.Clear("X");
             Assert.IsFalse(pg.Contains("X"));
 
-            // check if Guid.Empty is stored correctly
-            pg.SetReferenceIds("RefIds", Guid.NewGuid(), Guid.Empty, Guid.NewGuid());
-            Assert.AreEqual(3, pg.GetReferenceIds("RefIds").Length);
+            
 
 
             // check XML characters serialization
@@ -70,7 +68,7 @@ namespace Epsylon.UberFactory
         }
 
         [TestMethod]
-        public void NodeTests()
+        public void ChildConfigurationTests()
         {
             var n = ProjectDOM.Node.Create("SomeFilter");
 
@@ -81,6 +79,18 @@ namespace Epsylon.UberFactory
             pgroot.SetValue("X", "A"); Assert.AreEqual("A", pgchld.GetValue("X", null));    
             pgchld.SetValue("X", "B"); Assert.AreEqual("B", pgchld.GetValue("X", null));
             pgchld.Clear("X");         Assert.AreEqual("A", pgchld.GetValue("X", null));
+        }
+
+        [TestMethod]
+        public void ReferencePropertyTests()
+        {
+            var n = ProjectDOM.Node.Create("SomeFilter");
+
+            var pgroot = n.GetPropertiesForConfiguration("Root");
+
+            // check if Guid.Empty is stored correctly
+            pgroot.SetReferenceIds("RefIds", Guid.NewGuid(), Guid.Empty, Guid.NewGuid());
+            Assert.AreEqual(3, pgroot.GetReferenceIds("RefIds").Length);
         }
     }
 }

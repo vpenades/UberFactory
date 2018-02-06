@@ -15,13 +15,19 @@ namespace Epsylon.UberFactory
 
         void Clear(String serializationKey);
 
+        /// <summary>
+        /// Returns the underlaying value or defval if there's no parent configuration.
+        /// </summary>
+        /// <param name="serializationKey">the Property Key</param>
+        /// <param name="defval">The default value if there's no parent configuration</param>
+        /// <returns>A String value</returns>
         String GetDefaultValue(String serializationKey, String defval);
 
         String GetValue(String serializationKey, String defval);
         bool SetValue(String serializationKey, String value);
 
-        String[] GetArray(String serializationKey, String[] defval);
-        bool SetArray(String serializationKey, String[] array);
+        String[] GetArray(String serializationKey,params String[] defval);
+        bool SetArray(String serializationKey,params String[] array);
     }
     
     public static class IPropertyProviderExtensions
@@ -36,9 +42,7 @@ namespace Epsylon.UberFactory
         private static string _ToNodeReference(Guid id)
         {
             return id.ToString();
-        }
-
-        
+        }        
 
         public static Guid[] GetReferenceIds(this IPropertyProvider properties, string key, params string[] defval)
         {
@@ -48,9 +52,7 @@ namespace Epsylon.UberFactory
             return values
                 .Select(item => _ParseGuidReference(item))                
                 .ToArray();
-        }
-
-        
+        }        
 
         public static void SetReferenceIds(this IPropertyProvider properties, string key, params Guid[] values)
         {
@@ -92,19 +94,16 @@ namespace Epsylon.UberFactory
             return _Current.Contains(serializationKey);
         }
 
-        public string[] GetArray(string serializationKey, string[] defval)
+        public string GetDefaultValue(string serializationKey, string defval)
         {
-            return _Current.GetArray(serializationKey, _Base == null ? defval : _Base.GetArray(serializationKey, defval));
-        }
+            return _Base == null ? defval : _Base.GetValue(serializationKey, defval);
+        }        
 
         public string GetValue(string serializationKey, string defval)
         {
-            return _Current.GetValue(serializationKey, _Base == null ? defval : _Base.GetValue(serializationKey, defval));
-        }
+            var underlayingValue = GetDefaultValue(serializationKey, defval);
 
-        public bool SetArray(string serializationKey, string[] array)
-        {
-            return _Current.SetArray(serializationKey, array);
+            return _Current.GetValue(serializationKey, underlayingValue);
         }
 
         public bool SetValue(string serializationKey, string value)
@@ -112,12 +111,58 @@ namespace Epsylon.UberFactory
             return _Current.SetValue(serializationKey, value);
         }
 
-        public string GetDefaultValue(string serializationKey, string defval)
+        public string[] GetDefaultArray(string serializationKey, string[] defval)
         {
-            return _Base == null ? defval : _Base.GetValue(serializationKey, defval);
+            return _Base == null ? defval : _Base.GetArray(serializationKey, defval);
         }
 
-        #endregion        
+        public string[] GetArray(string serializationKey, string[] defval)
+        {
+            var underlayingCollection = GetDefaultArray(serializationKey, defval);
+
+            return _Current.GetArray(serializationKey, underlayingCollection);
+        }        
+
+        public bool SetArray(string serializationKey, string[] array)
+        {
+            return _Current.SetArray(serializationKey, array);
+        }
+
+        // this is an attempt to use an array with the same override rules as single values.
+        public string[] GetArray(string serializationKey, Predicate<String> isEmptyFunc, string[] defval)
+        {
+            var underlayingCollection = GetDefaultArray(serializationKey, defval).ToList();
+            var currentCollection =  _Current.GetArray(serializationKey, new String[0]).ToList();
+
+            // remove "empty" trailing elements
+            _TrimBack(underlayingCollection, isEmptyFunc);
+            _TrimBack(currentCollection, isEmptyFunc);
+
+            var len = Math.Max(underlayingCollection.Count, currentCollection.Count);
+
+            var finalCollection = new String[len];
+
+            for(int i =0; i < finalCollection.Length; ++i)
+            {
+                if (i <= currentCollection.Count && !isEmptyFunc(currentCollection[i])) { finalCollection[i] = currentCollection[i]; continue; }
+                if (i <= underlayingCollection.Count) { finalCollection[i] = underlayingCollection[i]; continue; }
+                finalCollection[i] = null;
+            }
+
+            return finalCollection.ToArray();
+        }
+
+        private static void _TrimBack(IList<string> collection, Predicate<String> isEmptyFunc)
+        {
+            while (collection.Count > 0)
+            {
+                var lastIdx = collection.Count - 1;
+                if (!isEmptyFunc(collection[lastIdx])) break;
+                collection.RemoveAt(lastIdx);
+            }
+        }
+
+        #endregion
     }
     
     sealed class _ReadOnlyLayer : IPropertyProvider
