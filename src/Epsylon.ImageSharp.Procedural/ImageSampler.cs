@@ -82,7 +82,7 @@ namespace Epsylon.ImageSharp.Procedural
         Wrap = 1,
         Mirror = 2,
         Clamp = 3,
-        Border = 4,
+        // Border = 4, // this has been deprecated in most hardware implementations since it requires an extra register
         MirrorOnce = 5
     }
 

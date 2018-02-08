@@ -1,9 +1,12 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.MetaData;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
 
@@ -34,5 +37,6 @@ namespace Epsylon.ImageSharp.Procedural
                 }
             }
         }
+        
     }
 }

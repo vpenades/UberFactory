@@ -24,7 +24,7 @@ namespace Epsylon.ImageSharp.Procedural
             switch (mode)
             {
                 case SamplerAddressMode.Clamp: return idx => idx.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return idx => idx.Wrap(size);
+                case SamplerAddressMode.Wrap: return idx => idx.RoundAbout(size);
 
                 default: throw new NotImplementedException();
             }
@@ -36,7 +36,7 @@ namespace Epsylon.ImageSharp.Procedural
             switch (mode)
             {
                 case SamplerAddressMode.Clamp: return index.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return index.Wrap(size);
+                case SamplerAddressMode.Wrap: return index.RoundAbout(size);
 
                 default: throw new NotImplementedException();
             }
@@ -48,7 +48,7 @@ namespace Epsylon.ImageSharp.Procedural
             switch (mode)
             {
                 case SamplerAddressMode.Clamp: return index.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return index.Wrap(size);
+                case SamplerAddressMode.Wrap: return index.RoundAbout(size);
 
                 default: throw new NotImplementedException();
             }
@@ -116,8 +116,14 @@ namespace Epsylon.ImageSharp.Procedural
             int i = (int)v; return (float)i <= v ? i : i - 1;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int Wrap(this int idx, int count) { return idx >= 0 ? idx % count : count - ((-idx - 1) % count) - 1; }
+        /// <summary>
+        /// Ensures the output values is in the range of 0 &lt;= value &lt; count, in a round about manner
+        /// </summary>
+        /// <param name="idx">Any value, positive or negative</param>
+        /// <param name="count">A positive value higher than 0</param>
+        /// <returns>a positive integer value</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]        
+        public static int RoundAbout(this int idx, int count) { return idx >= 0 ? idx % count : count - ((-idx - 1) % count) - 1; }
 
         private sealed class _ActionProcessor<TPixel> : IImageProcessor<TPixel> where TPixel : struct, IPixel<TPixel>
         {
