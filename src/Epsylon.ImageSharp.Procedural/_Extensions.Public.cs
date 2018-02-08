@@ -146,15 +146,7 @@ namespace Epsylon.ImageSharp.Procedural
             return source.ApplyProcessor(processor);
         }
 
-        public static ITexture ToTexture<TPixel>(this Image<TPixel> source) where TPixel : struct, IPixel<TPixel>
-        {
-            return new _ImageTexture<TPixel>(source);
-        }
-
-        public static ITexture ToTexture<TPixel>(this Image<TPixel> source, Image<Alpha8> mask) where TPixel : struct, IPixel<TPixel>
-        {
-            return new _ImageMaskedTexture<TPixel>(source, mask);
-        }
+        
 
         public static bool Contains<TPixel>(this Image<TPixel> image, int x, int y) where TPixel : struct, IPixel<TPixel>
         {
@@ -166,11 +158,11 @@ namespace Epsylon.ImageSharp.Procedural
             return image.Contains(p.X, p.Y);
         }
 
-        public static Rectangle Bounds(this ITexture tex) { return new Rectangle(0, 0, tex.Width, tex.Height); }
+        public static Rectangle Bounds(this IPixelSampler tex) { return new Rectangle(0, 0, tex.Width, tex.Height); }
 
-        public static bool Contains(this ITexture texture, int x, int y) { return texture.Bounds().Contains(x, y); }
+        public static bool Contains(this IPixelSampler texture, int x, int y) { return texture.Bounds().Contains(x, y); }
 
-        public static bool Contains(this ITexture image, Point p) { return image.Contains(p.X, p.Y); }
+        public static bool Contains(this IPixelSampler image, Point p) { return image.Contains(p.X, p.Y); }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static PointF TopLeft(this RectangleF rect) { return new PointF(rect.Left, rect.Top); }

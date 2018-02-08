@@ -78,27 +78,35 @@ namespace Epsylon.ImageSharp.Procedural
         {
             using (var source = target.Clone())
             {
-                var sampler = SamplerFactory
-                    .CreateSampler(source, SamplerAddressMode.Wrap, SamplerAddressMode.Clamp)
-                    .ToPolarTransform()
-                    .ToPointSampler(source.Width,source.Height);
+                var sampler = source
+                    .ToPixelSampler(SamplerAddressMode.Wrap, SamplerAddressMode.Clamp)
+                    .ToTextureSampler(false)
+                    .ToPolarTransform();
 
-                var tl = Point.Empty;
-                var tr = Point.Empty;
-                var bl = Point.Empty;
-                var br = Point.Empty;
+                var tl = PointF.Empty;
+                var tr = PointF.Empty;
+                var bl = PointF.Empty;
+                var br = PointF.Empty;
+
+                
 
                 for (int dy = 0; dy < target.Height; ++dy)
                 {
                     tl.Y = tr.Y = dy;
                     bl.Y = br.Y = dy + 1;
 
+                    TPixel c = default(TPixel);
+
                     for (int dx = 0; dx < target.Width; ++dx)
                     {
                         tl.X = bl.X = dx;
-                        tr.X = br.X = dx + 1;                        
+                        tr.X = br.X = dx + 1;
 
-                        target[dx, dy] = sampler.GetSample(tl, tr, br, bl);
+                        var r = sampler.GetAreaSample(tl, tr, br, bl);
+
+                        c.PackFromVector4(r);
+
+                        target[dx, dy] = c;
                     }
                 }
             }

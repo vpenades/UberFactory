@@ -39,7 +39,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static IImageProcessingContext<TPixel> PremultiplyAlpha<TPixel>(this IImageProcessingContext<TPixel> source) where TPixel : struct, IPixel<TPixel>
         {
-            return source.Apply(img => _ApplyAlphaPremultiply(img.ToTexture()));
+            return source.Apply(img => _ApplyAlphaPremultiply(img.ToPixelSampler()));
         }
 
         public static IImageProcessingContext<TPixel> ApplyCommonEffect<TPixel>(this IImageProcessingContext<TPixel> source, CommonEffect<TPixel> effect) where TPixel : struct, IPixel<TPixel>
@@ -49,7 +49,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static IImageProcessingContext<TPixel> FillRGB<TPixel>(this IImageProcessingContext<TPixel> source, TPixel rgb) where TPixel : struct, IPixel<TPixel>
         {
-            return source.Apply(img => _FillRGB(img.ToTexture(),rgb.ToVector4()));
+            return source.Apply(img => _FillRGB(img.ToPixelSampler(),rgb.ToVector4()));
         }
 
         public static IImageProcessingContext<TPixel> EdgePaddingAlpha<TPixel>(this IImageProcessingContext<TPixel> source, float minAlpha) where TPixel : struct, IPixel<TPixel>
@@ -106,12 +106,12 @@ namespace Epsylon.ImageSharp.Procedural
                 (
                 img =>
                 {
-                    if (mask.Width == img.Width && mask.Height == img.Height) img.ToTexture()._ApplyAlphaMask(mask, mode);
+                    if (mask.Width == img.Width && mask.Height == img.Height) img.ToPixelSampler()._ApplyAlphaMask(mask, mode);
                     else
                     {
                         using (var rmask = mask.Clone(dc => dc.Resize(img.Width, img.Height)))
                         {
-                            img.ToTexture()._ApplyAlphaMask(rmask, mode);
+                            img.ToPixelSampler()._ApplyAlphaMask(rmask, mode);
                         }
                     }
                 }
@@ -124,7 +124,7 @@ namespace Epsylon.ImageSharp.Procedural
         }
 
 
-        private static void _FillRGB(this ITexture source, Vector4 rgba)
+        private static void _FillRGB(this IPixelSampler source, Vector4 rgba)
         {
             for (int y = 0; y < source.Height; ++y)
             {
@@ -136,7 +136,7 @@ namespace Epsylon.ImageSharp.Procedural
             }
         }
 
-        private static void _ApplyAlphaMask(this ITexture source, Image<Alpha8> mask, PixelBlenderMode mode)
+        private static void _ApplyAlphaMask(this IPixelSampler source, Image<Alpha8> mask, PixelBlenderMode mode)
         {
             Func<float,float,float> alphaFunc = (a,b) => a * b;
 
@@ -164,7 +164,7 @@ namespace Epsylon.ImageSharp.Procedural
         }
 
 
-        private static void _ApplyAlphaPremultiply(this ITexture source)
+        private static void _ApplyAlphaPremultiply(this IPixelSampler source)
         {
             for(int y=0; y < source.Height; ++y)
             {
@@ -213,14 +213,14 @@ namespace Epsylon.ImageSharp.Procedural
             {
                 for (int i=0; i < maxSteps; ++i)
                 {
-                    var count = source.ToTexture()._DilateColor(mask.ToTexture());
+                    var count = source.ToPixelSampler()._DilateColor(mask.ToPixelSampler());
 
                     if (count == 0) break;
                 }                
             }
         }        
 
-        static int _DilateColor(this ITexture target, ITexture mask, float alphaThreshold = 0)
+        static int _DilateColor(this IPixelSampler target, IPixelSampler mask, float alphaThreshold = 0)
         {
             int count = 0;
 
@@ -254,7 +254,7 @@ namespace Epsylon.ImageSharp.Procedural
             return count;
         }
 
-        private static int _ApplyRow(this ITexture target,int y, Vector4[] row, bool ignoreAlpha)
+        private static int _ApplyRow(this IPixelSampler target,int y, Vector4[] row, bool ignoreAlpha)
         {
             int count = 0;
 
@@ -284,7 +284,7 @@ namespace Epsylon.ImageSharp.Procedural
         /// <returns>
         /// If the central pixel is not transparent, returns the pixel itself, else it returns a sampling.
         /// </returns>
-        static Vector4 _GetDilatedTexel(this ITexture texture, int x, int y, float alphaThreshold = 0)
+        static Vector4 _GetDilatedTexel(this IPixelSampler texture, int x, int y, float alphaThreshold = 0)
         {
             if (texture[x, y].W > alphaThreshold) return Vector4.Zero;
 
