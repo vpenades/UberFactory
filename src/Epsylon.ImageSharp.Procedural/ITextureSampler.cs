@@ -8,11 +8,11 @@ using System.Numerics;
 
 namespace Epsylon.ImageSharp.Procedural
 {
-    using UV = PointF;
+    using UV = PointF;    
 
     public interface ITextureSampler
-    {
-        SizeF Size { get; }
+    {        
+        SizeF Scale { get; }
 
         Vector4 GetPointSample(UV uv);
         
@@ -23,21 +23,26 @@ namespace Epsylon.ImageSharp.Procedural
     {
         public static ITextureSampler ToTextureSampler(this IPixelSampler ps, bool normalizedUV)
         {
-            return new _TextureSampler(ps, normalizedUV);
+            return new _PixelTextureSampler(ps, normalizedUV);
         }
 
         public static ITextureSampler ToPolarTransform(this ITextureSampler ts)
         {
             return new _PolarTransformedTextureSampler(ts);
         }
+
+        public static ITextureSampler CreatePerlinNoiseTexture(IPixel odd, IPixel even, int repeat, int octaves, float persistence, int randomSeed = 177)
+        {
+            return _PerlinNoiseTextureSampler.Create(odd, even, repeat, octaves, persistence, randomSeed);
+        }
     }
 
 
-    class _TextureSampler : ITextureSampler
+    class _PixelTextureSampler : ITextureSampler
     {
         #region lifecycle
 
-        public _TextureSampler(IPixelSampler source, bool normalizedUV)
+        public _PixelTextureSampler(IPixelSampler source, bool normalizedUV)
         {
             _Source = source;            
 
@@ -69,7 +74,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region properties
 
-        public SizeF Size => _Size;        
+        public SizeF Scale => _Size;        
 
         #endregion
 
@@ -132,7 +137,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region properties
 
-        public SizeF Size => _Source.Size;
+        public SizeF Scale => _Source.Scale;
 
         #endregion
 
@@ -166,15 +171,15 @@ namespace Epsylon.ImageSharp.Procedural
 
         public _PolarTransformedTextureSampler(ITextureSampler source) : base(source)
         {
-            _Size = source.Size;
-            _Center = _Size / 2;
+            _Scale = source.Scale;
+            _Center = _Scale / 2;
         }
 
         #endregion       
 
         #region API
 
-        private readonly Vector2 _Size;
+        private readonly Vector2 _Scale;
         private readonly Vector2 _Center;
 
         protected override UV Transform(UV pp)
@@ -191,7 +196,7 @@ namespace Epsylon.ImageSharp.Procedural
 
             var radius = p.Length();
 
-            return new Vector2((float)angle, 1 - (float)radius) * _Size;
+            return new Vector2((float)angle, 1 - (float)radius) * _Scale;
         }
 
         #endregion
@@ -199,28 +204,40 @@ namespace Epsylon.ImageSharp.Procedural
 
     sealed class _PerlinNoiseTextureSampler : ITextureSampler
     {
-        public _PerlinNoiseTextureSampler(int repeat, int randomSeed, int octaves, float persistence)
+        // TODO: pass a Black/White colors and interpolate based on noise value.
+
+        public static _PerlinNoiseTextureSampler Create(IPixel odd, IPixel even, int repeat, int octaves, float persistence, int randomSeed = 177)
+        {
+            return new _PerlinNoiseTextureSampler(odd.ToVector4(), even.ToVector4(), repeat, octaves, persistence, randomSeed);
+        }
+
+        private _PerlinNoiseTextureSampler(Vector4 odd, Vector4 even, int repeat, int octaves, float persistence, int randomSeed = 177)
         {
             if (repeat <= 0) repeat = -1; // repetition is disabled
 
-            _Size = repeat > 0 ? new SizeF(repeat, repeat) : new SizeF(1,1);            
+            _Scale = repeat > 0 ? new SizeF(repeat, repeat) : new SizeF(1,1);            
 
             _Perlin = new Perlin_Tileable(randomSeed, repeat);
 
             _Depth = 0;
             _Octaves = octaves;
-            _Persistence = persistence;
+            _Persistence = persistence;            
+
+            _OddColor = odd;
+            _EvenColor = even;
         }
 
         private readonly Perlin_Tileable _Perlin;
 
-        private readonly SizeF _Size;
+        private readonly SizeF _Scale;
 
         private readonly float _Depth;
         private readonly int _Octaves;
-        private readonly float _Persistence;        
+        private readonly float _Persistence;
+        private readonly Vector4 _OddColor;
+        private readonly Vector4 _EvenColor;
 
-        public SizeF Size => _Size;
+        public SizeF Scale => _Scale;
 
         public Vector4 GetAreaSample(UV tl, UV tr, UV br, UV bl)
         {
@@ -229,8 +246,11 @@ namespace Epsylon.ImageSharp.Procedural
 
         public Vector4 GetPointSample(UV uv)
         {
-            var v = _Perlin.OctavePerlin(uv.X, uv.Y, _Depth, _Octaves, _Persistence);
-            return new Vector4((float)v);
+            var v = (float)_Perlin
+                .OctavePerlin(uv.X, uv.Y, _Depth, _Octaves, _Persistence)
+                .Clamp(0,1);
+
+            return Vector4.Lerp(_OddColor, _EvenColor, v);
         }
     }
 }
