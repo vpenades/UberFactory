@@ -11,9 +11,9 @@ namespace Epsylon.ImageSharp.Procedural
 {
     public static class LookupTables
     {
-        public static IImageProcessingContext<TPixel> ApplyPolarDistort<TPixel>(this IImageProcessingContext<TPixel> dc) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> ApplyPolarDistort<TPixel>(this IImageProcessingContext<TPixel> dc, bool inverse) where TPixel : struct, IPixel<TPixel>
         {
-            return dc.Apply(image => image._DistortImage() );
+            return dc.Apply(image => image._DistortImage(inverse) );
         }
 
         private static void _FillPolarLookupTable(this Image<HalfVector2> target)
@@ -74,41 +74,16 @@ namespace Epsylon.ImageSharp.Procedural
 
 
 
-        private static void _DistortImage<TPixel>(this Image<TPixel> target) where TPixel : struct, IPixel<TPixel>
+        private static void _DistortImage<TPixel>(this Image<TPixel> target, bool inverse) where TPixel : struct, IPixel<TPixel>
         {
             using (var source = target.Clone())
             {
                 var sampler = source
                     .ToPixelSampler(SamplerAddressMode.Wrap, SamplerAddressMode.Clamp)
                     .ToTextureSampler(false)
-                    .ToPolarTransform();
+                    .ToPolarTransform(inverse);
 
-                var tl = PointF.Empty;
-                var tr = PointF.Empty;
-                var bl = PointF.Empty;
-                var br = PointF.Empty;
-
-                
-
-                for (int dy = 0; dy < target.Height; ++dy)
-                {
-                    tl.Y = tr.Y = dy;
-                    bl.Y = br.Y = dy + 1;
-
-                    TPixel c = default(TPixel);
-
-                    for (int dx = 0; dx < target.Width; ++dx)
-                    {
-                        tl.X = bl.X = dx;
-                        tr.X = br.X = dx + 1;
-
-                        var r = sampler.GetAreaSample(tl, tr, br, bl);
-
-                        c.PackFromVector4(r);
-
-                        target[dx, dy] = c;
-                    }
-                }
+                target.Fill(sampler);                
             }
         }
 

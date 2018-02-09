@@ -484,10 +484,13 @@ namespace Epsylon.UberPlugin
     [SDK.Title("Polar"), SDK.TitleFormat("{0} Polar")]
     [SDK.ContentNode("PolarDistortTransform")] public sealed class PolarDistortTransform : BaseImageTransform
     {
+        [SDK.Title("Inverse"), SDK.Group(0)]        
+        [SDK.InputValue("Inverse")] public Boolean Inverse { get; set; }
+
         protected override IMGTRANSFORM TransformImage()
         {
             return dc => dc
-                .ApplyPolarDistort()
+                .ApplyPolarDistort(Inverse)
                 .Flip(SixLabors.ImageSharp.Processing.FlipType.Vertical);
         }
 

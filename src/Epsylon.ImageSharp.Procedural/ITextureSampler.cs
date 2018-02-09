@@ -26,14 +26,43 @@ namespace Epsylon.ImageSharp.Procedural
             return new _PixelTextureSampler(ps, normalizedUV);
         }
 
-        public static ITextureSampler ToPolarTransform(this ITextureSampler ts)
+        public static ITextureSampler ToPolarTransform(this ITextureSampler ts, bool inverse)
         {
-            return new _PolarTransformedTextureSampler(ts);
+            return new _PolarTransformedTextureSampler(ts, inverse);
         }
 
         public static ITextureSampler CreatePerlinNoiseTexture(IPixel odd, IPixel even, int repeat, int octaves, float persistence, int randomSeed = 177)
         {
             return _PerlinNoiseTextureSampler.Create(odd, even, repeat, octaves, persistence, randomSeed);
+        }
+
+
+        public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler sampler) where TPixel : struct, IPixel<TPixel>
+        {
+            var tl = default(UV);
+            var tr = default(UV);
+            var bl = default(UV);
+            var br = default(UV);
+
+            for (int dy = 0; dy < target.Height; ++dy)
+            {
+                tl.Y = tr.Y = dy;
+                bl.Y = br.Y = dy + 1;
+
+                var c = default(TPixel);
+
+                for (int dx = 0; dx < target.Width; ++dx)
+                {
+                    tl.X = bl.X = dx;
+                    tr.X = br.X = dx + 1;
+
+                    var r = sampler.GetAreaSample(tl, tr, br, bl);
+
+                    c.PackFromVector4(r);
+
+                    target[dx, dy] = c;
+                }
+            }
         }
     }
 
@@ -167,24 +196,34 @@ namespace Epsylon.ImageSharp.Procedural
 
     sealed class _PolarTransformedTextureSampler : _TransformedTextureSampler
     {
-        #region lifecycle
+        #region lifecycle        
 
-        public _PolarTransformedTextureSampler(ITextureSampler source) : base(source)
+        public _PolarTransformedTextureSampler(ITextureSampler source, bool inverse = false) : base(source)
         {
+            _Inverse = inverse;
             _Scale = source.Scale;
             _Center = _Scale / 2;
+
+            var aa = _SquareToPolar(new UV(20, 30));
+            var bb = _PolarToSquare(aa);
         }
 
         #endregion       
 
         #region API
 
+        private readonly bool _Inverse;
         private readonly Vector2 _Scale;
         private readonly Vector2 _Center;
 
         protected override UV Transform(UV pp)
         {
-            Vector2 p = pp;            
+            return _Inverse ? _PolarToSquare(pp) : _SquareToPolar(pp);
+        }
+
+        private UV _SquareToPolar(UV pp)
+        {
+            Vector2 p = pp;
 
             p -= _Center; // offset coords to the center of the image
 
@@ -193,10 +232,28 @@ namespace Epsylon.ImageSharp.Procedural
             angle /= Math.PI * 2;
 
             p /= _Center; // normalize
-
             var radius = p.Length();
 
-            return new Vector2((float)angle, 1 - (float)radius) * _Scale;
+            p = Vector2.One - new Vector2((float)angle, (float)radius);            
+
+            return p * _Scale;
+        }
+
+        private UV _PolarToSquare(UV pp)
+        {
+            Vector2 p = pp;
+
+            p /= _Scale;
+            p = Vector2.One - p;
+
+            var angle = (p.X * Math.PI * 2 - Math.PI);
+
+            var x = (float)+Math.Sin(angle);
+            var y = (float)-Math.Cos(angle);
+
+            p = new Vector2(x, y) * _Center + _Center;
+
+            return p;
         }
 
         #endregion
