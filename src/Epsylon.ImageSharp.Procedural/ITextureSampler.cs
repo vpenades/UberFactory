@@ -10,34 +10,38 @@ namespace Epsylon.ImageSharp.Procedural
 {
     using UV = PointF;    
 
-    public interface ITextureSampler
+    public interface ITextureSampler<TPixel>
     {        
         SizeF Scale { get; }
 
-        Vector4 GetPointSample(UV uv);
-        
-        Vector4 GetAreaSample(UV tl, UV tr, UV br, UV bl);
+        TPixel GetPointSample(UV uv);
+
+        TPixel GetAreaSample(UV tl, UV tr, UV br, UV bl);
     }
 
     public static class TextureSamplerFactory
     {
-        public static ITextureSampler ToTextureSampler(this IPixelSampler ps, bool normalizedUV)
+        public static ITextureSampler<Vector4> ToTextureSampler(this IPixelSampler ps, bool normalizedUV)
         {
             return new _PixelTextureSampler(ps, normalizedUV);
         }
 
-        public static ITextureSampler ToPolarTransform(this ITextureSampler ts, bool inverse)
+        public static ITextureSampler<TPixel> ToPolarTransform<TPixel>(this ITextureSampler<TPixel> ts, bool inverse)
         {
-            return new _PolarTransformedTextureSampler(ts, inverse);
+            return new _PolarTransformedTextureSampler<TPixel>(ts, inverse);
         }
 
-        public static ITextureSampler CreatePerlinNoiseTexture(IPixel odd, IPixel even, int repeat, int octaves, float persistence, int randomSeed = 177)
+        public static ITextureSampler<float> CreatePerlinNoiseTexture(int repeat, int octaves, float persistence, int randomSeed = 177)
         {
-            return _PerlinNoiseTextureSampler.Create(odd, even, repeat, octaves, persistence, randomSeed);
+            return _PerlinNoiseTextureSampler.Create(repeat, octaves, persistence, randomSeed);
         }
 
+        public static ITextureSampler<Vector4> LerpColor(this ITextureSampler<float> source, IPixel odd, IPixel even)
+        {
+            return new _LerpColorSampler(source, odd, even);
+        }
 
-        public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler sampler) where TPixel : struct, IPixel<TPixel>
+        public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler<Vector4> sampler) where TPixel : struct, IPixel<TPixel>
         {
             var tl = default(UV);
             var tr = default(UV);
@@ -67,7 +71,7 @@ namespace Epsylon.ImageSharp.Procedural
     }
 
 
-    class _PixelTextureSampler : ITextureSampler
+    class _PixelTextureSampler : ITextureSampler<Vector4>
     {
         #region lifecycle
 
@@ -147,11 +151,11 @@ namespace Epsylon.ImageSharp.Procedural
         #endregion
     }    
 
-    abstract class _TransformedTextureSampler : ITextureSampler
+    abstract class _TransformedTextureSampler<TPixel> : ITextureSampler<TPixel>
     {
         #region lifecycle
 
-        public _TransformedTextureSampler(ITextureSampler source)
+        public _TransformedTextureSampler(ITextureSampler<TPixel> source)
         {
             _Source = source;
         }
@@ -160,7 +164,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region data
 
-        private readonly ITextureSampler _Source;        
+        private readonly ITextureSampler<TPixel> _Source;        
 
         #endregion
 
@@ -172,7 +176,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region API        
 
-        public Vector4 GetAreaSample(UV a, UV b, UV c, UV d)
+        public TPixel GetAreaSample(UV a, UV b, UV c, UV d)
         {
             a = Transform(a);
             b = Transform(b);
@@ -182,7 +186,7 @@ namespace Epsylon.ImageSharp.Procedural
             return _Source.GetAreaSample(a, b, c, d);
         }
 
-        public Vector4 GetPointSample(UV uv)
+        public TPixel GetPointSample(UV uv)
         {
             uv = Transform(uv);
 
@@ -194,11 +198,11 @@ namespace Epsylon.ImageSharp.Procedural
         #endregion
     }
 
-    sealed class _PolarTransformedTextureSampler : _TransformedTextureSampler
+    sealed class _PolarTransformedTextureSampler<TPixel> : _TransformedTextureSampler<TPixel>
     {
         #region lifecycle        
 
-        public _PolarTransformedTextureSampler(ITextureSampler source, bool inverse = false) : base(source)
+        public _PolarTransformedTextureSampler(ITextureSampler<TPixel> source, bool inverse = false) : base(source)
         {
             _Inverse = inverse;
             _Scale = source.Scale;
@@ -259,16 +263,16 @@ namespace Epsylon.ImageSharp.Procedural
         #endregion
     }
 
-    sealed class _PerlinNoiseTextureSampler : ITextureSampler
+    sealed class _PerlinNoiseTextureSampler : ITextureSampler<float>
     {
         // TODO: pass a Black/White colors and interpolate based on noise value.
 
-        public static _PerlinNoiseTextureSampler Create(IPixel odd, IPixel even, int repeat, int octaves, float persistence, int randomSeed = 177)
+        public static _PerlinNoiseTextureSampler Create(int repeat, int octaves, float persistence, int randomSeed = 177)
         {
-            return new _PerlinNoiseTextureSampler(odd.ToVector4(), even.ToVector4(), repeat, octaves, persistence, randomSeed);
+            return new _PerlinNoiseTextureSampler(repeat, octaves, persistence, randomSeed);
         }
 
-        private _PerlinNoiseTextureSampler(Vector4 odd, Vector4 even, int repeat, int octaves, float persistence, int randomSeed = 177)
+        private _PerlinNoiseTextureSampler(int repeat, int octaves, float persistence, int randomSeed = 177)
         {
             if (repeat <= 0) repeat = -1; // repetition is disabled
 
@@ -278,10 +282,7 @@ namespace Epsylon.ImageSharp.Procedural
 
             _Depth = 0;
             _Octaves = octaves;
-            _Persistence = persistence;            
-
-            _OddColor = odd;
-            _EvenColor = even;
+            _Persistence = persistence;
         }
 
         private readonly Perlin_Tileable _Perlin;
@@ -296,18 +297,47 @@ namespace Epsylon.ImageSharp.Procedural
 
         public SizeF Scale => _Scale;
 
-        public Vector4 GetAreaSample(UV tl, UV tr, UV br, UV bl)
+        public float GetAreaSample(UV tl, UV tr, UV br, UV bl)
         {
-            throw new NotImplementedException();
+            return GetPointSample((tl + tr + br + bl) * 0.25f);
         }
 
-        public Vector4 GetPointSample(UV uv)
+        public float GetPointSample(UV uv)
         {
             var v = (float)_Perlin
                 .OctavePerlin(uv.X, uv.Y, _Depth, _Octaves, _Persistence)
                 .Clamp(0,1);
 
-            return Vector4.Lerp(_OddColor, _EvenColor, v);
+            return v;
+        }
+    }
+
+
+    sealed class _LerpColorSampler : ITextureSampler<Vector4>
+    {
+        public _LerpColorSampler(ITextureSampler<float> source, IPixel odd, IPixel even)
+        {
+            _Source = source;
+            _OddColor = odd.ToVector4();
+            _EvenColor = even.ToVector4();
+        }
+
+        private readonly ITextureSampler<float> _Source;
+        private readonly Vector4 _OddColor;
+        private readonly Vector4 _EvenColor;
+
+        public SizeF Scale => throw new NotImplementedException();
+
+        public Vector4 GetPointSample(UV uv)
+        {
+            var f = _Source.GetPointSample(uv);
+            return Vector4.Lerp(_OddColor, _EvenColor, f);
+        }
+
+        public Vector4 GetAreaSample(UV tl, UV tr, UV br, UV bl)
+        {
+            var f = _Source.GetAreaSample(tl,tr,br,bl);
+            return Vector4.Lerp(_OddColor, _EvenColor, f);
         }
     }
 }
