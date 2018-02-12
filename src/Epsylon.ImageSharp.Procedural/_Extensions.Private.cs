@@ -30,19 +30,19 @@ namespace Epsylon.ImageSharp.Procedural
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V2 ToVector(this Point source) { return new V2(source.X, source.Y); }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V2 ToVector(this PointF source) { return new V2(source.X, source.Y); }
+        public static V2 ToVector(this Point source) { return new V2(source.X, source.Y); }       
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static V2 ToVector(this Size source) { return new V2(source.Width, source.Height); }
 
+
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V2 ToVector(this SizeF source) { return new V2(source.Width, source.Height); }
-
-        
-
+        public static V2 Round(this V2 source)
+        {
+            return new V2((float)Math.Round(source.X), (float)Math.Round(source.Y));
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static V4 Premultiply(this V4 source)

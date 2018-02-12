@@ -43,13 +43,15 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler<Vector4> sampler) where TPixel : struct, IPixel<TPixel>
         {
-            var tl = default(UV);
-            var tr = default(UV);
-            var bl = default(UV);
-            var br = default(UV);
+            var scale = new Vector2(sampler.Scale.Width / (float)target.Width, sampler.Scale.Height  / (float)target.Height);
 
             for (int dy = 0; dy < target.Height; ++dy)
             {
+                var tl = default(UV);
+                var tr = default(UV);
+                var bl = default(UV);
+                var br = default(UV);
+
                 tl.Y = tr.Y = dy;
                 bl.Y = br.Y = dy + 1;
 
@@ -60,7 +62,7 @@ namespace Epsylon.ImageSharp.Procedural
                     tl.X = bl.X = dx;
                     tr.X = br.X = dx + 1;
 
-                    var r = sampler.GetAreaSample(tl, tr, br, bl);
+                    var r = sampler.GetAreaSample(tl * scale, tr * scale, br * scale, bl * scale);
 
                     c.PackFromVector4(r);
 
@@ -208,8 +210,7 @@ namespace Epsylon.ImageSharp.Procedural
             _Scale = source.Scale;
             _Center = _Scale / 2;
 
-            var aa = _SquareToPolar(new UV(20, 30));
-            var bb = _PolarToSquare(aa);
+            _Center = _Center.Round(); // todo: we could "snap" the _Center of the image to an interpixel cross.
         }
 
         #endregion       
@@ -231,7 +232,7 @@ namespace Epsylon.ImageSharp.Procedural
 
             p -= _Center; // offset coords to the center of the image
 
-            var angle = -Math.Atan2(p.X, p.Y);
+            var angle = - Math.Atan2(p.X, p.Y);
             angle += Math.PI;
             angle /= Math.PI * 2;
 
@@ -247,15 +248,17 @@ namespace Epsylon.ImageSharp.Procedural
         {
             Vector2 p = pp;
 
-            p /= _Scale;
-            p = Vector2.One - p;
+            p /= _Scale;            
 
             var angle = (p.X * Math.PI * 2 - Math.PI);
+            var radius = p.Y;
 
-            var x = (float)+Math.Sin(angle);
-            var y = (float)-Math.Cos(angle);
+            var x = (float)-Math.Sin(angle);
+            var y = (float)+Math.Cos(angle);            
 
-            p = new Vector2(x, y) * _Center + _Center;
+            p = new Vector2(x, y) * radius * _Center;
+
+            p = _Center - p;
 
             return p;
         }
