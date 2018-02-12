@@ -199,9 +199,9 @@ namespace Epsylon.UberFactory
             // instance.SomeMethod(value);
             // instance.SomeField = value;
 
-            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).PropertyType;
-            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).FieldType;
-            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).GetParameters()[0].ParameterType;
+            if (xinfo is PropertyInfo pinfo) return pinfo.PropertyType;
+            if (xinfo is FieldInfo finfo)    return finfo.FieldType;
+            if (xinfo is MethodInfo minfo)   return minfo.GetParameters()[0].ParameterType;
 
             throw new NotImplementedException();
         }
@@ -213,9 +213,9 @@ namespace Epsylon.UberFactory
             // value = instance.SomeMethod();
             // value = instance.SomeField;
 
-            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).PropertyType;
-            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).FieldType;
-            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).ReturnType;
+            if (xinfo is PropertyInfo pinfo) return pinfo.PropertyType;
+            if (xinfo is FieldInfo finfo)    return finfo.FieldType;
+            if (xinfo is MethodInfo minfo)   return minfo.ReturnType;
 
             throw new NotImplementedException();
         }
@@ -293,9 +293,9 @@ namespace Epsylon.UberFactory
         {
             var xinfo = nodeInstance.TryGetReflectedMember(key);
 
-            if (xinfo is PropertyInfo) return ((PropertyInfo)xinfo).GetValue(nodeInstance);
-            if (xinfo is FieldInfo) return ((FieldInfo)xinfo).GetValue(nodeInstance);
-            if (xinfo is MethodInfo) return ((MethodInfo)xinfo).Invoke(nodeInstance, null);
+            if (xinfo is PropertyInfo pinfo) return pinfo.GetValue(nodeInstance);
+            if (xinfo is FieldInfo finfo)    return finfo.GetValue(nodeInstance);
+            if (xinfo is MethodInfo minfo)   return minfo.Invoke(nodeInstance, null);
 
             return null;
         }
@@ -320,9 +320,7 @@ namespace Epsylon.UberFactory
             }
 
             return (T)typeof(T).GetTypeInfo().ConvertBindableValue(value);
-        }
-
-        
+        }        
 
         #endregion
 
@@ -370,10 +368,10 @@ namespace Epsylon.UberFactory
             if (expectedType.AsType() == typeof(System.IO.FileInfo) && value is String) return new System.IO.FileInfo((String)value);
             if (expectedType.AsType() == typeof(System.IO.DirectoryInfo) && value is String) return new System.IO.DirectoryInfo((String)value);            
 
-            if (expectedType.AsType() == typeof(String) && value is PathString) return (String)value;
+            if (expectedType.AsType() == typeof(String) && value is PathString pstring) return pstring;
 
-            if (expectedType.AsType() == typeof(String) && value is System.IO.FileInfo) return ((System.IO.FileInfo)value).FullName;
-            if (expectedType.AsType() == typeof(String) && value is System.IO.DirectoryInfo) return ((System.IO.DirectoryInfo)value).FullName;            
+            // FileSystemInfo covers both FileInfo and DirectoryInfo
+            if (expectedType.AsType() == typeof(String) && value is System.IO.FileSystemInfo finfo) return finfo.FullName;            
 
             throw new NotImplementedException();
         }                

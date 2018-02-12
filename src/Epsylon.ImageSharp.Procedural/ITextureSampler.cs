@@ -343,4 +343,13 @@ namespace Epsylon.ImageSharp.Procedural
             return Vector4.Lerp(_OddColor, _EvenColor, f);
         }
     }
+
+    // TODO: Math function evaluator:
+    // http://opensource.graphics/image-processing-made-easier-with-a-powerful-math-expression-evaluator/
+    // and
+    // https://github.com/sheetsync/NCalc
+    // or
+    // https://github.com/sebastienros/jint
+
+
 }
