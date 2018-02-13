@@ -36,6 +36,16 @@ namespace Epsylon.ImageSharp.Procedural
             return _PerlinNoiseTextureSampler.Create(repeat, octaves, persistence, randomSeed);
         }
 
+        public static ITextureSampler<float> CreateMandelbrotTexture(int width, int height, float scale, int iterations)
+        {
+            return new MandelbrotFractal(width, height, scale, iterations);
+        }
+
+        public static ITextureSampler<HalfSingle> ToHalfSingle(this ITextureSampler<float> source)
+        {
+            return new _FloatToHalfSingleSampler(source);
+        }
+
         public static ITextureSampler<Vector4> LerpColor(this ITextureSampler<float> source, IPixel odd, IPixel even)
         {
             return new _LerpColorSampler(source, odd, even);
@@ -67,6 +77,34 @@ namespace Epsylon.ImageSharp.Procedural
                     c.PackFromVector4(r);
 
                     target[dx, dy] = c;
+                }
+            }
+        }
+
+        public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler<TPixel> sampler) where TPixel : struct, IPixel<TPixel>
+        {
+            var scale = new Vector2(sampler.Scale.Width / (float)target.Width, sampler.Scale.Height / (float)target.Height);
+
+            for (int dy = 0; dy < target.Height; ++dy)
+            {
+                var tl = default(UV);
+                var tr = default(UV);
+                var bl = default(UV);
+                var br = default(UV);
+
+                tl.Y = tr.Y = dy;
+                bl.Y = br.Y = dy + 1;
+
+                var c = default(TPixel);
+
+                for (int dx = 0; dx < target.Width; ++dx)
+                {
+                    tl.X = bl.X = dx;
+                    tr.X = br.X = dx + 1;
+
+                    var r = sampler.GetAreaSample(tl * scale, tr * scale, br * scale, bl * scale);                    
+
+                    target[dx, dy] = r;
                 }
             }
         }
@@ -329,20 +367,48 @@ namespace Epsylon.ImageSharp.Procedural
         private readonly Vector4 _OddColor;
         private readonly Vector4 _EvenColor;
 
-        public SizeF Scale => throw new NotImplementedException();
+        public SizeF Scale => _Source.Scale;
 
         public Vector4 GetPointSample(UV uv)
         {
-            var f = _Source.GetPointSample(uv);
+            var f = _Source.GetPointSample(uv).Clamp(0,1);
             return Vector4.Lerp(_OddColor, _EvenColor, f);
         }
 
         public Vector4 GetAreaSample(UV tl, UV tr, UV br, UV bl)
         {
-            var f = _Source.GetAreaSample(tl,tr,br,bl);
+            var f = _Source.GetAreaSample(tl,tr,br,bl).Clamp(0,1);
             return Vector4.Lerp(_OddColor, _EvenColor, f);
         }
     }
+
+    
+
+        sealed class _FloatToHalfSingleSampler : ITextureSampler<HalfSingle>
+    {
+        public _FloatToHalfSingleSampler(ITextureSampler<float> source)
+        {
+            _Source = source;            
+        }
+
+        private readonly ITextureSampler<float> _Source;
+
+        public SizeF Scale => _Source.Scale;
+
+        public HalfSingle GetPointSample(UV uv)
+        {
+            var f = _Source.GetPointSample(uv);
+            return new HalfSingle(f);
+        }
+
+        public HalfSingle GetAreaSample(UV tl, UV tr, UV br, UV bl)
+        {
+            var f = _Source.GetAreaSample(tl, tr, br, bl);
+            return new HalfSingle(f);
+        }
+    }
+
+
 
     // TODO: Math function evaluator:
     // http://opensource.graphics/image-processing-made-easier-with-a-powerful-math-expression-evaluator/

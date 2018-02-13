@@ -146,6 +146,45 @@ namespace Epsylon.UberPlugin
         }
     }
 
+    [SDK.Icon("🏳️‍🌈"), SDK.Title("Mandelbrot"), SDK.TitleFormat("{0} Mandelbrot")]
+    [SDK.ContentNode("CreateMandelbrot")]
+    public sealed class ImageSharpCreateMandelbrot : ImageFilter
+    {
+        [SDK.InputValue("Width")]
+        [SDK.Title("W"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Width { get; set; }
+
+        [SDK.InputValue("Height")]
+        [SDK.Title("H"), SDK.Group("Size")]
+        [SDK.Minimum(1), SDK.Default(256)]
+        public int Height { get; set; }        
+
+        [SDK.InputValue("Scale")]
+        [SDK.Title("Scale"), SDK.Group("Fractal")]
+        [SDK.Minimum(1), SDK.Default(1)]
+        public float Scale { get; set; }
+
+        [SDK.InputValue("Iterations")]
+        [SDK.Title("Iterations"), SDK.Group("Fractal")]
+        [SDK.Minimum(1),SDK.Default(1)]
+        public int Iterations { get; set; }
+
+        [SDK.InputNode("Gradient")]
+        [SDK.Title("Gradient"), SDK.Group("Tint")]
+        public PIXEL32[] Gradient { get; set; }
+
+        protected override IMAGE32 Evaluate()
+        {
+            using (var noise = new Image<HalfSingle>(Width, Height))
+            {
+                noise.Mutate(dc => dc.FillMandelbrot(this.Scale, this.Iterations));
+
+                return noise.CloneWithLookupTable(Gradient);
+            }
+        }
+    }
+
     [SDK.Icon(Constants.ICON_TEXT), SDK.Title("Text"), SDK.TitleFormat("{0} Text")]
     [SDK.ContentNode("CreateText")]
     public sealed class ImageSharpCreateText : ImageFilter
