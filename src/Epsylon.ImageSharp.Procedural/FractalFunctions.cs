@@ -29,8 +29,8 @@ namespace Epsylon.ImageSharp.Procedural
 
         public float GetPointSample(PointF uv)
         {
-            double x = uv.X;
-            double y = uv.Y;
+            double x = uv.X - _Size.Width * 0.5;
+            double y = uv.Y - _Size.Height * 0.5;
 
             double x0 = (-x / _Size.Width) * _Scale;
             double y0 = (-y / _Size.Height) * _Scale;
@@ -51,8 +51,6 @@ namespace Epsylon.ImageSharp.Procedural
             }
 
             return (float)i/(float)_Iterations;
-        }
-
-        
+        }        
     }
 }

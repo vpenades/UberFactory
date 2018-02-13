@@ -167,7 +167,7 @@ namespace Epsylon.UberPlugin
 
         [SDK.InputValue("Iterations")]
         [SDK.Title("Iterations"), SDK.Group("Fractal")]
-        [SDK.Minimum(1),SDK.Default(1)]
+        [SDK.Minimum(1),SDK.Default(100)]
         public int Iterations { get; set; }
 
         [SDK.InputNode("Gradient")]
