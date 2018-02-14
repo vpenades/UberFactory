@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,13 +27,19 @@ namespace Epsylon.UberFactory.Client
 
         public static Assembly LoadAssemblyFromFilePath(string absoluteFilePath)
         {
+            // System.Diagnostics.Debug.Assert(!absoluteFilePath.Contains("\\..\\"));
+
             // Note that MEF uses Assembly.Load(AssemblyName.GetAssemblyName(absPath));
             // http://stackoverflow.com/questions/1477843/difference-between-loadfile-and-loadfrom-with-net-assemblies/1477900#1477900
             // Conclusion: better uses LoadFrom always
 
-            if (!System.IO.File.Exists(absoluteFilePath)) return null;
+            var finfo = new System.IO.FileInfo(absoluteFilePath);
 
-            return Assembly.LoadFrom(absoluteFilePath);
+            if (!finfo.Exists) return null;
+
+            _UnmanagedAssemblyServices.SetDllDirectory(finfo.Directory.FullName);
+
+            return Assembly.LoadFrom(finfo.FullName);
         }
 
         public static void SetDefaultAssemblyResolver(ASSEMBLYRESOLVEFUNC func)
@@ -51,5 +58,36 @@ namespace Epsylon.UberFactory.Client
             var aname = new AssemblyName(args.Name);
             return _AssemblySolver?.Invoke(aname);
         }
-    }    
+    }
+
+
+    /// <summary>
+    /// Kernel32 unmanaged Assembly load utilities
+    /// </summary>
+    /// <remarks>
+    /// Unmanaged DLLs are not resolved with standard AppDomain.CurrentDomain.AssemblyResolve,
+    /// but we can add a search path so the unmanaged DLLs will be searched in these paths.
+    /// Whenever we dynamically load a MANAGED dll, we tell the kernel to use its directory as a search path for UNMANAGED DLLs
+    /// </remarks>
+    static class _UnmanagedAssemblyServices
+    {
+        private static readonly HashSet<string> _CurrentSearchPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682586(v=vs.85).aspx
+        // http://www.pinvoke.net/default.aspx/kernel32.setdlldirectory
+
+        // https://github.com/MonoGame/MonoGame/blob/d28cd31ec3c5b0cfc1fc57210f6eb368dd47fb10/MonoGame.Framework/Utilities/CurrentPlatform.cs#L99
+
+        [DllImport("kernel32.dll",EntryPoint = "SetDllDirectory", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool _SetDllDirectory(string lpPathName);
+
+        public static bool SetDllDirectory(string directoryName)
+        {
+            if (string.IsNullOrWhiteSpace(directoryName)) return false;
+            if (!System.IO.Path.IsPathRooted(directoryName)) return false;            
+
+            return _SetDllDirectory(directoryName);
+        }
+    }
 }

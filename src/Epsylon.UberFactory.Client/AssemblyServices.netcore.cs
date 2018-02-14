@@ -13,6 +13,7 @@ namespace Epsylon.UberFactory.Client
     public static partial class AssemblyServices
     {
         // http://www.michael-whelan.net/replacing-appdomain-in-dotnet-core/
+        // https://github.com/dotnet/standard/blob/master/docs/faq.md#is-appdomain-part-of-net-standard
 
         // NOTE: although System.Runtime.Loader is declared as compatible with Net.Standard 1.5, it is only implemented for Net.Core
 
@@ -22,8 +23,7 @@ namespace Epsylon.UberFactory.Client
 
         public static Assembly[] GetLoadedAssemblies()
         {
-            // https://github.com/dotnet/coreclr/blob/master/src/mscorlib/src/System/Runtime/Loader/AssemblyLoadContext.cs#L74            
-            // return AssemblyLoadContext.GetLoadedAssemblies();
+            // https://github.com/dotnet/coreclr/blob/master/src/mscorlib/src/System/Runtime/Loader/AssemblyLoadContext.cs#L74                        
 
             throw new NotSupportedException("DotNet API says it should be supported by now, but it is not yet.");
         }
