@@ -158,12 +158,20 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Height")]
         [SDK.Title("H"), SDK.Group("Size")]
         [SDK.Minimum(1), SDK.Default(256)]
-        public int Height { get; set; }        
+        public int Height { get; set; }
+
+        [SDK.InputValue("OffsetX")]
+        [SDK.Title("OffsetX"), SDK.Group("Fractal")]        
+        public double OffsetX { get; set; }
+
+        [SDK.InputValue("OffsetY")]
+        [SDK.Title("OffsetY"), SDK.Group("Fractal")]
+        public double OffsetY { get; set; }
 
         [SDK.InputValue("Scale")]
         [SDK.Title("Scale"), SDK.Group("Fractal")]
-        [SDK.Minimum(1), SDK.Default(1)]
-        public float Scale { get; set; }
+        [SDK.Minimum(1), SDK.Default(1000)]
+        public double Scale { get; set; }
 
         [SDK.InputValue("Iterations")]
         [SDK.Title("Iterations"), SDK.Group("Fractal")]
@@ -177,8 +185,12 @@ namespace Epsylon.UberPlugin
         protected override IMAGE32 Evaluate()
         {
             using (var noise = new Image<HalfSingle>(Width, Height))
-            {
-                noise.Mutate(dc => dc.FillMandelbrot(this.Scale, this.Iterations));
+            {                
+                var ox = 0.5 + OffsetX/1000;
+                var oy = 0.5 + OffsetX/1000;
+                var ss = Scale / 1000;
+
+                noise.Mutate(dc => dc.FillMandelbrot(ox,oy,ss, this.Iterations));
 
                 return noise.CloneWithLookupTable(Gradient);
             }

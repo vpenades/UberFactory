@@ -9,18 +9,24 @@ namespace Epsylon.ImageSharp.Procedural
 
     public class MandelbrotFractal : ITextureSampler<float>
     {
-        public MandelbrotFractal(int width, int height, float scale, int iterations)
+        public MandelbrotFractal(int width, int height)
         {
-            _Size = new SizeF(width,height);
-            _Scale = scale;
-            _Iterations = iterations;            
+            _Size = new SizeF(width,height);            
         }
+        
+        private readonly SizeF _Size;
 
-        private int _Iterations;
-        private SizeF _Size;
-        private double _Scale;
+        private Double _OffsetX = 0.5;
+        private Double _OffsetY = 0.5;
+        private Double _Scale = 1;
+        private int _Iterations = 100;
 
         public SizeF Scale => _Size;
+
+        public Double OffsetX { get => _OffsetX; set => _OffsetX = value; }
+        public Double OffsetY { get => _OffsetY; set => _OffsetY = value; }
+        public Double FractalScale { get => _Scale; set => _Scale = value; }
+        public int Iterations { get => _Iterations; set => _Iterations = value; }
 
         public float GetAreaSample(PointF tl, PointF tr, PointF br, PointF bl)
         {
@@ -29,11 +35,11 @@ namespace Epsylon.ImageSharp.Procedural
 
         public float GetPointSample(PointF uv)
         {
-            double x = uv.X - _Size.Width * 0.5;
-            double y = uv.Y - _Size.Height * 0.5;
+            double x = uv.X;
+            double y = uv.Y;
 
-            double x0 = (-x / _Size.Width) * _Scale;
-            double y0 = (-y / _Size.Height) * _Scale;
+            double x0 = (_OffsetX - x / _Size.Width) * _Scale;
+            double y0 = (_OffsetY - y / _Size.Height) * _Scale;
 
             x = 0;
             y = 0;

@@ -22,9 +22,9 @@ namespace Epsylon.ImageSharp.Procedural
             return source.Apply(image => image._FillPerlinNoise(scale, repeat, octaves, persistence, randomSeed));
         }
 
-        public static IImageProcessingContext<HalfSingle> FillMandelbrot(this IImageProcessingContext<HalfSingle> source, float scale, int iterations)
+        public static IImageProcessingContext<HalfSingle> FillMandelbrot(this IImageProcessingContext<HalfSingle> source, double ox, double oy, double scale, int iterations)
         {
-            return source.Apply(image => image._FillMandelbrot(scale,iterations));
+            return source.Apply(image => image._FillMandelbrot(ox,oy,scale,iterations));
         }
 
         private static void _FillRandomNoise(this Image<HalfSingle> image, int blurRadius = 0, int randomSeed = 177)
@@ -72,11 +72,13 @@ namespace Epsylon.ImageSharp.Procedural
             image._MutateAutoLevels();            
         }
 
-        private static void _FillMandelbrot(this Image<HalfSingle> image, float scale, int iterations)
+        private static void _FillMandelbrot(this Image<HalfSingle> image, double ox, double oy, double scale, int iterations)
         {
-            var texture = new MandelbrotFractal(image.Width,image.Height,scale,iterations);            
+            var texture = TextureSamplerFactory
+                .CreateMandelbrotTexture(image.Width, image.Height, ox, oy, scale, iterations)
+                .ToHalfSingle();
 
-            image.Fill(texture.ToHalfSingle());
+            image.Fill(texture);
         }
 
         private static void _MutateAutoLevels(this Image<HalfSingle> source)

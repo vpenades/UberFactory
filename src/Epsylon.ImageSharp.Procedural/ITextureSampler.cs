@@ -36,9 +36,17 @@ namespace Epsylon.ImageSharp.Procedural
             return _PerlinNoiseTextureSampler.Create(repeat, octaves, persistence, randomSeed);
         }
 
-        public static ITextureSampler<float> CreateMandelbrotTexture(int width, int height, float scale, int iterations)
+        public static ITextureSampler<float> CreateMandelbrotTexture(int width, int height, double offsetX, double offsetY, double scale, int iterations)
         {
-            return new MandelbrotFractal(width, height, scale, iterations);
+            var fractal = new MandelbrotFractal(width, height)
+            {
+                OffsetX = offsetX,
+                OffsetY = offsetY,
+                FractalScale = scale,
+                Iterations = iterations
+            };
+
+            return fractal;
         }
 
         public static ITextureSampler<HalfSingle> ToHalfSingle(this ITextureSampler<float> source)
