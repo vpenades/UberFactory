@@ -37,7 +37,7 @@ namespace Epsylon.UberPlugin.CoreTypes
         protected override string ReadFile(SDK.ImportContext stream)
         {
             return GetSharedSettings<TextFormattingSettings>()?.ReadText(stream);
-        }
+        }        
     }
 
     [SDK.Icon(Constants.ICON_TEXT), SDK.Title("Write Text to File")]
@@ -55,6 +55,11 @@ namespace Epsylon.UberPlugin.CoreTypes
         protected override void WriteFile(SDK.ExportContext stream)
         {
             GetSharedSettings<TextFormattingSettings>()?.WriteText(stream, Value);
+        }
+
+        protected override object EvaluatePreview(SDK.PreviewContext previewContext)
+        {
+            return Value;
         }
     }
 

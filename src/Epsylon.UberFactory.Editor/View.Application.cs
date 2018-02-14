@@ -299,6 +299,10 @@ namespace Epsylon.UberFactory
 
         private void _TryAddAssemblyFromFile(PathString path)
         {
+            if (path.FileName.ToLower() == "epsylon.uberFactory.sdk.dll") return;
+            if (path.FileName.ToLower() == "epsylon.uberFactory.core.dll") return;
+            if (path.FileName.ToLower() == "epsylon.uberFactory.client.dll") return;
+
             if (_IsValidAssemblyFile(path) != null) return;
             _Application._PluginPaths.Add(path);
         }

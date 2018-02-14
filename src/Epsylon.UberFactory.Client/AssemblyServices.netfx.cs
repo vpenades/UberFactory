@@ -37,7 +37,7 @@ namespace Epsylon.UberFactory.Client
 
             if (!finfo.Exists) return null;
 
-            _UnmanagedAssemblyServices.SetDllDirectory(finfo.Directory.FullName);
+            _UnmanagedAssemblyServices.AddDllSearchDirectory(finfo.Directory.FullName);
 
             return Assembly.LoadFrom(finfo.FullName);
         }
@@ -71,23 +71,95 @@ namespace Epsylon.UberFactory.Client
     /// </remarks>
     static class _UnmanagedAssemblyServices
     {
-        private static readonly HashSet<string> _CurrentSearchPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
+        // https://stackoverflow.com/questions/21710982/how-to-adjust-path-for-dynamically-loaded-native-dlls
         // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682586(v=vs.85).aspx
-        // http://www.pinvoke.net/default.aspx/kernel32.setdlldirectory
-
         // https://github.com/MonoGame/MonoGame/blob/d28cd31ec3c5b0cfc1fc57210f6eb368dd47fb10/MonoGame.Framework/Utilities/CurrentPlatform.cs#L99
 
+        #region lifecycle
+
+        static _UnmanagedAssemblyServices()
+        {
+            // enables using AddDllDirectory & RemoveDllDirectory
+            _SetDefaultDllDirectories
+                (
+                LOAD_LIBRARY_SEARCH_APPLICATION_DIR
+                |
+                LOAD_LIBRARY_SEARCH_USER_DIRS
+                |
+                LOAD_LIBRARY_SEARCH_SYSTEM32
+                |
+                LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                );
+        }
+
+        #endregion
+
+        #region data
+
+        private static readonly HashSet<string> _CurrentSearchPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly HashSet<IntPtr> _DirectoryHandles = new HashSet<IntPtr>();
+
+        #endregion
+
+        #region NATIVE API
+
+        /// <see cref="https://msdn.microsoft.com/en-us/library/windows/desktop/hh310515(v=vs.85).aspx"/>
+        /// <seealso cref="http://www.pinvoke.net/default.aspx/kernel32.SetDefaultDllDirectories"/>
+        [DllImport("kernel32", EntryPoint = "SetDefaultDllDirectories", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool _SetDefaultDllDirectories(uint directoryFlags);
+        const uint LOAD_LIBRARY_SEARCH_APPLICATION_DIR  = 0x00000200;
+        const uint LOAD_LIBRARY_SEARCH_USER_DIRS        = 0x00000400;
+        const uint LOAD_LIBRARY_SEARCH_SYSTEM32         = 0x00000800;        
+        const uint LOAD_LIBRARY_SEARCH_DEFAULT_DIRS     = 0x00001000;
+
+        /// <see cref="https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203(v=vs.85).aspx"/>
+        /// <seealso cref="http://www.pinvoke.net/default.aspx/kernel32.setdlldirectory"/>
         [DllImport("kernel32.dll",EntryPoint = "SetDllDirectory", CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool _SetDllDirectory(string lpPathName);
+        private static extern bool _SetDllDirectory(string lpPathName);
+        
+        /// <see cref="https://msdn.microsoft.com/en-us/library/windows/desktop/hh310513(v=vs.85).aspx"/>
+        /// <seealso cref="http://source.roslyn.io/#Microsoft.CodeAnalysis.Remote.ServiceHub/Services/RemoteHostService.cs,278"/>
+        [DllImport("kernel32.dll", EntryPoint = "AddDllDirectory", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr _AddDllDirectory(string directory);
 
-        public static bool SetDllDirectory(string directoryName)
+        /// <see cref="https://msdn.microsoft.com/en-us/library/windows/desktop/hh310514(v=vs.85).aspx"/>
+        [DllImport("kernel32.dll", EntryPoint = "RemoveDllDirectory", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool _RemoveDllDirectory(IntPtr handle);
+
+        #endregion
+
+        #region API
+
+        public static bool AddDllSearchDirectory(string directoryName)
         {
             if (string.IsNullOrWhiteSpace(directoryName)) return false;
-            if (!System.IO.Path.IsPathRooted(directoryName)) return false;            
+            if (!System.IO.Path.IsPathRooted(directoryName)) return false;
 
-            return _SetDllDirectory(directoryName);
+            if (_CurrentSearchPaths.Contains(directoryName)) return true;
+            _CurrentSearchPaths.Add(directoryName);
+
+            var handle = _AddDllDirectory(directoryName);
+
+            _DirectoryHandles.Add(handle);            
+
+            return true;
         }
+
+        public static void ClearSearchDirectories()
+        {
+            foreach(var handle in _DirectoryHandles)
+            {
+                _RemoveDllDirectory(handle);
+            }
+
+            _DirectoryHandles.Clear();
+            _CurrentSearchPaths.Clear();
+        }
+
+        #endregion
     }
 }
