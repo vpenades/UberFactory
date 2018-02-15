@@ -140,6 +140,7 @@
     </Compile>
     <Compile Include="Themes\TaskMonitorWindow.cs" />
     <Compile Include="View.Application.cs" />
+    <Compile Include="View.Document.cs" />
     <Compile Include="_Dialogs.cs" />
     <Compile Include="Themes\Converters.cs" />
     <Compile Include="Themes\Dialog.Generic.xaml.cs">
