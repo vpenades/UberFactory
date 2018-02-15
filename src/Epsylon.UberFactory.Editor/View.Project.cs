@@ -51,9 +51,17 @@ namespace Epsylon.UberFactory
             if (app == null) return null;
             if (!filePath.FileExists) return null;
 
-            var prj = ProjectDOM.LoadProjectFrom(filePath);
+            try
+            {
+                var prj = ProjectDOM.LoadProjectFrom(filePath);
 
-            return Project.Create(app, prj, filePath);
+                return Project.Create(app, prj, filePath);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public static string GetDisplayName(Object o)
@@ -150,8 +158,18 @@ namespace Epsylon.UberFactory
 
             public void Save()
             {
-                _Source.SaveTo(_DocumentPath);
+                try
+                {
+                    _Source.SaveTo(_DocumentPath);
+                }
+                catch(Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    return;
+                }
+                
 
+                // update dirty
                 _SourceBody = _Source.GetBody();
             }
 
@@ -189,6 +207,8 @@ namespace Epsylon.UberFactory
             public String DisplayName           => _DocumentPath.FileNameWithoutExtension;
 
             public String SourceDirectory       => _DocumentPath.DirectoryPath;
+
+            public Boolean IsReadOnly           => _DocumentPath.IsReadOnly;
 
             public Configurations Configurations => _Configurations;
 

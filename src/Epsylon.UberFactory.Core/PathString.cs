@@ -149,6 +149,15 @@ namespace Epsylon.UberFactory
 
         public PathString DirectoryPath => _Path == null ? PathString.Empty : new PathString(System.IO.Path.GetDirectoryName(_Path));
 
+        public bool IsReadOnly
+        {
+            get
+            {
+                if (!IsValidFilePath) return false;
+                return new System.IO.FileInfo(_Path).IsReadOnly;
+            }
+        }
+
         #endregion
 
         #region API
