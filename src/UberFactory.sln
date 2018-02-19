@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3AA0CCA9-250D-4F8F-9095-9AF034DC3BF5}"
 EndProject
@@ -11,10 +11,22 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.SDK", "Epsylon.UberFactory.SDK\Epsylon.UberFactory.SDK.csproj", "{5C1065B7-9AA9-4E2B-8AB6-903048E32D96}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.Core.Tests", "Epsylon.UberFactory.Core.Tests\Epsylon.UberFactory.Core.Tests.csproj", "{DC861CAD-852A-45A9-A747-707316FA6437}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0A467C36-232B-4658-9160-1C95BDA80FF2} = {0A467C36-232B-4658-9160-1C95BDA80FF2}
+		{1900A69B-888B-4AA9-BBC7-15A787060ADF} = {1900A69B-888B-4AA9-BBC7-15A787060ADF}
+		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4} = {101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9} = {B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epsylon.UberFactory.Editor", "Epsylon.UberFactory.Editor\Epsylon.UberFactory.Editor.csproj", "{9A24C608-BCA7-4C68-836C-BAF990AFED85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberFactory.Editor.Tests", "Epsylon.UberFactory.Editor.Tests\Epsylon.UberFactory.Editor.Tests.csproj", "{E5ADCBAA-337B-474D-A547-45F391DB84DE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0A467C36-232B-4658-9160-1C95BDA80FF2} = {0A467C36-232B-4658-9160-1C95BDA80FF2}
+		{1900A69B-888B-4AA9-BBC7-15A787060ADF} = {1900A69B-888B-4AA9-BBC7-15A787060ADF}
+		{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4} = {101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}
+		{B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9} = {B0C2DAF3-F3B3-4824-9713-5B7B87EBC3F9}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.UberPlugin.CoreTypes", "Epsylon.UberPlugin.CoreTypes\Epsylon.UberPlugin.CoreTypes.csproj", "{101160CB-2D3A-4E74-BBEC-FCEF1BD7B8E4}"
 EndProject
@@ -172,9 +184,6 @@ Global
 		{0A467C36-232B-4658-9160-1C95BDA80FF2} = {4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31}
 		{1900A69B-888B-4AA9-BBC7-15A787060ADF} = {4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31}
 		{AC2C23BD-E64D-47C2-A30C-FCF5D82619FF} = {4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31}
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13B51D28-1B57-4542-BADA-EA6722E539F6}

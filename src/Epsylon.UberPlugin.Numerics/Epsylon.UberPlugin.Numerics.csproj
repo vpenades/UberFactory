@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MathNet.Numerics" Version="4.0.0-alpha03" />    
+    <PackageReference Include="MathNet.Numerics" Version="4.0.0" />    
   </ItemGroup>
 
   <ItemGroup>
