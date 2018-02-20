@@ -133,7 +133,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public int Height => _Height;
 
-        public ImageMetaData MetaData => 
+        public ImageMetaData MetaData => throw new NotImplementedException();
 
         public void Mutate(Action<IImageProcessingContext<TPixel>> operation)
         {
