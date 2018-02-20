@@ -147,7 +147,7 @@ namespace Epsylon.UberFactory.Evaluation
     /// export context that stores everything in memory, used for preview and testing
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("Export Context for: {_DefaultFileName}")]
-    class _MemoryExportContext : SDK.ExportContext, IPreviewResult
+    class _MemoryExportContext : SDK.ExportContext, IMultiFileContent
     {
         #region lifecycle
 

@@ -223,7 +223,7 @@ namespace Epsylon.UberFactory
             {
                 if (_PipelineInstance == null) return;
 
-                Evaluation.IPreviewResult result = null;
+                Evaluation.IMultiFileContent result = null;
 
                 using (var evaluator = _PipelineInstance.CreateEvaluator())
                 {

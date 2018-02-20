@@ -154,7 +154,9 @@ namespace Epsylon.UberFactory
             get
             {
                 if (!IsValidFilePath) return false;
-                return new System.IO.FileInfo(_Path).IsReadOnly;
+                var finfo = new System.IO.FileInfo(_Path);
+
+                return finfo.Exists && finfo.IsReadOnly;
             }
         }
 

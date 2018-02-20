@@ -95,7 +95,7 @@ namespace Epsylon.UberFactory
 
         #region API
 
-        public static void ShowPreview(Evaluation.IPreviewResult result)
+        public static void ShowPreview(Evaluation.IMultiFileContent result)
         {
             if (result == null) return;            
 
@@ -112,16 +112,18 @@ namespace Epsylon.UberFactory
 
             try
             {
-                var pinfo = new System.Diagnostics.ProcessStartInfo(fileName);                
-
+                var pinfo = new System.Diagnostics.ProcessStartInfo(fileName);
+                
                 // setup verb
                 var verbIndex = pinfo.Verbs.IndexOf(item => item.ToLower() == "open");
-                if (verbIndex >= 0) pinfo.Verb = pinfo.Verbs[verbIndex];
+                if (verbIndex >= 0) pinfo.Verb = pinfo.Verbs[verbIndex];                
 
                 // run
-                var process = System.Diagnostics.Process.Start(pinfo);
-
-                _OpenDocuments[System.IO.Path.GetFileName(dirPath)] = process.Id;
+                using (var process = System.Diagnostics.Process.Start(pinfo))
+                {
+                    _OpenDocuments[System.IO.Path.GetFileName(dirPath)] = process.Id;
+                }
+                    
             }
             catch(Exception ex) { }            
         }

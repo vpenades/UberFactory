@@ -14,7 +14,7 @@ namespace Epsylon.UberFactory.Evaluation
         void RegisterOutputFile(string filePath, string parentFilePath);
     }
 
-    public interface IPreviewResult
+    public interface IMultiFileContent
     {
         string FileName { get; }
 

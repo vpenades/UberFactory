@@ -90,7 +90,7 @@
 
         </StatusBar>
 
-        <StatusBar DockPanel.Dock="Top" Visibility="{Binding ActiveDocument.IsReadOnly,Converter={StaticResource asVisible}}" Background="Orange" >
+        <StatusBar DockPanel.Dock="Top" Visibility="{Binding IsReadOnly,Converter={StaticResource asVisible}}" Background="Orange" >
             <TextBlock Text="Document is Read Only" FontWeight="Bold" />
         </StatusBar>
 

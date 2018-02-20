@@ -297,7 +297,7 @@ namespace Epsylon.UberFactory.Evaluation
 
         public Object Result => _Result;
 
-        public IPreviewResult PreviewResult
+        public IMultiFileContent PreviewResult
         {
             get
             {
@@ -315,7 +315,7 @@ namespace Epsylon.UberFactory.Evaluation
                     return dict;
                 }
 
-                return _Result as IPreviewResult;
+                return _Result as IMultiFileContent;
             }
         }
 
