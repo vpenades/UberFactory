@@ -28,12 +28,12 @@ namespace Epsylon.ImageSharp.Procedural
     {
         public static IPixelSampler ToPixelSampler<TPixel>(this Image<TPixel> source) where TPixel : struct, IPixel<TPixel>
         {
-            return new _PixelSampler<TPixel>(source, SamplerAddressMode.Clamp, SamplerAddressMode.Clamp, true);
+            return new _UnmanagedPixelSampler<TPixel>(source, SamplerAddressMode.Clamp, SamplerAddressMode.Clamp, true);
         }
 
         public static IPixelSampler ToPixelSampler<TPixel>(this Image<TPixel> source, SamplerAddressMode u, SamplerAddressMode v) where TPixel : struct, IPixel<TPixel>
         {
-            return new _PixelSampler<TPixel>(source, u,v,true);
+            return new _UnmanagedPixelSampler<TPixel>(source, u,v,true);
         }        
 
         public static IPixelSampler ToPixelSampler<TPixel>(this Image<TPixel> source, Image<Alpha8> mask) where TPixel : struct, IPixel<TPixel>
@@ -42,11 +42,11 @@ namespace Epsylon.ImageSharp.Procedural
         }
     }
 
-    class _PixelSampler<TPixel> : IPixelSampler, IDisposable where TPixel : struct, IPixel<TPixel>
+    class _UnmanagedPixelSampler<TPixel> : IPixelSampler, IDisposable where TPixel : struct, IPixel<TPixel>
     {
         #region lifecycle
 
-        public _PixelSampler(Image<TPixel> source, SamplerAddressMode u, SamplerAddressMode v, bool leaveUndisposed = false)
+        public _UnmanagedPixelSampler(Image<TPixel> source, SamplerAddressMode u, SamplerAddressMode v, bool leaveUndisposed = false)
         {
             _Source = source;
             _LeaveUndisposed = leaveUndisposed;
@@ -111,6 +111,56 @@ namespace Epsylon.ImageSharp.Procedural
 
         #endregion
     }
+
+
+    class _ManagedPixelSampler<TPixel> : IPixelSampler where TPixel : struct, IPixel<TPixel>
+    {
+        private TPixel[] _Buffer;
+        private int _Width;
+        private int _Height;
+
+        private ImageMetaData _MetaData;
+
+        public Vector4 this[int x, int y]
+        {
+            get => _Buffer[y*_Width+x].ToVector4();
+            set => throw new NotImplementedException();
+        }
+
+        public PixelTypeInfo PixelType => throw new NotImplementedException();
+
+        public int Width => _Width;
+
+        public int Height => _Height;
+
+        public ImageMetaData MetaData => 
+
+        public void Mutate(Action<IImageProcessingContext<TPixel>> operation)
+        {
+            using (var image = new Image<TPixel>(_Width, _Height))
+            {
+                // image.MetaData = _MetaData; // Can't do this
+
+                for(int y=0; y < _Height; ++y)
+                {
+                    for(int x=0; x < _Width; ++x)
+                    {
+                        image[x, y] = _Buffer[y * _Width + x];
+                    }
+                }
+
+                image.Mutate(operation);
+
+                this._Width = image.Width;
+                this._Height = image.Height;
+
+                // TODO: if buffer & dimensions are not the same, copy our bitmap back.
+
+            }
+        }
+    }
+
+
 
     class _MaskedPixelSampler<TPixel> : IPixelSampler, IDisposable where TPixel : struct, IPixel<TPixel>
     {

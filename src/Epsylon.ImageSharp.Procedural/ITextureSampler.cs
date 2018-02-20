@@ -392,7 +392,7 @@ namespace Epsylon.ImageSharp.Procedural
 
     
 
-        sealed class _FloatToHalfSingleSampler : ITextureSampler<HalfSingle>
+    sealed class _FloatToHalfSingleSampler : ITextureSampler<HalfSingle>
     {
         public _FloatToHalfSingleSampler(ITextureSampler<float> source)
         {
