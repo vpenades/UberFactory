@@ -121,14 +121,18 @@ namespace Epsylon.UberFactory
                 // run
                 using (var process = System.Diagnostics.Process.Start(pinfo))
                 {
-                    _OpenDocuments[System.IO.Path.GetFileName(dirPath)] = process.Id;
+                    _OpenDocuments[System.IO.Path.GetFileName(dirPath)] = process == null ? 0 : process.Id;
                 }
-                    
+
             }
-            catch(Exception ex) { }            
+            catch (ObjectDisposedException) { }
+            catch (InvalidOperationException) { }
+            catch (ArgumentNullException) { }            
+            catch (System.IO.FileNotFoundException) { }
+            catch (System.ComponentModel.Win32Exception) { }           
+
         }
 
         #endregion
-
     }
 }
