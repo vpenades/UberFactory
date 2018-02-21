@@ -10,6 +10,14 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Epsylon.ImageSharp.Procedural
 {
+    public interface IBitmap<TPixel> where TPixel : struct, IPixel<TPixel>
+    {
+        int Width { get; }
+        int Height { get; }
+
+        TPixel this[int x, int y] { get; set; }
+    }
+
     /// <summary>
     /// GC friendly Image
     /// </summary>
@@ -24,11 +32,30 @@ namespace Epsylon.ImageSharp.Procedural
     /// internal buffer is fully handled by the GC
     /// </remarks>
     /// <typeparam name="TPixel"></typeparam>
-    public class ManagedImage<TPixel> : IImage where TPixel : struct, IPixel<TPixel>
+    public class Bitmap<TPixel> : IBitmap<TPixel>, IPixelSampler where TPixel : struct, IPixel<TPixel>
     {
-        #region lifecycle
+        #region lifecycle        
 
-        public ManagedImage(int width, int height)
+        public static Bitmap<TPixel> Create(int w, int h)
+        {
+            if (w <= 0 || h <= 0) return null;
+
+            return new Bitmap<TPixel>(w, h);
+        }
+
+        public static Bitmap<TPixel> Create(Image<TPixel> image)
+        {
+            if (image == null) return null;
+
+            return new Bitmap<TPixel>(image);
+        }
+
+        private Bitmap(Image<TPixel> image) : this(image.Width,image.Height)
+        {
+            image.SavePixelData(_Buffer);
+        }
+
+        private Bitmap(int width, int height)
         {
             _Width = width;
             _Height = height;
@@ -40,9 +67,9 @@ namespace Epsylon.ImageSharp.Procedural
             //_MetaData = new ImageMetaData(); // can't do this yet
         }
 
-        public ManagedImage<TPixel> Clone()
+        public Bitmap<TPixel> Clone()
         {
-            var cloned = new ManagedImage<TPixel>(_Width, _Height);
+            var cloned = new Bitmap<TPixel>(_Width, _Height);
             _Buffer.CopyTo(cloned._Buffer, 0);
 
             // cloned._MetaData = this._MetaData.Clone();
@@ -70,13 +97,19 @@ namespace Epsylon.ImageSharp.Procedural
             set => _Buffer[y * _Width + x] = value;
         }
 
+        Vector4 IPixelSampler.this[int x, int y]
+        {
+            get => _Buffer[y * _Width + x].ToVector4();
+            set { var c = default(TPixel); c.PackFromVector4(value); _Buffer[y * _Width + x] = c; }
+        }
+
         public PixelTypeInfo PixelType => throw new NotImplementedException(); // Can't do this yet
 
         public int Width => _Width;
 
         public int Height => _Height;
 
-        public ImageMetaData MetaData => _MetaData;
+        public ImageMetaData MetaData => _MetaData;        
 
         #endregion
 
@@ -105,12 +138,12 @@ namespace Epsylon.ImageSharp.Procedural
             }
         }
 
-        public ManagedImage<TPixel> Clone(Action<IImageProcessingContext<TPixel>> operation)
+        public Bitmap<TPixel> Clone(Action<IImageProcessingContext<TPixel>> operation)
         {
             var clone = this.Clone();  clone.Mutate(operation);
             return clone;
         }
 
         #endregion
-    }
+    }    
 }

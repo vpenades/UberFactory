@@ -10,6 +10,10 @@ namespace Epsylon.ImageSharp.Procedural
     /// </summary>
     /// <see cref="http://flafla2.github.io/2014/08/09/perlinnoise.html"/>
     /// <seealso cref="https://gist.github.com/Flafla2"/>
+    /// <remarks>
+    /// Interesting alternatives:
+    /// https://github.com/wwwtyro/space-3d/blob/gh-pages/src/glsl/classic-noise-4d.snip
+    /// </remarks>
     class Perlin_Tileable
     {
         #region lifecycle

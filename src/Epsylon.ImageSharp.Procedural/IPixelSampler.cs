@@ -19,8 +19,11 @@ namespace Epsylon.ImageSharp.Procedural
         MirrorOnce = 5
     }    
 
-    public interface IPixelSampler : IImage
+    public interface IPixelSampler
     {
+        int Width { get; }
+        int Height { get; }
+
         Vector4 this[int x, int y] { get; set; }
     }
 
@@ -40,6 +43,70 @@ namespace Epsylon.ImageSharp.Procedural
         {
             return new _MaskedPixelSampler<TPixel>(source, mask);
         }
+    }
+
+
+    class _WrapSampler : IPixelSampler // TODO: generate all combinations with a TT
+    {
+        #region lifecycle
+
+        public _WrapSampler(IPixelSampler source, SamplerAddressMode u, SamplerAddressMode v)
+        {
+            _Source = source;
+
+            _AddressReadU = _AddressWriteU = u.GetFunction(_Source.Width);
+            _AddressReadV = _AddressWriteV = v.GetFunction(_Source.Height);
+
+            if (u == SamplerAddressMode.Clamp) _AddressWriteU = x => (x >= 0 && x < _Source.Width) ? x : -1;
+            if (v == SamplerAddressMode.Clamp) _AddressWriteV = y => (y >= 0 && y < _Source.Height) ? y : -1;
+        }
+
+        #endregion
+
+        #region data
+
+        private static readonly Vector2 V2HALF = Vector2.One * 0.5f;
+
+        private IPixelSampler _Source;        
+
+        private Func<int, int> _AddressReadU;
+        private Func<int, int> _AddressReadV;
+        private Func<int, int> _AddressWriteU;
+        private Func<int, int> _AddressWriteV;
+
+        #endregion
+
+        #region properties
+
+        // public PixelTypeInfo PixelType => _Source.PixelType;
+
+        public int Width => _Source.Width;
+
+        public int Height => _Source.Height;
+
+        // public ImageMetaData MetaData => _Source.MetaData;
+
+        #endregion
+
+        #region API
+
+        public Vector4 this[int x, int y]
+        {
+            get
+            {
+                x = _AddressReadU(x);
+                y = _AddressReadV(y);
+                return _Source[x, y];
+            }
+            set
+            {
+                x = _AddressWriteU(x); if (x < 0) return;
+                y = _AddressWriteV(y); if (y < 0) return;
+                _Source[x, y] = value;
+            }
+        }
+
+        #endregion
     }
 
     class _UnmanagedPixelSampler<TPixel> : IPixelSampler, IDisposable where TPixel : struct, IPixel<TPixel>
