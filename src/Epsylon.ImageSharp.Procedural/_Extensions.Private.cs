@@ -16,6 +16,9 @@ namespace Epsylon.ImageSharp.Procedural
 
     static class _PrivateExtensions
     {
+        public static Boolean Bit(this Int32 value, int idx) => ((value >> idx) & 1) == 1;
+        public static Int32 WithBit(this Int32 value, int idx, bool bit) => bit ? (value | (1 << idx)) : (value & ~(1 << idx));        
+
         public static SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile UseExifProfile(this IImage image)
         {
             if (image == null) return null;

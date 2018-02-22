@@ -14,7 +14,7 @@ namespace Epsylon.UberPlugin
     using Epsylon.ImageSharp.Procedural;    
 
     using PIXEL32 = Rgba32;
-    using IMAGE32 = Image<Rgba32>;
+    using BITMAP = Image<Rgba32>;
 
     [SDK.Icon(Constants.ICON_IMAGE)]
     [SDK.ContentNode("LayersStack")]
@@ -25,9 +25,9 @@ namespace Epsylon.UberPlugin
         [SDK.InputNode("Layers", true)]
         [SDK.Title("Layers")]
         [SDK.ItemsPanel("VerticalList")]
-        public IMAGE32[] Layers { get; set; }
+        public BITMAP[] Layers { get; set; }
 
-        protected override IMAGE32 Evaluate()
+        protected override BITMAP Evaluate()
         {
             var layout = new CanvasLayout<PIXEL32>(Layers);
 
@@ -76,9 +76,9 @@ namespace Epsylon.UberPlugin
         public int OffsetY { get; set; }
 
         [SDK.InputNode("Image")]        
-        public IMAGE32 Image { get; set; }        
+        public BITMAP Image { get; set; }        
 
-        protected override IMAGE32 Evaluate()
+        protected override BITMAP Evaluate()
         {
             if (Image == null || Opacity <= 0) return null;
 

@@ -79,11 +79,11 @@ namespace Epsylon.ImageSharp.Procedural
             using (var source = target.Clone())
             {
                 var sampler = source
-                    .ToPixelSampler(SamplerAddressMode.Wrap, SamplerAddressMode.Clamp)
+                    .ToPixelSampler(AddressMode.Wrap, AddressMode.Clamp)
                     .ToTextureSampler(false)
                     .ToPolarTransform(inverse);
 
-                target.Fill(sampler);                
+                target.FitFill(sampler);                
             }
         }
 

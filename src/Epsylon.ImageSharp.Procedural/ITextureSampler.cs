@@ -21,9 +21,16 @@ namespace Epsylon.ImageSharp.Procedural
 
     public static class TextureSamplerFactory
     {
-        public static ITextureSampler<Vector4> ToTextureSampler(this IPixelSampler ps, bool normalizedUV)
+        public static ITextureSampler<Vector4> ToTextureSampler<TPixel>(this IBitmap<TPixel> bitmap, bool normalizedUV) where TPixel : struct, IPixel<TPixel>
         {
-            return new _PixelTextureSampler(ps, normalizedUV);
+            return bitmap
+                .ToPixelSampler()
+                .ToTextureSampler(normalizedUV);
+        }
+
+        public static ITextureSampler<Vector4> ToTextureSampler(this IBitmapSampler sampler, bool normalizedUV)
+        {
+            return new _PixelTextureSampler(sampler, normalizedUV);
         }
 
         public static ITextureSampler<TPixel> ToPolarTransform<TPixel>(this ITextureSampler<TPixel> ts, bool inverse)
@@ -59,7 +66,7 @@ namespace Epsylon.ImageSharp.Procedural
             return new _LerpColorSampler(source, odd, even);
         }
 
-        public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler<Vector4> sampler) where TPixel : struct, IPixel<TPixel>
+        public static void FitFill<TPixel>(this Image<TPixel> target, ITextureSampler<Vector4> sampler) where TPixel : struct, IPixel<TPixel>
         {
             var scale = new Vector2(sampler.Scale.Width / (float)target.Width, sampler.Scale.Height  / (float)target.Height);
 
@@ -89,7 +96,7 @@ namespace Epsylon.ImageSharp.Procedural
             }
         }
 
-        public static void Fill<TPixel>(this Image<TPixel> target, ITextureSampler<TPixel> sampler) where TPixel : struct, IPixel<TPixel>
+        public static void FitFill<TPixel>(this Image<TPixel> target, ITextureSampler<TPixel> sampler) where TPixel : struct, IPixel<TPixel>
         {
             var scale = new Vector2(sampler.Scale.Width / (float)target.Width, sampler.Scale.Height / (float)target.Height);
 
@@ -123,7 +130,7 @@ namespace Epsylon.ImageSharp.Procedural
     {
         #region lifecycle
 
-        public _PixelTextureSampler(IPixelSampler source, bool normalizedUV)
+        public _PixelTextureSampler(IBitmapSampler source, bool normalizedUV)
         {
             _Source = source;            
 
@@ -145,7 +152,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region data        
 
-        private readonly IPixelSampler _Source;
+        private readonly IBitmapSampler _Source;
         private readonly SizeF _Size;
 
         private readonly Vector2 _Scale;
@@ -341,8 +348,6 @@ namespace Epsylon.ImageSharp.Procedural
         private readonly float _Depth;
         private readonly int _Octaves;
         private readonly float _Persistence;
-        private readonly Vector4 _OddColor;
-        private readonly Vector4 _EvenColor;
 
         public SizeF Scale => _Scale;
 

@@ -16,45 +16,65 @@ namespace Epsylon.ImageSharp.Procedural
 
     public static class _PublicExtensions
     {
+        public static int GetRandomSeedHash(this string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return (int)DateTime.Now.Ticks;
+
+            // https://referencesource.microsoft.com/#mscorlib/system/string.cs,854
+
+            int hash1 = 5381;
+            int hash2 = hash1;
+
+            for (int i = 0; i < value.Length; ++i)
+            {
+                var c = (int)value[i];
+
+                if (!i.Bit(0)) hash1 = ((hash1 << 5) + hash1) ^ c;
+                else           hash2 = ((hash2 << 5) + hash2) ^ c;
+            }
+
+            return hash1 + (hash2 * 1566083941);
+        }
+
         private static readonly V2 V2HALF = V2.One / 2;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Func<int, int> GetFunction(this SamplerAddressMode mode, int size)
+        public static Func<int, int> GetFunction(this AddressMode mode, int size)
         {
             switch (mode)
             {
-                case SamplerAddressMode.Clamp: return idx => idx.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return idx => idx.RoundAbout(size);
+                case AddressMode.Clamp: return idx => idx.Clamp(0, size - 1);
+                case AddressMode.Wrap: return idx => idx.RoundAbout(size);
 
                 default: throw new NotImplementedException();
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetFinalIndex(this SamplerAddressMode mode, int index, int size)
+        public static int GetFinalIndex(this AddressMode mode, int index, int size)
         {
             switch (mode)
             {
-                case SamplerAddressMode.Clamp: return index.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return index.RoundAbout(size);
+                case AddressMode.Clamp: return index.Clamp(0, size - 1);
+                case AddressMode.Wrap: return index.RoundAbout(size);
 
                 default: throw new NotImplementedException();
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int _GetFinalIndex(int index, int size, SamplerAddressMode mode)
+        private static int _GetFinalIndex(int index, int size, AddressMode mode)
         {
             switch (mode)
             {
-                case SamplerAddressMode.Clamp: return index.Clamp(0, size - 1);
-                case SamplerAddressMode.Wrap: return index.RoundAbout(size);
+                case AddressMode.Clamp: return index.Clamp(0, size - 1);
+                case AddressMode.Wrap: return index.RoundAbout(size);
 
                 default: throw new NotImplementedException();
             }
         }
 
-        public static TPixel GetSample<TPixel>(this Image<TPixel> image, V2 p, SamplerAddressMode u = SamplerAddressMode.Wrap, SamplerAddressMode v = SamplerAddressMode.Wrap) where TPixel : struct, IPixel<TPixel>
+        public static TPixel GetSample<TPixel>(this Image<TPixel> image, V2 p, AddressMode u = AddressMode.Wrap, AddressMode v = AddressMode.Wrap) where TPixel : struct, IPixel<TPixel>
         {
             p -= V2HALF;
 
@@ -158,11 +178,11 @@ namespace Epsylon.ImageSharp.Procedural
             return image.Contains(p.X, p.Y);
         }
 
-        public static Rectangle Bounds(this IPixelSampler tex) { return new Rectangle(0, 0, tex.Width, tex.Height); }
+        public static Rectangle Bounds(this IBitmapSampler tex) { return new Rectangle(0, 0, tex.Width, tex.Height); }
 
-        public static bool Contains(this IPixelSampler texture, int x, int y) { return texture.Bounds().Contains(x, y); }
+        public static bool Contains(this IBitmapSampler texture, int x, int y) { return texture.Bounds().Contains(x, y); }
 
-        public static bool Contains(this IPixelSampler image, Point p) { return image.Contains(p.X, p.Y); }
+        public static bool Contains(this IBitmapSampler image, Point p) { return image.Contains(p.X, p.Y); }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static PointF TopLeft(this RectangleF rect) { return new PointF(rect.Left, rect.Top); }

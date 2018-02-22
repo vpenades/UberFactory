@@ -30,7 +30,7 @@ namespace Epsylon.ImageSharp.Procedural
 
     struct PixelView<TPixel> where TPixel : struct, IPixel<TPixel>
     {
-        private readonly Bitmap<TPixel> _Bitmap;
+        private readonly _Bitmap<TPixel> _Bitmap;
         private readonly int _X;
         private readonly int _Y;
         private readonly Vector3 _Point;
@@ -50,27 +50,27 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region data
 
-        private Bitmap<TPixel> _Front;
-        private Bitmap<TPixel> _Back;
+        private IBitmap<TPixel> _Front;
+        private IBitmap<TPixel> _Back;
 
-        private Bitmap<TPixel> _Left;
-        private Bitmap<TPixel> _Right;
+        private IBitmap<TPixel> _Left;
+        private IBitmap<TPixel> _Right;
 
-        private Bitmap<TPixel> _Top;
-        private Bitmap<TPixel> _Bottom;
+        private IBitmap<TPixel> _Top;
+        private IBitmap<TPixel> _Bottom;
 
         #endregion
 
         #region properties        
 
-        public Bitmap<TPixel> Front => _Front;
-        public Bitmap<TPixel> Back => _Back;
+        public IBitmap<TPixel> Front => _Front;
+        public IBitmap<TPixel> Back => _Back;
 
-        public Bitmap<TPixel> Left => _Left;
-        public Bitmap<TPixel> Right => _Right;
+        public IBitmap<TPixel> Left => _Left;
+        public IBitmap<TPixel> Right => _Right;
 
-        public Bitmap<TPixel> Top => _Top;
-        public Bitmap<TPixel> Bottom => _Bottom;
+        public IBitmap<TPixel> Top => _Top;
+        public IBitmap<TPixel> Bottom => _Bottom;
 
         #endregion
 
@@ -105,8 +105,9 @@ namespace Epsylon.ImageSharp.Procedural
         private ITextureSampler<T> _Top;
         private ITextureSampler<T> _Bottom;
 
-        #endregion
-
-        
+        #endregion        
     }
+
+
+    
 }

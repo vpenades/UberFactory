@@ -124,7 +124,7 @@ namespace Epsylon.ImageSharp.Procedural
         }
 
 
-        private static void _FillRGB(this IPixelSampler source, Vector4 rgba)
+        private static void _FillRGB(this IBitmapSampler source, Vector4 rgba)
         {
             for (int y = 0; y < source.Height; ++y)
             {
@@ -136,7 +136,7 @@ namespace Epsylon.ImageSharp.Procedural
             }
         }
 
-        private static void _ApplyAlphaMask(this IPixelSampler source, Image<Alpha8> mask, PixelBlenderMode mode)
+        private static void _ApplyAlphaMask(this IBitmapSampler source, Image<Alpha8> mask, PixelBlenderMode mode)
         {
             Func<float,float,float> alphaFunc = (a,b) => a * b;
 
@@ -164,7 +164,7 @@ namespace Epsylon.ImageSharp.Procedural
         }
 
 
-        private static void _ApplyAlphaPremultiply(this IPixelSampler source)
+        private static void _ApplyAlphaPremultiply(this IBitmapSampler source)
         {
             for(int y=0; y < source.Height; ++y)
             {
@@ -220,7 +220,7 @@ namespace Epsylon.ImageSharp.Procedural
             }
         }        
 
-        static int _DilateColor(this IPixelSampler target, IPixelSampler mask, float alphaThreshold = 0)
+        static int _DilateColor(this IBitmapSampler target, IBitmapSampler mask, float alphaThreshold = 0)
         {
             int count = 0;
 
@@ -254,7 +254,7 @@ namespace Epsylon.ImageSharp.Procedural
             return count;
         }
 
-        private static int _ApplyRow(this IPixelSampler target,int y, Vector4[] row, bool ignoreAlpha)
+        private static int _ApplyRow(this IBitmapSampler target,int y, Vector4[] row, bool ignoreAlpha)
         {
             int count = 0;
 
@@ -284,7 +284,7 @@ namespace Epsylon.ImageSharp.Procedural
         /// <returns>
         /// If the central pixel is not transparent, returns the pixel itself, else it returns a sampling.
         /// </returns>
-        static Vector4 _GetDilatedTexel(this IPixelSampler texture, int x, int y, float alphaThreshold = 0)
+        static Vector4 _GetDilatedTexel(this IBitmapSampler texture, int x, int y, float alphaThreshold = 0)
         {
             if (texture[x, y].W > alphaThreshold) return Vector4.Zero;
 

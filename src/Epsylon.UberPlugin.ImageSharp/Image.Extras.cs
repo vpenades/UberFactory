@@ -110,8 +110,8 @@ namespace Epsylon.UberPlugin
 
         [SDK.InputValue("RandomSeed")]
         [SDK.Title("Seed"), SDK.Group("Noise")]
-        [SDK.Minimum(0), SDK.Default(177), SDK.Maximum(255)]
-        public int RandomSeed { get; set; }
+        [SDK.Default("RsaT4f7")]
+        public String RandomSeed { get; set; }
 
         [SDK.InputValue("Scale")]
         [SDK.Title("Scale"), SDK.Group("Noise")]
@@ -139,7 +139,7 @@ namespace Epsylon.UberPlugin
 
             using (var noise = new Image<HalfSingle>(Width, Height))
             {
-                noise.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, this.Octaves, p / 100.0f, this.RandomSeed));
+                noise.Mutate(dc => dc.FillPerlinNoise(this.Scale, 0, this.Octaves, p / 100.0f, this.RandomSeed.GetRandomSeedHash()));
 
                 return noise.CloneWithLookupTable(Gradient);
             }
@@ -421,8 +421,8 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("Height")] public int Height { get; set; }
         
         [SDK.Title("Seed"), SDK.Group("Noise")]
-        [SDK.Minimum(0), SDK.Default(177), SDK.Maximum(255)]
-        [SDK.InputValue("RandomSeed")] public int RandomSeed { get; set; }
+        [SDK.Default("RsaT4f7")]
+        [SDK.InputValue("RandomSeed")] public String RandomSeed { get; set; }
         
         [SDK.Title("Iterations"), SDK.Group("Noise")]
         [SDK.Minimum(0), SDK.Default(500), SDK.Maximum(5000)]
@@ -439,7 +439,7 @@ namespace Epsylon.UberPlugin
 
             using (var target = new IMAGE32(size.Width, size.Height))
             {
-                var substrate = Substrate.Create(target, RandomSeed, Palette);
+                var substrate = Substrate.Create(target, RandomSeed.GetRandomSeedHash(), Palette);
 
                 for (int i = 0; i < Iterations; ++i)
                 {                    

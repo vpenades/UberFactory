@@ -14,7 +14,7 @@ namespace Epsylon.UberPlugin
     using UberFactory;
 
     using PIXEL32 = Rgba32;
-    using IMAGE32 = Image<Rgba32>;
+    using BITMAP = Image<Rgba32>;
     using IMAGE32DC = IImageProcessingContext<Rgba32>;
     using IMGTRANSFORM = Action<IImageProcessingContext<Rgba32>>;
 
@@ -29,14 +29,14 @@ namespace Epsylon.UberPlugin
     {
         [SDK.InputNode("Source")]
         [SDK.Title("Source Image")]
-        public IMAGE32 Source { get; set; }
+        public BITMAP Source { get; set; }
 
         [SDK.InputNode("Transforms",true)]
         [SDK.Title("Transforms")]
         [SDK.ItemsPanel("VerticalList")]
         public IMGTRANSFORM[] Transforms { get; set; }
 
-        protected override IMAGE32 Evaluate()
+        protected override BITMAP Evaluate()
         {
             if (Source == null) return null;            
 
@@ -61,18 +61,18 @@ namespace Epsylon.UberPlugin
     {
         [SDK.InputNode("Source")]
         [SDK.Title("Source Image")]
-        public IMAGE32 Source { get; set; }
+        public BITMAP Source { get; set; }
 
         [SDK.InputNode("Layers", true)]
         [SDK.Title("Layers")]
         [SDK.ItemsPanel("VerticalList")]
         public TransformLayer.Description[] Layers { get; set; }
 
-        protected override IMAGE32 Evaluate()
+        protected override BITMAP Evaluate()
         {
             if (Source == null) return null;
 
-            var target = new IMAGE32(Source.Width, Source.Height);
+            var target = new BITMAP(Source.Width, Source.Height);
 
             foreach(var layer in Layers.Where(l => l != null))
             {
@@ -137,7 +137,7 @@ namespace Epsylon.UberPlugin
 
             public int Opacity { get; private set; }            
 
-            public IMAGE32 ProcessStack(IMAGE32 src)
+            public BITMAP ProcessStack(BITMAP src)
             {
                 return src.Clone
                 (

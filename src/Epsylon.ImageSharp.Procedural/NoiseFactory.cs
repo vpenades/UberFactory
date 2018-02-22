@@ -78,7 +78,7 @@ namespace Epsylon.ImageSharp.Procedural
                 .CreateMandelbrotTexture(image.Width, image.Height, ox, oy, scale, iterations)
                 .ToHalfSingle();
 
-            image.Fill(texture);
+            image.FitFill(texture);
         }
 
         private static void _MutateAutoLevels(this Image<HalfSingle> source)
