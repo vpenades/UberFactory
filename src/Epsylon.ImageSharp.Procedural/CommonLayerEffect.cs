@@ -56,7 +56,7 @@ namespace Epsylon.ImageSharp.Procedural
 
                 _ApplyOuterEffects(image, source);                
 
-                image.Mutate(dc => dc.DrawImage(source, 1, source.Size(), Point.Empty));
+                image.Mutate(dc => dc.DrawImage(source,1, Point.Empty));
             }
         }
 
@@ -164,7 +164,7 @@ namespace Epsylon.ImageSharp.Procedural
                     .PowerAlpha(Intensity)
                 );
 
-                target.Mutate(dc => dc.DrawImage(layer, this.BlendMode, (float)this.Opacity / 100.0f, size, origin));
+                target.Mutate(dc => dc.DrawImage(layer, this.BlendMode, (float)this.Opacity / 100.0f, origin));
             }
         }
 

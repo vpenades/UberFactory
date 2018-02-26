@@ -59,7 +59,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static IImageProcessingContext<TPixel> BlitImage<TPixel>(this IImageProcessingContext<TPixel> source, Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
         {
-            return source.DrawImage(image, PixelBlenderMode.Src, 1, image.Size(), Point.Empty);
+            return source.DrawImage(image, PixelBlenderMode.Src, 1, Point.Empty);
             // return source.DrawImage(image, 1, image.Size(), Point.Empty);
         }
 
@@ -191,7 +191,7 @@ namespace Epsylon.ImageSharp.Procedural
                     dc
                     // .EdgePadding(0.1f, 1+ (int) radius)
                     .Blur(BlurMode.Gaussian, radius)
-                    .DrawImage(top, 1, top.Size(), Point.Empty)
+                    .DrawImage(top, 1, Point.Empty)
                     );
             }
 

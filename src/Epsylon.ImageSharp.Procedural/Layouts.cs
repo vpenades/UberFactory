@@ -50,7 +50,9 @@ namespace Epsylon.ImageSharp.Procedural
 
             if (flattened == null) flattened = new Image<TPixel>(layer.Width, layer.Height);
 
-            flattened.Mutate(dc => dc.DrawImage(layer, bmode, opacity, Size.Empty, offset));
+            flattened.Mutate(dc => dc.DrawImage(layer, bmode, opacity, offset));
+
+            
 
             return flattened;
         }
