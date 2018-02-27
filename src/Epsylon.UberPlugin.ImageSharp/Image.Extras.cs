@@ -453,7 +453,7 @@ namespace Epsylon.UberPlugin
                     dc =>
                     {
                         dc.Fill(Rgba32.White);
-                        dc.DrawImage(target, PixelBlenderMode.Normal, 1, size, SixLabors.Primitives.Point.Empty);
+                        dc.DrawImage(target, PixelBlenderMode.Normal, 1, SixLabors.Primitives.Point.Empty);
                     }
                     );
 

@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- Frameworks should use version as low as possible to allow using the SDK in as many platforms as possible -->
-    <TargetFramework>netstandard1.1</TargetFramework>
+    
+    <!-- even if the core SDK should have as broad compatibility as possible, truth is any newly created project will be 2.0-->
+    
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>    
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>    

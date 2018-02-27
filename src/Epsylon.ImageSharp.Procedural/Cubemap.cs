@@ -7,7 +7,13 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 // http://paulbourke.net/miscellaneous/cubemaps/
+
+// ONLINE TOOLS:
+// http://wwwtyro.github.io/procedural.js/space/
+// http://wwwtyro.github.io/
+// https://wwwtyro.github.io/space-3d
 // https://www.360toolkit.co/convert-cubemap-to-spherical-equirectangular.html
+
 
 namespace Epsylon.ImageSharp.Procedural
 {

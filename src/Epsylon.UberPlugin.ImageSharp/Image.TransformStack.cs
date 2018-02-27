@@ -78,7 +78,7 @@ namespace Epsylon.UberPlugin
             {
                 using (var clone = layer.ProcessStack(Source))
                 {
-                    target.Mutate(dc => dc.DrawImage(clone, layer.Mode, layer.Opacity, SIZE.Empty, POINT.Empty));
+                    target.Mutate(dc => dc.DrawImage(clone, layer.Mode, layer.Opacity, POINT.Empty));
                 }
             }
 
