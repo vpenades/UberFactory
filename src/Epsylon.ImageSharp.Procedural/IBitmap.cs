@@ -243,7 +243,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         internal Image<TPixel> _ToImageSharp()
         {
-            return Image.LoadPixelData<TPixel>(_Buffer, _Width, _Height);
+            return _Buffer.CreateImage(_Width, _Height);
         }
 
         public void Mutate(Action<IImageProcessingContext<TPixel>> operation)
@@ -259,7 +259,7 @@ namespace Epsylon.ImageSharp.Procedural
                 _MetaData = image.MetaData;
 
                 _Width = image.Width;
-                _Height = image.Height;                
+                _Height = image.Height;
 
                 var newSize = _Width * _Height;
 
@@ -267,7 +267,7 @@ namespace Epsylon.ImageSharp.Procedural
 
                 image.SavePixelData(_Buffer); // ImageSharp request:  if _Buffer happens to be the same buffer stored internally, DO NOTHING
             }
-        }
+        }        
 
         public _Bitmap<TPixel> Clone(Action<IImageProcessingContext<TPixel>> operation)
         {
