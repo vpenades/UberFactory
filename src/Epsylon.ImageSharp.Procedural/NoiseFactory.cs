@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Helpers;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+
 
 namespace Epsylon.ImageSharp.Procedural
 {
@@ -45,7 +46,7 @@ namespace Epsylon.ImageSharp.Procedural
 
             if (blurRadius > 0)
             {
-                image.Mutate(dc => dc.BoxBlur(blurRadius));
+                image.Mutate(dc => dc.Blur(BlurMode.Box,blurRadius));
                 image._MutateAutoLevels();
             }            
         }

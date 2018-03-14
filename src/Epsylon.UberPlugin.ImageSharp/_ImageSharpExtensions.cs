@@ -5,17 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SixLabors.Primitives;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Drawing;
+using SixLabors.ImageSharp.Processing.Text;
+using SixLabors.ImageSharp.Processing.Quantization;
+using SixLabors.ImageSharp.Processing.Transforms.Resamplers;
+
 
 namespace Epsylon.UberPlugin
 {
     using Epsylon.ImageSharp.Procedural;
 
-    using POINT = SixLabors.Primitives.Point;
-    using COLOR = SixLabors.ImageSharp.Rgba32;
-    using IMAGE = SixLabors.ImageSharp.Image;
-    using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
-    using SixLabors.Primitives;
+    using POINT = Point;
+    using COLOR = Rgba32;
+    using IMAGE = Image;
+    using IMAGE32 = Image<Rgba32>;
+    
 
     public enum Resampler
     {
@@ -73,11 +81,11 @@ namespace Epsylon.UberPlugin
         
 
 
-        public static SixLabors.ImageSharp.Quantizers.IQuantizer GetInstance(this SixLabors.ImageSharp.Quantization mode)
+        public static IQuantizer GetInstance(this QuantizationMode mode)
         {
-            if (mode == Quantization.Octree) return new SixLabors.ImageSharp.Quantizers.OctreeQuantizer<Rgba32>();
-            if (mode == Quantization.Palette) return new SixLabors.ImageSharp.Quantizers.PaletteQuantizer<Rgba32>();
-            if (mode == Quantization.Wu) return new SixLabors.ImageSharp.Quantizers.WuQuantizer<Rgba32>();
+            if (mode == QuantizationMode.Octree) return new OctreeQuantizer<Rgba32>();
+            if (mode == QuantizationMode.Palette) return new PaletteQuantizer<Rgba32>();
+            if (mode == QuantizationMode.Wu) return new WuQuantizer<Rgba32>();
 
             throw new NotImplementedException();
         }
@@ -92,28 +100,28 @@ namespace Epsylon.UberPlugin
             return color;
         }
 
-        public static SixLabors.ImageSharp.Processing.IResampler GetInstance(this Resampler mode)
+        public static IResampler GetInstance(this Resampler mode)
         {
-            if (mode == Resampler.NearestNeighbor) return new SixLabors.ImageSharp.Processing.NearestNeighborResampler();
+            if (mode == Resampler.NearestNeighbor) return new NearestNeighborResampler();
 
-            if (mode == Resampler.Box) return new SixLabors.ImageSharp.Processing.BoxResampler();
-            if (mode == Resampler.Triangle) return new SixLabors.ImageSharp.Processing.TriangleResampler();
-            if (mode == Resampler.Bicubic) return new SixLabors.ImageSharp.Processing.BicubicResampler();
+            if (mode == Resampler.Box) return new BoxResampler();
+            if (mode == Resampler.Triangle) return new TriangleResampler();
+            if (mode == Resampler.Bicubic) return new BicubicResampler();
 
-            if (mode == Resampler.Spline) return new SixLabors.ImageSharp.Processing.SplineResampler();
-            if (mode == Resampler.CatmullRom) return new SixLabors.ImageSharp.Processing.CatmullRomResampler();
-            if (mode == Resampler.Hermite) return new SixLabors.ImageSharp.Processing.HermiteResampler();
+            if (mode == Resampler.Spline) return new SplineResampler();
+            if (mode == Resampler.CatmullRom) return new CatmullRomResampler();
+            if (mode == Resampler.Hermite) return new HermiteResampler();
 
-            if (mode == Resampler.Robidoux) return new SixLabors.ImageSharp.Processing.RobidouxResampler();
-            if (mode == Resampler.RobidouxSharp) return new SixLabors.ImageSharp.Processing.RobidouxSharpResampler();
-            if (mode == Resampler.Welch) return new SixLabors.ImageSharp.Processing.WelchResampler();
+            if (mode == Resampler.Robidoux) return new RobidouxResampler();
+            if (mode == Resampler.RobidouxSharp) return new RobidouxSharpResampler();
+            if (mode == Resampler.Welch) return new WelchResampler();
 
-            if (mode == Resampler.Lanczos2) return new SixLabors.ImageSharp.Processing.Lanczos2Resampler();
-            if (mode == Resampler.Lanczos3) return new SixLabors.ImageSharp.Processing.Lanczos3Resampler();            
-            if (mode == Resampler.Lanczos5) return new SixLabors.ImageSharp.Processing.Lanczos5Resampler();
-            if (mode == Resampler.Lanczos8) return new SixLabors.ImageSharp.Processing.Lanczos8Resampler();
+            if (mode == Resampler.Lanczos2) return new Lanczos2Resampler();
+            if (mode == Resampler.Lanczos3) return new Lanczos3Resampler();            
+            if (mode == Resampler.Lanczos5) return new Lanczos5Resampler();
+            if (mode == Resampler.Lanczos8) return new Lanczos8Resampler();
 
-            if (mode == Resampler.MitchellNetravali) return new SixLabors.ImageSharp.Processing.MitchellNetravaliResampler();
+            if (mode == Resampler.MitchellNetravali) return new MitchellNetravaliResampler();
 
             throw new NotImplementedException();
         }
@@ -148,11 +156,11 @@ namespace Epsylon.UberPlugin
 
                     l[0] = sinfo.Center + new Size(0, 3);
                     l[1] = sinfo.Center - new Size(0, 3);
-                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l));
+                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l));                    
 
                     if (sinfo.Size.HasValue)
                     {
-                        image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, sinfo.BoundsFloat.GetPoints()));
+                        image.Mutate(dc => dc.DrawPolygon(COLOR.Red, 1, sinfo.BoundsFloat.Get4Points()));                        
                     }
 
                 }                
@@ -255,7 +263,7 @@ namespace Epsylon.UberPlugin
         }
         
 
-        public static IMAGE32 RenderText(this SixLabors.Fonts.FontFamily ffamily, string text, float fsize, float padding, COLOR color, SixLabors.ImageSharp.Drawing.TextGraphicsOptions options)
+        public static IMAGE32 RenderText(this SixLabors.Fonts.FontFamily ffamily, string text, float fsize, float padding, COLOR color, TextGraphicsOptions options)
         {
             // http://sixlabors.com/2017/04/08/watermarks/
 

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing.Brushes;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+
+using V2 = System.Numerics.Vector2;
 
 namespace Epsylon.ImageSharp.Procedural
 {
@@ -18,22 +20,20 @@ namespace Epsylon.ImageSharp.Procedural
 
         private static void _FillPolarLookupTable(this Image<HalfVector2> target)
         {
-            var c = new System.Numerics.Vector2((float)target.Width / 2.0f, (float)target.Height / 2.0f);
+            var c = new V2((float)target.Width / 2.0f, (float)target.Height / 2.0f);
 
-            for (int y = 0; y < target.Height; ++y)
-            {
-                for (int x = 0; x < target.Width; ++x)
-                {
-                    var p = _PixelEvaluator(x, y, c);
-
-                    target[x, y] = new HalfVector2(p);
-                }
-            }
+            target.Bounds().ForEachPoint
+                (
+                pc => {
+                   var p = _PixelEvaluator(pc.X, pc.Y, c);
+                   target[pc.X, pc.Y] = new HalfVector2(p);
+                    }
+                );            
         }
 
-        private static System.Numerics.Vector2 _PixelEvaluator(int x, int y, System.Numerics.Vector2 center)
+        private static V2 _PixelEvaluator(int x, int y, System.Numerics.Vector2 center)
         {
-            var p = new System.Numerics.Vector2((float)x + 0.5f, (float)y + 0.5f) - center;            
+            var p = new V2((float)x + 0.5f, (float)y + 0.5f) - center;            
 
             var angle = -Math.Atan2(p.X, p.Y);
             angle += Math.PI;
@@ -43,14 +43,14 @@ namespace Epsylon.ImageSharp.Procedural
 
             var radius = p.Length();
 
-            return new System.Numerics.Vector2((float)angle.Clamp(0, 1), 1- (float)radius.Clamp(0, 1));            
+            return new V2((float)angle.Clamp(0, 1), 1- (float)radius.Clamp(0, 1));            
         }
 
         private static void _DistortImage<TPixel>(this Image<TPixel> target, Image<HalfVector2> targetLookup) where TPixel : struct, IPixel<TPixel>
         {
             using (var source = target.Clone())
             {
-                var sourceScale = new System.Numerics.Vector2(source.Width, source.Height);
+                var sourceScale = new V2(source.Width, source.Height);
 
                 for (int dy = 0; dy < target.Height; ++dy)
                 {

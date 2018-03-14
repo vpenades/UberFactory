@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
+using SixLabors.Primitives;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.Primitives;
+using SixLabors.ImageSharp.Processing.Processors;
+
 
 namespace Epsylon.ImageSharp.Procedural
 {

@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 
 using SixLabors.Primitives;
-using SixLabors.ImageSharp.Helpers;
 using SixLabors.ImageSharp.MetaData.Profiles.Exif;
+
+using V2 = System.Numerics.Vector2;
 
 namespace Epsylon.ImageSharp.Procedural
 {
@@ -156,14 +157,14 @@ namespace Epsylon.ImageSharp.Procedural
                 // rectangle
                 if (Size.HasValue)
                 {
-                    var tl = Center.ToVector() - Size.Value.ToVector()*0.5f;
+                    var tl = PointF.Subtract(Center,Size.Value) *0.5f;
                     return new RectangleF(tl, Size.Value);
                 }
 
                 // circle
                 if (Diameter.HasValue)
                 {
-                    var tl = Center.ToVector() - new System.Numerics.Vector2(Diameter.Value) * 0.5f;
+                    var tl = PointF.Subtract(Center , new SizeF(Diameter.Value,Diameter.Value)) * 0.5f;
                     return new RectangleF(tl, new Size(Diameter.Value));
                 }
 

@@ -5,19 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SixLabors.ImageSharp;
-
-using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace Epsylon.UberPlugin
 {
     using UberFactory;
-
     using Epsylon.ImageSharp.Procedural;
+
+    using IMAGE32 = Image<Rgba32>;
 
     using PNGFORMAT = SixLabors.ImageSharp.Formats.Png;
     using JPGFORMAT = SixLabors.ImageSharp.Formats.Jpeg;
     using BMPFORMAT = SixLabors.ImageSharp.Formats.Bmp;
     using GIFFORMAT = SixLabors.ImageSharp.Formats.Gif;
+    using SixLabors.ImageSharp.Processing.Quantization;
 
     public enum AlphaEncoding
     {
@@ -102,8 +104,8 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("AlphaProcessing")] public AlphaEncoding AlphaProcessing { get; private set; }
 
         [SDK.Group(0), SDK.Title("Quantizer")]        
-        [SDK.Default(Quantization.Palette)]
-        [SDK.InputValue("Quantizer")] public Quantization Quantizer { get; set; }
+        [SDK.Default(QuantizationMode.Palette)]
+        [SDK.InputValue("Quantizer")] public QuantizationMode Quantizer { get; set; }
 
         protected override EncoderAgent Evaluate()
         {
@@ -185,8 +187,8 @@ namespace Epsylon.UberPlugin
         [SDK.InputValue("TransparencyThreshold")] public int TransparencyThreshold { get; set; }
 
         [SDK.Group(0), SDK.Title("Quantizer")]        
-        [SDK.Default(Quantization.Palette)]
-        [SDK.InputValue("Quantizer")] public Quantization Quantizer { get; set; }
+        [SDK.Default(QuantizationMode.Palette)]
+        [SDK.InputValue("Quantizer")] public QuantizationMode Quantizer { get; set; }
 
         protected override EncoderAgent Evaluate()
         {

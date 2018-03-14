@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SixLabors.ImageSharp;
-
-using IMAGE32 = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.Rgba32>;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace Epsylon.UberPlugin
 {
     using UberFactory;
 
+    using IMAGE32 = SixLabors.ImageSharp.Image<Rgba32>;
     using IMGTRANSFORM = Action<IImageProcessingContext<Rgba32>>;    
     using IMAGE32DC = IImageProcessingContext<Rgba32>;
 

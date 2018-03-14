@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using SixLabors.Primitives;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Helpers;
 using SixLabors.ImageSharp.MetaData;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.Primitives;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.MetaData.Profiles.Exif;
 
 namespace Epsylon.ImageSharp.Procedural
 {
+    using METADATAOWNER = IImageInfo;
+
     public static class _MetadataExtensions
     {
         // TODO: Trick: to store offsets or vector data that is not affected by the image resizes,
@@ -56,7 +59,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         #endregion
 
-        #region internals
+        #region custom metadata tags
 
         private const string _InternalPropertyPrefix = "{9578CA40-2C8B-40AB-AB22-5A7B5777D861}-";
         private const string _PixelOffsetX = _InternalPropertyPrefix + "PixelOffsetX";
@@ -114,17 +117,30 @@ namespace Epsylon.ImageSharp.Procedural
 
         #region Exif
 
+        internal static ExifProfile UseExifProfile(this METADATAOWNER image)
+        {
+            if (image == null) return null;
+            if (image.MetaData.ExifProfile == null) image.MetaData.ExifProfile = new ExifProfile();
+
+            return image.MetaData.ExifProfile;
+        }
+
+        internal static void ClearValue(this ExifProfile profile, ExifTag tag)
+        {
+            if (profile.GetValue(tag) != null) profile.RemoveValue(tag);
+        }
+
         public static IImageProcessingContext<TPixel> SetSubjectInfo<TPixel>(this IImageProcessingContext<TPixel> source, SubjectInfo sinfo) where TPixel : struct, IPixel<TPixel>
         {
             return source.Apply(img => img.SetSubjectInfo(sinfo));
         }
 
-        public static SubjectInfo GetSubjectInfo(this IImage image)
+        public static SubjectInfo GetSubjectInfo(this METADATAOWNER image)
         {
             return SubjectInfo.FromProfile(image?.MetaData?.ExifProfile);            
         }
 
-        public static void SetSubjectInfo(this IImage image, SubjectInfo sinfo)
+        public static void SetSubjectInfo(this METADATAOWNER image, SubjectInfo sinfo)
         {
             sinfo.WriteTo(image.UseExifProfile());
         }

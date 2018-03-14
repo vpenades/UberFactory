@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Epsylon.ImageSharp.Procedural
 {
+    using V4 = System.Numerics.Vector4;
+
     [Flags]
     public enum Channel
     {
@@ -31,5 +33,30 @@ namespace Epsylon.ImageSharp.Procedural
         public Channel Green;
         public Channel Blue;
         public Channel Alpha;
-    }
+
+        public V4 ShuffleComponents(V4 color)
+        {
+            return new V4
+                (
+                GetComponent(Red, color),
+                GetComponent(Green, color),
+                GetComponent(Blue, color),
+                GetComponent(Alpha, color)
+                );
+        }
+
+        public static float GetComponent(Channel c, V4 color)
+        {
+            float r = 0;
+            float w = 0;
+
+            if (c.HasFlag(Channel.One)) { r += 1; w += 1; }
+            if (c.HasFlag(Channel.Red)) { r += color.X; w += 1; }
+            if (c.HasFlag(Channel.Green)) { r += color.Y; w += 1; }
+            if (c.HasFlag(Channel.Blue)) { r += color.Z; w += 1; }
+            if (c.HasFlag(Channel.Alpha)) { r += color.W; w += 1; }
+
+            return w == 0 ? 0 : r / w;
+        }
+    }   
 }

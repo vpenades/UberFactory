@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Convolution;
+using SixLabors.ImageSharp.Processing.Drawing;
+using SixLabors.ImageSharp.Processing.Transforms;
+using SixLabors.ImageSharp.Processing.Filters;
+using SixLabors.ImageSharp.Processing.Effects;
 
 using Epsylon.ImageSharp.Procedural;
+
 
 namespace Epsylon.UberPlugin
 {
@@ -21,6 +28,7 @@ namespace Epsylon.UberPlugin
     using SIZE = SixLabors.Primitives.Size;
     using POINT = SixLabors.Primitives.Point;
     using RECT = SixLabors.Primitives.Rectangle;
+    
 
     [SDK.Icon(Constants.ICON_IMAGE)]
     [SDK.ContentNode("TransformStack")]
@@ -263,8 +271,8 @@ namespace Epsylon.UberPlugin
         [SDK.Group(0)]
         [SDK.InputValue("Filter")]
         [SDK.Title("Filter")]
-        [SDK.Default(SixLabors.ImageSharp.Processing.EdgeDetection.Lapacian5X5)]
-        public SixLabors.ImageSharp.Processing.EdgeDetection Filter { get; set; }        
+        [SDK.Default(EdgeDetectionOperators.Laplacian5x5)]
+        public EdgeDetectionOperators Filter { get; set; }        
 
         protected override IMGTRANSFORM TransformImage()
         {
@@ -442,10 +450,10 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
-            var ft = SixLabors.ImageSharp.Processing.FlipType.None;
+            var ft = FlipType.None;
 
-            if (Horizontal) ft |= SixLabors.ImageSharp.Processing.FlipType.Horizontal;
-            if (Vertical) ft |= SixLabors.ImageSharp.Processing.FlipType.Vertical;
+            if (Horizontal) ft |= FlipType.Horizontal;
+            if (Vertical) ft |= FlipType.Vertical;
 
             return dc => dc.Flip(ft);
         }
@@ -491,7 +499,7 @@ namespace Epsylon.UberPlugin
         {
             return dc => dc
                 .ApplyPolarDistort(Inverse)
-                .Flip(SixLabors.ImageSharp.Processing.FlipType.Vertical);
+                .Flip(FlipType.Vertical);
         }
 
     }

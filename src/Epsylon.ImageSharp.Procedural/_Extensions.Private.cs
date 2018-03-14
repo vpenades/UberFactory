@@ -6,6 +6,8 @@ using System.Text;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Drawing;
 using SixLabors.Primitives;
 
 namespace Epsylon.ImageSharp.Procedural
@@ -16,65 +18,7 @@ namespace Epsylon.ImageSharp.Procedural
 
     static class _PrivateExtensions
     {
-        public static Boolean Bit(this Int32 value, int idx) => ((value >> idx) & 1) == 1;
-        public static Int32 WithBit(this Int32 value, int idx, bool bit) => bit ? (value | (1 << idx)) : (value & ~(1 << idx));        
-
-        public static SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile UseExifProfile(this IImage image)
-        {
-            if (image == null) return null;
-            if (image.MetaData.ExifProfile == null) image.MetaData.ExifProfile = new SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile();
-
-            return image.MetaData.ExifProfile;
-        }
-
-        public static void ClearValue(this SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifProfile profile, SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag tag)
-        {
-            if (profile.GetValue(tag) != null) profile.RemoveValue(tag);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V2 ToVector(this Point source) { return new V2(source.X, source.Y); }       
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V2 ToVector(this Size source) { return new V2(source.Width, source.Height); }
-
-
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V2 Round(this V2 source)
-        {
-            return new V2((float)Math.Round(source.X), (float)Math.Round(source.Y));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V4 Premultiply(this V4 source)
-        {
-            float w = source.W;
-            var premultiplied = source * w;
-            premultiplied.W = w;
-            return premultiplied;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V4 UnPremultiply(this V4 source)
-        {
-            float w = source.W;
-            var unpremultiplied = source / w;
-            unpremultiplied.W = w;
-            return unpremultiplied;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V4 ApplyAsNormal(this V4 dest, V4 source)
-        {
-            source = source.Premultiply();
-
-            dest = V4.Lerp(dest, source, source.W);
-
-            return dest.UnPremultiply();
-        }
+        #region intrinsics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Clamp(this int v, int min, int max)
@@ -100,6 +44,47 @@ namespace Epsylon.ImageSharp.Procedural
             return v;
         }
 
+        public static Boolean Bit(this Int32 value, int idx) => ((value >> idx) & 1) == 1;
+
+        public static Int32 WithBit(this Int32 value, int idx, bool bit) => bit ? (value | (1 << idx)) : (value & ~(1 << idx));
+
+        #endregion
+
+        #region vectors
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V2 Round(this V2 source)
+        {
+            return new V2((float)Math.Round(source.X), (float)Math.Round(source.Y));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 Premultiply(this V4 source)
+        {
+            float w = source.W;
+            var premultiplied = source * w;
+            return premultiplied.WithW(w);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 UnPremultiply(this V4 source)
+        {
+            float w = source.W;
+            var unpremultiplied = source / w;
+            return unpremultiplied.WithW(w);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static V4 ApplyAsNormal(this V4 dest, V4 source)
+        {
+            source = source.Premultiply();
+            dest = V4.Lerp(dest, source, source.W);
+            return dest.UnPremultiply();
+        }
+
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static V4 Clamp(this V4 v, V4 min, V4 max)
         {
@@ -112,7 +97,7 @@ namespace Epsylon.ImageSharp.Procedural
         public static V4 Saturate(this V4 v)
         {
             return v.Clamp(V4.Zero, V4.One);
-        }        
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static V4 WithX(this V4 v, float x) { v.X = x; return v; }
@@ -125,6 +110,10 @@ namespace Epsylon.ImageSharp.Procedural
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static V4 WithW(this V4 v, float w) { v.W = w; return v; }
+
+        #endregion
+
+        #region sixlabors primitives        
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithAlpha(this Rgba32 color, int alpha)
@@ -170,7 +159,10 @@ namespace Epsylon.ImageSharp.Procedural
             return color;
         }
 
-        
+        #endregion       
+
+        #region sixlabors images
+
         public static void DrawPixel<TPixel>(this Image<TPixel> image, int x, int y, TPixel color, GraphicsOptions gfx) where TPixel : struct, IPixel<TPixel>
         {
             if (x < 0 || y < 0 || x >= image.Width || y >= image.Height) return;
@@ -192,30 +184,42 @@ namespace Epsylon.ImageSharp.Procedural
             return rect;
         }
 
+        /// <summary>
+        /// Gets the alpha-weighted, average color of the pixels of the image contained in the given rectangle.
+        /// </summary>
+        /// <typeparam name="TPixel"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="sourceRectangle"></param>
+        /// <returns></returns>
         public static TPixel GetAverageColor<TPixel>(this Image<TPixel> source, Rectangle sourceRectangle) where TPixel : struct, IPixel<TPixel>
         {
-            sourceRectangle.FitWithinImage(source);
+            sourceRectangle = sourceRectangle.FitWithinImage(source);
 
-            var ccc = V4.Zero;
-            float w = 0;
+            double x = 0;
+            double y = 0;
+            double z = 0;
+            double w = 0;            
 
-            for (int y=0; y < sourceRectangle.Height; ++y)
-            {
-                for (int x = 0; x < sourceRectangle.Height; ++x)
+            sourceRectangle.ForEachPoint(
+                pc =>
                 {
-                    var c = source[x + sourceRectangle.X, y + sourceRectangle.Y].ToVector4();
+                    var c = source[pc.X, pc.Y].ToVector4();
 
-                    ccc += c;
-                    w += c.W;                    
+                    x += c.X;
+                    y += c.Y;
+                    z += c.Z;
+                    w += c.W;
                 }
-            }
+                );
 
-            ccc /= w;
+            var r = w == 0 ? V4.Zero : new V4( (float)(x / w), (float)(y / w), (float)(z / w), 1);            
 
             var p = default(TPixel);
-            p.PackFromVector4(ccc);
+            p.PackFromVector4(r);
 
             return p;
         }
+
+        #endregion
     }
 }

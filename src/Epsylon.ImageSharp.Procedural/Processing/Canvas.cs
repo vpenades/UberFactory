@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-using SixLabors.ImageSharp;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
-namespace Epsylon.ImageSharp.Procedural
+
+namespace Epsylon.ImageSharp.Procedural.Processing
 {
     using COLOR = Rgba32;
     using IMAGE = Image<Rgba32>;
@@ -16,18 +18,18 @@ namespace Epsylon.ImageSharp.Procedural
     // https://github.com/jeresig/processing-js
     // https://johnresig.com/blog/processingjs/
 
-    public class Processing
+    public class Canvas
     {
         #region lifecycle
 
-        public Processing(IMAGE target, int seed)
+        public Canvas(IMAGE target, int seed)
         {
             _Canvas = target;
             _Randomizer = new Random(seed);
 
-            var mode = SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal;
+            var mode = PixelBlenderMode.Normal;
 
-            // _Blender = SixLabors.ImageSharp.PixelFormats.PixelOperations<Rgba32>.Instance.GetPixelBlender(mode);
+            // _Blender = PixelOperations<Rgba32>.Instance.GetPixelBlender(mode);
             _GfxMode = new GraphicsOptions() { BlenderMode = mode };
         }
 
@@ -44,6 +46,15 @@ namespace Epsylon.ImageSharp.Procedural
 
         #endregion
 
+        #region properties
+
+        public int Width => _Canvas.Width;
+        public int Height => _Canvas.Height;
+
+        #endregion
+
+        #region API
+
         protected int NextRandomInt(int max) { return _Randomizer.Next(max); }
 
         protected float NextRandomFloat(float min, float max)
@@ -59,9 +70,8 @@ namespace Epsylon.ImageSharp.Procedural
             if (y < 0 || y >= _Canvas.Height) return;
 
             _Canvas.DrawPixel((int)x, (int)y, color, _GfxMode);
-        }
+        }        
 
-        public int Width => _Canvas.Width;
-        public int Height => _Canvas.Height;
+        #endregion
     }
 }

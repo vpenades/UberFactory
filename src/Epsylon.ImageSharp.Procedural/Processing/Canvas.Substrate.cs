@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SixLabors.ImageSharp;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
-namespace Epsylon.ImageSharp.Procedural
+
+namespace Epsylon.ImageSharp.Procedural.Processing
 {    
     using COLOR = Rgba32;
     using IMAGE = Image<Rgba32>;
@@ -25,7 +27,7 @@ namespace Epsylon.ImageSharp.Procedural
 
     // https://crossjam.net/wp/mpr/2009/10/pollockshimmeringgif/
 
-    public class Substrate : Processing
+    public class Substrate : Canvas
     {
         // Substrate Watercolor
         // j.tarbell   June, 2004
@@ -242,7 +244,7 @@ namespace Epsylon.ImageSharp.Procedural
                 if ((cx >= 0) && (cx < _Parent.Width) && (cy >= 0) && (cy < _Parent.Height))
                 {
                     // draw black crack                    
-                    _Parent.DrawPoint(cx, cy, SixLabors.ImageSharp.Rgba32.Black.WithAlpha((int)(255.0f * 0.85f)));
+                    _Parent.DrawPoint(cx, cy, Rgba32.Black.WithAlpha((int)(255.0f * 0.85f)));
 
                     // safe to check
                     if ((_Parent.GetCell(cx,cy) > 10000) || (Math.Abs( _Parent.GetCell(cx,cy) - _Angle) < 5))

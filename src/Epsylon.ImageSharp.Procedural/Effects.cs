@@ -5,10 +5,14 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Helpers;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Convolution;
+using SixLabors.ImageSharp.Processing.Filters;
+using SixLabors.ImageSharp.Processing.Drawing;
+using SixLabors.ImageSharp.Processing.Transforms;
 
 namespace Epsylon.ImageSharp.Procedural
 {

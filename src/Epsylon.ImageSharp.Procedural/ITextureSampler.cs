@@ -187,10 +187,10 @@ namespace Epsylon.ImageSharp.Procedural
             uv.Y -= y; System.Diagnostics.Debug.Assert(uv.Y >= 0 && uv.Y <= 1);
 
             // bilinear filtering
-            A = A.AlphaAwareLerp(B, uv.X); // first row
-            C = C.AlphaAwareLerp(D, uv.X); // second row
+            A = A.LerpRGBA(B, uv.X); // first row
+            C = C.LerpRGBA(D, uv.X); // second row
 
-            return A.AlphaAwareLerp(C, uv.Y); // column            
+            return A.LerpRGBA(C, uv.Y); // column            
         }
 
         public Vector4 GetAreaSample(UV tl, UV tr, UV br, UV bl)
@@ -317,7 +317,7 @@ namespace Epsylon.ImageSharp.Procedural
         }
 
         #endregion
-    }
+    }    
 
     sealed class _PerlinNoiseTextureSampler : ITextureSampler<float>
     {

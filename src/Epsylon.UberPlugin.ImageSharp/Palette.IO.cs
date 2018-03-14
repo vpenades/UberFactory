@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+
 namespace Epsylon.UberPlugin.ImageSharp
 {
-    using COLOR = SixLabors.ImageSharp.Rgba32;
-
     using UberFactory;
-    using SixLabors.ImageSharp;
+
+    using COLOR = Rgba32;    
+    
 
     [SDK.ContentNode("PaletteReader")]
     [SDK.Title("Palette from File")]

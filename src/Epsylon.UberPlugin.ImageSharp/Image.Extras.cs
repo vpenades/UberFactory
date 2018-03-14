@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Overlays;
+using SixLabors.ImageSharp.Processing.Drawing;
+using SixLabors.ImageSharp.Processing.Text;
 
 using Epsylon.ImageSharp.Procedural;
 
@@ -16,8 +18,7 @@ namespace Epsylon.UberPlugin
 
     using PIXEL32 = Rgba32;
     using IMAGE32 = Image<Rgba32>;
-    using IMAGEENCODER = KeyValuePair<string, Action<UberFactory.SDK.ExportContext, Image<Rgba32>>>;
-    
+
 
     [SDK.Icon("🏴"), SDK.Title("Solid Color"), SDK.TitleFormat("{0} Solid Color")]
     [SDK.ContentNode("CreateSolidColor")]    
@@ -262,7 +263,7 @@ namespace Epsylon.UberPlugin
         {
             var ffamily = Evaluate(); if (ffamily == null) return null;
 
-            using (var o = ffamily.RenderText("Lorem ipsum dolor sit amet", 48, 4, PIXEL32.Black, SixLabors.ImageSharp.Drawing.TextGraphicsOptions.Default) as IMAGE32)
+            using (var o = ffamily.RenderText("Lorem ipsum dolor sit amet", 48, 4, PIXEL32.Black, TextGraphicsOptions.Default) as IMAGE32)
             {
                 return o.CreatePreview(context);
             }
@@ -439,7 +440,7 @@ namespace Epsylon.UberPlugin
 
             using (var target = new IMAGE32(size.Width, size.Height))
             {
-                var substrate = Substrate.Create(target, RandomSeed.GetRandomSeedHash(), Palette);
+                var substrate = Epsylon.ImageSharp.Procedural.Processing.Substrate.Create(target, RandomSeed.GetRandomSeedHash(), Palette);
 
                 for (int i = 0; i < Iterations; ++i)
                 {                    
