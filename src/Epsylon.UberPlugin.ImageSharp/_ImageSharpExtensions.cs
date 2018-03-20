@@ -23,7 +23,7 @@ namespace Epsylon.UberPlugin
     using COLOR = Rgba32;
     using IMAGE = Image;
     using IMAGE32 = Image<Rgba32>;
-    
+    using SixLabors.ImageSharp.Primitives;
 
     public enum Resampler
     {
@@ -37,6 +37,8 @@ namespace Epsylon.UberPlugin
         Lanczos2, Lanczos3, Lanczos5, Lanczos8,
         MitchellNetravali,
     }
+
+    public enum Quantizer { Palette,Octree, Wu }
 
     static class _ImageSharpExtensions
     {
@@ -61,8 +63,8 @@ namespace Epsylon.UberPlugin
             // r == 2 inch
             // r == 3 cm
 
-            var x = (SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.XPosition).Value;
-            var y = (SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.YPosition).Value;
+            var x = (Rational)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.XPosition).Value;
+            var y = (Rational)image.MetaData.ExifProfile.GetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.YPosition).Value;
 
             return new POINT((int)x.ToDouble(), (int)y.ToDouble());
         }
@@ -71,8 +73,8 @@ namespace Epsylon.UberPlugin
         {
             // value should be rational64u
 
-            var x = SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational.FromDouble(offset.X);
-            var y = SixLabors.ImageSharp.MetaData.Profiles.Exif.Rational.FromDouble(offset.Y);
+            var x = Rational.FromDouble(offset.X);
+            var y = Rational.FromDouble(offset.Y);
 
             image.MetaData.ExifProfile.SetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.XPosition, x);
             image.MetaData.ExifProfile.SetValue(SixLabors.ImageSharp.MetaData.Profiles.Exif.ExifTag.YPosition, y);
@@ -81,11 +83,11 @@ namespace Epsylon.UberPlugin
         
 
 
-        public static IQuantizer GetInstance(this QuantizationMode mode)
+        public static IQuantizer GetInstance(this Quantizer mode)
         {
-            if (mode == QuantizationMode.Octree) return new OctreeQuantizer<Rgba32>();
-            if (mode == QuantizationMode.Palette) return new PaletteQuantizer<Rgba32>();
-            if (mode == QuantizationMode.Wu) return new WuQuantizer<Rgba32>();
+            if (mode == Quantizer.Octree) return new OctreeQuantizer();
+            if (mode == Quantizer.Palette) return new PaletteQuantizer();
+            if (mode == Quantizer.Wu) return new WuQuantizer();
 
             throw new NotImplementedException();
         }

@@ -450,10 +450,10 @@ namespace Epsylon.UberPlugin
 
         protected override IMGTRANSFORM TransformImage()
         {
-            var ft = FlipType.None;
+            var ft = FlipMode.None;
 
-            if (Horizontal) ft |= FlipType.Horizontal;
-            if (Vertical) ft |= FlipType.Vertical;
+            if (Horizontal) ft |= FlipMode.Horizontal;
+            if (Vertical) ft |= FlipMode.Vertical;
 
             return dc => dc.Flip(ft);
         }
@@ -499,7 +499,7 @@ namespace Epsylon.UberPlugin
         {
             return dc => dc
                 .ApplyPolarDistort(Inverse)
-                .Flip(FlipType.Vertical);
+                .Flip(FlipMode.Vertical);
         }
 
     }
