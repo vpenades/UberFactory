@@ -147,7 +147,7 @@ namespace Epsylon.ImageSharp.Procedural
             if (mode == PixelBlenderMode.Src) alphaFunc = (a, b) => a;
             if (mode == PixelBlenderMode.Dest) alphaFunc = (a, b) => b;
             if (mode == PixelBlenderMode.Add) alphaFunc = (a, b) => Math.Min(1,a+b);
-            if (mode == PixelBlenderMode.Substract) alphaFunc = (a, b) => Math.Max(0, a - b);            
+            if (mode == PixelBlenderMode.Subtract) alphaFunc = (a, b) => Math.Max(0, a - b);            
 
             var w = Math.Min(source.Width, mask.Width);
             var h = Math.Min(source.Height, mask.Height);

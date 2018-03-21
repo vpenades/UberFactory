@@ -150,15 +150,13 @@ namespace Epsylon.UberPlugin
 
                 if (sinfo != null)
                 {
-                    var l = new PointF[2];
+                    var l0 = sinfo.Center + new Size(3, 0);
+                    var l1 = sinfo.Center + new Size(3, 0);
+                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l0,l1) );
 
-                    l[0] = sinfo.Center + new Size(3, 0);
-                    l[1] = sinfo.Center + new Size(3, 0);
-                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l) );
-
-                    l[0] = sinfo.Center + new Size(0, 3);
-                    l[1] = sinfo.Center - new Size(0, 3);
-                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l));                    
+                    l0 = sinfo.Center + new Size(0, 3);
+                    l1 = sinfo.Center - new Size(0, 3);
+                    image.Mutate(dc => dc.DrawLines(COLOR.Red, 1, l0,l1));
 
                     if (sinfo.Size.HasValue)
                     {
@@ -279,7 +277,7 @@ namespace Epsylon.UberPlugin
             var h = (int)Math.Ceiling(size.Height + padding * 2);
             var img = new IMAGE32(w, h);
 
-            img.Mutate( dc => dc.DrawText(text, font, color, new System.Numerics.Vector2(padding, padding), options) );
+            img.Mutate( dc => dc.DrawText(options, text, font, color, new System.Numerics.Vector2(padding, padding)) );
 
             return img;
         }

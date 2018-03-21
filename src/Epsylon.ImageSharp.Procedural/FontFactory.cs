@@ -38,7 +38,7 @@ namespace Epsylon.ImageSharp.Procedural
             
             var img = new Image<Rgba32>(w,h);            
 
-            img.Mutate(dc => dc.DrawText(text, font, foreground, System.Numerics.Vector2.Zero, options));
+            img.Mutate(dc => dc.DrawText(options, text, font, foreground, System.Numerics.Vector2.Zero));
 
             return img;
         }

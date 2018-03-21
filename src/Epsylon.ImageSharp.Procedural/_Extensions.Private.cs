@@ -169,7 +169,7 @@ namespace Epsylon.ImageSharp.Procedural
 
             // this should be MUCH faster if we had access to PixelBlender<TPixel>
 
-            image.Mutate(dc => dc.Fill(color, new Rectangle(x, y, 1, 1), gfx));
+            image.Mutate(dc => dc.Fill(gfx, color, new Rectangle(x, y, 1, 1)));
         }
 
 
