@@ -66,9 +66,6 @@ namespace Epsylon.ImageSharp.Procedural.Processing
 
         protected void DrawPoint(float x, float y, COLOR color)
         {
-            if (x < 0 || x >= _Canvas.Width) return;
-            if (y < 0 || y >= _Canvas.Height) return;
-
             _Canvas.DrawPixel((int)x, (int)y, color, _GfxMode);
         }        
 

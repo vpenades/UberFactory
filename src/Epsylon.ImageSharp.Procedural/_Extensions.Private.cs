@@ -20,6 +20,11 @@ namespace Epsylon.ImageSharp.Procedural
     {
         #region intrinsics
 
+        // RoundUp => rounds to positive infinity
+        // RoundDown => rounds to negative infinity
+        // RoundAway => rounds away from zero
+        // RoundZero => rounds to zero        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Clamp(this int v, int min, int max)
         {
@@ -76,7 +81,7 @@ namespace Epsylon.ImageSharp.Procedural
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V4 ApplyAsNormal(this V4 dest, V4 source)
+        public static V4 ApplyAsNormalBlend(this V4 dest, V4 source)
         {
             source = source.Premultiply();
             dest = V4.Lerp(dest, source, source.W);
@@ -118,44 +123,28 @@ namespace Epsylon.ImageSharp.Procedural
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithAlpha(this Rgba32 color, int alpha)
         {
-            alpha = Math.Min(alpha, 255);
-            alpha = Math.Max(alpha, 0);
-
-            color.A = (Byte)alpha;
-
+            color.A = (Byte)alpha.Clamp(0,255);
             return color;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithRed(this Rgba32 color, int red)
         {
-            red = Math.Min(red, 255);
-            red = Math.Max(red, 0);
-
-            color.R = (Byte)red;
-
+            color.R = (Byte)red.Clamp(0,255);
             return color;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithGreen(this Rgba32 color, int green)
         {
-            green = Math.Min(green, 255);
-            green = Math.Max(green, 0);
-
-            color.G = (Byte)green;
-
+            color.G = (Byte)green.Clamp(0,255);
             return color;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rgba32 WithBlue(this Rgba32 color, int blue)
         {
-            blue = Math.Min(blue, 255);
-            blue = Math.Max(blue, 0);
-
-            color.B = (Byte)blue;
-
+            color.B = (Byte)blue.Clamp(0,255);
             return color;
         }
 

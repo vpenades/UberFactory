@@ -151,7 +151,9 @@ namespace Epsylon.UberFactory.Bindings
             ids.Add(Guid.Empty);
             SetDependencies(ids.ToArray());
 
-            System.Diagnostics.Debug.Assert(GetDependencies().Length == _debugCount + 1, "ERROR, new slot was not added correctly");            
+            #if DEBUG
+            System.Diagnostics.Debug.Assert(GetDependencies().Length == _debugCount + 1, "ERROR, new slot was not added correctly");
+            #endif
         }
 
         public void RemoveSlot(int index)

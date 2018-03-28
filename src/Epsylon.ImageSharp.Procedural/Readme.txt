@@ -9,3 +9,5 @@
 - Image could have a TPixel this[Point] { get; set; }
 
 - MemoryManager cannot be inherited in a derived class because abstract internal methods. If that's the expected behavior, 
+
+- Rectangle(F) don't have a "Invalid" constant defined with infinite negative size and an .IsValid property

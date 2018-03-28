@@ -117,6 +117,52 @@ namespace Epsylon.ImageSharp.Procedural
         #region SixLabors primitive helpers
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValid(this Rectangle rect) { return rect.Width >= 0 && rect.Height >= 0; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValid(this RectangleF rect) { return rect.Width >= 0 && rect.Height >= 0; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInitialized(this Rectangle rect)
+        {
+            if (rect.X != int.MaxValue) return true;
+            if (rect.Y != int.MaxValue) return true;
+            if (rect.Width != int.MinValue) return true;
+            if (rect.Height != int.MinValue) return true;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInitialized(this RectangleF rect)
+        {
+            if (rect.X != float.PositiveInfinity) return true;
+            if (rect.Y != float.PositiveInfinity) return true;
+            if (rect.Width != float.NegativeInfinity) return true;
+            if (rect.Height != float.NegativeInfinity) return true;
+            return false;
+        }
+
+        public static Rectangle UnionWith(this Rectangle a, Rectangle b)
+        {
+            var x = Math.Min(a.X, b.X);
+            var y = Math.Min(a.Y, b.Y);
+            var w = Math.Max(a.Right, b.Right) - x;
+            var h = Math.Max(a.Bottom, b.Bottom) - y;
+
+            return new Rectangle(x, y, w, h);
+        }
+
+        public static RectangleF UnionWith(this RectangleF a, RectangleF b)
+        {
+            var x = Math.Min(a.X, b.X);
+            var y = Math.Min(a.Y, b.Y);
+            var w = Math.Max(a.Right, b.Right) - x;
+            var h = Math.Max(a.Bottom, b.Bottom) - y;
+
+            return new RectangleF(x, y, w, h);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Area(this Size size) { return size.Width * size.Height; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
