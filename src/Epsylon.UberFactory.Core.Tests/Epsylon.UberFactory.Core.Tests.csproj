@@ -37,12 +37,6 @@
   
 
   <ItemGroup>
-    <Folder Include="TestFiles\" />
-  </ItemGroup>
-
-  
-
-  <ItemGroup>
     <ProjectReference Include="..\Epsylon.UberFactory.Client\Epsylon.UberFactory.Client.csproj" />
   </ItemGroup>
 

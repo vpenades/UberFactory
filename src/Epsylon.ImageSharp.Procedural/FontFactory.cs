@@ -7,12 +7,20 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Drawing;
 using SixLabors.ImageSharp.Processing.Text;
+using SixLabors.Primitives;
 using SixLabors.Shapes;
 
 namespace Epsylon.ImageSharp.Procedural
 {
-    static class FontFactory
+
+    // we need a single GlypthBitmap/SpriteBitmap object to represent an image that can be styled.
+    // option 1 is to have a custom object with an image inside
+    // option 2 is to add the glyph/sprite info as Image Metadata.
+
+
+    public static class FontFactory
     {
+        // https://docs.microsoft.com/es-es/typography/opentype/spec/ttch01
 
         public static void TestGlyph()
         {
@@ -67,16 +75,30 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static void DrawGlypth(this Image<Rgba32> target, SixLabors.Fonts.RendererOptions options, int x, int y, char character)
         {
+            var origin = new PointF(x, y);
+
+            // origin += new SizeF(0.5f, 0.5f);
+
             var path = options
                 .GetCharacterGlypth(character)
-                .Translate(x,y);            
+                .Translate(origin);            
 
             target.Mutate(dc => dc.Fill(Rgba32.White, path) );
-        }       
-
-        
-
-
-
+        }               
     }
+
+
+    class SpriteInfo
+    {
+        // logical origin/center/rotation pivot of the sprite
+        public PointF Origin { get; set; }
+
+        // it can be circles, polygons, etc, each one with a collision ID
+        // private readonly List<CollisionShape> _CollisionShapes = new List<CollisionShape>();
+
+        // glyph info
+    }
+
+
+
 }

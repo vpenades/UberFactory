@@ -1,0 +1,92 @@
+<Project Version="1.0" xmlns="http://www.uberfactory.com">
+  <Properties />
+  <DocumentInfo>
+    <Properties>
+      <Generator>UberFactoryEditor 0.0.0.0</Generator>
+      <Date>03/04/2018 18:28:39</Date>
+    </Properties>
+  </DocumentInfo>
+  <PluginReference>
+    <Properties>
+      <AssemblyPath>..\..\Epsylon.UberPlugin.ImageSharp\bin\Debug\netstandard2.0\Epsylon.UberPlugin.ImageSharp.dll</AssemblyPath>
+      <Version>1.0.0</Version>
+    </Properties>
+  </PluginReference>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>44f4fec3-b090-4efc-ad8c-b137fc816071</RootNodeId>
+      </Properties>
+      <Node Id="44f4fec3-b090-4efc-ad8c-b137fc816071">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_GlobalSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>f6b9050f-039b-4342-b0a5-c263a21dba09</RootNodeId>
+      </Properties>
+      <Node Id="f6b9050f-039b-4342-b0a5-c263a21dba09">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_JpegGlobalSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Settings>
+    <Properties />
+    <Pipeline>
+      <Properties>
+        <RootNodeId>8477980e-7a65-45fb-8b42-6547f7322376</RootNodeId>
+      </Properties>
+      <Node Id="8477980e-7a65-45fb-8b42-6547f7322376">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_PngGlobalSettings</ClassName>
+        </Properties>
+      </Node>
+    </Pipeline>
+  </Settings>
+  <Task>
+    <Properties>
+      <Title>New Task 1</Title>
+    </Properties>
+    <Pipeline>
+      <Properties>
+        <RootNodeId>a6a4e9f4-0750-47a1-8772-ed3553f51996</RootNodeId>
+      </Properties>
+      <Node Id="a6a4e9f4-0750-47a1-8772-ed3553f51996">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_ImageWriter</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <Image>dd2e6a34-4255-44fe-8550-db20de4419d5</Image>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="dd2e6a34-4255-44fe-8550-db20de4419d5">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_CreateFontGrid</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties>
+            <FontFamily>24c11526-57a7-4e03-81be-136565146197</FontFamily>
+          </Properties>
+        </Configuration>
+      </Node>
+      <Node Id="24c11526-57a7-4e03-81be-136565146197">
+        <Properties>
+          <ClassName>UberFactory_ImageSharp_SixLaborsSystemFont</ClassName>
+        </Properties>
+        <Configuration Name="Root">
+          <Properties />
+        </Configuration>
+      </Node>
+    </Pipeline>
+  </Task>
+</Project>

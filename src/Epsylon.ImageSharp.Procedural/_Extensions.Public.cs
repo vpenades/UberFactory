@@ -272,6 +272,17 @@ namespace Epsylon.ImageSharp.Procedural
             }
         }
 
+        public static Rectangle OuterRound(this RectangleF rect)
+        {
+            return new Rectangle
+                (
+                (int)Math.Floor(rect.X),
+                (int)Math.Floor(rect.Y),
+                (int)Math.Ceiling(rect.Width),
+                (int)Math.Ceiling(rect.Height)
+                );
+        }
+
         #endregion
 
         #region complex extensions
