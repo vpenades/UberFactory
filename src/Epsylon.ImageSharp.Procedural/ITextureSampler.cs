@@ -263,7 +263,7 @@ namespace Epsylon.ImageSharp.Procedural
             _Scale = source.Scale;
             _Center = _Scale / 2;
 
-            _Center = _Center.Round(); // todo: we could "snap" the _Center of the image to an interpixel cross.
+            _Center = _Center.RoundDown(); // todo: we could "snap" the _Center of the image to an interpixel cross.
         }
 
         #endregion       
