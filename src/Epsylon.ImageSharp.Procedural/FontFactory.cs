@@ -54,7 +54,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         // https://github.com/SixLabors/Fonts/issues/57
 
-        public static SixLabors.Primitives.RectangleF GetGlypthMaxBounds(this SixLabors.Fonts.RendererOptions options, params char[] characters)
+        public static RectangleF GetGlypthMaxBounds(this SixLabors.Fonts.RendererOptions options, params char[] characters)
         {
             var rect = new SixLabors.Primitives.RectangleF(float.PositiveInfinity, float.PositiveInfinity, float.NegativeInfinity, float.NegativeInfinity);
 

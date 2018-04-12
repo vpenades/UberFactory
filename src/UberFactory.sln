@@ -39,6 +39,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{1A979F46-F761-425A-94CC-591B9C08EF7A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugs", "Plugs", "{4AFC5DA8-2C9C-4C29-AE96-BFABCD1FBC31}"
+	ProjectSection(SolutionItems) = preProject
+		Plugin Guidelines.md = Plugin Guidelines.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{C2D80D18-CBE6-402C-B904-D711676DC636}"
 	ProjectSection(SolutionItems) = preProject
