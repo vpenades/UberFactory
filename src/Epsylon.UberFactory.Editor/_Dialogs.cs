@@ -51,7 +51,7 @@ namespace Epsylon.UberFactory
         {
             if (string.IsNullOrWhiteSpace(title)) title = "Item";
 
-            var result = MessageBox.Show("'" + title + "' " + "will be deleted permanently.", System.Windows.Application.Current.MainWindow.Title, MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            var result = MessageBox.Show("'" + title + "' " + "will be deleted permanently.", Application.Current.MainWindow.Title, MessageBoxButton.OKCancel, MessageBoxImage.Warning);
 
             return result == MessageBoxResult.OK;
         }
@@ -63,7 +63,12 @@ namespace Epsylon.UberFactory
 
         public static MessageBoxResult ShowSaveChangesDialog(string item)
         {
-            return MessageBox.Show("Save changes to '" + item + "'?", System.Windows.Application.Current.MainWindow.Title, MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            return MessageBox.Show("Save changes to '" + item + "'?", Application.Current.MainWindow.Title, MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+        }
+
+        public static void ShowRestartDialog(PathString newDocPath)
+        {
+            MessageBox.Show($"Application will restart and load {newDocPath.FileName}", Application.Current.MainWindow.Title, MessageBoxButton.OK,MessageBoxImage.Information);
         }
 
         public static PathString ShowOpenFileDialog(string fileFilter, PathString startDir)

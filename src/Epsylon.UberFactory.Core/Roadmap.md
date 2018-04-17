@@ -1,18 +1,19 @@
-﻿#### ROADMAP:
+﻿#### ROADMAP
 
 - Consider supporting JSON as an alternative document format.
-	
-		Pros: increased robustness and interoperability
-		Cons: adds a dependency with newtownsoft, which might be a problem for plugins,
+  - Pros: increased robustness and interoperability
+  - Cons: adds a dependency with newtownsoft, which might be a problem for plugins,
              a potential solution would be to use a custom/DotNet.System parser		
 		
    [System.Runtime.Serialization.Json - StackOverflow](https://stackoverflow.com/questions/15894091/how-to-parse-this-string-using-system-runtime-serialization-json)
 
    [System.Runtime.Serialization.Json - Microsoft](https://msdn.microsoft.com/en-us/library/system.runtime.serialization.json(v=vs.100).aspx)
 
-- A solution is required on how to handle collections on child configurations. Right now, a child collection completely overlaps the parent.
+- A solution is required on how to handle collections on child configurations. Right now,
+a child collection completely overlaps the parent.
 
-		We can have true arrays that might use the "replace" rule, and reference arrays that use the "union" rule.
+		We can have true arrays that might use the "replace" rule, and reference
+        arrays that use the "union" rule.
 
 		Solution: the merge rule can come from the Core, defined in the SDK.
 
@@ -24,4 +25,33 @@
 
 		Define a Curve object as a primitive value;
 		it might be part of the SDK, so it's powerful enough and common.
+
+- The current editor keeps loaded plugins in the current AppDomain and cannot be unloaded.
+This presents a problem when loading multiple scripts. A definitive solution is proposed
+in future versions, in the short term, a solution would be, when loading a new script,
+force the editor to close and execute itself with the loaded file as command line.
+
+- The document stores plugins as plain relative paths to the plugin assembly.
+This is problematic in development scenarios where multiple versions of the plugin can exist
+within a solution project.
+  - Instead of using a plain path, we can use a pair of "filename" and "hint paths", so the runtime can look into subdirectories
+    - for the most appropiated assembly based on runtime/platform
+    - for the most recent assembly.
+  - We can try using nuget packages, but this is a whole new ball game.
+    
+
+
+#### FUTURE
+
+- Right now, the editor is limited when working with scripts that use different plugins;
+Plugins remain loaded and can cause conflicts. A way to overcome this limitation is to load
+the plugins on execution in a separate context, that is, executing the script by calling the
+CLI application. But at the same time, we do need access to the plugins declared types, which
+are currently retrieved by reflection. A future variation would serialize the retrieved types
+to a file, which would be consumed by the editor.
+- 
+
+
+
+
 

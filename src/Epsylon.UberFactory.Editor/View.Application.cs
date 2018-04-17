@@ -23,7 +23,7 @@ namespace Epsylon.UberFactory
             ExitApplicationCmd = new RelayCommand(ExitApplication);
 
             var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
-            _Document = ProjectVIEW.CreateFromCommandLine(this, args);
+            DocumentView = ProjectVIEW.CreateFromCommandLine(this, args);            
 
             if (_Document == null) _Document = new HomeView(this);
         }
@@ -65,16 +65,20 @@ namespace Epsylon.UberFactory
             {
                 _Document = value;
                 RaiseChanged(nameof(DocumentView));
+                _UpdatePluginPaths();
+            }
+        }
 
-                if (_Document is ProjectVIEW.Project prj)
+        private void _UpdatePluginPaths()
+        {
+            if (_Document is ProjectVIEW.Project prj)
+            {
+                foreach (var pp in prj.AbsoluteFilePaths)
                 {
-                    foreach (var pp in prj.AbsoluteFilePaths)
-                    {
-                        var ppv = PluginView.Create(pp, null, null, null);
-                        if (ppv == null) continue;
+                    var ppv = PluginView.Create(pp, null, null, null);
+                    if (ppv == null) continue;
 
-                        _PluginPaths.Add(pp);
-                    }
+                    _PluginPaths.Add(pp);
                 }
             }
         }
@@ -98,28 +102,18 @@ namespace Epsylon.UberFactory
             }            
 
             return false;
-        }
-
-        private bool _CheckPluginSystemDirty()
-        {
-            var plugins = Client.PluginLoader.Instance.GetPlugins();
-            if (plugins == null || plugins.Count() == 0) return false;
-
-            var r = System.Windows.MessageBox.Show("There's plugins already loaded, Restart application?", "Warning", System.Windows.MessageBoxButton.YesNoCancel);
-            if (r == System.Windows.MessageBoxResult.Cancel) return true;
-            if (r == System.Windows.MessageBoxResult.Yes)
-            {
-                // https://stackoverflow.com/a/44477612
-                this.ExitApplication();
-            }
-
-            return false;
-        }
+        }        
 
         private void _CreateNewDocument()
         {
             if (_CheckKeepCurrentDocument()) return;
-            if (_CheckPluginSystemDirty()) return;
+
+            var plugins = Client.PluginLoader.Instance.GetPlugins();
+            if (plugins != null && plugins.Count() > 0)
+            {
+                (System.Windows.Application.Current as App).Restart();
+                return;
+            }
 
             var doc = ProjectVIEW.CreateNew(this);
             if (doc == null) return;
@@ -133,8 +127,7 @@ namespace Epsylon.UberFactory
 
         private void _OpenDocument()
         {
-            if (_CheckKeepCurrentDocument()) return;
-            if (_CheckPluginSystemDirty()) return;
+            if (_CheckKeepCurrentDocument()) return;            
 
             var dlg = new Microsoft.Win32.OpenFileDialog()
             {
@@ -149,10 +142,20 @@ namespace Epsylon.UberFactory
 
         private void _OpenDocument(String fPath)
         {
-            if (_CheckKeepCurrentDocument()) return;
-            if (_CheckPluginSystemDirty()) return;
+            if (_CheckKeepCurrentDocument()) return;            
 
             var filePath = new PathString(fPath);
+
+            // if there's plugins already loaded, we need to load the new document with an application's restart
+            var plugins = Client.PluginLoader.Instance.GetPlugins();
+            if (plugins != null && plugins.Count() > 0)
+            {                
+
+                (System.Windows.Application.Current as App).RestartAndLoad(filePath);
+                return;
+            }
+
+            // load normally;
 
             var doc = ProjectVIEW.OpenFile(this, filePath);
             if (doc == null) { RecentFilesManager.RemoveFile(filePath); return; }
@@ -160,7 +163,7 @@ namespace Epsylon.UberFactory
             RecentFilesManager.InsertFile(doc.DocumentPath);
 
             DocumentView = doc;            
-        }
+        }        
 
         public bool CloseDocument()
         {

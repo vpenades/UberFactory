@@ -8,7 +8,7 @@
         
         xmlns:themes="clr-namespace:Epsylon.UberFactory.Themes"        
         
-        Title="{Binding DocumentView.Title}"
+        Title="{Binding DocumentView.Title}"        
         
         Closing="Window_Closing"
         
