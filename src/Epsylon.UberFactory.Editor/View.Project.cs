@@ -9,26 +9,21 @@ namespace Epsylon.UberFactory
 {
     public static partial class ProjectVIEW
     {
-        public static Project CreateFromCommandLine(AppView app, string[] args)
+        public static Project TryCreateFromCommandLine(AppView app)
         {
-            if (app == null) return null;
+            var docPath = _AppConstants.StartupOpenDocumentPath;
 
-            if (args.Length == 0) return null;
+            if (!docPath.HasValue) return null;
 
-            var docPath = new PathString(args[0]);
-            if (!docPath.FileExists) return null;
-            if (!docPath.HasExtension("uberfactory")) return null;
+            var prj = ProjectDOM.LoadProjectFrom(docPath.Value);
 
-            var prj = ProjectDOM.LoadProjectFrom(docPath);            
-
-            var prjv = Project.Create(app, prj, docPath);
+            var prjv = Project.Create(app, prj, docPath.Value);
 
             // var outDir = args.FirstOrDefault(item => item.StartsWith("-OutDir:"));
             // if (outDir != null) outDir = outDir.Substring(8).Trim('"');
             // prjv.TargetDirectory = outDir;
 
-            return prjv;
-            
+            return prjv;            
         }
 
         public static Project CreateNew(AppView app)

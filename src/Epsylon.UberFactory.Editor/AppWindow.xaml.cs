@@ -23,31 +23,11 @@ namespace Epsylon.UberFactory
 
             this.DataContext = new AppView();
 
-            var wbounds = Environment.GetCommandLineArgs().FirstOrDefault(item => item.StartsWith("-WBOUNDS:"));
-
-            if (wbounds != null)
+            if (this.SetWindowStatusFromCLI())
             {
-                var parts = wbounds.Split(':');
-                if (parts.Length == 5)
-                {
-                    var xywl = parts.Skip(1).Select(item => int.Parse(item)).ToArray();
-
-                    // check more constraints
-                    if (xywl[2] > 10 && xywl[3] > 10)
-                    {
-                        this.WindowStartupLocation = WindowStartupLocation.Manual;
-                        this.Left = xywl[0];
-                        this.Top = xywl[1];
-                        this.Width = xywl[2];
-                        this.Height = xywl[3];
-                    }
-                }
-
-                this.Loaded += (s, e) => this.Show();
+                this.Loaded += (s, e) => this.Activate();
             }
-
-        }
-        
+        }        
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

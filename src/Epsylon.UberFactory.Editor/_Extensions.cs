@@ -277,6 +277,79 @@ namespace Epsylon.UberFactory
 
         public static PathString Location(this System.Diagnostics.FileVersionInfo fvinfo) { return new PathString(fvinfo.FileName); }
 
-        #endregion        
+        #endregion
+
+        #region WPF
+
+        public static string GetWindowStatusForCLI(this System.Windows.Window wnd)
+        {
+            // https://stackoverflow.com/questions/847752/net-wpf-remember-window-size-between-sessions
+            // https://blogs.msdn.microsoft.com/davidrickard/2010/03/08/saving-window-size-and-location-in-wpf-and-winforms/
+
+            var b = wnd.RestoreBounds;
+            
+            var m = wnd.WindowState == System.Windows.WindowState.Maximized ? 1 : 0;
+
+            return $"-WBOUNDS:{b.X}:{b.Y}:{b.Width}:{b.Height}:{m}";
+        }
+
+        public static bool SetWindowStatusFromCLI(this System.Windows.Window wnd)
+        {
+            int m, x, y, w, h;
+
+            try
+            {
+                var wbounds = Environment.GetCommandLineArgs().FirstOrDefault(item => item.StartsWith("-WBOUNDS:"));
+                if (wbounds == null) return false;
+
+                var parts = wbounds.Split(':');
+                if (parts.Length != 6) return false;
+
+                var xywlm = parts.Skip(1).Select(item => int.Parse(item)).ToArray();
+
+                m = xywlm[4];
+                x = xywlm[0];
+                y = xywlm[1];
+                w = xywlm[2];
+                h = xywlm[3];
+
+                if (m == 0)
+                {
+                    // check constraints
+                    if (w < System.Windows.SystemParameters.MinimumWindowTrackWidth) return false;
+                    if (w >= System.Windows.SystemParameters.MaximumWindowTrackWidth) return false;
+                    if (h < System.Windows.SystemParameters.MinimumWindowTrackHeight) return false;
+                    if (h >= System.Windows.SystemParameters.MaximumWindowTrackHeight) return false;
+
+                    if (x < 0) x = 0;
+                    if (y < 0) y = 0;
+                }
+            }
+            catch { return false; }
+
+            if (m != 0) // maximized
+            {
+                wnd.Left = x;
+                wnd.Top = y;
+                wnd.Width = w;
+                wnd.Height = h;                
+                wnd.WindowState = System.Windows.WindowState.Maximized;
+                wnd.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+            }
+            else
+            {
+                
+                wnd.Left = x;
+                wnd.Top = y;
+                wnd.Width = w;
+                wnd.Height = h;                
+                wnd.WindowState = System.Windows.WindowState.Normal;
+                wnd.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+            }            
+
+            return true;
+        }
+    
+        #endregion
     }
 }

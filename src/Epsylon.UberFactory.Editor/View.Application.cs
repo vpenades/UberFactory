@@ -21,9 +21,8 @@ namespace Epsylon.UberFactory
             ShowAboutDialogCmd = new RelayCommand(() => _Dialogs.ShowAboutDialog(null));
 
             ExitApplicationCmd = new RelayCommand(ExitApplication);
-
-            var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
-            DocumentView = ProjectVIEW.CreateFromCommandLine(this, args);            
+            
+            DocumentView = ProjectVIEW.TryCreateFromCommandLine(this);
 
             if (_Document == null) _Document = new HomeView(this);
         }
