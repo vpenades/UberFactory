@@ -26,10 +26,23 @@ a child collection completely overlaps the parent.
 		Define a Curve object as a primitive value;
 		it might be part of the SDK, so it's powerful enough and common.
 
+#### Plugin Issues
+
+- Right now, a script references plugins with relative paths. This has several problems:
+  - Moving the script to another location breaks the dependencies.
+  - Scripts are not self contained.
+
+  Solutions for these issues are:
+  - Use multiple hint paths
+  - Embed the plugin binaries as Mime64
+  - Have one UberFactory.cfg per directory, pointing to plugin locations (like nuget.cfg)
+
+
+
 - The current editor keeps loaded plugins in the current AppDomain and cannot be unloaded.
-This presents a problem when loading multiple scripts. A definitive solution is proposed
-in future versions, in the short term, a solution would be, when loading a new script,
-force the editor to close and execute itself with the loaded file as command line.
+This presents a problem when loading scripts consecutively.
+A short term solution is to force the editor to close and restart iteself when loading a new script.
+A definitive solution is proposed below.
 
 - The document stores plugins as plain relative paths to the plugin assembly.
 This is problematic in development scenarios where multiple versions of the plugin can exist
