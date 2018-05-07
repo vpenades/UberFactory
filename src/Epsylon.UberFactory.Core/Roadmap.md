@@ -1,4 +1,18 @@
-﻿#### ROADMAP
+﻿## Roadmap
+
+#### Build process
+
+A better version number system is required.
+
+[GitVersion](https://github.com/GitTools/GitVersion)
+
+for the SDK and Core assemblies, it could be desirable to have an automatic mechanism
+to prevent API breaking across releases, some candidate libraries are:
+
+[BreakDance](https://github.com/CloudNimble/Breakdance)
+
+
+#### Document Serialization
 
 - Consider supporting JSON as an alternative document format.
   - Pros: increased robustness and interoperability
