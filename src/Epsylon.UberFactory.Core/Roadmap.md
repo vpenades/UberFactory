@@ -65,10 +65,14 @@ within a solution project.
     - for the most appropiated assembly based on runtime/platform
     - for the most recent assembly.
   - We can try using nuget packages, but this is a whole new ball game.
-    
-
 
 #### FUTURE
+
+- Add a Button binding to launch actions within the plugin; NOTE: this is incompatible with decoupling plugin load
+from the editor, so we have to choose between dynamically loading the plugins in the editor to allow some features or not.
+Interesting actions would be: advanced preview, advanced edition in an external tool; query for information that can only
+be available from an unmanaged executable, etc;
+
 
 - Right now, the editor is limited when working with scripts that use different plugins;
 Plugins remain loaded and can cause conflicts. A way to overcome this limitation is to load
