@@ -40,6 +40,21 @@ a child collection completely overlaps the parent.
 		Define a Curve object as a primitive value;
 		it might be part of the SDK, so it's powerful enough and common.
 
+#### Previewing
+
+Right now the current mechanism for preview is to create a document,
+store it in a TMP folder and launch it with a Shell Process, letting
+the OS to choose the appropiate viewer based on user's preferences.
+
+This is good for know formats like images, but in some cases, a plugin
+might want to preview a custom file with a specific program.
+
+A solution would come in two ways:
+
+- At SDK level, allow to pass an executable path with arguments to be used for preview.
+
+- At editor level, allow selecting exectuables for preview, like Visual Studio.
+
 #### Plugin Issues
 
 - Right now, a script references plugins with relative paths. This has several problems:
