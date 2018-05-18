@@ -456,7 +456,7 @@ namespace Epsylon.UberFactory
                     .References
                     .Where(item => !item.IsEmpty)                    
                     .Select(rp => System.IO.Path.Combine(SourceDirectory, rp))
-                    .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .Select(item => new PathString(item))
                     .Where(item => item.IsValidAbsoluteFilePath)
                     .ToArray();

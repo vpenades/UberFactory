@@ -40,6 +40,15 @@ a child collection completely overlaps the parent.
 		Define a Curve object as a primitive value;
 		it might be part of the SDK, so it's powerful enough and common.
 
+#### improve debugging:
+
+if debugging is enabled in the application,
+a new "breakpoint" checkbox should appear on each node box.
+
+When checked, the node must run System.Diagnostics.Debugger.Break();
+
+
+
 #### Previewing
 
 Right now the current mechanism for preview is to create a document,
@@ -80,6 +89,14 @@ within a solution project.
     - for the most appropiated assembly based on runtime/platform
     - for the most recent assembly.
   - We can try using nuget packages, but this is a whole new ball game.
+
+
+Another issue is missing assemblies:
+Net.Standard projects by default don't copy assemblies to the BIN folder.
+To Copy assemblies locally, add this property to the project; <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+https://github.com/dotnet/sdk/issues/933
+https://github.com/dotnet/sdk/issues/598
+https://github.com/dotnet/sdk/issues/747
 
 #### FUTURE
 
