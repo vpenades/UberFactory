@@ -47,6 +47,10 @@ a new "breakpoint" checkbox should appear on each node box.
 
 When checked, the node must run System.Diagnostics.Debugger.Break();
 
+#### Validation
+
+We must detect and warn that a file is written more than once; this can be the case of shared textures,
+but it should not be the case of primary assets
 
 
 #### Previewing

@@ -227,6 +227,40 @@
 
     </Style>
 
+
+
+    <Style x:Key="MinimizeMaximizeToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+        <!--
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        -->
+        <Setter Property="Content" Value="🗖" />
+        <Setter Property="ToolTip" Value="Maximize" />
+        <Setter Property="Padding" Value="5,0,0,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <!-- https://msdn.microsoft.com/fr-fr/library/cc296245(v=vs.95).aspx -->
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+
+                    <ContentPresenter x:Name="contentPresenter"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          Margin="{TemplateBinding Padding}" />
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="contentPresenter" Property="Content" Value="🗕"/>
+                            <Setter TargetName="contentPresenter" Property="ToolTip" Value="Minimize"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
     <Style x:Key="VerticalExpanderStyle" TargetType="{x:Type Expander}">
         <Setter Property="Background" Value="White" />
         <Setter Property="Template">
@@ -237,16 +271,32 @@
                     <DockPanel SnapsToDevicePixels="True">
 
                         <Border Style="{StaticResource GroupBorderUpStyle}" DockPanel.Dock="Top">
-                            <ContentPresenter Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                                <!-- This ToggleButton is displayed in the main pannel as 🗕🗖 -->
+                                <ToggleButton x:Name="ExpanderButton" Grid.Column="1" Style="{StaticResource MinimizeMaximizeToggleButtonStyle}"                                              
+                                              IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                                </ToggleButton>
+
+                            </Grid>                            
                         </Border>
 
                         <Border Style="{StaticResource GroupBorderDownStyle}" Background="{TemplateBinding Background}" >
                             <DockPanel>
 
+                                <!-- This ToggleButton is displayed in the main pannel as ▼△ -->
+                                <!--
                                 <ToggleButton DockPanel.Dock="Bottom" x:Name="ExpanderButton" Style="{StaticResource ExpanderToggleButtonStyle}"
                                               HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"
                                               IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
                                 </ToggleButton>
+                                -->
 
                                 <ContentPresenter x:Name="ExpanderContent"
                                               Visibility="Collapsed"
