@@ -12,6 +12,4 @@ This is a WPF application to help authoring and debugging UberFactory scripts.
 
 - for both the Editor and the CLI tool, add Win7 shell extensions to display the progress bar in the taskbar icon.
 
-- The expander control uses two triangles (empty and filled) for collapsing and expanding; it could be better to use the classic maximize and minimize icons in the title bar.
-
 - Preview could have a tooltip, telling if there's something to preview, and the kind of Object to preview; an image, a 3d model, etc

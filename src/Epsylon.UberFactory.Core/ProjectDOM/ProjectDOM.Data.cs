@@ -20,6 +20,7 @@ namespace Epsylon.UberFactory
 
         public interface IBindableObject { Guid Identifier { get; } }
 
+        [System.Diagnostics.DebuggerDisplay("{Key} = {System.String.Join(\" \",GetValues())}")]
         public sealed class Property
         {
             #region lifecycle
@@ -27,6 +28,13 @@ namespace Epsylon.UberFactory
             internal Property() { }
 
             internal Property(string key) { _Key = key; }
+
+            internal Property(Property other)
+            {
+                this._Key = other._Key;
+                this._Value = other._Value;
+                if (other._Array != null) this._Array = (string[])other._Array.Clone();
+            }
 
             #endregion
 
@@ -62,7 +70,7 @@ namespace Epsylon.UberFactory
 
             #region properties
 
-            public String Key { get { return _Key; } set { _Key = value; } }
+            public String Key { get => _Key; set => _Key = value; }
 
             public int Count
             {
@@ -113,23 +121,27 @@ namespace Epsylon.UberFactory
             {
                 return _Value == null ? _Array?.ToArray() : new String[] { _Value };
             }
-
-            public void ReplaceValue(String oldVal, String newVal)
+            
+            internal void _RemapLocalIds(IReadOnlyDictionary<Guid, Guid> ids)
             {
-                if (oldVal == null) oldVal = String.Empty;
-                if (newVal == null) newVal = String.Empty;
-
-                var parts = GetValues(); if (parts == null) return;
-
-                bool changed = false;
-                
-                for(int i=0; i < parts.Length; ++i)
+                if (_Value != null)
                 {
-                    if (parts[i] == oldVal) { parts[i] = newVal; changed = true; }
+                    if (Guid.TryParse(_Value, out Guid oldId))
+                    {
+                        if (ids.TryGetValue(oldId, out Guid newId)) _Value = newId.ToString();
+                    }
                 }
 
-                if (changed) SetValues(parts);
-                
+                if (_Array != null)
+                {
+                    for(int i=0; i < _Array.Length; ++i)
+                    {
+                        if (_Array[i] != null && Guid.TryParse(_Array[i], out Guid oldId))
+                        {
+                            if (ids.TryGetValue(oldId, out Guid newId)) _Array[i] = newId.ToString();
+                        }
+                    }
+                }
             }
 
             #endregion            
@@ -157,10 +169,7 @@ namespace Epsylon.UberFactory
 
             public IEnumerable<string> Keys => _Properties.Select(item => item.Key);
 
-            public void CopyTo(PropertyGroup other)
-            {
-                other._Properties.AddRange(this._Properties);
-            }
+            public void CopyTo(PropertyGroup other) { other._Properties.AddRange(this._Properties.Select(item => new Property(item))); }
 
             internal Property _GetProperty(string key)
             {
@@ -288,6 +297,18 @@ namespace Epsylon.UberFactory
                     .FirstOrDefault();
             }
 
+            internal void _ActivateChildren(Func<Unknown, ObjectBase> factory)
+            {
+                for(int i=0; i < _LogicalChildren.Count; ++i)
+                {
+                    if (_LogicalChildren[i] is Unknown unk)
+                    {
+                        unk._ActivateChildren(factory);
+                        _LogicalChildren[i] = factory(unk);
+                    }
+                }
+            }
+
             #endregion
         }
 
@@ -308,7 +329,7 @@ namespace Epsylon.UberFactory
 
             public string ClassName { get; set; }
 
-            public IEnumerable<Unknown> Children { get { return GetLogicalChildren<Unknown>(); } }
+            public IEnumerable<Unknown> Children => GetLogicalChildren<Unknown>();
 
             #endregion
 
@@ -331,7 +352,7 @@ namespace Epsylon.UberFactory
                 return root;
             }
 
-            public static ObjectBase ParseXml(XElement root, Func<Unknown, ObjectBase> resolve)
+            public static ObjectBase ParseXml(XElement root, Func<Unknown, ObjectBase> factory)
             {
                 var target = new Unknown(root.Name.LocalName);
 
@@ -346,11 +367,17 @@ namespace Epsylon.UberFactory
 
                 foreach (var childxml in root.Elements().Where(item => item.Name.LocalName != "Properties"))
                 {
-                    var child = ParseXml(childxml, resolve);
+                    var child = ParseXml(childxml, factory);
                     target.AddLogicalChild(child);
                 }
 
-                return resolve(target);
+                return factory(target);
+            }
+
+            public ObjectBase Activate(Func<Unknown, ObjectBase> factory)
+            {
+                this._ActivateChildren(factory);
+                return factory(this);
             }
 
             #endregion
@@ -386,7 +413,9 @@ namespace Epsylon.UberFactory
         {
             protected Item() { }
 
-            internal Item(Unknown s) : base(s) { }            
+            internal Item(Unknown s) : base(s) { }
+
+            internal Item(Item s) : base(s) { }
         }        
 
         public partial class Settings : Item
@@ -399,6 +428,8 @@ namespace Epsylon.UberFactory
         public partial class Task : Item
         {
             internal Task(Unknown s) : base(s) { }
+
+            private Task(Task other) : base(other) { }
         }
 
         

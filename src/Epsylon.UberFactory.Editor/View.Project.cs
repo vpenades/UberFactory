@@ -118,6 +118,8 @@ namespace Epsylon.UberFactory
 
                 DeleteActiveDocumentCmd = new RelayCommand<BindableBase>(_DeleteTask);
 
+                CopyActiveDocumentCmd = new RelayCommand<BindableBase>(_CopyTask);
+
                 BuildAllCmd = new RelayCommand(Build);
                 TestAllCmd = new RelayCommand(Test);
 
@@ -138,6 +140,8 @@ namespace Epsylon.UberFactory
             public ICommand EditConfigurationsCmd { get; private set; }
 
             public ICommand DeleteActiveDocumentCmd { get; private set; }
+
+            public ICommand CopyActiveDocumentCmd { get; private set; }
 
             public ICommand BuildAllCmd { get; private set; }
 
@@ -367,6 +371,34 @@ namespace Epsylon.UberFactory
                 RaiseChanged(nameof(CanBuild),nameof(CanAddItems));
             }
 
+            private void _AddNewTask()
+            {
+                if (_ActiveConfiguration == null || _Configurations.IsEmpty) { _EditConfigurations(); return; }
+
+                var task = _Source.AddTask();
+                task.Title = "New Task " + Tasks.Count();
+
+                RaiseChanged(nameof(Tasks), nameof(IsDirty));
+
+                ActiveDocument = Tasks.FirstOrDefault(item => item.Source == task);
+
+                RaiseChanged(nameof(CanBuild));
+            }
+
+            private void _CopyTask(BindableBase item)
+            {
+                if (item is Task task)
+                {
+                    var xtask = _Source.AddTaskCopy(task.Source);
+
+                    RaiseChanged(nameof(Tasks), nameof(IsDirty));
+
+                    ActiveDocument = Tasks.FirstOrDefault(taskView => taskView.Source == xtask);
+
+                    RaiseChanged(nameof(CanBuild));
+                }
+            }
+
             private void _DeleteTask(BindableBase item)
             {
                 if (item is Task task)
@@ -383,16 +415,9 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            private void _AddNewTask()
-            {
-                if (_ActiveConfiguration == null || _Configurations.IsEmpty) { _EditConfigurations(); return; }
+            
 
-                _Source.AddTask().Title = "New Task " + Tasks.Count();
-
-                RaiseChanged(nameof(Tasks), nameof(IsDirty));
-
-                RaiseChanged(nameof(CanBuild));
-            }            
+            
 
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }
 

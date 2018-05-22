@@ -119,6 +119,7 @@
                             <StatusBar DockPanel.Dock="Bottom">
                                 <Button Content="{StaticResource _AddIcon}" ToolTip="Add Task" Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />
                                 <Button Content="{StaticResource _TrashIcon}" ToolTip="Remove Selected Task" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ActiveDocumentCanBeRemoved}" />
+                                <Button Content="{StaticResource _CopyIcon}" ToolTip="Copy Selected Task" Command="{Binding CopyActiveDocumentCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ActiveDocumentCanBeRemoved}" />
                             </StatusBar>
                             
                         <DataGrid x:Name="myTasks"

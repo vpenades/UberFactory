@@ -10,6 +10,8 @@ namespace Epsylon.UberFactory
     {
         public partial class Configuration : ObjectBase
         {
+            #region lifecycle
+
             public Configuration(string[] cfg)
             {
                 if (cfg == null || cfg.Length == 0) throw new ArgumentNullException(nameof(cfg));
@@ -18,11 +20,19 @@ namespace Epsylon.UberFactory
                 Attributes[PROP_NAME] = string.Join(Evaluation.BuildContext.ConfigurationSeparator.ToString(), cfg);
             }
 
+            #endregion
+
+            #region data
+
             private const String PROP_NAME = "Name";
 
             public String ConfigurationFullName => Attributes.GetValueOrDefault(PROP_NAME);
 
-            public String[] ConfigurationPath => ConfigurationFullName.Split(Evaluation.BuildContext.ConfigurationSeparator);            
+            public String[] ConfigurationPath => ConfigurationFullName.Split(Evaluation.BuildContext.ConfigurationSeparator);
+
+            #endregion
+
+            #region API
 
             public bool IsMatch(string[] cfg)
             {
@@ -32,12 +42,19 @@ namespace Epsylon.UberFactory
                 return IsMatch(string.Join(Evaluation.BuildContext.ConfigurationSeparator.ToString(), cfg));
             }
 
-            public bool IsMatch(string cfg) { return string.Equals(cfg, ConfigurationFullName, StringComparison.OrdinalIgnoreCase); }
+            public bool IsMatch(string cfg) { return string.Equals(cfg, ConfigurationFullName, StringComparison.OrdinalIgnoreCase); }            
 
-            internal void RemapLocalIds(IReadOnlyDictionary<Guid, Guid> ids)
+            internal void _RemapLocalIds(IReadOnlyDictionary<Guid, Guid> ids)
             {
-                throw new NotImplementedException();
+                foreach(var k in this.Properties.Keys)
+                {
+                    var p = this.Properties._GetProperty(k);
+
+                    p._RemapLocalIds(ids);
+                }
             }
+
+            #endregion
 
         }
 
@@ -46,15 +63,14 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public static Node Create(Factory.ContentBaseInfo node)
+            internal static Node Create(Factory.ContentBaseInfo node)
             {
-                var filter = node as Factory.ContentFilterInfo;
-                if (filter == null) return null;                
+                if (!(node is Factory.ContentFilterInfo filter)) return null;
 
                 return Create(filter.SerializationKey);
             }
 
-            public static Node Create(string classid)
+            internal static Node Create(string classid)
             {
                 if (string.IsNullOrWhiteSpace(classid)) throw new ArgumentNullException(nameof(classid));
 
@@ -127,13 +143,17 @@ namespace Epsylon.UberFactory
                 return provider;
             }
 
-            internal void RemapLocalIds(IReadOnlyDictionary<Guid, Guid> ids)
+            /// <summary>
+            /// Used to remap the ids when we do a deep clone operations of a Pipeline
+            /// </summary>
+            /// <param name="ids">A dictionary mapping the old IDs to the new IDs</param>
+            internal void _RemapLocalIds(IReadOnlyDictionary<Guid, Guid> ids)
             {
                 this.Identifier = ids[this.Identifier];
 
                 foreach(var cfg in GetLogicalChildren<Configuration>())
                 {
-                    cfg.RemapLocalIds(ids);
+                    cfg._RemapLocalIds(ids);
                 }
             }
 
@@ -192,7 +212,7 @@ namespace Epsylon.UberFactory
 
             #region lifecycle
 
-            public Pipeline() { }
+            internal Pipeline() { }            
 
             #endregion
 
@@ -265,6 +285,18 @@ namespace Epsylon.UberFactory
                 return h;
             }
 
+            internal void _RemapIds()
+            {
+                // create a map of new Guids to use as replacement
+                var idMap = new Dictionary<Guid, Guid>();                
+                foreach (var n in Nodes) idMap[n.Identifier] = Guid.NewGuid();
+
+                // begin replacement
+                this.RootIdentifier = idMap[this.RootIdentifier];
+
+                foreach (var n in Nodes) n._RemapLocalIds(idMap);
+            }
+
             #endregion
         }
 
@@ -317,6 +349,24 @@ namespace Epsylon.UberFactory
             #region lifecycle
 
             internal Task() { }
+
+            public Task CreateDeepCopy(bool remapIds)
+            {
+                var liquid = new Unknown(this);
+
+                var newTask = liquid.Activate(_Factory) as Task;
+
+                newTask.Title += "_Copy";
+
+                if (!remapIds) return newTask;
+
+                var pipeline = newTask.GetLogicalChildren<Pipeline>().FirstOrDefault();
+                if (pipeline == null) return newTask;
+
+                pipeline._RemapIds();
+
+                return newTask;
+            }            
 
             #endregion
 
@@ -491,14 +541,25 @@ namespace Epsylon.UberFactory
                 RemoveLogicalChild(child);
             }
 
-            public Task AddTask() { var task = new Task(); AddLogicalChild(task); return task; }            
-
-            public void RemoveItem(Item item) { RemoveLogicalChild(item); }            
-
-            public void Paste(Guid id)
+            public Task AddTask()
             {
+                var task = new Task();
 
+                AddLogicalChild(task);
+
+                return task;
             }
+
+            public Task AddTaskCopy(Task task)
+            {
+                var newTask = task.CreateDeepCopy(true);
+
+                AddLogicalChild(newTask);
+
+                return newTask;
+            }
+
+            public void RemoveItem(Item item) { RemoveLogicalChild(item); }
             
             public Settings UseSettings(string className)
             {

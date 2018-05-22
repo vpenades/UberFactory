@@ -56,7 +56,7 @@ namespace Epsylon.UberFactory
             return Unknown.ParseXml(root, _Factory) as Project;
         }
 
-        private static ObjectBase _Factory(Unknown unk)
+        internal static ObjectBase _Factory(Unknown unk)
         {
             var name = unk.ClassName;
 

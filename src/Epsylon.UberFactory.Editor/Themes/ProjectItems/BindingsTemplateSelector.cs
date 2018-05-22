@@ -12,8 +12,7 @@ namespace Epsylon.UberFactory.Themes.ProjectItems
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var element = container as FrameworkElement;
-            if (element == null) return null;
+            if (!(container is FrameworkElement element)) return null;
 
             var value = _SelectTemplate(item, element);
 

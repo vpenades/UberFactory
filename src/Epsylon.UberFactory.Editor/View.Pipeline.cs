@@ -357,8 +357,7 @@ namespace Epsylon.UberFactory
 
                 foreach(var b in bindings)
                 {
-                    var vb = b as Bindings.ValueBinding;
-                    if (vb == null) { r.Add(b); continue; }
+                    if (!(b is Bindings.ValueBinding vb)) { r.Add(b); continue; }
 
                     var gn = vb.GroupName; if (string.IsNullOrWhiteSpace(gn)) { r.Add(b); continue; }
 
