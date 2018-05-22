@@ -254,10 +254,15 @@ namespace Epsylon.UberFactory
             public BindableBase ActiveDocument
             {
                 get { return _ActiveItemView; }
-                set { if (value == _ActiveItemView) return; _ActiveItemView = value;RaiseChanged(nameof(ActiveDocument),nameof(ActiveDocumentCanBeRemoved)); }
+                set
+                {
+                    if (value == _ActiveItemView) return;
+                    _ActiveItemView = value;
+                    RaiseChanged(nameof(ActiveDocument),nameof(ActiveDocumentCanBeRemoved));
+                }
             }
 
-            public bool ActiveDocumentCanBeRemoved
+            public Boolean ActiveDocumentCanBeRemoved
             {
                 get
                 {

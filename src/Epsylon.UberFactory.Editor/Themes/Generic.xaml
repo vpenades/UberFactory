@@ -38,7 +38,7 @@
     <sys:String x:Key="_PackageIcon">📦</sys:String>
     <sys:String x:Key="_OutboxTray">📤</sys:String>
     <sys:String x:Key="_InboxTray">📥</sys:String>
-    <sys:String x:Key="_CopyIcon">⎘</sys:String>
+    <sys:String x:Key="_CopyIcon">⮎🗎</sys:String>
 
 
     <!--▲△ ▼▽-->
