@@ -346,15 +346,11 @@ namespace Epsylon.UberFactory
             private const String PROP_TITLE = "Title";
             private const String PROP_ENABLED = "Enabled";
 
-            #region lifecycle
-
-            internal Task() { }
+            #region lifecycle            
 
             public Task CreateDeepCopy(bool remapIds)
             {
-                var liquid = new Unknown(this);
-
-                var newTask = liquid.Activate(_Factory) as Task;
+                var newTask = new Unknown(this).Activate() as Task;                
 
                 newTask.Title += "_Copy";
 

@@ -56,20 +56,24 @@ namespace Epsylon.UberFactory
             return Unknown.ParseXml(root, _Factory) as Project;
         }
 
+        internal delegate ObjectBase ObjectFactoryDelegate(Unknown obj);
+
+        internal delegate Unknown UnknownFactoryDelegate(ObjectBase obj);
+
         internal static ObjectBase _Factory(Unknown unk)
         {
             var name = unk.ClassName;
 
             if (name == "Content") name = "Task";
 
-            if (name == typeof(Configuration).Name) return new Configuration(unk);
-            if (name == typeof(Node).Name) return new Node(unk);
-            if (name == typeof(Pipeline).Name) return new Pipeline(unk);
-            if (name == typeof(Task).Name) return new Task(unk);            
-            if (name == typeof(PluginReference).Name) return new PluginReference(unk);
-            if (name == typeof(Project).Name) return new Project(unk);
-            if (name == typeof(Settings).Name) return new Settings(unk);
-            if (name == typeof(DocumentInfo).Name) return new DocumentInfo(unk);
+            if (name == typeof(Configuration).Name) return new Configuration(unk,_Factory);
+            if (name == typeof(Node).Name) return new Node(unk, _Factory);
+            if (name == typeof(Pipeline).Name) return new Pipeline(unk, _Factory);
+            if (name == typeof(Task).Name) return new Task(unk, _Factory);            
+            if (name == typeof(PluginReference).Name) return new PluginReference(unk, _Factory);
+            if (name == typeof(Project).Name) return new Project(unk, _Factory);
+            if (name == typeof(Settings).Name) return new Settings(unk, _Factory);
+            if (name == typeof(DocumentInfo).Name) return new DocumentInfo(unk, _Factory);
 
             return unk;
         }

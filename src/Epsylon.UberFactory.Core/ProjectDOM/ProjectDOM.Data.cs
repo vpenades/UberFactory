@@ -240,18 +240,28 @@ namespace Epsylon.UberFactory
         {
             #region lifecycle
 
-            public ObjectBase() { }
+            protected ObjectBase() { }
 
-            public ObjectBase(ObjectBase other)
+            internal ObjectBase(Unknown other, ObjectFactoryDelegate factory)
             {
                 other._Properties.CopyTo(this._Properties);
 
-                foreach(var kvp in other._Attributes) { this._Attributes[kvp.Key] = kvp.Value; }
+                foreach (var kvp in other._Attributes) { this._Attributes[kvp.Key] = kvp.Value; }
 
-                _LogicalChildren.AddRange(other._LogicalChildren);
+                foreach(var child in other._LogicalChildren)
+                {
+                    if (factory != null && child is Unknown unkChild)
+                    {
+                        _LogicalChildren.Add(factory(unkChild));
+                    }
+                    else
+                    {
+                        _LogicalChildren.Add(child);
+                    }                    
+                }                
             }
 
-            public ObjectBase(ObjectBase other, Func<ObjectBase, Unknown> toUnknown)
+            internal ObjectBase(ObjectBase other, UnknownFactoryDelegate toUnknown)
             {
                 other._Properties.CopyTo(this._Properties);
 
@@ -295,19 +305,7 @@ namespace Epsylon.UberFactory
                     .Select(item => item.FindBindableObject<T>(id))
                     .ExceptNulls()
                     .FirstOrDefault();
-            }
-
-            internal void _ActivateChildren(Func<Unknown, ObjectBase> factory)
-            {
-                for(int i=0; i < _LogicalChildren.Count; ++i)
-                {
-                    if (_LogicalChildren[i] is Unknown unk)
-                    {
-                        unk._ActivateChildren(factory);
-                        _LogicalChildren[i] = factory(unk);
-                    }
-                }
-            }
+            }            
 
             #endregion
         }
@@ -374,79 +372,58 @@ namespace Epsylon.UberFactory
                 return factory(target);
             }
 
-            public ObjectBase Activate(Func<Unknown, ObjectBase> factory)
-            {
-                this._ActivateChildren(factory);
-                return factory(this);
-            }
+            public ObjectBase Activate() { return _Factory(this); }
 
             #endregion
         }
 
-
-
-
-
-
-
         public partial class Configuration : ObjectBase
         {
-            internal Configuration(Unknown s) : base(s) { }            
-        }
-        
+            internal Configuration(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
+        }        
 
         public partial class Node : ObjectBase
         {
-            internal Node(Unknown s) : base(s) { }            
+            internal Node(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
         }
 
         public partial class Pipeline : ObjectBase
         {
-            internal Pipeline(Unknown s) : base(s) { }
-
-            private Pipeline(Pipeline other) : base(other) { }            
+            internal Pipeline(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }            
         }
-
-
 
         public abstract partial class Item : ObjectBase
         {
-            protected Item() { }
+            internal Item(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
 
-            internal Item(Unknown s) : base(s) { }
-
-            internal Item(Item s) : base(s) { }
+            protected Item() {}
         }        
 
         public partial class Settings : Item
         {
-            internal Settings(Unknown s) : base(s) { }
-
-
+            internal Settings(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
         }
 
         public partial class Task : Item
         {
-            internal Task(Unknown s) : base(s) { }
+            internal Task(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
 
-            private Task(Task other) : base(other) { }
-        }
-
-        
+            internal Task() {}
+        }        
 
         public partial class PluginReference : Item
         {
-            internal PluginReference(Unknown s) : base(s) { }
+            internal PluginReference(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
         }
 
         public partial class DocumentInfo : ObjectBase
         {
-            internal DocumentInfo(Unknown s) : base(s) { }
+            internal DocumentInfo(Unknown s, ObjectFactoryDelegate factory) : base(s, factory) { }
         }
 
         public partial class Project : ObjectBase
         {
-            internal Project(Unknown s) : base(s)
+            internal Project(Unknown s, ObjectFactoryDelegate factory) : base(s, factory)
             {
                 Attributes["Version"] = _CurrentVersion.ToString();
             }
