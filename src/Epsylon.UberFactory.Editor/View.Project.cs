@@ -9,6 +9,8 @@ namespace Epsylon.UberFactory
 {
     public static partial class ProjectVIEW
     {
+        #region lifecycle
+
         public static Project TryCreateFromCommandLine(AppView app)
         {
             var docPath = _AppConstants.StartupOpenDocumentPath;
@@ -68,6 +70,10 @@ namespace Epsylon.UberFactory
             throw new NotSupportedException();
         }
 
+        #endregion
+
+        #region MVVMs
+
         public class Project : BindableBase
         {
             #region lifecycle
@@ -103,9 +109,9 @@ namespace Epsylon.UberFactory
                 _Application = app;
 
                 _Source = doc;
-                _SourceBody = doc.GetBody();
+                _SourceBody = doc.GetBody(false);
 
-                _DocumentPath = documentPath;
+                _SourceFilePath = documentPath;
 
                 _Configurations = new Configurations(doc);
                 _ActiveConfiguration = _Configurations.RootConfiguration;
@@ -122,9 +128,7 @@ namespace Epsylon.UberFactory
                 PasteTaskFromClipboardCmd = new RelayCommand(_PasteTaskFromClipboard);
 
                 BuildAllCmd = new RelayCommand(Build);
-                TestAllCmd = new RelayCommand(Test);
-
-                
+                TestAllCmd = new RelayCommand(Test);                
 
                 ShowSourceDirectoryCmd = new RelayCommand(() => new PathString(this.SourceDirectory).TryOpenContainingFolder());
                 ShowTargetDirectoryCmd = new RelayCommand(() => new PathString(this.TargetDirectory).TryOpenContainingFolder());
@@ -156,43 +160,22 @@ namespace Epsylon.UberFactory
 
             public ICommand PasteTaskFromClipboardCmd { get; private set; }
 
-            #endregion
-
-            #region serialization
-
-            public void Save()
-            {
-                try
-                {
-                    _Source.SaveTo(_DocumentPath);
-                }
-                catch(Exception ex)
-                {
-                    System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                    return;
-                }
-                
-
-                // update dirty
-                _SourceBody = _Source.GetBody();
-            }
-
-            #endregion
+            #endregion            
 
             #region data
 
-            private readonly AppView _Application;
+            private readonly AppView            _Application;
 
             private readonly ProjectDOM.Project _Source;
-            private String                      _SourceBody;    // used to check if the project is dirty
+            private readonly PathString         _SourceFilePath;
+            private String                      _SourceBody;    // used to check if the project is dirty            
 
-            private readonly PathString _DocumentPath;
+            private readonly Configurations     _Configurations;
 
-            private readonly Configurations _Configurations;
             internal readonly Factory.Collection _Plugins = new Factory.Collection();            
 
-            private BindableBase _ActiveItemView;
-            private String _ActiveConfiguration;
+            private BindableBase                _ActiveItemView;
+            private String                      _ActiveConfiguration;
             
             private Evaluation.PipelineClientState.Manager _ProjectState = new Evaluation.PipelineClientState.Manager();
 
@@ -204,15 +187,15 @@ namespace Epsylon.UberFactory
 
             public String Title                 => this.GetType().Assembly.GetDisplayTitle(true, true, DisplayName);
 
-            public String DocumentPath          => _DocumentPath;
+            public String DocumentPath          => _SourceFilePath;
 
-            public Boolean IsDirty              => _SourceBody != _Source.GetBody();
+            public Boolean IsDirty              => _SourceBody != _Source.GetBody(false);
 
-            public String DisplayName           => _DocumentPath.FileNameWithoutExtension;
+            public String DisplayName           => _SourceFilePath.FileNameWithoutExtension;
 
-            public String SourceDirectory       => _DocumentPath.DirectoryPath;
+            public String SourceDirectory       => _SourceFilePath.DirectoryPath;
 
-            public Boolean IsReadOnly           => _DocumentPath.IsReadOnly;
+            public Boolean IsReadOnly           => _SourceFilePath.IsReadOnly;
 
             public Configurations Configurations => _Configurations;
 
@@ -220,7 +203,7 @@ namespace Epsylon.UberFactory
 
             public String TargetDirectory       => GetBuildSettings().TargetDirectory;
 
-            public String ActiveConfiguration { get { return _ActiveConfiguration; } set { _SetActiveConfiguration(value); } }
+            public String ActiveConfiguration { get => _ActiveConfiguration; set => _SetActiveConfiguration(value); }
 
             public IEnumerable<SettingsView> SharedSettings
             {
@@ -276,7 +259,9 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            public IEnumerable<PathString> AbsoluteFilePaths => _Source.References.Select(item => _DocumentPath.DirectoryPath.MakeAbsolutePath(item));
+            public Boolean ClipboardContainsTask => _GetFromClipboard() != null;
+
+            public IEnumerable<PathString> AbsoluteFilePaths => _Source.References.Select(item => _SourceFilePath.DirectoryPath.MakeAbsolutePath(item));
 
             public bool CanAddItems => _ActiveConfiguration != null;
 
@@ -290,8 +275,6 @@ namespace Epsylon.UberFactory
                 }
             }
 
-            
-
             #endregion
 
             #region API
@@ -302,7 +285,7 @@ namespace Epsylon.UberFactory
 
                 if (string.IsNullOrWhiteSpace(cfg)) cfg = _Configurations.RootConfiguration;                
 
-                return Evaluation.BuildContext.Create(cfg, _DocumentPath.DirectoryPath, isSimulation);
+                return Evaluation.BuildContext.Create(cfg, _SourceFilePath.DirectoryPath, isSimulation);
             }
 
             public Evaluation.PipelineClientState GetTaskState(Guid id)
@@ -347,9 +330,9 @@ namespace Epsylon.UberFactory
                 _Dialogs.ShowPluginsManagerDialog
                     (
                     _Application,
-                    path => _Source.ContainsReference(_DocumentPath.DirectoryPath.MakeRelativePath(path)),
-                    (path,ver) => _Source.UseAssemblyReference(_DocumentPath.DirectoryPath.MakeRelativePath(path),ver),
-                    path => _Source.RemoveReference(_DocumentPath.DirectoryPath.MakeRelativePath(path))
+                    path => _Source.ContainsReference(_SourceFilePath.DirectoryPath.MakeRelativePath(path)),
+                    (path,ver) => _Source.UseAssemblyReference(_SourceFilePath.DirectoryPath.MakeRelativePath(path),ver),
+                    path => _Source.RemoveReference(_SourceFilePath.DirectoryPath.MakeRelativePath(path))
                     );
                 _ReloadPlugins();
             }
@@ -507,6 +490,8 @@ namespace Epsylon.UberFactory
                 if (item is Task task)
                 {
                     _SetToClipboard(task.Source);
+
+                    RaiseChanged(nameof(ClipboardContainsTask));
                 }
             }
 
@@ -528,14 +513,14 @@ namespace Epsylon.UberFactory
                 {
                     task = task.CreateDeepCopy(true);
 
-                    var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
-                    var clipID = assembly_Core.InformationalVersion();
+                    var clipID = _GetClipboardId();
 
                     var xml = task.ToXml();
 
                     var text = xml.ToString(System.Xml.Linq.SaveOptions.DisableFormatting);
 
                     System.Windows.Clipboard.SetData(clipID, text);
+                    System.Windows.Clipboard.Flush();
                 }
                 catch { }
             }
@@ -544,8 +529,7 @@ namespace Epsylon.UberFactory
             {
                 try
                 {
-                    var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
-                    var clipID = assembly_Core.InformationalVersion();
+                    var clipID = _GetClipboardId();
 
                     if (!System.Windows.Clipboard.ContainsData(clipID)) return null;
 
@@ -558,8 +542,35 @@ namespace Epsylon.UberFactory
                 catch { return null; }                
             }
 
+            private static String _GetClipboardId()
+            {
+                var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
+                return assembly_Core.InformationalVersion();
+            }
+
             #endregion
-        }        
+
+            #region API - serialization
+
+            public void Save()
+            {
+                try
+                {
+                    _Source.SaveTo(_SourceFilePath);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    return;
+                }
+
+
+                // update dirty
+                _SourceBody = _Source.GetBody(false);
+            }
+
+            #endregion
+        }
 
         public class Configurations : BindableBase
         {
@@ -685,5 +696,7 @@ namespace Epsylon.UberFactory
 
             #endregion
         }
+
+        #endregion
     }
 }

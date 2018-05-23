@@ -430,7 +430,7 @@ namespace Epsylon.UberFactory
 
             #region serialization                
 
-            public String GetBody()
+            public String GetBody(bool useCurrentTime = true)
             {
                 var assembly = System.Reflection.Assembly.GetEntryAssembly();
                 if (assembly != null)
@@ -438,7 +438,7 @@ namespace Epsylon.UberFactory
                     this.Generator = $"{assembly.GetName().Name} {assembly.GetName().Version.ToString()}";
                 }
 
-                this.Date = DateTime.Now;
+                this.Date = useCurrentTime ? DateTime.Now : DateTime.Now.Date;
 
                 var root = new Unknown(this).ToXml();
                 return root.ToString(SaveOptions.OmitDuplicateNamespaces);

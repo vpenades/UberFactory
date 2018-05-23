@@ -120,14 +120,14 @@
                                 <Button Content="{StaticResource _AddIcon}" ToolTip="Add Task" Command="{Binding AddTaskCmd}" IsEnabled="{Binding CanAddItems}" />                                
                                 <Button Content="{StaticResource _TrashIcon}" ToolTip="Remove Selected Task" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ActiveDocumentCanBeRemoved}" />                                
                                 <Button Content="{StaticResource _Clipboard_CopyIcon}" ToolTip="Copy Selected Task to Clipboard" Command="{Binding CopyTaskToClipboardCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ActiveDocumentCanBeRemoved}" />
-                                <Button Content="{StaticResource _Clipboard_PasteIcon}" ToolTip="Paste Task from Clipboard" Command="{Binding PasteTaskFromClipboardCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ActiveDocumentCanBeRemoved}" />                                
+                                <Button Content="{StaticResource _Clipboard_PasteIcon}" ToolTip="Paste Task from Clipboard" Command="{Binding PasteTaskFromClipboardCmd}" CommandParameter="{Binding ActiveDocument}" IsEnabled="{Binding ClipboardContainsTask}" />                                
                             </StatusBar>
                             
                         <DataGrid x:Name="myTasks"
                                   ItemsSource="{Binding Tasks}"
                                   AutoGenerateColumns="False"
                                   AllowDrop="True"
-                                  SelectionMode="Single" SelectedValue="{Binding ActiveDocument}">
+                                  SelectionMode="Single" SelectedValue="{Binding ActiveDocument,Mode=TwoWay}" >
 
                             <DataGrid.InputBindings>
                                 <KeyBinding Key="Delete" Command="{Binding DeleteActiveDocumentCmd}" CommandParameter="{Binding ElementName=myTasks,Path=SelectedValue}"/>

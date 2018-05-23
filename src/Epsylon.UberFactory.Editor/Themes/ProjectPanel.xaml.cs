@@ -14,10 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Epsylon.UberFactory.Themes
-{
-    /// <summary>
-    /// Interaction logic for ProjectPanel.xaml
-    /// </summary>
+{    
     public partial class ProjectPanel : UserControl
     {
         public ProjectPanel()
