@@ -18,11 +18,15 @@ namespace Epsylon.UberFactory
             // File document is newer than File document => Reload dialog
             // Live document is not dirty, but File was deleted => Save dialog
 
-            #region lifecycle
+            // Undo/Redo ??
 
-            private Document(PathString path)
-            {                
+            #region lifecycle                       
+
+            protected Document(T document, PathString path)
+            {
                 _DocumentPath = path;
+                _DocumentContent = document;
+                _DocumentSnapshot = GetContentSnapshot(_DocumentContent);
 
                 SaveCmd = new RelayCommand(Save);
             }
@@ -31,15 +35,14 @@ namespace Epsylon.UberFactory
             {
                 try
                 {
-                    SaveContent(_DocumentPath, _Content);
+                    WriteContent(_DocumentPath, _DocumentContent);
+                    _DocumentSnapshot = GetContentSnapshot(_DocumentContent);
                 }
                 catch (Exception ex)
                 {
                     System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                     return;
-                }
-
-                _ContentVersion = GetContentVersion(_Content);
+                }                
 
                 RaiseChanged(nameof(IsDirty));
             }
@@ -54,34 +57,33 @@ namespace Epsylon.UberFactory
 
             #region data
             
-            private readonly PathString _DocumentPath;
-
-            private T _Content;
-            private IComparable _ContentVersion;
+            private PathString  _DocumentPath;
+            private T           _DocumentContent;
+            private IComparable _DocumentSnapshot;
 
             #endregion
 
             #region properties            
 
-            protected T Content             => _Content;
+            public T Content             => _DocumentContent;
 
             public String DocumentPath      => _DocumentPath;
 
             public String DisplayName       => _DocumentPath.FileNameWithoutExtension;
 
-            public String SourceDirectory   => _DocumentPath.DirectoryPath;
+            public PathString SourceDirectory   => _DocumentPath.DirectoryPath;
 
             public Boolean IsReadOnly       => _DocumentPath.IsReadOnly;
 
-            public Boolean IsDirty          => _ContentVersion.CompareTo(GetContentVersion(_Content)) == 0;
+            public Boolean IsDirty          => _DocumentSnapshot.CompareTo(GetContentSnapshot(_DocumentContent)) == 0;
 
             #endregion
 
             #region API
 
-            protected abstract IComparable GetContentVersion(T content);
+            protected abstract IComparable GetContentSnapshot(T content);
 
-            protected abstract void SaveContent(PathString dstPath, T content);
+            protected abstract void WriteContent(PathString dstPath, T content);
 
             protected abstract T ReadContent(PathString srcPath);
 
