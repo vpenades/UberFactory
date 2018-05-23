@@ -356,10 +356,7 @@ namespace Epsylon.UberFactory
 
                 if (!remapIds) return newTask;
 
-                var pipeline = newTask.GetLogicalChildren<Pipeline>().FirstOrDefault();
-                if (pipeline == null) return newTask;
-
-                pipeline._RemapIds();
+                newTask.RemapIdentifiers();
 
                 return newTask;
             }            
@@ -397,7 +394,22 @@ namespace Epsylon.UberFactory
             }
 
             #endregion
-        }        
+
+            #region partial serialization
+
+            public void RemapIdentifiers()
+            {
+                var pipeline = this.GetLogicalChildren<Pipeline>().FirstOrDefault();
+
+                if (pipeline != null) pipeline._RemapIds();
+            }
+
+            public System.Xml.Linq.XElement ToXml() { return new Unknown(this).ToXml(); }
+
+            public static Task Parse(System.Xml.Linq.XElement element) { return Unknown.ParseXml(element,_Factory) as Task; }
+
+            #endregion
+        }
 
         public partial class PluginReference : Item
         {

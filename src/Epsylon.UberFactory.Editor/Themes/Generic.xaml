@@ -13,6 +13,10 @@
     <!-- ✳✴❇🆕-->
     <sys:String x:Key="_AddIcon">➕</sys:String>
 
+    <sys:String x:Key="_Clipboard_CutIcon">✂→📋</sys:String>
+    <sys:String x:Key="_Clipboard_CopyIcon">🗎→📋</sys:String>
+    <sys:String x:Key="_Clipboard_PasteIcon">📋→🗎</sys:String>
+
     <sys:String x:Key="_RemoveIcon">❌</sys:String>
     <sys:String x:Key="_TrashIcon">🗑</sys:String>
 
@@ -39,6 +43,8 @@
     <sys:String x:Key="_OutboxTray">📤</sys:String>
     <sys:String x:Key="_InboxTray">📥</sys:String>
     <sys:String x:Key="_CopyIcon">⮎🗎</sys:String>
+    
+    
 
 
     <!--▲△ ▼▽-->

@@ -116,12 +116,15 @@ namespace Epsylon.UberFactory
                 EditPluginsCmd = new RelayCommand(_EditPlugin);
                 EditConfigurationsCmd = new RelayCommand(_EditConfigurations);               
 
-                DeleteActiveDocumentCmd = new RelayCommand<BindableBase>(_DeleteTask);
+                DeleteActiveDocumentCmd = new RelayCommand<BindableBase>(_DeleteTask);                
 
-                CopyActiveDocumentCmd = new RelayCommand<BindableBase>(_CopyTask);
+                CopyTaskToClipboardCmd = new RelayCommand<BindableBase>(_CopyTaskToClipboard);
+                PasteTaskFromClipboardCmd = new RelayCommand(_PasteTaskFromClipboard);
 
                 BuildAllCmd = new RelayCommand(Build);
                 TestAllCmd = new RelayCommand(Test);
+
+                
 
                 ShowSourceDirectoryCmd = new RelayCommand(() => new PathString(this.SourceDirectory).TryOpenContainingFolder());
                 ShowTargetDirectoryCmd = new RelayCommand(() => new PathString(this.TargetDirectory).TryOpenContainingFolder());
@@ -131,25 +134,27 @@ namespace Epsylon.UberFactory
 
             #region cmds
 
-            public ICommand SaveCmd { get; private set; }
-
-            public ICommand AddTaskCmd { get; private set; }            
-
             public ICommand EditPluginsCmd { get; private set; }
 
             public ICommand EditConfigurationsCmd { get; private set; }
 
-            public ICommand DeleteActiveDocumentCmd { get; private set; }
-
-            public ICommand CopyActiveDocumentCmd { get; private set; }
+            public ICommand TestAllCmd { get; private set; }
 
             public ICommand BuildAllCmd { get; private set; }
-
-            public ICommand TestAllCmd { get; private set; }
 
             public ICommand ShowSourceDirectoryCmd { get; private set; }
 
             public ICommand ShowTargetDirectoryCmd { get; private set; }
+
+            public ICommand SaveCmd { get; private set; }
+
+            public ICommand AddTaskCmd { get; private set; }
+
+            public ICommand DeleteActiveDocumentCmd { get; private set; }
+
+            public ICommand CopyTaskToClipboardCmd { get; private set; }
+
+            public ICommand PasteTaskFromClipboardCmd { get; private set; }
 
             #endregion
 
@@ -375,55 +380,7 @@ namespace Epsylon.UberFactory
 
                 RaiseChanged(nameof(CanBuild),nameof(CanAddItems));
             }
-
-            private void _AddNewTask()
-            {
-                if (_ActiveConfiguration == null || _Configurations.IsEmpty) { _EditConfigurations(); return; }
-
-                var task = _Source.AddTask();
-                task.Title = "New Task " + Tasks.Count();
-
-                RaiseChanged(nameof(Tasks), nameof(IsDirty));
-
-                ActiveDocument = Tasks.FirstOrDefault(item => item.Source == task);
-
-                RaiseChanged(nameof(CanBuild));
-            }
-
-            private void _CopyTask(BindableBase item)
-            {
-                if (item is Task task)
-                {
-                    var xtask = _Source.AddTaskCopy(task.Source);
-
-                    RaiseChanged(nameof(Tasks), nameof(IsDirty));
-
-                    ActiveDocument = Tasks.FirstOrDefault(taskView => taskView.Source == xtask);
-
-                    RaiseChanged(nameof(CanBuild));
-                }
-            }
-
-            private void _DeleteTask(BindableBase item)
-            {
-                if (item is Task task)
-                {
-                    if (!_Dialogs.QueryDeletePermanentlyWarningDialog(GetDisplayName(task))) return;
-
-                    _Source.RemoveItem(task.Source);
-
-                    RaiseChanged(nameof(Tasks), nameof(IsDirty));
-
-                    if (ActiveDocument == item) ActiveDocument = null;
-
-                    RaiseChanged(nameof(CanBuild));
-                }
-            }
-
             
-
-            
-
             internal ProjectDOM.Settings GetSharedSettings(Type t) { return _Source.UseSettings(t); }
 
             public void Test() { _BuildOrTest(true); RaiseChanged(nameof(Tasks)); }
@@ -496,9 +453,112 @@ namespace Epsylon.UberFactory
                 _Plugins.SetAssemblies(Client.PluginLoader.Instance.GetPlugins() );
 
                 RaiseChanged();
-            }           
+            }
 
-            #endregion            
+            #endregion
+
+            #region API - Tasks management
+
+            private void _AddNewTask(Func<ProjectDOM.Task> addTaskFunc)
+            {
+                if (_ActiveConfiguration == null || _Configurations.IsEmpty) { _EditConfigurations(); return; }
+
+                var task = addTaskFunc();
+                if (task == null) return;
+
+                RaiseChanged(nameof(Tasks), nameof(IsDirty));
+
+                ActiveDocument = Tasks.FirstOrDefault(item => item.Source == task);
+
+                RaiseChanged(nameof(CanBuild));
+            }
+
+            private void _AddNewTask()
+            {
+                _AddNewTask
+                    (
+                    () =>
+                    {
+                        var task = _Source.AddTask();
+                        task.Title = "New Task " + Tasks.Count();
+                        return task;
+                    }
+                    );                
+            }
+
+            private void _DeleteTask(BindableBase item)
+            {
+                if (item is Task task)
+                {
+                    if (!_Dialogs.QueryDeletePermanentlyWarningDialog(GetDisplayName(task))) return;
+
+                    _Source.RemoveItem(task.Source);
+
+                    RaiseChanged(nameof(Tasks), nameof(IsDirty));
+
+                    if (ActiveDocument == item) ActiveDocument = null;
+
+                    RaiseChanged(nameof(CanBuild));
+                }
+            }
+
+            private void _CopyTaskToClipboard(BindableBase item)
+            {
+                if (item is Task task)
+                {
+                    _SetToClipboard(task.Source);
+                }
+            }
+
+            private void _PasteTaskFromClipboard()
+            {
+                var task = _GetFromClipboard();
+                if (task == null) return;
+
+                _AddNewTask(() => _Source.AddTaskCopy(task));
+            }
+
+            #endregion
+
+            #region API - Clipboard
+
+            private static void _SetToClipboard(ProjectDOM.Task task)
+            {
+                try
+                {
+                    task = task.CreateDeepCopy(true);
+
+                    var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
+                    var clipID = assembly_Core.InformationalVersion();
+
+                    var xml = task.ToXml();
+
+                    var text = xml.ToString(System.Xml.Linq.SaveOptions.DisableFormatting);
+
+                    System.Windows.Clipboard.SetData(clipID, text);
+                }
+                catch { }
+            }
+
+            private static ProjectDOM.Task _GetFromClipboard()
+            {
+                try
+                {
+                    var assembly_Core = typeof(Evaluation.PipelineInstance).Assembly;
+                    var clipID = assembly_Core.InformationalVersion();
+
+                    if (!System.Windows.Clipboard.ContainsData(clipID)) return null;
+
+                    var text = System.Windows.Clipboard.GetData(clipID) as String;
+
+                    var xml = System.Xml.Linq.XElement.Parse(text);
+
+                    return ProjectDOM.Task.Parse(xml);
+                }
+                catch { return null; }                
+            }
+
+            #endregion
         }        
 
         public class Configurations : BindableBase

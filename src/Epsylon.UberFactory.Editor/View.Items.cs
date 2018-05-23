@@ -155,7 +155,7 @@ namespace Epsylon.UberFactory
 
             public ProjectDOM.Settings GetSharedSettings(Type t) { return _Parent.GetSharedSettings(t); }            
 
-            public Type GetRootOutputType() { return null; }
+            public Type GetRootOutputType() { return null; }            
 
             #endregion
         }        
