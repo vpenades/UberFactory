@@ -4,12 +4,14 @@
              xmlns:xcontrols="clr-namespace:Epsylon.UberFactory.Themes.Controls">
 
     <!-- this class expects DataContext to be a IChildEditCommands compatible object -->
+
+    <!-- ToolBar.ButtonStyleKey button style is a completely transparent button style -->
     
     <StackPanel Orientation="Horizontal">
-        <Button               Content="{StaticResource _InspectIcon}" Command="{Binding ViewCurrentPreviewCmd}" ToolTip="{StaticResource L2N_PreviewResult}"       Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
-        <Button               Content="{StaticResource _AddIcon}"     Command="{Binding SetCurrentValueCmd}"    ToolTip="{StaticResource L2N_SetNewReference}"     Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>
-        <xcontrols:SafeButton Content="{StaticResource _RemoveIcon}"  Command="{Binding ClearCurrentCmd}"      ToolTip="{StaticResource L2N_SetNullReference}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
-        <xcontrols:SafeButton Content="{StaticResource _EmptyIcon}"   Command="{Binding SetCurrentEmptyCmd}"     ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}"/>        
+        <Button               Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Content="{StaticResource _InspectIcon}" Command="{Binding ViewCurrentPreviewCmd}" ToolTip="{StaticResource L2N_PreviewResult}"       Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <Button               Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Content="{StaticResource _AddIcon}"     Command="{Binding SetCurrentValueCmd}"    ToolTip="{StaticResource L2N_SetNewReference}"     Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <xcontrols:SafeButton Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Content="{StaticResource _RemoveIcon}"  Command="{Binding ClearCurrentCmd}"       ToolTip="{StaticResource L2N_SetNullReference}"    Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />
+        <xcontrols:SafeButton Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Content="{StaticResource _EmptyIcon}"   Command="{Binding SetCurrentEmptyCmd}"    ToolTip="{StaticResource L2N_SetDefaultReference}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource asVisible}}" />        
     </StackPanel>
     
 </UserControl>

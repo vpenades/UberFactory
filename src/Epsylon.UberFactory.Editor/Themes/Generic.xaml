@@ -234,38 +234,24 @@
 
     </Style>
 
+   
 
-
-    <Style x:Key="MinimizeMaximizeToggleButtonStyle" TargetType="{x:Type ToggleButton}">
-        <!--
-        <Setter Property="OverridesDefaultStyle" Value="true" />
-        -->
+    <Style x:Key="MinimizeMaximizeToggleButtonStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}">
         <Setter Property="Content" Value="🗖" />
         <Setter Property="ToolTip" Value="Maximize" />
         <Setter Property="Padding" Value="5,0,0,0" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <!-- https://msdn.microsoft.com/fr-fr/library/cc296245(v=vs.95).aspx -->
-                <ControlTemplate TargetType="{x:Type ToggleButton}">
+        <Setter Property="Background" Value="Transparent" />        
+        <Setter Property="BorderThickness" Value="0" />        
 
-                    <ContentPresenter x:Name="contentPresenter"
-                                                          Content="{TemplateBinding Content}"
-                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                          Margin="{TemplateBinding Padding}" />
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="contentPresenter" Property="Content" Value="🗕"/>
-                            <Setter TargetName="contentPresenter" Property="ToolTip" Value="Minimize"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Content" Value="🗕"/>
+                <Setter Property="ToolTip" Value="Minimize"/>
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Trigger>
+        </Style.Triggers>
+        
     </Style>
 
     <Style x:Key="VerticalExpanderStyle" TargetType="{x:Type Expander}">
