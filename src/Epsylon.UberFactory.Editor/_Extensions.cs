@@ -265,14 +265,43 @@ namespace Epsylon.UberFactory
 
             return attributes.OfType<AssemblyMetadataAttribute>().FirstOrDefault(item => item.Key == key)?.Value;
         }
-        
+
+        public static Boolean IsDebug(this Assembly assembly)
+        {
+            // https://stackoverflow.com/questions/2186613/how-to-check-if-an-assembly-was-built-using-debug-or-release-configuration
+
+            return assembly.GetCustomAttributes(false)
+                .OfType<System.Diagnostics.DebuggableAttribute>()
+                .Select(da => da.IsJITTrackingEnabled)
+                .FirstOrDefault();
+        }
+
+        public static bool IsAssemblyConfiguration(this Assembly assembly, string configuration)
+        {
+            var attributes = assembly.GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
+            if (attributes.Length == 1)
+            {
+                var assemblyConfiguration = attributes[0] as AssemblyConfigurationAttribute;
+                if (assemblyConfiguration != null)
+                {
+                    return assemblyConfiguration.Configuration.Equals(configuration, StringComparison.InvariantCultureIgnoreCase);
+                }
+            }
+            return true;
+        }
+
         public static bool IsLoaded(this System.Diagnostics.FileVersionInfo fvinfo)
+        {
+            return fvinfo.GetLoadedAssembly() != null;
+        }
+
+        public static Assembly GetLoadedAssembly(this System.Diagnostics.FileVersionInfo fvinfo)
         {
             return AppDomain
                     .CurrentDomain
                     .GetAssemblies()
-                    .Where(a => !a.IsDynamic) // this is required to prevent crashes if there's a dynamically generated assebly loaded                    
-                    .Any(a => string.Equals(a.Location, fvinfo.FileName, StringComparison.InvariantCultureIgnoreCase));
+                    .Where(a => !a.IsDynamic) // this is required to prevent crashes if there's a dynamically generated assembly loaded                    
+                    .FirstOrDefault(a => string.Equals(a.Location, fvinfo.FileName, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public static PathString Location(this System.Diagnostics.FileVersionInfo fvinfo) { return new PathString(fvinfo.FileName); }
