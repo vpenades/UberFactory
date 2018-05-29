@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Epsylon.UberFactory
 {
+    using Serialization;
+
     public static partial class ProjectDOM
     {
         public partial class Configuration : ObjectBase
@@ -350,7 +352,7 @@ namespace Epsylon.UberFactory
 
             public Task CreateDeepCopy(bool remapIds)
             {
-                var newTask = new Unknown(this).Activate() as Task;                
+                var newTask = new Unknown(this).Activate(_Factory) as Task;                
 
                 newTask.Title += "_Copy";
 
@@ -493,7 +495,7 @@ namespace Epsylon.UberFactory
 
             internal Project()
             {
-                Attributes["Version"] = _CurrentVersion.ToString();
+                Attributes["Version"] = CurrentVersion.ToString();
             }
 
             #endregion

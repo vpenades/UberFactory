@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Epsylon.UberFactory
 {
+    using Serialization;
+
     public static partial class ProjectDOM
     {
         /// <summary>
@@ -51,14 +53,10 @@ namespace Epsylon.UberFactory
             var ver = root.Attribute("Version").Value;
 
             if (!Version.TryParse(ver, out Version docVer)) throw new System.IO.FileLoadException();
-            if (docVer > _CurrentVersion) throw new System.IO.FileLoadException("Document Version " + docVer + " not supported");
+            if (docVer > CurrentVersion) throw new System.IO.FileLoadException("Document Version " + docVer + " not supported");
             
             return Unknown.ParseXml(root, _Factory) as Project;
-        }
-
-        internal delegate ObjectBase ObjectFactoryDelegate(Unknown obj);
-
-        internal delegate Unknown UnknownFactoryDelegate(ObjectBase obj);
+        }       
 
         internal static ObjectBase _Factory(Unknown unk)
         {

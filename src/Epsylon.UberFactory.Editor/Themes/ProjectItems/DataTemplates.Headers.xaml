@@ -58,7 +58,7 @@
                 </ContextMenu>
             </DockPanel.ContextMenu>
             <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />
-            <Button Content="{StaticResource _AddIcon}" Command="{Binding AddParameterSlotCmd}" DockPanel.Dock="Right" ToolTip="{StaticResource L2N_SetNewReference}"/>
+            <Button Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Content="{StaticResource _AddIcon}" Command="{Binding AddParameterSlotCmd}" DockPanel.Dock="Right" ToolTip="{StaticResource L2N_SetNewReference}"/>
             <TextBlock Text="    " />
         </DockPanel>
     </DataTemplate>

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Epsylon.UberFactory
+namespace Epsylon.UberFactory.ProjectDocument
 {
     // https://www.visualstudio.com/en-us/docs/test/developer-testing/getting-started/getting-started-with-developer-testing
 
@@ -31,7 +31,7 @@ namespace Epsylon.UberFactory
         [TestMethod]
         public void PropertyTests()
         {
-            var pg = new ProjectDOM.PropertyGroup();
+            var pg = new Serialization.PropertyGroup();
 
             // null key check
             Assert.ThrowsException<ArgumentNullException>(() => pg.SetValue(null, "X"));
@@ -60,7 +60,7 @@ namespace Epsylon.UberFactory
             pg.SetValue("XMLChars", xmlchars);
             var xmlElement = new System.Xml.Linq.XElement("Properties");
             pg._ToXml(xmlElement);
-            var pgg = new ProjectDOM.PropertyGroup();
+            var pgg = new Serialization.PropertyGroup();
             pgg._ParseXml(xmlElement);
             var xmlchars2 = pgg.GetValue("XMLChars",null);
             Assert.AreEqual(xmlchars, xmlchars2);
