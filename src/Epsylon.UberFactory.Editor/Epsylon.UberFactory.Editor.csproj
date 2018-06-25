@@ -315,7 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ColorPickerWPF">
-      <Version>1.0.7</Version>
+      <Version>1.0.9</Version>
     </PackageReference>
     <PackageReference Include="System.IO.FileSystem">
       <Version>4.3.0</Version>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47;netcoreapp2.0</TargetFrameworks>
@@ -27,11 +27,18 @@
   <!-- Dependencies -->
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Condition="'$(TargetFramework)' == 'netcoreapp2.0'" Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Condition="'$(TargetFramework)' == 'netcoreapp2.0'" Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
-    <PackageReference Condition="'$(TargetFramework)' == 'net47'"         Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />        
   </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
+    <PackageReference  Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+  </ItemGroup>  
 
   <ItemGroup>
     <ProjectReference Include="..\Epsylon.UberFactory.Core\Epsylon.UberFactory.Core.csproj" />
