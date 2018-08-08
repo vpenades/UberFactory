@@ -101,7 +101,7 @@ namespace Epsylon.UberPlugin
             var encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder
             {
                 CompressionLevel = this.CompressionLevel,
-                PngColorType = colorType,
+                ColorType = colorType,
             };
 
             void act(SDK.ExportContext ctx, IMAGE32 img) => ctx.WriteStream(s => img.Save(s, encoder));

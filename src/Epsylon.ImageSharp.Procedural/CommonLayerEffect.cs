@@ -5,8 +5,6 @@ using System.Text;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Convolution;
-using SixLabors.ImageSharp.Processing.Drawing;
 using SixLabors.Primitives;
 
 namespace Epsylon.ImageSharp.Procedural

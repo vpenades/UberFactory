@@ -125,7 +125,7 @@ namespace Epsylon.UberPlugin
             {                
                 Quantizer = isPalette ? Quantizer.GetInstance() : null,
                 CompressionLevel = settings.CompressionLevel,
-                PngColorType = ColorChannels
+                ColorType = ColorChannels
             };
 
             if (ColorChannels != PNGFORMAT.PngColorType.RgbWithAlpha &&

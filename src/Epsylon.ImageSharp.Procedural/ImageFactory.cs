@@ -4,8 +4,8 @@ using System.Text;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.Memory;
 using SixLabors.Primitives;
 
 namespace Epsylon.ImageSharp.Procedural
@@ -18,10 +18,10 @@ namespace Epsylon.ImageSharp.Procedural
         {
             var cfg = Configuration.Default.ShallowCopy();
 
-            cfg.MemoryManager = new SimpleGcMemoryManager();
+            cfg.MemoryAllocator = new SixLabors.Memory.SimpleGcMemoryAllocator();
 
             #if DEBUG
-            Configuration.Default.MemoryManager = null; // invalidate default configuration to signal inproper calls
+            Configuration.Default.MemoryAllocator = null; // invalidate default configuration to signal inproper calls
             #endif
 
             return cfg;

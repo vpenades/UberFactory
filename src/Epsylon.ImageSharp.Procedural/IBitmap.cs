@@ -8,7 +8,9 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.MetaData;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.Primitives;
+
 
 namespace Epsylon.ImageSharp.Procedural
 {
@@ -174,7 +176,9 @@ namespace Epsylon.ImageSharp.Procedural
 
         private _Bitmap(Image<TPixel> image) : this(image.Width,image.Height)
         {
-            image.SavePixelData(_Buffer);
+            image
+                .GetPixelSpan()
+                .CopyTo(_Buffer);
         }
 
         private _Bitmap(int width, int height)
@@ -266,7 +270,9 @@ namespace Epsylon.ImageSharp.Procedural
 
                 if (newSize != _Buffer.Length) _Buffer = new TPixel[newSize];
 
-                image.SavePixelData(_Buffer); // ImageSharp request:  if _Buffer happens to be the same buffer stored internally, DO NOTHING
+                image
+                    .GetPixelSpan()
+                    .CopyTo(_Buffer); // ImageSharp request:  if _Buffer happens to be the same buffer stored internally, DO NOTHING
             }
         }        
 

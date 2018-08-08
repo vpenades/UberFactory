@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,22 +7,19 @@ using System.Threading.Tasks;
 using SixLabors.Primitives;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Primitives;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Drawing;
-using SixLabors.ImageSharp.Processing.Text;
-using SixLabors.ImageSharp.Processing.Quantization;
-using SixLabors.ImageSharp.Processing.Transforms.Resamplers;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
+using Epsylon.ImageSharp.Procedural;
 
 namespace Epsylon.UberPlugin
 {
-    using Epsylon.ImageSharp.Procedural;
-
     using POINT = Point;
     using COLOR = Rgba32;
     using IMAGE = Image;
-    using IMAGE32 = Image<Rgba32>;
-    using SixLabors.ImageSharp.Primitives;
+    using IMAGE32 = Image<Rgba32>;    
 
     public enum Resampler
     {
