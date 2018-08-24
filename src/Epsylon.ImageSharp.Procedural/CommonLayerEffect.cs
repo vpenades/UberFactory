@@ -57,7 +57,7 @@ namespace Epsylon.ImageSharp.Procedural
 
                 _ApplyOuterEffects(image, source);                
 
-                image.Mutate(dc => dc.DrawImage(source,1, Point.Empty));
+                image.Mutate(dc => dc.DrawImage(source, 1));
             }
         }
 
@@ -139,7 +139,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public UInt32 Color { get; set; }
 
-        public PixelBlenderMode BlendMode { get; set; }
+        public PixelColorBlendingMode BlendMode { get; set; }
 
         // %
         public int Opacity { get; set; }
@@ -165,7 +165,7 @@ namespace Epsylon.ImageSharp.Procedural
                     .PowerAlpha(Intensity)
                 );
 
-                target.Mutate(dc => dc.DrawImage(layer, this.BlendMode, (float)this.Opacity / 100.0f, origin));
+                target.Mutate(dc => dc.DrawImage(layer, origin, this.BlendMode, (float)this.Opacity / 100.0f));
             }
         }
 

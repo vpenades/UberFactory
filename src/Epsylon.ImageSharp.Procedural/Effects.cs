@@ -59,7 +59,7 @@ namespace Epsylon.ImageSharp.Procedural
 
         public static IImageProcessingContext<TPixel> BlitImage<TPixel>(this IImageProcessingContext<TPixel> source, Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
         {
-            return source.DrawImage(image, PixelBlenderMode.Src, 1, Point.Empty);
+            return source.DrawImage(image, PixelColorBlendingMode.Normal, PixelAlphaCompositionMode.Src, 1);
             // return source.DrawImage(image, 1, image.Size(), Point.Empty);
         }
 
@@ -98,7 +98,7 @@ namespace Epsylon.ImageSharp.Procedural
 
 
 
-        public static IImageProcessingContext<TPixel> SetAlphaMask<TPixel>(this IImageProcessingContext<TPixel> source, Image<Alpha8> mask, PixelBlenderMode mode) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> SetAlphaMask<TPixel>(this IImageProcessingContext<TPixel> source, Image<Alpha8> mask, PixelAlphaCompositionMode mode) where TPixel : struct, IPixel<TPixel>
         {
             if (mask == null) return source;
 
@@ -106,12 +106,19 @@ namespace Epsylon.ImageSharp.Procedural
                 (
                 img =>
                 {
-                    if (mask.Width == img.Width && mask.Height == img.Height) img.ToPixelSampler()._ApplyAlphaMask(mask, mode);
+                    if (mask.Width == img.Width && mask.Height == img.Height)
+                    {
+                        using (var rmask = mask.CloneAs<TPixel>())
+                        {
+                            img.Mutate(dc => dc.DrawImage(rmask, PixelColorBlendingMode.Normal, mode, 1));
+                        }
+                    }
                     else
                     {
-                        using (var rmask = mask.Clone(dc => dc.Resize(img.Width, img.Height)))
+                        using (var rmask = mask.CloneAs<TPixel>())
                         {
-                            img.ToPixelSampler()._ApplyAlphaMask(rmask, mode);
+                            rmask.Mutate(dc => dc.Resize(img.Width, img.Height) );
+                            img.Mutate(dc => dc.DrawImage(rmask, PixelColorBlendingMode.Normal, mode, 1));
                         }
                     }
                 }
@@ -134,34 +141,7 @@ namespace Epsylon.ImageSharp.Procedural
                     source[x, y] = rgba;
                 }
             }
-        }
-
-        private static void _ApplyAlphaMask(this IBitmapSampler source, Image<Alpha8> mask, PixelBlenderMode mode)
-        {
-            Func<float,float,float> alphaFunc = (a,b) => a * b;
-
-            if (mode == PixelBlenderMode.Src) alphaFunc = (a, b) => a;
-            if (mode == PixelBlenderMode.Dest) alphaFunc = (a, b) => b;
-            if (mode == PixelBlenderMode.Add) alphaFunc = (a, b) => Math.Min(1,a+b);
-            if (mode == PixelBlenderMode.Subtract) alphaFunc = (a, b) => Math.Max(0, a - b);            
-
-            var w = Math.Min(source.Width, mask.Width);
-            var h = Math.Min(source.Height, mask.Height);
-
-            for(int y=0; y < h; ++y)
-            {
-                for(int x=0; x < w; ++x)
-                {
-                    var texel = source[x, y];
-                    var alpha = mask[x, y].ToVector4().W;
-                    texel.W = alphaFunc(alpha, texel.W);
-
-                    source[x, y] = texel;
-                }
-            }
-
-
-        }
+        }        
 
 
         private static void _ApplyAlphaPremultiply(this IBitmapSampler source)
@@ -191,7 +171,7 @@ namespace Epsylon.ImageSharp.Procedural
                     dc
                     // .EdgePadding(0.1f, 1+ (int) radius)
                     .Blur(BlurMode.Gaussian, radius)
-                    .DrawImage(top, 1, Point.Empty)
+                    .DrawImage(top, 1)
                     );
             }
 

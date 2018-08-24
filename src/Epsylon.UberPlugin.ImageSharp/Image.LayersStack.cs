@@ -63,8 +63,8 @@ namespace Epsylon.UberPlugin
 
         [SDK.InputValue("BlendMode")]
         [SDK.Title("⚭"), SDK.Group(_GroupTitle)]
-        [SDK.Default(SixLabors.ImageSharp.PixelFormats.PixelBlenderMode.Normal)]
-        public SixLabors.ImageSharp.PixelFormats.PixelBlenderMode BlendMode { get; set; }
+        [SDK.Default(SixLabors.ImageSharp.PixelFormats.PixelColorBlendingMode.Normal)]
+        public SixLabors.ImageSharp.PixelFormats.PixelColorBlendingMode BlendMode { get; set; }
 
         [SDK.InputValue("OffsetX")]
         [SDK.Title("X"), SDK.Group(_GroupTitle)]

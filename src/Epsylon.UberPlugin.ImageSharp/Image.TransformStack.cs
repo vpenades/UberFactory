@@ -81,7 +81,7 @@ namespace Epsylon.UberPlugin
             {
                 using (var clone = layer.ProcessStack(Source))
                 {
-                    target.Mutate(dc => dc.DrawImage(clone, layer.Mode, layer.Opacity, POINT.Empty));
+                    target.Mutate(dc => dc.DrawImage(clone, layer.Mode, layer.Opacity));
                 }
             }
 
@@ -110,8 +110,8 @@ namespace Epsylon.UberPlugin
 
         [SDK.InputValue("BlendMode")]
         [SDK.Title("Mode"), SDK.Group("Opacity")]
-        [SDK.Default(PixelBlenderMode.Normal)]
-        public PixelBlenderMode BlendMode { get; set; }
+        [SDK.Default(PixelColorBlendingMode.Normal)]
+        public PixelColorBlendingMode BlendMode { get; set; }
 
         [SDK.InputNode("Transforms", true)]
         [SDK.Title("Transforms")]
@@ -127,7 +127,7 @@ namespace Epsylon.UberPlugin
 
         public sealed class Description
         {
-            public Description(IMGTRANSFORM[] transforms, PixelBlenderMode mode, int opacity)
+            public Description(IMGTRANSFORM[] transforms, PixelColorBlendingMode mode, int opacity)
             {
                 this._Transforms = transforms;
                 this.Mode = mode;
@@ -136,7 +136,7 @@ namespace Epsylon.UberPlugin
 
             private readonly IMGTRANSFORM[] _Transforms;
 
-            public PixelBlenderMode Mode { get; private set; }
+            public PixelColorBlendingMode Mode { get; private set; }
 
             public int Opacity { get; private set; }            
 
@@ -210,12 +210,12 @@ namespace Epsylon.UberPlugin
 
         
         [SDK.Group(0), SDK.Title("Mode")]
-        [SDK.Default(PixelBlenderMode.Normal)]
-        [SDK.InputValue("BlendMode")] public PixelBlenderMode BlendMode { get; set; }
+        [SDK.Default(PixelAlphaCompositionMode.SrcOver)]
+        [SDK.InputValue("BlendMode")] public PixelAlphaCompositionMode CompositionMode { get; set; }
 
         protected override IMGTRANSFORM TransformImage()
         {
-            return dc => { dc.SetAlphaMask(Mask, BlendMode); };
+            return dc => { dc.SetAlphaMask(Mask, CompositionMode); };
         }
     }
 
@@ -649,7 +649,7 @@ namespace Epsylon.UberPlugin
             effectContext.DropShadow.Enabled   = DropShadowEnabled;
             effectContext.DropShadow.Color     = DropShadowColor;
             effectContext.DropShadow.Opacity   = DropShadowOpacity;
-            effectContext.DropShadow.BlendMode = PixelBlenderMode.Multiply;
+            effectContext.DropShadow.BlendMode = PixelColorBlendingMode.Multiply;
             effectContext.DropShadow.Angle     = DropShadowAngle;
             effectContext.DropShadow.Distance  = DropShadowDistance;
             effectContext.DropShadow.BlurRadius = DropShadowRadius;
@@ -658,7 +658,7 @@ namespace Epsylon.UberPlugin
             effectContext.InnerShadow.Enabled   = InnerShadowEnabled;
             effectContext.InnerShadow.Color     = InnerShadowColor;
             effectContext.InnerShadow.Opacity   = InnerShadowOpacity;
-            effectContext.InnerShadow.BlendMode = PixelBlenderMode.Multiply;
+            effectContext.InnerShadow.BlendMode = PixelColorBlendingMode.Multiply;
             effectContext.InnerShadow.Angle     = InnerShadowAngle;
             effectContext.InnerShadow.Distance  = InnerShadowDistance;
             effectContext.InnerShadow.BlurRadius = InnerShadowRadius;
@@ -668,14 +668,14 @@ namespace Epsylon.UberPlugin
             effectContext.OuterGlow.Enabled = OuterGlowEnabled;
             effectContext.OuterGlow.Color = OuterGlowColor;
             effectContext.OuterGlow.Opacity = OuterGlowOpacity;
-            effectContext.OuterGlow.BlendMode = PixelBlenderMode.Add;            
+            effectContext.OuterGlow.BlendMode = PixelColorBlendingMode.Add;            
             effectContext.OuterGlow.BlurRadius = OuterGlowRadius;
             effectContext.OuterGlow.Intensity = OuterGlowIntensity;
 
             effectContext.InnerGlow.Enabled = InnerGlowEnabled;
             effectContext.InnerGlow.Color = InnerGlowColor;
             effectContext.InnerGlow.Opacity = InnerGlowOpacity;
-            effectContext.InnerGlow.BlendMode = PixelBlenderMode.Add;
+            effectContext.InnerGlow.BlendMode = PixelColorBlendingMode.Add;
             effectContext.InnerGlow.BlurRadius = InnerGlowRadius;
             effectContext.InnerGlow.Intensity = InnerGlowIntensity;
             effectContext.InnerShadow.InvertAlpha = true;

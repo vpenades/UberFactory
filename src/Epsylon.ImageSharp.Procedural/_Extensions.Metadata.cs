@@ -97,18 +97,18 @@ namespace Epsylon.ImageSharp.Procedural
             metadata.Properties.SetValue<float>(_Opacity, value, 1);
         }
 
-        public static PixelBlenderMode GetInternalBlendMode(this ImageMetaData metadata)
+        public static PixelColorBlendingMode GetInternalBlendMode(this ImageMetaData metadata)
         {
-            var val = (int)PixelBlenderMode.Normal;
+            var val = (int)PixelColorBlendingMode.Normal;
 
             val = metadata.Properties.GetValue<int>(_BlendMode,val);
 
-            return (PixelBlenderMode)val;
+            return (PixelColorBlendingMode)val;
         }
 
-        public static void SetInternalBlendMode(this ImageMetaData metadata, PixelBlenderMode value)
+        public static void SetInternalBlendMode(this ImageMetaData metadata, PixelColorBlendingMode value)
         {
-            var defval = (int)PixelBlenderMode.Normal;
+            var defval = (int)PixelColorBlendingMode.Normal;
 
             metadata.Properties.SetValue<float>(_BlendMode, (int)value, defval);
         }

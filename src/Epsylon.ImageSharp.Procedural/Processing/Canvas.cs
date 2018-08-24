@@ -27,10 +27,10 @@ namespace Epsylon.ImageSharp.Procedural.Processing
             _Canvas = target;
             _Randomizer = new Random(seed);
 
-            var mode = PixelBlenderMode.Normal;
+            var mode = PixelColorBlendingMode.Normal;
 
             // _Blender = PixelOperations<Rgba32>.Instance.GetPixelBlender(mode);
-            _GfxMode = new GraphicsOptions() { BlenderMode = mode };
+            _GfxMode = new GraphicsOptions(true, mode, 1);
         }
 
         #endregion
