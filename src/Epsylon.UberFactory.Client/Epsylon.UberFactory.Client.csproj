@@ -1,7 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net47;netcoreapp2.0</TargetFrameworks>
+    <NETFRAMEWORKTARGET>net471</NETFRAMEWORKTARGET>
+    <STDFRAMEWORKTARGET>netstandard2.0</STDFRAMEWORKTARGET>
+    <COREFRAMEWORKTARGET>netcoreapp2.0</COREFRAMEWORKTARGET>
+  </PropertyGroup>
+
+  <PropertyGroup>    
+    <TargetFrameworks>$(NETFRAMEWORKTARGET);$(STDFRAMEWORKTARGET);$(COREFRAMEWORKTARGET)</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
     <PackageLicenseUrl>https://github.com/vpenades/UberFactory/blob/master/LICENSE</PackageLicenseUrl>    
@@ -9,17 +15,17 @@
 
   <!-- Source code Switches -->
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+  <ItemGroup Condition="'$(TargetFramework)' != '$(STDFRAMEWORKTARGET)'">
     <Compile Remove="**\*.netstd.cs" />
     <None Include="**\*.netstd.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net47'">
+  <ItemGroup Condition="'$(TargetFramework)' != '$(NETFRAMEWORKTARGET)'">
     <Compile Remove="**\*.netfx.cs" />
     <None Include="**\*.netfx.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)' != '$(COREFRAMEWORKTARGET)'">
     <Compile Remove="**\*.netcore.cs" />
     <None Include="**\*.netcore.cs" />
   </ItemGroup>
@@ -27,17 +33,16 @@
   <!-- Dependencies -->
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />        
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />    
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == '$(COREFRAMEWORKTARGET)'">
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <PackageReference  Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+  <ItemGroup Condition="'$(TargetFramework)' == '$(NETFRAMEWORKTARGET)'">
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
   </ItemGroup>  
 
   <ItemGroup>

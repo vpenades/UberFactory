@@ -1,8 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">  
 
   <PropertyGroup>
+    <NETFRAMEWORKTARGET>net471</NETFRAMEWORKTARGET>    
+    <COREFRAMEWORKTARGET>netcoreapp2.0</COREFRAMEWORKTARGET>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net47;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>$(NETFRAMEWORKTARGET);$(COREFRAMEWORKTARGET)</TargetFrameworks>
     <ApplicationIcon>..\Shared\AppIcon.ico</ApplicationIcon>
     <AssemblyName>dotnet-UberFactory</AssemblyName>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -25,37 +30,37 @@
   <!-- https://github.com/NuGet/Home/issues/3891#issuecomment-309792369 -->
 
   <ItemGroup>
-    <_PackageFiles Include="$(OutputPath)\net47/Epsylon.UberFactory.Client.dll">
+    <_PackageFiles Include="$(OutputPath)\$(NETFRAMEWORKTARGET)/Epsylon.UberFactory.Client.dll">
       <BuildAction>None</BuildAction>
-      <PackagePath>lib\net47\</PackagePath>
+      <PackagePath>lib\net471\</PackagePath>
     </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\net47/Epsylon.UberFactory.Core.dll">
+    <_PackageFiles Include="$(OutputPath)\$(NETFRAMEWORKTARGET)/Epsylon.UberFactory.Core.dll">
       <BuildAction>None</BuildAction>
-      <PackagePath>lib\net47\</PackagePath>
+      <PackagePath>lib\net471\</PackagePath>
     </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\net47/Epsylon.UberFactory.SDK.dll">
+    <_PackageFiles Include="$(OutputPath)\$(NETFRAMEWORKTARGET)/Epsylon.UberFactory.SDK.dll">
       <BuildAction>None</BuildAction>
-      <PackagePath>lib\net47\</PackagePath>
+      <PackagePath>lib\net471\</PackagePath>
     </_PackageFiles>
   </ItemGroup>
 
   <ItemGroup>
-    <_PackageFiles Include="$(OutputPath)\netcoreapp2.0/Epsylon.UberFactory.Client.dll">
+    <_PackageFiles Include="$(OutputPath)\$(COREFRAMEWORKTARGET)/Epsylon.UberFactory.Client.dll">
       <BuildAction>None</BuildAction>
       <PackagePath>lib\netcoreapp2.0\</PackagePath>
     </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\netcoreapp2.0/Epsylon.UberFactory.Core.dll">
+    <_PackageFiles Include="$(OutputPath)\$(COREFRAMEWORKTARGET)/Epsylon.UberFactory.Core.dll">
       <BuildAction>None</BuildAction>
       <PackagePath>lib\netcoreapp2.0\</PackagePath>
     </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\netcoreapp2.0/Epsylon.UberFactory.SDK.dll">
+    <_PackageFiles Include="$(OutputPath)\$(COREFRAMEWORKTARGET)/Epsylon.UberFactory.SDK.dll">
       <BuildAction>None</BuildAction>
       <PackagePath>lib\netcoreapp2.0\</PackagePath>
     </_PackageFiles>
   </ItemGroup>
 
   <ItemGroup>    
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
   </ItemGroup>
 
   <Import Project="..\Shared\StaticVersionInfo.props" />
